@@ -1,10 +1,9 @@
 import React from 'react';
+import {Button} from "@material-ui/core";
 
 const App: React.FunctionComponent = () => {
     return (
-        <div className="App">
-            <p>Starting Development!</p>
-        </div>
+        <Button variant="contained" color="primary"> Hello World </Button>
     );
 }
 
