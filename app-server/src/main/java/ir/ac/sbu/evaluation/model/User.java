@@ -2,6 +2,7 @@ package ir.ac.sbu.evaluation.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import lombok.Builder;
 
 @Entity
 public class User extends BaseEntity {
@@ -14,6 +15,7 @@ public class User extends BaseEntity {
     public User() {
     }
 
+    @Builder
     public User(Long id, String username, String password) {
         super(id);
         this.username = username;
