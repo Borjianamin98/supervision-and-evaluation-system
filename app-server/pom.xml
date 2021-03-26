@@ -17,6 +17,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+
+        <io.jsonwebtoken.version>0.9.1</io.jsonwebtoken.version>
     </properties>
 
     <dependencies>
@@ -67,6 +69,14 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- JWT authorization dependency -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>${io.jsonwebtoken.version}</version>
+        </dependency>
+
+        <!-- Test dependencies -->
         <dependency>
             <artifactId>spring-boot-starter-test</artifactId>
             <groupId>org.springframework.boot</groupId>

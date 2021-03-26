@@ -8,3 +8,8 @@ spring:
   datasource:
     url: jdbc:h2:mem:testdb
 
+# Application configurations
+# JWT configurations
+jwt:
+  secret: SecretJwtString
+  expiration-seconds: 86400 # 1 day

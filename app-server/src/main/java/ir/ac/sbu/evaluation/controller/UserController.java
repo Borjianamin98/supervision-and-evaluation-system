@@ -7,10 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(UserController.API_USER_PATH)
+@RequestMapping(ApiPaths.API_USER_ROOT_PATH)
 public class UserController {
-
-    public static final String API_USER_PATH = "/api/v1/user";
 
     private final UserService userService;
 
