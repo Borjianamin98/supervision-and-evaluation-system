@@ -47,7 +47,6 @@ public class JwtAuthenticationController {
             throw new AssertionError(
                     "Unexpected exception because locking user accounts for a duration has not been used.", e);
         } catch (BadCredentialsException e) {
-            // TODO: Add logs for invalid user info.
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(AuthenticationResponseDto.forRequest(request).withError("Invalid credential provided."));
