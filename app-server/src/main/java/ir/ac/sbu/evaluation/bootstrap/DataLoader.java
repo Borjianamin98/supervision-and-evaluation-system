@@ -1,25 +1,25 @@
 package ir.ac.sbu.evaluation.bootstrap;
 
-import ir.ac.sbu.evaluation.model.User;
-import ir.ac.sbu.evaluation.repository.UserRepository;
+import ir.ac.sbu.evaluation.dto.UserDto;
+import ir.ac.sbu.evaluation.service.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DataLoader implements CommandLineRunner {
 
-    private UserRepository userRepository;
+    private final UserService userService;
 
-    public DataLoader(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public DataLoader(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
     public void run(String... args) {
-        User user1 = User.builder().username("user1").password("pass1").build();
-        User user2 = User.builder().username("user2").password("pass2").build();
+        UserDto user1 = UserDto.builder().username("user1").password("pass1").build();
+        UserDto user2 = UserDto.builder().username("user2").password("pass2").build();
 
-        userRepository.save(user1);
-        userRepository.save(user2);
+        userService.save(user1);
+        userService.save(user2);
     }
 }

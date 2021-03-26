@@ -2,9 +2,11 @@ package ir.ac.sbu.evaluation.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 import lombok.Builder;
 
 @Entity
+@Table(name = "user")
 public class User extends BaseEntity {
 
     @Column(name = "username")

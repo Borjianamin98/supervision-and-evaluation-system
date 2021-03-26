@@ -1,9 +1,11 @@
 package ir.ac.sbu.evaluation.configuration;
 
+import static ir.ac.sbu.evaluation.controller.UserController.API_USER_REGISTER_PATH;
+
 import ir.ac.sbu.evaluation.controller.ApiPaths;
-import ir.ac.sbu.evaluation.security.JpaUserDetailsService;
 import ir.ac.sbu.evaluation.security.JwtAuthenticationEntryPoint;
 import ir.ac.sbu.evaluation.security.JwtAuthenticationFilter;
+import ir.ac.sbu.evaluation.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -20,16 +22,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
-    private final JpaUserDetailsService userDetailsService;
+    private final UserService userService;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     public SecurityConfig(PasswordEncoder passwordEncoder,
-            JpaUserDetailsService userDetailsService,
+            UserService userService,
             JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
             JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.passwordEncoder = passwordEncoder;
-        this.userDetailsService = userDetailsService;
+        this.userService = userService;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
@@ -42,13 +44,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(this.userDetailsService).passwordEncoder(passwordEncoder);
+        auth.userDetailsService(userService).passwordEncoder(passwordEncoder);
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers(ApiPaths.API_AUTHENTICATE_ROOT_PATH).permitAll()
+                .antMatchers(ApiPaths.API_USER_ROOT_PATH + API_USER_REGISTER_PATH).permitAll()
                 .antMatchers("/favicon.ico").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/**").hasRole("USER")

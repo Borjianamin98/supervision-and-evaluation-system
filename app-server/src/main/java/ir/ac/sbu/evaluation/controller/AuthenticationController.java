@@ -2,8 +2,8 @@ package ir.ac.sbu.evaluation.controller;
 
 import ir.ac.sbu.evaluation.dto.authentication.AuthenticationRequestDto;
 import ir.ac.sbu.evaluation.dto.authentication.AuthenticationResponseDto;
-import ir.ac.sbu.evaluation.security.JpaUserDetailsService;
 import ir.ac.sbu.evaluation.security.JwtTokenProvider;
+import ir.ac.sbu.evaluation.service.UserService;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,18 +20,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(ApiPaths.API_AUTHENTICATE_ROOT_PATH)
-public class JwtAuthenticationController {
+public class AuthenticationController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
-    private final JpaUserDetailsService userDetailsService;
+    private final UserService userService;
 
-    public JwtAuthenticationController(
+    public AuthenticationController(
             AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider,
-            JpaUserDetailsService userDetailsService) {
+            UserService userService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
-        this.userDetailsService = userDetailsService;
+        this.userService = userService;
     }
 
     @PostMapping(path = {"", "/"})
@@ -52,7 +52,7 @@ public class JwtAuthenticationController {
                     .body(AuthenticationResponseDto.forRequest(request).withError("Invalid credential provided."));
         }
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+        final UserDetails userDetails = userService.loadUserByUsername(request.getUsername());
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(AuthenticationResponseDto.forRequest(request)

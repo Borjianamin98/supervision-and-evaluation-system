@@ -1,6 +1,7 @@
 package ir.ac.sbu.evaluation.security;
 
 import ir.ac.sbu.evaluation.exception.InvalidJwtTokenException;
+import ir.ac.sbu.evaluation.service.UserService;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -18,11 +19,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JpaUserDetailsService userDetailsService;
+    private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public JwtAuthenticationFilter(JpaUserDetailsService userDetailsService, JwtTokenProvider jwtTokenProvider) {
-        this.userDetailsService = userDetailsService;
+    public JwtAuthenticationFilter(UserService userService, JwtTokenProvider jwtTokenProvider) {
+        this.userService = userService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
@@ -53,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // Find user provided by JWT token to validate its existence.
         UserDetails userDetails;
         try {
-            userDetails = userDetailsService.loadUserByUsername(username);
+            userDetails = userService.loadUserByUsername(username);
         } catch (UsernameNotFoundException e) {
             logger.warn("Skip JWT token because username is not valid anymore: error = " + e.getMessage());
             return;
