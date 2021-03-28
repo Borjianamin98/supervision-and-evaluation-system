@@ -2,10 +2,13 @@ package ir.ac.sbu.evaluation.dto.authentication;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 public class AuthenticationResponseDto {
 
     private final String username;
+    @JsonProperty(access = Access.WRITE_ONLY)
     private final String password;
     @JsonInclude(Include.NON_NULL)
     private String token;
