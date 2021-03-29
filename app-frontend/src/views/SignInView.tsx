@@ -1,7 +1,6 @@
-import React from 'react';
+import React, {FormEventHandler, useState} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
@@ -13,8 +12,9 @@ import Paper from '@material-ui/core/Paper';
 import {makeStyles, ThemeProvider} from '@material-ui/core/styles';
 import signInImage from "../assets/images/signIn.png";
 import {rtlTheme} from '../App';
-import {IconButton} from "@material-ui/core";
-import {Visibility, VisibilityOff} from "@material-ui/icons";
+import PasswordTextField from '../components/Text/PasswordTextField';
+import AuthenticationService from "../services/api/AuthenticationService";
+import history from '../config/history';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -45,9 +45,18 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const SignIn: React.FunctionComponent = () => {
+const SignInView: React.FunctionComponent = (props) => {
     const classes = useStyles();
-    const [showPassword, setShowPassword] = React.useState<boolean>(false);
+    const [username, setUsername] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+
+    const formSubmitHandler: FormEventHandler = (event) => {
+        event.preventDefault();
+        AuthenticationService.authenticate(username, password);
+        if (AuthenticationService.isAuthenticated()) {
+            history.push("/dashboard")
+        }
+    }
 
     return (
         <Grid container className={classes.root}>
@@ -61,41 +70,31 @@ const SignIn: React.FunctionComponent = () => {
                         ورود
                     </Typography>
                     <ThemeProvider theme={rtlTheme}>
-                        <form dir="rtl" action="/" method="get" className={classes.form} noValidate>
+                        <form dir="rtl" onSubmit={formSubmitHandler} className={classes.form} noValidate>
                             <TextField
                                 dir="rtl"
                                 variant="outlined"
                                 margin="normal"
                                 required
                                 fullWidth
+                                label="آدرس ایمیل"
                                 id="email"
                                 name="email"
-                                label="آدرس ایمیل"
+                                value={username}
+                                onChange={(event) => setUsername(event.target.value)}
                                 autoComplete="email"
-                                autoFocus
                             />
-                            <TextField
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                onClick={() => setShowPassword(prevState => !prevState)}
-                                            >
-                                                {showPassword ? <Visibility/> : <VisibilityOff/>}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    )
-                                }}
+                            <PasswordTextField
                                 dir="rtl"
                                 variant="outlined"
                                 margin="normal"
                                 required
                                 fullWidth
                                 label="رمز عبور"
-                                type={showPassword ? 'text' : 'password'}
                                 id="password"
                                 name="password"
-                                autoComplete="current-password"
+                                value={password}
+                                onChange={(event) => setPassword(event.target.value)}
                             />
                             <FormControlLabel
                                 control={<Checkbox value="remember" color="primary"/>}
@@ -130,4 +129,4 @@ const SignIn: React.FunctionComponent = () => {
     );
 }
 
-export default SignIn;
+export default SignInView;

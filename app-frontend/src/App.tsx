@@ -3,13 +3,18 @@ import {createMuiTheme, CssBaseline} from "@material-ui/core";
 import {StylesProvider, jssPreset, ThemeProvider, Theme} from '@material-ui/core/styles';
 import {create} from 'jss';
 import rtl from 'jss-rtl';
-import SignIn from './views/SignIn';
+import SignInView from './views/SignInView';
+import {Router, Switch} from 'react-router-dom';
+import {PrivateRoute, AuthenticationRoute} from './components/Route/CustomRoute';
+import history from './config/history';
+import DashboardView from "./views/DashboardView";
+import {configAxios} from "./config/axios-config";
 
-export const rtlTheme =(theme: Theme) => createMuiTheme({...theme, direction: "rtl"});
-
+// Configuration
+// Configure axios library globally
+configAxios();
 // Configure JSS
 const jss = create({plugins: [...jssPreset().plugins, rtl()]});
-
 // Configure custom font
 const vazirFontTheme = createMuiTheme({
     typography: {
@@ -22,10 +27,21 @@ const App: React.FunctionComponent = () => {
         <StylesProvider jss={jss}>
             <ThemeProvider theme={vazirFontTheme}>
                 <CssBaseline/>
-                <SignIn/>
+                <Router history={history}>
+                    <Switch>
+                        <AuthenticationRoute path="/login">
+                            <SignInView/>
+                        </AuthenticationRoute>
+                        <PrivateRoute path="/**">
+                            <DashboardView/>
+                        </PrivateRoute>
+                    </Switch>
+                </Router>
             </ThemeProvider>
         </StylesProvider>
     );
 }
+
+export const rtlTheme = (theme: Theme) => createMuiTheme({...theme, direction: "rtl"});
 
 export default App;
