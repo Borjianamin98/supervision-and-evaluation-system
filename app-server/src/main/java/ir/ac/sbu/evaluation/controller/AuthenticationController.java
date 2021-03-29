@@ -34,7 +34,7 @@ public class AuthenticationController {
         this.userService = userService;
     }
 
-    @PostMapping(path = {"", "/"})
+    @PostMapping(path = "/create")
     public ResponseEntity<AuthenticationResponseDto> createAuthenticationToken(
             @Valid @RequestBody AuthenticationRequestDto request) {
         try {

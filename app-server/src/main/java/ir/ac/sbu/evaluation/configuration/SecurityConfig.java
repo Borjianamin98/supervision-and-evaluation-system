@@ -50,7 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers(ApiPaths.API_AUTHENTICATE_ROOT_PATH).permitAll()
+                .antMatchers(ApiPaths.API_AUTHENTICATE_ROOT_PATH + "/**").permitAll()
                 .antMatchers(ApiPaths.API_USER_ROOT_PATH + API_USER_REGISTER_PATH).permitAll()
                 .antMatchers("/favicon.ico").permitAll()
                 .antMatchers("/h2-console/**").permitAll()

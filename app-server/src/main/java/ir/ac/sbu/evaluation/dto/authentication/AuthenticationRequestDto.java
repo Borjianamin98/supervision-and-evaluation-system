@@ -1,12 +1,12 @@
 package ir.ac.sbu.evaluation.dto.authentication;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 public class AuthenticationRequestDto {
 
-    @NotBlank
+    @NotNull
     private String username;
-    @NotBlank
+    @NotNull
     private String password;
 
     public AuthenticationRequestDto() {
