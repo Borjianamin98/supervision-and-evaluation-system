@@ -35,7 +35,7 @@ public class JwtTokenProvider {
         } catch (ExpiredJwtException e) {
             throw new InvalidJwtTokenException("Received expired JWT token.", e);
         } catch (IllegalArgumentException e) {
-            throw new InvalidJwtTokenException("Received empty JWT string.", e);
+            throw new AssertionError("Received unexpected empty JWT string.", e);
         }
     }
 
