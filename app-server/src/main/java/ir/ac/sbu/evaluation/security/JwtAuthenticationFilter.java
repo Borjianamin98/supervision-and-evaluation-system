@@ -1,65 +1,80 @@
 package ir.ac.sbu.evaluation.security;
 
+import io.jsonwebtoken.Claims;
+import ir.ac.sbu.evaluation.controller.ApiPaths;
 import ir.ac.sbu.evaluation.exception.InvalidJwtTokenException;
-import ir.ac.sbu.evaluation.service.UserService;
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final UserService userService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private static final String AUTHORIZATION_BEARER_PREFIX = "Bearer ";
 
-    public JwtAuthenticationFilter(UserService userService, JwtTokenProvider jwtTokenProvider) {
-        this.userService = userService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final RequestMatcher isAuthPathRequestMatcher =
+            new AntPathRequestMatcher(ApiPaths.API_AUTHENTICATION_ROOT_PATH + "/**");
+
+    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return isAuthPathRequestMatcher.matches(request);
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-        extractJwtToken(request);
+        extractJwtToken(request).ifPresent(token -> handleJwtToken(request, token));
         chain.doFilter(request, response);
     }
 
-    private void extractJwtToken(HttpServletRequest request) {
+    private Optional<String> extractJwtToken(HttpServletRequest request) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (authHeader == null || !authHeader.startsWith("Bearer ") || authHeader.length() <= 7) {
+        if (authHeader == null
+                || !authHeader.startsWith(AUTHORIZATION_BEARER_PREFIX)
+                || authHeader.length() <= AUTHORIZATION_BEARER_PREFIX.length()) {
             // No JWT token found in request headers.
-            return;
+            return Optional.empty();
         }
-
         // JWT token is in the form "Bearer token". Remove "Bearer" word and get only the token.
-        String token = authHeader.substring(7);
-        String username;
+        return Optional.of(authHeader.substring(AUTHORIZATION_BEARER_PREFIX.length()));
+    }
+
+    private void handleJwtToken(HttpServletRequest request, String token) {
         try {
-            username = jwtTokenProvider.getSubjectFromToken(token);
+            Claims tokenClaims = jwtTokenProvider.parseToken(token);
+            jwtTokenProvider.ensureIsAccessToken(tokenClaims);
+            setSpringSecurityAuthentication(request,
+                    jwtTokenProvider.getUsername(tokenClaims),
+                    jwtTokenProvider.getRoles(tokenClaims));
         } catch (InvalidJwtTokenException e) {
-            logger.warn("Invalid JWT token found in request headers: error = " + e.getMessage());
-            return;
+            logger.warn(e.getMessage());
         }
+    }
 
-        // Find user provided by JWT token to validate its existence.
-        UserDetails userDetails;
-        try {
-            userDetails = userService.loadUserByUsername(username);
-        } catch (UsernameNotFoundException e) {
-            logger.warn("Skip JWT token because username is not valid anymore: error = " + e.getMessage());
-            return;
-        }
-
+    private void setSpringSecurityAuthentication(HttpServletRequest request, String username, List<String> roles) {
+        UserDetails userDetails = new User(username, "",
+                roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
         // Manually provided authentication for Spring Security.
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

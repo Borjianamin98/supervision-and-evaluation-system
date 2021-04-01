@@ -2,17 +2,17 @@ package ir.ac.sbu.evaluation.dto.authentication;
 
 import javax.validation.constraints.NotNull;
 
-public class AuthenticationRequestDto {
+public class AuthLoginDto {
 
     @NotNull
     private String username;
     @NotNull
     private String password;
 
-    public AuthenticationRequestDto() {
+    public AuthLoginDto() {
     }
 
-    public AuthenticationRequestDto(String username, String password) {
+    public AuthLoginDto(String username, String password) {
         this.username = username;
         this.password = password;
     }
@@ -35,7 +35,7 @@ public class AuthenticationRequestDto {
 
     @Override
     public String toString() {
-        return "AuthenticationRequestDto{" +
+        return "AuthLoginDto{" +
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 '}';

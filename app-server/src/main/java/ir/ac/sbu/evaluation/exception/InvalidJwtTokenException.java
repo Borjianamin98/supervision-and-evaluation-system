@@ -6,6 +6,11 @@ public class InvalidJwtTokenException extends Exception {
 
     private final JwtException cause;
 
+    public InvalidJwtTokenException(JwtException cause) {
+        super(cause.getMessage(), cause);
+        this.cause = cause;
+    }
+
     public InvalidJwtTokenException(String message, JwtException cause) {
         super(message, cause);
         this.cause = cause;
