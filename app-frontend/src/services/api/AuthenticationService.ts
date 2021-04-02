@@ -1,48 +1,69 @@
 import {AxiosError} from "axios";
-import {API_AUTHENTICATION_CREATE_PATH} from "../ApiPaths";
-import history from "../../config/history";
+import {API_AUTHENTICATION_LOGIN_PATH, API_AUTHENTICATION_REFRESH_PATH} from "../ApiPaths";
+import browserHistory from "../../config/browserHistory";
 import apiAxios from "../../config/axios-config";
 
-export interface AuthenticationResponse {
+export interface AuthResponse {
     username: string,
-    token?: string,
+    access_token?: string,
+    refresh_token?: string,
     error?: string
 }
 
 class AuthenticationService {
-    private static authenticationKey = "auth"
+    private static readonly AUTH_ACCESS_TOKEN_KEY = "auth-access"
+    private static readonly AUTH_REFRESH_TOKEN_KEY = "auth-refresh"
 
     private constructor() {
     }
 
     static isAuthenticated() {
-        return localStorage.getItem(AuthenticationService.authenticationKey) != null;
+        return localStorage.getItem(AuthenticationService.AUTH_ACCESS_TOKEN_KEY) != null;
     }
 
-    static getAuthenticationToken() {
-        return localStorage.getItem(AuthenticationService.authenticationKey);
+    static logout() {
+        localStorage.removeItem(AuthenticationService.AUTH_ACCESS_TOKEN_KEY);
+        localStorage.removeItem(AuthenticationService.AUTH_REFRESH_TOKEN_KEY);
+        browserHistory.push("/login");
     }
 
-    static clearAuthentication() {
-        localStorage.removeItem(AuthenticationService.authenticationKey);
+    static getAccessToken() {
+        return localStorage.getItem(AuthenticationService.AUTH_ACCESS_TOKEN_KEY);
     }
 
-    static authenticate(username: string, password: string) {
-        apiAxios.post<AuthenticationResponse>(API_AUTHENTICATION_CREATE_PATH, {
+    static getRefreshToken() {
+        return localStorage.getItem(AuthenticationService.AUTH_REFRESH_TOKEN_KEY);
+    }
+
+    static login(username: string, password: string) {
+        apiAxios.post<AuthResponse>(API_AUTHENTICATION_LOGIN_PATH, {
             username: username,
             password: password
         }).then(response => {
             if (response.status === 200) {
-                localStorage.setItem(AuthenticationService.authenticationKey, response.data.token!);
-                history.push("/dashboard");
+                localStorage.setItem(AuthenticationService.AUTH_ACCESS_TOKEN_KEY, response.data.access_token!);
+                localStorage.setItem(AuthenticationService.AUTH_REFRESH_TOKEN_KEY, response.data.refresh_token!);
+                browserHistory.push("/dashboard");
             } else {
-                throw new Error(`Receive a response from authentication endpoint in range 2xx which is not ok: 
+                throw new Error(`Receive a response from auth endpoint in range 2xx which is not ok: 
                     status = ${response.status} response = ${response}`);
             }
         }).catch((reason: AxiosError) => {
             // TODO: Show a error notification
             console.error(`Unhandled exception: ${reason}`);
         });
+    }
+
+    static async refresh() {
+        const response = await apiAxios.post<AuthResponse>(API_AUTHENTICATION_REFRESH_PATH, {
+            refresh_token: AuthenticationService.getRefreshToken()
+        })
+        if (response.status === 200) {
+            localStorage.setItem(AuthenticationService.AUTH_ACCESS_TOKEN_KEY, response.data.access_token!);
+        } else {
+            throw new Error(`Receive a response from auth endpoint in range 2xx which is not ok: 
+                status = ${response.status} response = ${response}`);
+        }
     }
 }
 

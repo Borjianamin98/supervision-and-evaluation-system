@@ -14,7 +14,7 @@ import signInImage from "../assets/images/signIn.png";
 import {rtlTheme} from '../App';
 import PasswordTextField from '../components/Text/PasswordTextField';
 import AuthenticationService from "../services/api/AuthenticationService";
-import history from '../config/history';
+import browserHistory from '../config/browserHistory';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -52,9 +52,9 @@ const SignInView: React.FunctionComponent = (props) => {
 
     const formSubmitHandler: FormEventHandler = (event) => {
         event.preventDefault();
-        AuthenticationService.authenticate(username, password);
+        AuthenticationService.login(username, password);
         if (AuthenticationService.isAuthenticated()) {
-            history.push("/dashboard")
+            browserHistory.push("/dashboard")
         }
     }
 

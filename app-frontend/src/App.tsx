@@ -6,7 +6,7 @@ import rtl from 'jss-rtl';
 import SignInView from './views/SignInView';
 import {Router, Switch} from 'react-router-dom';
 import {PrivateRoute, AuthenticationRoute} from './components/Route/CustomRoute';
-import history from './config/history';
+import browserHistory from './config/browserHistory';
 import DashboardView from "./views/DashboardView";
 import {configAxios} from "./config/axios-config";
 
@@ -27,12 +27,12 @@ const App: React.FunctionComponent = () => {
         <StylesProvider jss={jss}>
             <ThemeProvider theme={vazirFontTheme}>
                 <CssBaseline/>
-                <Router history={history}>
+                <Router history={browserHistory}>
                     <Switch>
                         <AuthenticationRoute path="/login">
                             <SignInView/>
                         </AuthenticationRoute>
-                        <PrivateRoute path="/**">
+                        <PrivateRoute path="/dashboard">
                             <DashboardView/>
                         </PrivateRoute>
                     </Switch>
