@@ -14,7 +14,7 @@ import signInImage from "../assets/images/signIn.png";
 import {rtlTheme} from '../App';
 import PasswordTextField from '../components/Text/PasswordTextField';
 import AuthenticationService from "../services/api/AuthenticationService";
-import browserHistory from '../config/browserHistory';
+import {AxiosError} from "axios";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -43,19 +43,35 @@ const useStyles = makeStyles((theme) => ({
     submit: {
         margin: theme.spacing(3, 0, 2),
     },
+    error: {
+        color: theme.palette.error.main,
+        margin: theme.spacing(2, 0),
+    }
 }));
 
 const SignInView: React.FunctionComponent = (props) => {
     const classes = useStyles();
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     const formSubmitHandler: FormEventHandler = (event) => {
         event.preventDefault();
-        AuthenticationService.login(username, password);
-        if (AuthenticationService.isAuthenticated()) {
-            browserHistory.push("/dashboard")
-        }
+        AuthenticationService.login(username, password)
+            .then(() => setErrorMessage(""))
+            .catch((reason: AxiosError) => {
+                if (reason.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the validation range.
+                    setErrorMessage("اطلاعات وارد شده صحیح نمی‌باشد. لطفا دوباره تلاش بفرمایید.")
+                } else if (reason.request) {
+                    // The request was made but no response was received
+                    setErrorMessage("در ارتباط با سرور مشکلی می‌باشد. در صورت عدم رفع مشکل با مسئول پشتیبانی تماس بگیرید.");
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.log('Unexpected error happened in request', reason.message);
+                }
+            });
     }
 
     return (
@@ -77,12 +93,12 @@ const SignInView: React.FunctionComponent = (props) => {
                                 margin="normal"
                                 required
                                 fullWidth
-                                label="آدرس ایمیل"
-                                id="email"
-                                name="email"
+                                label="نام کاربری"
+                                id="username"
+                                name="username"
                                 value={username}
                                 onChange={(event) => setUsername(event.target.value)}
-                                autoComplete="email"
+                                autoComplete="username"
                             />
                             <PasswordTextField
                                 dir="rtl"
@@ -115,12 +131,10 @@ const SignInView: React.FunctionComponent = (props) => {
                                         فراموشی رمز
                                     </Link>
                                 </Grid>
-                                <Grid item>
-                                    <Link href="#" variant="body2">
-                                        ساخت حساب کاربری
-                                    </Link>
-                                </Grid>
                             </Grid>
+                            <Typography hidden={!errorMessage} className={classes.error}>
+                                {errorMessage}
+                            </Typography>
                         </form>
                     </ThemeProvider>
                 </div>

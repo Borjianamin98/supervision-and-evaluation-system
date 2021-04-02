@@ -1,6 +1,6 @@
 import axios, {AxiosError} from "axios";
 import AuthenticationService from "../services/api/AuthenticationService";
-import {API_AUTHENTICATION_REFRESH_PATH, API_ROOT_PATH} from "../services/ApiPaths";
+import {API_AUTHENTICATION_LOGIN_PATH, API_AUTHENTICATION_REFRESH_PATH, API_ROOT_PATH} from "../services/ApiPaths";
 import browserHistory from "./browserHistory";
 
 // Extend any library types, by using the typescript declaration merging feature:
@@ -13,7 +13,7 @@ declare module 'axios' {
 
 let apiAxios = axios.create({
     baseURL: API_ROOT_PATH,
-    // timeout: 1000
+    timeout: 3000
 });
 
 export function configAxios() {
@@ -40,10 +40,18 @@ export function configAxios() {
             if (error.response?.status === 401) {
                 const axiosRequestConfig = error.config;
                 if (axiosRequestConfig.url?.includes(API_AUTHENTICATION_REFRESH_PATH)) {
+                    // Refresh token invalidated/expired and we should login again.
+                    AuthenticationService.logout();
+                    browserHistory.push("/login");
+                    return Promise.reject(error);
+                } else if (axiosRequestConfig.url?.includes(API_AUTHENTICATION_LOGIN_PATH)) {
+                    // Incorrect username/password provided for authentication
                     AuthenticationService.logout();
                     browserHistory.push("/login");
                     return Promise.reject(error);
                 } else if (axiosRequestConfig.isRetryable) {
+                    // Access token expired. We should try to refresh our token before force
+                    // user to login again.
                     axiosRequestConfig.isRetryable = false;
                     await AuthenticationService.refresh();
                     return apiAxios(axiosRequestConfig);
