@@ -7,6 +7,7 @@ import {PrivateRoute} from "../components/Route/CustomRoute";
 import apiAxios from "../config/axios-config";
 import {API_USER_PATH} from "../services/ApiPaths";
 import {AxiosResponse} from "axios";
+import Dashboard from "./Dashboard";
 
 interface User {
     username: string
@@ -38,6 +39,9 @@ const DashboardView: React.FunctionComponent = () => {
                     <Link to={`${match.url}/setting`}>Go Setting</Link>
                     <Button variant="contained" onClick={() => AuthenticationService.logout()}>Log out!</Button>
                 </>
+            </PrivateRoute>
+            <PrivateRoute path={`${match.path}/dv`}>
+                <Dashboard/>
             </PrivateRoute>
             <PrivateRoute path={`${match.path}/setting`}>
                 <SettingView/>
