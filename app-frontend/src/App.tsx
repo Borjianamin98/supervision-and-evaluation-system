@@ -7,8 +7,8 @@ import SignInView from './views/SignInView';
 import {Router, Switch} from 'react-router-dom';
 import {PrivateRoute, AuthenticationRoute} from './components/Route/CustomRoute';
 import browserHistory from './config/browserHistory';
-import DashboardView from "./views/DashboardView";
 import {configAxios} from "./config/axios-config";
+import DashboardView from "./views/DashboardView";
 
 // Configuration
 // Configure axios library globally
