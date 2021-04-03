@@ -18,13 +18,14 @@ import MailIcon from '@material-ui/icons/Mail';
 import classNames from 'classnames';
 import {Badge, Button, ClickAwayListener, Fade, MenuItem, MenuList, Paper, Popper} from "@material-ui/core";
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import {Person} from '@material-ui/icons';
+import {Home, Person, Settings} from '@material-ui/icons';
 import {PrivateRoute} from "../components/Route/CustomRoute";
-import {Link, Switch, useLocation, useRouteMatch} from "react-router-dom";
+import {Switch, useLocation, useRouteMatch} from "react-router-dom";
 import AuthenticationService from "../services/api/AuthenticationService";
 import apiAxios from "../config/axios-config";
 import {AxiosResponse} from "axios";
 import {API_USER_PATH} from "../services/ApiPaths";
+import ListItemLink from '../components/List/ListItemLink';
 
 const drawerWidth = 240;
 
@@ -87,9 +88,6 @@ const useStyles = makeStyles((theme: Theme) =>
         content: {
             flexGrow: 1,
             padding: theme.spacing(3)
-        },
-        listItemText: {
-            textAlign: "right",
         },
         dropdownItem: {
             display: "block",
@@ -219,11 +217,14 @@ const DashboardView: React.FunctionComponent = () => {
                             <Typography paragraph>
                                 نام کاربران که به صورت امتحانی صرفا دریافت شده و نمایش داده شده است:
                             </Typography>
-                            <ul>
-                                {users.map(u => <li key={u.username}>{u.username}</li>)}
-                            </ul>
+                            <List>
+                                {
+                                    users.map(u => <ListItem dir="rtl" key={u.username}>
+                                        <ListItemText primary={u.username}/>
+                                    </ListItem>)
+                                }
+                            </List>
                         </div>
-                        <Link to={`${match.url}/setting`}>Go Setting</Link>
                     </PrivateRoute>
                     <PrivateRoute path={`${match.path}/setting`}>
                         <Typography paragraph>
@@ -253,24 +254,19 @@ const DashboardView: React.FunctionComponent = () => {
                 </div>
                 <Divider/>
                 <List>
-                    <ListItem dir="rtl" button key='Inbox'>
-                        <ListItemIcon><InboxIcon/></ListItemIcon>
-                        <ListItemText className={classes.listItemText} primary="پیام‌ها"/>
-                    </ListItem>
-                    <ListItem dir="rtl" button key='Inbox'>
-                        <ListItemIcon><MailIcon/></ListItemIcon>
-                        <ListItemText className={classes.listItemText} primary="ایمیل‌ها"/>
-                    </ListItem>
+                    <ListItemLink key='home' dir="rtl" to={match.path} primary="صفحه اصلی" icon={<Home/>}/>
+                    <ListItemLink key='setting' dir="rtl" to={`${match.path}/setting`} primary="تنظیمات"
+                                  icon={<Settings/>}/>
                 </List>
                 <Divider/>
                 <List>
                     <ListItem dir="rtl" button key='Inbox'>
                         <ListItemIcon><InboxIcon/></ListItemIcon>
-                        <ListItemText className={classes.listItemText} primary="پیام‌ها"/>
+                        <ListItemText primary="پیام‌ها"/>
                     </ListItem>
-                    <ListItem dir="rtl" button key='Inbox'>
+                    <ListItem dir="rtl" button key='email'>
                         <ListItemIcon><MailIcon/></ListItemIcon>
-                        <ListItemText className={classes.listItemText} primary="ایمیل‌ها"/>
+                        <ListItemText primary="ایمیل‌ها"/>
                     </ListItem>
                 </List>
             </Drawer>
