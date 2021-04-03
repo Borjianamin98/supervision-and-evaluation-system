@@ -16,8 +16,9 @@ import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import classNames from 'classnames';
-import {Badge} from "@material-ui/core";
+import {Badge, Button, ClickAwayListener, Fade, MenuItem, MenuList, Paper, Popper} from "@material-ui/core";
 import NotificationsIcon from '@material-ui/icons/Notifications';
+import {Person} from '@material-ui/icons';
 
 const drawerWidth = 240;
 
@@ -83,6 +84,14 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         listItemText: {
             textAlign: "right",
+        },
+        dropdownItem: {
+            display: "block",
+            whiteSpace: "nowrap",
+            textAlign: "right",
+        },
+        icons: {
+            color: "white"
         }
     }),
 );
@@ -90,6 +99,9 @@ const useStyles = makeStyles((theme: Theme) =>
 const Dashboard: React.FunctionComponent = () => {
     const classes = useStyles();
     const [open, setOpen] = React.useState<boolean>(false);
+    const [profileAnchorEl, setProfileAnchorEl] = React.useState<null | HTMLElement>(null);
+
+    const openProfileId = Boolean(profileAnchorEl) ? 'transitions-popper' : undefined;
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -97,6 +109,14 @@ const Dashboard: React.FunctionComponent = () => {
 
     const handleDrawerClose = () => {
         setOpen(false);
+    };
+
+    const handleCloseProfile = () => {
+        setProfileAnchorEl(null);
+    };
+
+    const handleClickProfile = (event: React.MouseEvent<HTMLElement>) => {
+        setProfileAnchorEl(profileAnchorEl ? null : event.currentTarget);
     };
 
     return (
@@ -118,11 +138,50 @@ const Dashboard: React.FunctionComponent = () => {
                     <Typography variant="h6" noWrap className={classes.title}>
                         داشبورد
                     </Typography>
-                    <IconButton color="inherit">
+                    <IconButton className={classes.icons}>
                         <Badge badgeContent={4} color="secondary">
                             <NotificationsIcon/>
                         </Badge>
                     </IconButton>
+                    <div>
+                        <Button
+                            aria-owns={openProfileId}
+                            aria-haspopup="true"
+                            onClick={handleClickProfile}
+                        >
+                            <Person className={classes.icons}/>
+                        </Button>
+                        <Popper id={openProfileId}
+                                open={Boolean(profileAnchorEl)}
+                                anchorEl={profileAnchorEl}
+                                transition
+                                disablePortal
+                        >
+                            {({TransitionProps}) => (
+                                <Fade {...TransitionProps} timeout={350}>
+                                    <Paper>
+                                        <ClickAwayListener onClickAway={handleCloseProfile}>
+                                            <MenuList dir="rtl">
+                                                <MenuItem
+                                                    onClick={handleCloseProfile}
+                                                    className={classes.dropdownItem}
+                                                >
+                                                    تنظیمات
+                                                </MenuItem>
+                                                <Divider/>
+                                                <MenuItem
+                                                    onClick={handleCloseProfile}
+                                                    className={classes.dropdownItem}
+                                                >
+                                                    خروج
+                                                </MenuItem>
+                                            </MenuList>
+                                        </ClickAwayListener>
+                                    </Paper>
+                                </Fade>
+                            )}
+                        </Popper>
+                    </div>
                 </Toolbar>
             </AppBar>
             <main dir="rtl" className={classes.content}>
