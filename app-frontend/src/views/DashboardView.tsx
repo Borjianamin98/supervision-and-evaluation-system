@@ -1,31 +1,33 @@
-import React, {useEffect, useState} from 'react';
-import clsx from 'clsx';
-import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
+import {Badge, ClickAwayListener, Fade, MenuItem, MenuList, Paper, Popper} from "@material-ui/core";
 import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
+import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
+import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import HomeIcon from '@material-ui/icons/Home';
 import MailIcon from '@material-ui/icons/Mail';
-import classNames from 'classnames';
-import {Badge, Button, ClickAwayListener, Fade, MenuItem, MenuList, Paper, Popper} from "@material-ui/core";
+import MenuIcon from '@material-ui/icons/Menu';
+import InboxIcon from '@material-ui/icons/MoveToInbox';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import {Home, Person, Settings} from '@material-ui/icons';
-import {PrivateRoute} from "../components/Route/CustomRoute";
-import {Switch, useLocation, useRouteMatch} from "react-router-dom";
-import AuthenticationService from "../services/api/AuthenticationService";
-import apiAxios from "../config/axios-config";
+import PersonIcon from '@material-ui/icons/Person';
+import SettingsIcon from '@material-ui/icons/Settings';
 import {AxiosResponse} from "axios";
-import {API_USER_PATH} from "../services/ApiPaths";
+import classNames from 'classnames';
+import clsx from 'clsx';
+import React, {useEffect, useState} from 'react';
+import {Switch, useLocation, useRouteMatch} from "react-router-dom";
 import ListItemLink from '../components/List/ListItemLink';
+import {PrivateRoute} from "../components/Route/CustomRoute";
+import apiAxios from "../config/axios-config";
+import AuthenticationService from "../services/api/AuthenticationService";
+import {API_USER_PATH} from "../services/ApiPaths";
 
 const drawerWidth = 240;
 
@@ -111,7 +113,7 @@ interface UserApiResponse {
 const DashboardView: React.FunctionComponent = () => {
     const classes = useStyles();
     const match = useRouteMatch();
-    const location = useLocation()
+    const location = useLocation();
 
     const [open, setOpen] = React.useState<boolean>(false);
     const [profileAnchorEl, setProfileAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -166,13 +168,13 @@ const DashboardView: React.FunctionComponent = () => {
                         </Badge>
                     </IconButton>
                     <div>
-                        <Button
+                        <IconButton
                             aria-owns={openProfileId}
                             aria-haspopup="true"
                             onClick={handleClickProfile}
                         >
-                            <Person className={classes.icons}/>
-                        </Button>
+                            <PersonIcon className={classes.icons}/>
+                        </IconButton>
                         <Popper id={openProfileId}
                                 open={Boolean(profileAnchorEl)}
                                 anchorEl={profileAnchorEl}
@@ -254,9 +256,9 @@ const DashboardView: React.FunctionComponent = () => {
                 </div>
                 <Divider/>
                 <List>
-                    <ListItemLink key='home' dir="rtl" to={match.path} primary="صفحه اصلی" icon={<Home/>}/>
+                    <ListItemLink key='home' dir="rtl" to={match.path} primary="صفحه اصلی" icon={<HomeIcon/>}/>
                     <ListItemLink key='setting' dir="rtl" to={`${match.path}/setting`} primary="تنظیمات"
-                                  icon={<Settings/>}/>
+                                  icon={<SettingsIcon/>}/>
                 </List>
                 <Divider/>
                 <List>
