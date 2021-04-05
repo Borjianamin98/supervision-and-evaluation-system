@@ -4,7 +4,7 @@ import {StylesProvider, jssPreset, ThemeProvider, Theme} from '@material-ui/core
 import {create} from 'jss';
 import rtl from 'jss-rtl';
 import SignInView from './views/SignInView';
-import {Router, Switch} from 'react-router-dom';
+import {Redirect, Router, Switch} from 'react-router-dom';
 import {PrivateRoute, AuthenticationRoute} from './components/Route/CustomRoute';
 import browserHistory from './config/browserHistory';
 import {configAxios} from "./config/axios-config";
@@ -35,6 +35,7 @@ const App: React.FunctionComponent = () => {
                         <PrivateRoute path="/dashboard">
                             <DashboardView/>
                         </PrivateRoute>
+                        <Redirect to="/dashboard"/>
                     </Switch>
                 </Router>
             </ThemeProvider>

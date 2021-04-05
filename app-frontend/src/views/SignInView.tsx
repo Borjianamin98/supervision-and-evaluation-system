@@ -55,6 +55,11 @@ const SignInView: React.FunctionComponent = (props) => {
     const [password, setPassword] = useState<string>("");
     const [errorMessage, setErrorMessage] = useState<string>("");
 
+    const clearFormInputs = () => {
+        setUsername("");
+        setPassword("");
+    };
+
     const formSubmitHandler: FormEventHandler = (event) => {
         event.preventDefault();
         AuthenticationService.login(username, password)
@@ -70,7 +75,9 @@ const SignInView: React.FunctionComponent = (props) => {
                 } else {
                     // Something happened in setting up the request that triggered an Error
                     console.log('Unexpected error happened in request', reason.message);
+                    setErrorMessage("خطای غیرمنتظره رخ داده است. در صورت عدم رفع مشکل با مسئول پشتیبانی تماس بگیرید.");
                 }
+                clearFormInputs();
             });
     }
 
@@ -111,10 +118,6 @@ const SignInView: React.FunctionComponent = (props) => {
                                 name="password"
                                 value={password}
                                 onChange={(event) => setPassword(event.target.value)}
-                            />
-                            <FormControlLabel
-                                control={<Checkbox value="remember" color="primary"/>}
-                                label="من را به خاطر بسپار"
                             />
                             <Button
                                 type="submit"
