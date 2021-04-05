@@ -44,7 +44,6 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(3, 0, 2),
     },
     error: {
-        color: theme.palette.error.main,
         margin: theme.spacing(2, 0),
     }
 }));
@@ -135,7 +134,7 @@ const SignInView: React.FunctionComponent = (props) => {
                                     </Link>
                                 </Grid>
                             </Grid>
-                            <Typography hidden={!errorMessage} className={classes.error}>
+                            <Typography hidden={!errorMessage} color="error" className={classes.error}>
                                 {errorMessage}
                             </Typography>
                         </form>

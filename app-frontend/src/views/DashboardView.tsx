@@ -5,7 +5,6 @@ import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -20,7 +19,6 @@ import PersonIcon from '@material-ui/icons/Person';
 import SettingsIcon from '@material-ui/icons/Settings';
 import {AxiosResponse} from "axios";
 import classNames from 'classnames';
-import clsx from 'clsx';
 import React, {useEffect, useState} from 'react';
 import {Switch, useLocation, useRouteMatch} from "react-router-dom";
 import ListItemLink from '../components/List/ListItemLink';
@@ -155,7 +153,7 @@ const DashboardView: React.FunctionComponent = () => {
                         aria-label="open drawer"
                         edge="end"
                         onClick={handleDrawerOpen}
-                        className={clsx(classes.menuButton, open && classes.menuButtonHidden)}
+                        className={classNames(classes.menuButton, {[classes.menuButtonHidden]: open})}
                     >
                         <MenuIcon/>
                     </IconButton>
@@ -186,6 +184,11 @@ const DashboardView: React.FunctionComponent = () => {
                                     <Paper>
                                         <ClickAwayListener onClickAway={handleCloseProfile}>
                                             <MenuList dir="rtl">
+                                                <MenuItem
+                                                    className={classes.dropdownItem}
+                                                >
+                                                    حساب کاربری
+                                                </MenuItem>
                                                 <MenuItem
                                                     onClick={handleCloseProfile}
                                                     className={classes.dropdownItem}
@@ -238,12 +241,12 @@ const DashboardView: React.FunctionComponent = () => {
             <Drawer
                 variant="permanent"
                 anchor="right"
-                className={clsx(classes.drawer, {
+                className={classNames(classes.drawer, {
                     [classes.drawerOpen]: open,
                     [classes.drawerClose]: !open,
                 })}
                 classes={{
-                    paper: clsx({
+                    paper: classNames({
                         [classes.drawerOpen]: open,
                         [classes.drawerClose]: !open,
                     }),
@@ -262,14 +265,8 @@ const DashboardView: React.FunctionComponent = () => {
                 </List>
                 <Divider/>
                 <List>
-                    <ListItem dir="rtl" button key='Inbox'>
-                        <ListItemIcon><InboxIcon/></ListItemIcon>
-                        <ListItemText primary="پیام‌ها"/>
-                    </ListItem>
-                    <ListItem dir="rtl" button key='email'>
-                        <ListItemIcon><MailIcon/></ListItemIcon>
-                        <ListItemText primary="ایمیل‌ها"/>
-                    </ListItem>
+                    <ListItemLink key='messages' dir="rtl" to={match.path} primary="پیام‌ها" icon={<InboxIcon/>}/>
+                    <ListItemLink key='emails' dir="rtl" to={match.path} primary="ایمیل‌ها" icon={<MailIcon/>}/>
                 </List>
             </Drawer>
         </div>

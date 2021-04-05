@@ -1,11 +1,16 @@
-import React from "react";
 import {ListItem, ListItemIcon, ListItemProps, ListItemText} from "@material-ui/core";
-import {Link, LinkProps} from "react-router-dom";
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
+import classNames from "classnames";
+import React from "react";
+import {LinkProps, NavLink} from "react-router-dom";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         listItemText: {
+            whiteSpace: "nowrap",
+            color: "inherit"
+        },
+        rtl: {
             textAlign: "right",
         }
     }),
@@ -24,7 +29,7 @@ const ListItemLink: React.FunctionComponent<ListItemLinkProps> = (props) => {
     const renderLink = React.useMemo(
         () =>
             React.forwardRef<any, Omit<LinkProps, 'to'>>((itemProps, ref) => (
-                <Link to={to} ref={ref} {...itemProps} />
+                <NavLink exact to={to} ref={ref} {...itemProps} />
             )),
         [to],
     );
@@ -33,7 +38,12 @@ const ListItemLink: React.FunctionComponent<ListItemLinkProps> = (props) => {
         <li>
             <ListItem dir={dir} component={renderLink} button>
                 {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
-                <ListItemText className={classes.listItemText} primary={primary}/>
+                <ListItemText
+                    className={classNames({
+                        [classes.listItemText]: true,
+                        [classes.rtl]: dir === "rtl"
+                    })}
+                    primary={primary}/>
             </ListItem>
         </li>
     );
