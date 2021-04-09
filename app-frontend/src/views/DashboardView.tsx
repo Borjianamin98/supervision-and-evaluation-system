@@ -3,9 +3,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -13,14 +10,10 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import MenuIcon from '@material-ui/icons/Menu';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import PersonIcon from '@material-ui/icons/Person';
-import {AxiosResponse} from "axios";
 import classNames from 'classnames';
-import React, {useEffect, useState} from 'react';
-import {Switch, useLocation, useRouteMatch} from "react-router-dom";
-import {PrivateRoute} from "../components/Route/CustomRoute";
-import apiAxios from "../config/axios-config";
+import React from 'react';
 import AuthenticationService from "../services/api/AuthenticationService";
-import {API_USER_PATH} from "../services/ApiPaths";
+import DashboardContentRoutes from "./dashboard/DashboardContentRoutes";
 import DashboardNavBarLinks from "./dashboard/DashboardNavBarLinks";
 
 const drawerWidth = 240;
@@ -96,28 +89,11 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-interface User {
-    username: string
-}
-
-interface UserApiResponse {
-    users: Array<User>
-}
-
 const DashboardView: React.FunctionComponent = () => {
     const classes = useStyles();
-    const match = useRouteMatch();
-    const location = useLocation();
 
     const [open, setOpen] = React.useState<boolean>(false);
     const [profileAnchorEl, setProfileAnchorEl] = React.useState<null | HTMLElement>(null);
-    const [users, setUsers] = useState<Array<User>>([]);
-
-    useEffect(() => {
-        apiAxios.get<UserApiResponse, AxiosResponse<UserApiResponse>>(API_USER_PATH)
-            .then(value => setUsers(value.data.users))
-            .catch(err => console.log("error"));
-    }, [location.key])
 
     const openProfileId = Boolean(profileAnchorEl) ? 'transitions-popper' : undefined;
 
@@ -209,30 +185,7 @@ const DashboardView: React.FunctionComponent = () => {
             </AppBar>
             <main dir="rtl" className={classes.content}>
                 <div className={classes.toolbar}/>
-                <Typography paragraph>
-                    بخش مشترک
-                </Typography>
-                <Switch>
-                    <PrivateRoute exact path={match.path}>
-                        <div>
-                            <Typography paragraph>
-                                نام کاربران که به صورت امتحانی صرفا دریافت شده و نمایش داده شده است:
-                            </Typography>
-                            <List>
-                                {
-                                    users.map(u => <ListItem dir="rtl" key={u.username}>
-                                        <ListItemText primary={u.username}/>
-                                    </ListItem>)
-                                }
-                            </List>
-                        </div>
-                    </PrivateRoute>
-                    <PrivateRoute path={`${match.path}/setting`}>
-                        <Typography paragraph>
-                            صفحه تنظیمات
-                        </Typography>
-                    </PrivateRoute>
-                </Switch>
+                <DashboardContentRoutes/>
             </main>
             <Drawer
                 variant="permanent"
@@ -254,7 +207,7 @@ const DashboardView: React.FunctionComponent = () => {
                     </IconButton>
                 </div>
                 <Divider/>
-                <DashboardNavBarLinks />
+                <DashboardNavBarLinks/>
             </Drawer>
         </div>
     );
