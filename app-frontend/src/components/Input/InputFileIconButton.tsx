@@ -11,14 +11,21 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface InputIconButtonProps {
-    accept: string
+    accept: string,
+    onFileChange?: React.ChangeEventHandler<HTMLInputElement>
 }
 
 const InputFileIconButton: React.FunctionComponent<InputIconButtonProps> = (props) => {
     const classes = useStyles();
     return (
         <>
-            <input className={classes.imageInput} accept={props.accept} id="icon-button-file" type="file"/>
+            <input
+                className={classes.imageInput}
+                onChange={props.onFileChange}
+                accept={props.accept}
+                id="icon-button-file"
+                type="file"
+            />
             <label htmlFor="icon-button-file">
                 <IconButton color="primary" aria-label="upload file" component="span">
                     {props.children}

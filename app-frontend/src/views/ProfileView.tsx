@@ -3,6 +3,8 @@ import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
 import React from 'react';
 import InputFileIconButton from "../components/Input/InputFileIconButton";
+import apiAxios from "../config/axios-config";
+import {API_USER_PROFILE_PICTURE_PATH} from "../services/ApiPaths";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -25,6 +27,30 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const ProfileView: React.FunctionComponent = () => {
     const classes = useStyles();
+
+    const onFileChangeHandler: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+        event.preventDefault();
+        if (!event.target.files) {
+            // User canceled upload file window
+            return
+        }
+
+        const formData = new FormData();
+        formData.append('file', event.target.files[0]);
+        apiAxios.post(API_USER_PROFILE_PICTURE_PATH, formData)
+            .then(res => {
+                if (res.status === 200) {
+                    console.log(res.data);
+                    alert("File uploaded successfully.")
+                } else {
+                    console.log("error");
+                }
+            })
+            .catch(err => console.log("error"));
+
+
+    }
+
     return (
         <div>
             <Grid container
@@ -35,7 +61,7 @@ const ProfileView: React.FunctionComponent = () => {
                         <div className={classes.imageIcon}>
                             <Badge
                                 badgeContent={
-                                    <InputFileIconButton accept="image/*">
+                                    <InputFileIconButton onFileChange={onFileChangeHandler} accept="image/png">
                                         <PhotoCameraIcon/>
                                     </InputFileIconButton>
                                 }
