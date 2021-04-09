@@ -6,8 +6,8 @@ import {navBarRoutesInfo} from './MainViewNavBarLinks';
 const MainViewContent: React.FunctionComponent = () => {
     return (
         <Switch>
-            {navBarRoutesInfo.map(value =>
-                <PrivateRoute exact path={value.path}>
+            {navBarRoutesInfo.map((value, id) =>
+                <PrivateRoute key={id} exact path={value.path}>
                     {React.createElement(value.component, {})}
                 </PrivateRoute>
             )}
