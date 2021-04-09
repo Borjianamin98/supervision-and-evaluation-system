@@ -1,33 +1,50 @@
-import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
-import HomeIcon from '@material-ui/icons/Home';
-import MailIcon from '@material-ui/icons/Mail';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
+import DashboardIcon from "@material-ui/icons/Dashboard";
 import PersonIcon from '@material-ui/icons/Person';
 import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
-import {useRouteMatch} from "react-router-dom";
 import ListItemLink from '../../components/List/ListItemLink';
+import DashboardView from "../DashboardView";
+import ProfileView from "../ProfileView";
+import SettingsView from "../SettingsView";
+
+const navBarRoutesInfo = [
+    {
+        path: "/dashboard",
+        name: "داشبورد",
+        icon: DashboardIcon,
+        component: DashboardView
+    },
+    {
+        path: "/user",
+        name: "حساب کاربری",
+        icon: PersonIcon,
+        component: ProfileView,
+    },
+    {
+        path: "/settings",
+        name: "تنظیمات",
+        icon: SettingsIcon,
+        component: SettingsView,
+    },
+];
 
 const MainViewNavBarLinks: React.FunctionComponent = () => {
-    const routeMatch = useRouteMatch();
-
     return (
         <>
             <List>
-                <ListItemLink key='home' dir="rtl" to={routeMatch.path} primary="صفحه اصلی" icon={<HomeIcon/>}/>
-                <ListItemLink key='setting' dir="rtl" to={`${routeMatch.path}/setting`} primary="تنظیمات"
-                              icon={<SettingsIcon/>}/>
-            </List>
-            <Divider/>
-            <List>
-                <ListItemLink key='messages' dir="rtl" to={routeMatch.path} primary="پیام‌ها" icon={<InboxIcon/>}/>
-                <ListItemLink key='emails' dir="rtl" to={routeMatch.path} primary="ایمیل‌ها" icon={<MailIcon/>}/>
-                <ListItemLink key='profile' dir="rtl" to={`${routeMatch.path}/user`} primary="حساب کاربری"
-                              icon={<PersonIcon/>}/>
+                {navBarRoutesInfo.map((value, index) =>
+                    <ListItemLink
+                        key={index}
+                        dir="rtl"
+                        to={value.path}
+                        primary={value.name}
+                        icon={React.createElement(value.icon, {})}
+                    />)}
             </List>
         </>
     );
 }
 
+export {navBarRoutesInfo}
 export default MainViewNavBarLinks;

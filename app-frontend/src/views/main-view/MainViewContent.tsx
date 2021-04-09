@@ -1,45 +1,17 @@
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import PersonIcon from "@material-ui/icons/Person";
-import SettingsIcon from "@material-ui/icons/Settings";
 import React from 'react';
-import {Switch, useRouteMatch} from "react-router-dom";
+import {Redirect, Switch} from "react-router-dom";
 import {PrivateRoute} from "../../components/Route/CustomRoute";
-import DashboardView from "../DashboardView";
-import ProfileView from '../ProfileView';
-import SettingsView from "../SettingsView";
-
-const mainRoutes = [
-    {
-        path: "/",
-        name: "داشبورد",
-        icon: DashboardIcon,
-        component: DashboardView
-    },
-    {
-        path: "/user",
-        name: "حساب کاربری",
-        icon: PersonIcon,
-        component: ProfileView,
-    },
-    {
-        path: "/settings",
-        name: "تنظیمات",
-        icon: SettingsIcon,
-        component: SettingsView,
-    },
-];
+import {navBarRoutesInfo} from './MainViewNavBarLinks';
 
 const MainViewContent: React.FunctionComponent = () => {
-    const routeMatch = useRouteMatch();
-
     return (
         <Switch>
-            <PrivateRoute exact path={routeMatch.path}>
-                <DashboardView/>
-            </PrivateRoute>
-            <PrivateRoute exact path={`${routeMatch.path}/setting`}>
-                <SettingsView/>
-            </PrivateRoute>
+            {navBarRoutesInfo.map(value =>
+                <PrivateRoute exact path={value.path}>
+                    {React.createElement(value.component, {})}
+                </PrivateRoute>
+            )}
+            <Redirect to="/dashboard"/>
         </Switch>
     );
 }

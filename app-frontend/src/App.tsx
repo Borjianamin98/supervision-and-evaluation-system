@@ -1,14 +1,14 @@
-import React from 'react';
 import {createMuiTheme, CssBaseline} from "@material-ui/core";
-import {StylesProvider, jssPreset, ThemeProvider, Theme} from '@material-ui/core/styles';
+import {jssPreset, StylesProvider, Theme, ThemeProvider} from '@material-ui/core/styles';
 import {create} from 'jss';
 import rtl from 'jss-rtl';
-import SignInView from './views/SignInView';
-import {Redirect, Router, Switch} from 'react-router-dom';
-import {PrivateRoute, AuthenticationRoute} from './components/Route/CustomRoute';
-import browserHistory from './config/browserHistory';
+import React from 'react';
+import {Router, Switch} from 'react-router-dom';
+import {AuthenticationRoute, PrivateRoute} from './components/Route/CustomRoute';
 import {configAxios} from "./config/axios-config";
+import browserHistory from './config/browserHistory';
 import MainView from "./views/MainView";
+import SignInView from './views/SignInView';
 
 // Configuration
 // Configure axios library globally
@@ -32,10 +32,9 @@ const App: React.FunctionComponent = () => {
                         <AuthenticationRoute path="/login">
                             <SignInView/>
                         </AuthenticationRoute>
-                        <PrivateRoute path="/dashboard">
+                        <PrivateRoute>
                             <MainView/>
                         </PrivateRoute>
-                        <Redirect to="/dashboard"/>
                     </Switch>
                 </Router>
             </ThemeProvider>
