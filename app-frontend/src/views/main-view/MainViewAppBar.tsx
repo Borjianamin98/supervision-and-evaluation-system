@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const DashboardAppBar: React.FunctionComponent = () => {
+const MainViewAppBar: React.FunctionComponent = () => {
     const classes = useStyles();
 
     const [profileAnchorEl, setProfileAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -92,4 +92,4 @@ const DashboardAppBar: React.FunctionComponent = () => {
     );
 }
 
-export default DashboardAppBar;
+export default MainViewAppBar;

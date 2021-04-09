@@ -8,7 +8,7 @@ import {Redirect, Router, Switch} from 'react-router-dom';
 import {PrivateRoute, AuthenticationRoute} from './components/Route/CustomRoute';
 import browserHistory from './config/browserHistory';
 import {configAxios} from "./config/axios-config";
-import DashboardView from "./views/DashboardView";
+import MainView from "./views/MainView";
 
 // Configuration
 // Configure axios library globally
@@ -33,7 +33,7 @@ const App: React.FunctionComponent = () => {
                             <SignInView/>
                         </AuthenticationRoute>
                         <PrivateRoute path="/dashboard">
-                            <DashboardView/>
+                            <MainView/>
                         </PrivateRoute>
                         <Redirect to="/dashboard"/>
                     </Switch>

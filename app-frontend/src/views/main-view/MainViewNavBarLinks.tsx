@@ -9,7 +9,7 @@ import React from 'react';
 import {useRouteMatch} from "react-router-dom";
 import ListItemLink from '../../components/List/ListItemLink';
 
-const DashboardNvaBarLinks: React.FunctionComponent = () => {
+const MainViewNavBarLinks: React.FunctionComponent = () => {
     const routeMatch = useRouteMatch();
 
     return (
@@ -30,4 +30,4 @@ const DashboardNvaBarLinks: React.FunctionComponent = () => {
     );
 }
 
-export default DashboardNvaBarLinks;
+export default MainViewNavBarLinks;

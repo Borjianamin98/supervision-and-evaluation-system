@@ -1,35 +1,44 @@
-import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
-import React from 'react';
-import NavBar from "../components/NavBar/NavBar";
-import DashboardAppBar from "./dashboard/DashboardAppBar";
-import DashboardContentRoutes from "./dashboard/DashboardContentRoutes";
-import DashboardNavBarLinks from "./dashboard/DashboardNavBarLinks";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import Typography from "@material-ui/core/Typography";
+import {AxiosResponse} from "axios";
+import React, {useEffect, useState} from 'react';
+import {useLocation} from "react-router-dom";
+import apiAxios from "../config/axios-config";
+import {API_USER_PATH} from "../services/ApiPaths";
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
-            display: 'flex',
-        },
-        content: {
-            flexGrow: 1,
-            padding: theme.spacing(3)
-        },
-        offset: theme.mixins.toolbar
-    }),
-);
+interface User {
+    username: string
+}
+
+interface UserApiResponse {
+    users: Array<User>,
+}
 
 const DashboardView: React.FunctionComponent = () => {
-    const classes = useStyles();
+    const location = useLocation();
+
+    const [users, setUsers] = useState<Array<User>>([]);
+
+    useEffect(() => {
+        apiAxios.get<UserApiResponse, AxiosResponse<UserApiResponse>>(API_USER_PATH)
+            .then(value => setUsers(value.data.users))
+            .catch(err => console.log("error"));
+    }, [location.key])
 
     return (
-        <div className={classes.root}>
-            <main dir="rtl" className={classes.content}>
-                <div className={classes.offset}/>
-                <DashboardContentRoutes/>
-            </main>
-            <NavBar appBarContent={<DashboardAppBar/>}>
-                <DashboardNavBarLinks/>
-            </NavBar>
+        <div>
+            <Typography paragraph>
+                نام کاربران که به صورت امتحانی صرفا دریافت شده و نمایش داده شده است:
+            </Typography>
+            <List>
+                {
+                    users.map(u => <ListItem dir="rtl" key={u.username}>
+                        <ListItemText primary={u.username}/>
+                    </ListItem>)
+                }
+            </List>
         </div>
     );
 }
