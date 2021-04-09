@@ -1,10 +1,14 @@
 import {Avatar, Badge, Card, Grid} from "@material-ui/core";
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
-import React from 'react';
+import React, {useState} from 'react';
 import InputFileIconButton from "../components/Input/InputFileIconButton";
 import apiAxios from "../config/axios-config";
 import {API_USER_PROFILE_PICTURE_PATH} from "../services/ApiPaths";
+import {resizeImage} from "../utility/image-resize";
+
+const PROFILE_PICTURE_MIME_TYPES = ["image/png", "image/jpeg"];
+const PROFILE_PICTURE_MAX_SIZE = 500;
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -27,28 +31,54 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const ProfileView: React.FunctionComponent = () => {
     const classes = useStyles();
+    const [avatar, setAvatar] = useState<string>("");
 
+    // TODO: Complete implementation of uploading/retrieving user profile picture.
     const onFileChangeHandler: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         event.preventDefault();
-        if (!event.target.files) {
+        const target = event.target;
+        if (!target.files) {
             // User canceled upload file window
             return
         }
+        const selectedFile = target.files[0];
+        console.log(selectedFile.type)
+        if (!PROFILE_PICTURE_MIME_TYPES.some(acceptType => selectedFile.type.match(acceptType))) {
+            // TODO: Show toast error for invalid upload file
+            return
+        }
 
-        const formData = new FormData();
-        formData.append('file', event.target.files[0]);
-        apiAxios.post(API_USER_PROFILE_PICTURE_PATH, formData)
-            .then(res => {
-                if (res.status === 200) {
-                    console.log(res.data);
-                    alert("File uploaded successfully.")
-                } else {
-                    console.log("error");
-                }
+        resizeImage(selectedFile, PROFILE_PICTURE_MAX_SIZE, true)
+            .then(resizedImageBlob => {
+                const formData = new FormData();
+                const file = new File([resizedImageBlob], "profile");
+                formData.append('file', file);
+                return apiAxios.post<FormData>(API_USER_PROFILE_PICTURE_PATH, formData)
+                    .then(res => {
+                        if (res.status === 200) {
+                            console.log("File uploaded successfully.");
+                            console.log(res.data);
+                            return resizedImageBlob;
+                        } else {
+                            // TODO: Handle invalid call error
+                            return Promise.reject("invalid call error");
+                        }
+                    })
+                    .catch(err => {
+                        // TODO: Handle connection error
+                        console.log("connection error");
+                        return Promise.reject(err);
+                    });
+
             })
-            .catch(err => console.log("error"));
-
-
+            .then(resizedImageBlob => {
+                setAvatar(window.URL.createObjectURL(resizedImageBlob));
+            })
+            .catch(err => {
+                    // TODO: Show toast error for unhandled upload errors
+                    console.log(err);
+                }
+            );
     }
 
     return (
@@ -61,7 +91,10 @@ const ProfileView: React.FunctionComponent = () => {
                         <div className={classes.imageIcon}>
                             <Badge
                                 badgeContent={
-                                    <InputFileIconButton onFileChange={onFileChangeHandler} accept="image/png">
+                                    <InputFileIconButton
+                                        onFileChange={onFileChangeHandler}
+                                        accept={PROFILE_PICTURE_MIME_TYPES.join(",")}
+                                    >
                                         <PhotoCameraIcon/>
                                     </InputFileIconButton>
                                 }
@@ -71,7 +104,7 @@ const ProfileView: React.FunctionComponent = () => {
                                 }}
                                 overlap="circle"
                             >
-                                <Avatar className={classes.avatar}/>
+                                <Avatar src={avatar} className={classes.avatar}/>
                             </Badge>
                         </div>
                         <div className={classes.center}>
