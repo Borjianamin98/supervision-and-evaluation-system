@@ -1,7 +1,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <img src="doc/images/logo.png" alt="Logo" width="80" height="80">
+  <img src="doc/images/logo.png" alt="Logo" width="120" height="120">
 
   <h2 align="center">Integrated Supervision And Evaluation System</h2>
 
