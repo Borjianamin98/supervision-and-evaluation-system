@@ -23,7 +23,7 @@ const MainView: React.FunctionComponent = () => {
 
     return (
         <div className={classes.root}>
-            <main dir="rtl" className={classes.content}>
+            <main className={classes.content}>
                 <div className={classes.offset}/>
                 <MainViewContent/>
             </main>

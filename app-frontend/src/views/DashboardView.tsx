@@ -28,7 +28,7 @@ const DashboardView: React.FunctionComponent = () => {
     }, [location.key])
 
     return (
-        <div>
+        <div dir="rtl">
             <Typography paragraph>
                 نام کاربران که به صورت امتحانی صرفا دریافت شده و نمایش داده شده است:
             </Typography>

@@ -3,7 +3,7 @@ import React from 'react';
 
 const SettingsView: React.FunctionComponent = () => {
     return (
-        <Typography paragraph>
+        <Typography dir="rtl" paragraph>
             صفحه تنظیمات
         </Typography>
     );
