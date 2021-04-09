@@ -17,7 +17,7 @@ interface UserApiResponse {
     users: Array<User>
 }
 
-const DashboardView: React.FunctionComponent = () => {
+const DashboardContentRoutes: React.FunctionComponent = () => {
     const routeMatch = useRouteMatch();
     const location = useLocation();
 
@@ -54,4 +54,4 @@ const DashboardView: React.FunctionComponent = () => {
     );
 }
 
-export default DashboardView;
+export default DashboardContentRoutes;
