@@ -4,6 +4,8 @@ import ir.ac.sbu.evaluation.dto.UserDto;
 import ir.ac.sbu.evaluation.dto.UserListDto;
 import ir.ac.sbu.evaluation.model.User;
 import ir.ac.sbu.evaluation.repository.UserRepository;
+import ir.ac.sbu.evaluation.utility.ByteUtility;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -40,6 +42,27 @@ public class UserService implements UserDetailsService {
         User user = userDto.toUser();
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         return UserDto.from(userRepository.save(user));
+    }
+
+    @Transactional
+    public UserDto setProfilePicture(String username, byte[] rawPictureBytes) {
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        if (!optionalUser.isPresent()) {
+            throw new IllegalArgumentException("Username not found: " + username);
+        }
+        User user = optionalUser.get();
+        user.setProfilePicture(ByteUtility.toWrapperBytes(rawPictureBytes));
+        userRepository.save(user);
+        return UserDto.from(user);
+    }
+
+    public Optional<byte[]> getProfilePicture(String username) {
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        if (!optionalUser.isPresent()) {
+            throw new IllegalArgumentException("Username not found: " + username);
+        }
+        Byte[] profilePicture = optionalUser.get().getProfilePicture();
+        return profilePicture == null ? Optional.empty() : Optional.of(ByteUtility.toPrimitiveBytes(profilePicture));
     }
 
     public UserListDto getAllUsers() {
