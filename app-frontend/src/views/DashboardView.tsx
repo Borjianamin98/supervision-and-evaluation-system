@@ -267,6 +267,7 @@ const DashboardView: React.FunctionComponent = () => {
                 <List>
                     <ListItemLink key='messages' dir="rtl" to={match.path} primary="پیام‌ها" icon={<InboxIcon/>}/>
                     <ListItemLink key='emails' dir="rtl" to={match.path} primary="ایمیل‌ها" icon={<MailIcon/>}/>
+                    <ListItemLink key='profile' dir="rtl" to={`${match.path}/user`} primary="حساب کاربری" icon={<PersonIcon/>}/>
                 </List>
             </Drawer>
         </div>
