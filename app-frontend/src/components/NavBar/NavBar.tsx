@@ -34,8 +34,8 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface NavBarProps {
-    isOpen: boolean,
-    closedHandler: () => void,
+    open: boolean,
+    onClose: () => void,
 }
 
 const NavBar: React.FunctionComponent<NavBarProps> = (props) => {
@@ -46,18 +46,18 @@ const NavBar: React.FunctionComponent<NavBarProps> = (props) => {
             variant="permanent"
             anchor="right"
             className={classNames(classes.drawer, {
-                [classes.drawerOpen]: props.isOpen,
-                [classes.drawerClose]: !props.isOpen,
+                [classes.drawerOpen]: props.open,
+                [classes.drawerClose]: !props.open,
             })}
             classes={{
                 paper: classNames({
-                    [classes.drawerOpen]: props.isOpen,
-                    [classes.drawerClose]: !props.isOpen,
+                    [classes.drawerOpen]: props.open,
+                    [classes.drawerClose]: !props.open,
                 }),
             }}
         >
             <div className={classes.offset}>
-                <IconButton onClick={props.closedHandler}>
+                <IconButton onClick={props.onClose}>
                     <ChevronRightIcon/>
                 </IconButton>
             </div>

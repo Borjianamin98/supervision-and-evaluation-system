@@ -17,9 +17,6 @@ const useStyles = makeStyles((theme: Theme) =>
             display: "block",
             whiteSpace: "nowrap",
             textAlign: "right",
-        },
-        icons: {
-            color: "white"
         }
     }),
 );
@@ -41,18 +38,19 @@ const DashboardAppBar: React.FunctionComponent = () => {
             <Typography variant="h6" noWrap className={classes.title}>
                 داشبورد
             </Typography>
-            <IconButton className={classes.icons}>
+            <IconButton color="inherit">
                 <Badge badgeContent={4} color="secondary">
                     <NotificationsIcon/>
                 </Badge>
             </IconButton>
             <div>
                 <IconButton
+                    color="inherit"
                     aria-owns={openProfileId}
                     aria-haspopup="true"
                     onClick={handleClickProfile}
                 >
-                    <PersonIcon className={classes.icons}/>
+                    <PersonIcon/>
                 </IconButton>
                 <Popper id={openProfileId}
                         open={Boolean(profileAnchorEl)}

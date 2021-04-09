@@ -48,10 +48,10 @@ const DashboardView: React.FunctionComponent = () => {
     const classes = useStyles();
 
     const [open, setOpen] = React.useState<boolean>(false);
-    const navBarOpenedHandler = () => {
+    const navBarOnOpenHandler = () => {
         setOpen(true);
     };
-    const navBarClosedHandler = () => {
+    const navBarOnCloseHandler = () => {
         setOpen(false);
     };
 
@@ -66,7 +66,7 @@ const DashboardView: React.FunctionComponent = () => {
                         color="inherit"
                         aria-label="open drawer"
                         edge="end"
-                        onClick={navBarOpenedHandler}
+                        onClick={navBarOnOpenHandler}
                         className={classNames(classes.menuButton, {[classes.menuButtonHidden]: open})}
                     >
                         <MenuIcon/>
@@ -78,7 +78,7 @@ const DashboardView: React.FunctionComponent = () => {
                 <div className={classes.offset}/>
                 <DashboardContentRoutes/>
             </main>
-            <NavBar isOpen={open} closedHandler={navBarClosedHandler}>
+            <NavBar open={open} onClose={navBarOnCloseHandler}>
                 <DashboardNavBarLinks/>
             </NavBar>
         </div>
