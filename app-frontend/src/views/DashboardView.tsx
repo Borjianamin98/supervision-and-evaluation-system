@@ -10,22 +10,18 @@ import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import HomeIcon from '@material-ui/icons/Home';
-import MailIcon from '@material-ui/icons/Mail';
 import MenuIcon from '@material-ui/icons/Menu';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import PersonIcon from '@material-ui/icons/Person';
-import SettingsIcon from '@material-ui/icons/Settings';
 import {AxiosResponse} from "axios";
 import classNames from 'classnames';
 import React, {useEffect, useState} from 'react';
 import {Switch, useLocation, useRouteMatch} from "react-router-dom";
-import ListItemLink from '../components/List/ListItemLink';
 import {PrivateRoute} from "../components/Route/CustomRoute";
 import apiAxios from "../config/axios-config";
 import AuthenticationService from "../services/api/AuthenticationService";
 import {API_USER_PATH} from "../services/ApiPaths";
+import DashboardNavBarLinks from "./dashboard/DashboardNavBarLinks";
 
 const drawerWidth = 240;
 
@@ -258,17 +254,7 @@ const DashboardView: React.FunctionComponent = () => {
                     </IconButton>
                 </div>
                 <Divider/>
-                <List>
-                    <ListItemLink key='home' dir="rtl" to={match.path} primary="صفحه اصلی" icon={<HomeIcon/>}/>
-                    <ListItemLink key='setting' dir="rtl" to={`${match.path}/setting`} primary="تنظیمات"
-                                  icon={<SettingsIcon/>}/>
-                </List>
-                <Divider/>
-                <List>
-                    <ListItemLink key='messages' dir="rtl" to={match.path} primary="پیام‌ها" icon={<InboxIcon/>}/>
-                    <ListItemLink key='emails' dir="rtl" to={match.path} primary="ایمیل‌ها" icon={<MailIcon/>}/>
-                    <ListItemLink key='profile' dir="rtl" to={`${match.path}/user`} primary="حساب کاربری" icon={<PersonIcon/>}/>
-                </List>
+                <DashboardNavBarLinks />
             </Drawer>
         </div>
     );
