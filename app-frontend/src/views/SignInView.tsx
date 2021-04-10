@@ -12,6 +12,7 @@ import React, {FormEventHandler, useState} from 'react';
 import {rtlTheme} from '../App';
 import signInImage from "../assets/images/signIn.png";
 import PasswordTextField from '../components/Text/PasswordTextField';
+import {getGeneralErrorMessage} from "../config/axios-config";
 import AuthenticationService from "../services/api/AuthenticationService";
 
 const useStyles = makeStyles((theme) => ({
@@ -61,19 +62,8 @@ const SignInView: React.FunctionComponent = (props) => {
         event.preventDefault();
         AuthenticationService.login(username, password)
             .then(() => setErrorMessage(""))
-            .catch((reason: AxiosError) => {
-                if (reason.response) {
-                    // The request was made and the server responded with a status code
-                    // that falls out of the validation range.
-                    setErrorMessage("اطلاعات وارد شده صحیح نمی‌باشد. لطفا دوباره تلاش بفرمایید.")
-                } else if (reason.request) {
-                    // The request was made but no response was received
-                    setErrorMessage("در ارتباط با سرور مشکلی می‌باشد. در صورت عدم رفع مشکل با مسئول پشتیبانی تماس بگیرید.");
-                } else {
-                    // Something happened in setting up the request that triggered an Error
-                    console.log('Unexpected error happened in request', reason.message);
-                    setErrorMessage("خطای غیرمنتظره رخ داده است. در صورت عدم رفع مشکل با مسئول پشتیبانی تماس بگیرید.");
-                }
+            .catch((error: AxiosError) => {
+                setErrorMessage(getGeneralErrorMessage(error));
                 clearFormInputs();
             });
     }

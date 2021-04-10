@@ -1,9 +1,9 @@
 import {Avatar, Badge, Card, Grid} from "@material-ui/core";
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import InputFileIconButton from "../components/Input/InputFileIconButton";
-import apiAxios from "../config/axios-config";
+import apiAxios, {getGeneralErrorMessage} from "../config/axios-config";
 import {API_USER_PROFILE_PICTURE_PATH} from "../services/ApiPaths";
 import {resizeImage} from "../utility/image-resize";
 
@@ -33,7 +33,18 @@ const ProfileView: React.FunctionComponent = () => {
     const classes = useStyles();
     const [avatar, setAvatar] = useState<string>("");
 
-    // TODO: Complete implementation of uploading/retrieving user profile picture.
+    useEffect(() => {
+        apiAxios.get<Blob>(API_USER_PROFILE_PICTURE_PATH, {
+            responseType: 'blob',
+            validateStatus: status => status === 200
+        })
+            .then(value => setAvatar(window.URL.createObjectURL(value.data)))
+            .catch(error => {
+                // TODO: Show toast error with below error.
+                console.log(getGeneralErrorMessage(error));
+            });
+    }, [])
+
     const onFileChangeHandler: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         event.preventDefault();
         const target = event.target;
@@ -42,7 +53,6 @@ const ProfileView: React.FunctionComponent = () => {
             return
         }
         const selectedFile = target.files[0];
-        console.log(selectedFile.type)
         if (!PROFILE_PICTURE_MIME_TYPES.some(acceptType => selectedFile.type.match(acceptType))) {
             // TODO: Show toast error for invalid upload file
             return
@@ -53,32 +63,17 @@ const ProfileView: React.FunctionComponent = () => {
                 const formData = new FormData();
                 const file = new File([resizedImageBlob], "profile");
                 formData.append('file', file);
-                return apiAxios.post<FormData>(API_USER_PROFILE_PICTURE_PATH, formData)
-                    .then(res => {
-                        if (res.status === 200) {
-                            console.log("File uploaded successfully.");
-                            console.log(res.data);
-                            return resizedImageBlob;
-                        } else {
-                            // TODO: Handle invalid call error
-                            return Promise.reject("invalid call error");
-                        }
-                    })
+                return apiAxios.post<FormData>(API_USER_PROFILE_PICTURE_PATH, formData, {
+                    validateStatus: status => status === 200
+                })
+                    .then(() => resizedImageBlob)
                     .catch(err => {
                         // TODO: Handle connection error
                         console.log("connection error");
                         return Promise.reject(err);
                     });
-
             })
-            .then(resizedImageBlob => {
-                setAvatar(window.URL.createObjectURL(resizedImageBlob));
-            })
-            .catch(err => {
-                    // TODO: Show toast error for unhandled upload errors
-                    console.log(err);
-                }
-            );
+            .then(resizedImageBlob => setAvatar(window.URL.createObjectURL(resizedImageBlob)));
     }
 
     return (
@@ -94,6 +89,8 @@ const ProfileView: React.FunctionComponent = () => {
                                     <InputFileIconButton
                                         onFileChange={onFileChangeHandler}
                                         accept={PROFILE_PICTURE_MIME_TYPES.join(",")}
+                                        edge="end"
+                                        color="primary"
                                     >
                                         <PhotoCameraIcon/>
                                     </InputFileIconButton>
