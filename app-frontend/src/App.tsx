@@ -1,7 +1,8 @@
 import {createMuiTheme, CssBaseline} from "@material-ui/core";
-import {jssPreset, StylesProvider, Theme, ThemeProvider} from '@material-ui/core/styles';
+import {createStyles, jssPreset, makeStyles, StylesProvider, Theme, ThemeProvider} from '@material-ui/core/styles';
 import {create} from 'jss';
 import rtl from 'jss-rtl';
+import {SnackbarProvider} from "notistack";
 import React from 'react';
 import {Router, Switch} from 'react-router-dom';
 import {AuthenticationRoute, PrivateRoute} from './components/Route/CustomRoute';
@@ -22,21 +23,43 @@ const vazirFontTheme = createMuiTheme({
     }
 });
 
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        snackbarRoot: {
+            direction: "rtl",
+        }
+    }),
+);
+
 const App: React.FunctionComponent = () => {
+    const classes = useStyles();
+
     return (
         <StylesProvider jss={jss}>
             <ThemeProvider theme={vazirFontTheme}>
                 <CssBaseline/>
-                <Router history={browserHistory}>
-                    <Switch>
-                        <AuthenticationRoute path="/login">
-                            <SignInView/>
-                        </AuthenticationRoute>
-                        <PrivateRoute>
-                            <MainView/>
-                        </PrivateRoute>
-                    </Switch>
-                </Router>
+                <SnackbarProvider
+                    classes={{
+                        root: classes.snackbarRoot
+                    }}
+                    maxSnack={1}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    autoHideDuration={6000}
+                >
+                    <Router history={browserHistory}>
+                        <Switch>
+                            <AuthenticationRoute path="/login">
+                                <SignInView/>
+                            </AuthenticationRoute>
+                            <PrivateRoute>
+                                <MainView/>
+                            </PrivateRoute>
+                        </Switch>
+                    </Router>
+                </SnackbarProvider>
             </ThemeProvider>
         </StylesProvider>
     );
