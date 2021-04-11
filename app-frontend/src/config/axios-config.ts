@@ -62,18 +62,23 @@ export function configAxios() {
     );
 }
 
-export function getGeneralErrorMessage(error: AxiosError) : string {
+export function getGeneralErrorMessage(error: AxiosError) : { message: string, statusCode?: number } {
+    let message = "", statusCode;
     if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the validation range.
-        return "اطلاعات وارد شده صحیح نمی‌باشد. لطفا دوباره تلاش بفرمایید.";
+        statusCode = error.response.status;
     } else if (error.request) {
         // The request was made but no response was received
-        return "در ارتباط با سرور مشکلی می‌باشد. در صورت عدم رفع مشکل با مسئول پشتیبانی تماس بگیرید.";
+        message =  "در ارتباط با سرور مشکلی می‌باشد. در صورت عدم رفع مشکل با مسئول پشتیبانی تماس بگیرید.";
     } else {
         // Something happened in setting up the request that triggered an Error
         console.log('Unexpected error happened in request', error.message);
-        return "خطای غیرمنتظره رخ داده است. در صورت عدم رفع مشکل با مسئول پشتیبانی تماس بگیرید.";
+        message = "خطای غیرمنتظره رخ داده است. در صورت عدم رفع مشکل با مسئول پشتیبانی تماس بگیرید.";
+    }
+    return {
+        message,
+        statusCode
     }
 }
 

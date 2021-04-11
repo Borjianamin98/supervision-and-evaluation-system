@@ -63,7 +63,8 @@ const SignInView: React.FunctionComponent = (props) => {
         AuthenticationService.login(username, password)
             .then(() => setErrorMessage(""))
             .catch((error: AxiosError) => {
-                setErrorMessage(getGeneralErrorMessage(error));
+                const {message, statusCode} = getGeneralErrorMessage(error);
+                setErrorMessage(statusCode ? "اطلاعات وارد شده صحیح نمی‌باشد. لطفا دوباره تلاش بفرمایید." : message);
                 clearFormInputs();
             });
     }
