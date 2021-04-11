@@ -1,9 +1,11 @@
 import {Avatar, Badge, Card, Grid} from "@material-ui/core";
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
+import {useSnackbar} from "notistack";
 import React, {useEffect, useState} from 'react';
 import InputFileIconButton from "../components/Input/InputFileIconButton";
 import apiAxios, {getGeneralErrorMessage} from "../config/axios-config";
+import browserHistory from "../config/browserHistory";
 import {API_USER_PROFILE_PICTURE_PATH} from "../services/ApiPaths";
 import {resizeImage} from "../utility/image-resize";
 
@@ -31,6 +33,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const ProfileView: React.FunctionComponent = () => {
     const classes = useStyles();
+    const {enqueueSnackbar} = useSnackbar();
     const [avatar, setAvatar] = useState<string>("");
 
     useEffect(() => {
@@ -40,22 +43,26 @@ const ProfileView: React.FunctionComponent = () => {
         })
             .then(value => setAvatar(window.URL.createObjectURL(value.data)))
             .catch(error => {
-                // TODO: Show toast error with below error.
-                console.log(getGeneralErrorMessage(error));
+                const {message, statusCode} = getGeneralErrorMessage(error);
+                enqueueSnackbar(statusCode ?
+                    `در دریافت تصویر از سرور خطای ${statusCode} دریافت شد.` : message,
+                    {variant: "error"});
+                if (!statusCode) {
+                    browserHistory.push("/dashboard");
+                }
             });
-    }, [])
+    }, [enqueueSnackbar])
 
     const onFileChangeHandler: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         event.preventDefault();
         const target = event.target;
         if (!target.files) {
-            // User canceled upload file window
-            return
+            return; // User canceled upload file window
         }
         const selectedFile = target.files[0];
         if (!PROFILE_PICTURE_MIME_TYPES.some(acceptType => selectedFile.type.match(acceptType))) {
-            // TODO: Show toast error for invalid upload file
-            return
+            enqueueSnackbar('فایل انتخابی باید تصویری با فرمت مناسب باشد.', {variant: "error"});
+            return;
         }
 
         resizeImage(selectedFile, PROFILE_PICTURE_MAX_SIZE, true)
@@ -68,8 +75,10 @@ const ProfileView: React.FunctionComponent = () => {
                 })
                     .then(() => resizedImageBlob)
                     .catch(err => {
-                        // TODO: Handle connection error
-                        console.log("connection error");
+                        const {message, statusCode} = getGeneralErrorMessage(err);
+                        enqueueSnackbar(statusCode ?
+                            `در ارسال تصویر به سرور خطای ${statusCode} دریافت شد.` : message,
+                            {variant: "error"});
                         return Promise.reject(err);
                     });
             })
