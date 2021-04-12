@@ -4,10 +4,11 @@ import {create} from 'jss';
 import rtl from 'jss-rtl';
 import {SnackbarProvider} from "notistack";
 import React from 'react';
-import {Router, Switch} from 'react-router-dom';
+import {Route, Router, Switch} from 'react-router-dom';
 import {AuthenticationRoute, PrivateRoute} from './components/Route/CustomRoute';
 import {configAxios} from "./config/axios-config";
 import browserHistory from './config/browserHistory';
+import ErrorView from "./views/error/ErrorView";
 import MainView from "./views/MainView";
 import SignInView from './views/SignInView';
 
@@ -54,6 +55,9 @@ const App: React.FunctionComponent = () => {
                             <AuthenticationRoute path="/login">
                                 <SignInView/>
                             </AuthenticationRoute>
+                            <Route exact path="/error">
+                                <ErrorView/>
+                            </Route>
                             <PrivateRoute>
                                 <MainView/>
                             </PrivateRoute>
