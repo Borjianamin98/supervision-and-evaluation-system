@@ -52,6 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers(ApiPaths.API_AUTHENTICATION_ROOT_PATH + "/**").permitAll()
                 .antMatchers("/favicon.ico").permitAll()
+                .antMatchers("/actuator/**").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
