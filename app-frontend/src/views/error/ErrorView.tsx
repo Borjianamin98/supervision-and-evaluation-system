@@ -3,7 +3,10 @@ import Grid from "@material-ui/core/Grid";
 import createStyles from "@material-ui/core/styles/createStyles";
 import Typography from "@material-ui/core/Typography";
 import CloudIcon from '@material-ui/icons/Cloud';
+import {useSnackbar} from "notistack";
 import React from 'react';
+import browserHistory from "../../config/browserHistory";
+import ActuatorService from "../../services/api/ActuatorService";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -19,9 +22,12 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const ErrorView: React.FunctionComponent = () => {
     const classes = useStyles();
+    const {enqueueSnackbar} = useSnackbar();
 
     function tryAgainHandler() {
-
+        ActuatorService.isServerUp()
+            .then(() => browserHistory.push("/dashboard"))
+            .catch(() => enqueueSnackbar("سامانه همچنان در دسترس نمی‌باشد.", {variant: "error"}))
     }
 
     return (

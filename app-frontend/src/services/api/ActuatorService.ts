@@ -15,7 +15,9 @@ class ActuatorService {
             {
                 validateStatus: status => status === 200
             })
-        return response.data.status === "UP";
+        if (response.data.status === "UP") {
+            throw new Error("Backend server is not healthy");
+        }
     }
 }
 

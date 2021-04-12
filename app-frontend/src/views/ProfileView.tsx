@@ -48,7 +48,7 @@ const ProfileView: React.FunctionComponent = () => {
                     `در دریافت تصویر از سرور خطای ${statusCode} دریافت شد.` : message,
                     {variant: "error"});
                 if (!statusCode) {
-                    browserHistory.push("/dashboard");
+                    browserHistory.push("/error");
                 }
             });
     }, [enqueueSnackbar])
