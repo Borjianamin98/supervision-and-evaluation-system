@@ -43,11 +43,11 @@ const ProfileView: React.FunctionComponent = () => {
         })
             .then(value => setAvatar(window.URL.createObjectURL(value.data)))
             .catch(error => {
-                const {message, statusCode} = getGeneralErrorMessage(error);
-                enqueueSnackbar(statusCode ?
-                    `در دریافت تصویر از سرور خطای ${statusCode} دریافت شد.` : message,
-                    {variant: "error"});
-                if (!statusCode) {
+                const {statusCode} = getGeneralErrorMessage(error);
+                if (statusCode) {
+                    enqueueSnackbar(`در دریافت تصویر از سرور خطای ${statusCode} دریافت شد.`,
+                        {variant: "error"});
+                } else if (!statusCode) {
                     browserHistory.push("/error");
                 }
             });
