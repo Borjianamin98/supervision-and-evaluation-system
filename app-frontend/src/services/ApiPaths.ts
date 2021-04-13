@@ -1,7 +1,8 @@
-export const API_ROOT_PATH = "http://localhost:8080/api/v1"
+export const BACKEND_SERVICE_HOST = "http://localhost:8080"
+export const API_ROOT_PATH = `${BACKEND_SERVICE_HOST}/api/v1`
 
 // Actuator paths
-export const API_ACTUATOR_HEALTH_PATH = `${API_ROOT_PATH}/actuator/health`
+export const API_ACTUATOR_HEALTH_PATH = `${BACKEND_SERVICE_HOST}/actuator/health`
 
 // Authentication paths
 const API_AUTHENTICATION_PATH = "/auth"
