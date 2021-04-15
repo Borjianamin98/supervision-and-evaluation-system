@@ -6,7 +6,7 @@ import Typography from "@material-ui/core/Typography";
 import React from 'react';
 import addDocumentImage from "../assets/images/dashboard/add-document.jpg";
 import ButtonLink from "../components/Button/ButtonLink";
-import {PROBLEM_ADD_VIEW_PATH, PROBLEM_VIEW_PATH} from "./ViewPaths";
+import {PROBLEM_CREATE_VIEW_PATH, PROBLEM_VIEW_PATH} from "./ViewPaths";
 
 const useStyles = makeStyles({
     root: {
@@ -37,8 +37,8 @@ const DashboardView: React.FunctionComponent = () => {
                     </CardContent>
                 </CardActionArea>
                 <CardActions>
-                    <ButtonLink to={PROBLEM_ADD_VIEW_PATH} size="small" color="primary">
-                        افزودن
+                    <ButtonLink to={PROBLEM_CREATE_VIEW_PATH} size="small" color="primary">
+                        ایجاد
                     </ButtonLink>
                     <ButtonLink to={PROBLEM_VIEW_PATH} size="small" color="primary">
                         مشاهده

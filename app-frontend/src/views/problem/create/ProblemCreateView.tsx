@@ -6,7 +6,7 @@ import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import React from 'react';
 import SwipeableViews from "react-swipeable-views";
-import {rtlTheme} from "../../App";
+import {rtlTheme} from "../../../App";
 
 const useStyles = makeStyles((theme) => ({
     root: {},
@@ -43,7 +43,7 @@ const TabPanel: React.FunctionComponent<TabPanelProps> = (props) => {
     );
 }
 
-const ProblemAddView: React.FunctionComponent = () => {
+const ProblemCreateView: React.FunctionComponent = () => {
     const classes = useStyles();
     const [tabIndex, setTabIndex] = React.useState(0);
 
@@ -116,4 +116,4 @@ const ProblemAddView: React.FunctionComponent = () => {
     );
 }
 
-export default ProblemAddView;
+export default ProblemCreateView;

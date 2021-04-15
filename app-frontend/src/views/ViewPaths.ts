@@ -9,7 +9,7 @@ export const PROFILE_VIEW_PATH = "/profile";
 
 // Problem Views
 export const PROBLEM_VIEW_PATH = "/problem";
-export const PROBLEM_ADD_VIEW_PATH = "/problem/add";
+export const PROBLEM_CREATE_VIEW_PATH = "/problem/create";
 
 // Settings Views
 export const SETTINGS_VIEW_PATH = "/settings";

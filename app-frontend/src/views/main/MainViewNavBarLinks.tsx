@@ -8,13 +8,13 @@ import ViewListIcon from '@material-ui/icons/ViewList';
 import React from 'react';
 import ListItemLink from '../../components/List/ListItemLink';
 import DashboardView from "../DashboardView";
-import ProblemAddView from "../problem/ProblemAddView";
+import ProblemCreateView from "../problem/create/ProblemCreateView";
 import ProblemView from "../problem/ProblemView";
 import ProfileView from "../ProfileView";
 import SettingsView from "../SettingsView";
 import {
     DASHBOARD_VIEW_PATH,
-    PROBLEM_ADD_VIEW_PATH,
+    PROBLEM_CREATE_VIEW_PATH,
     PROBLEM_VIEW_PATH,
     PROFILE_VIEW_PATH,
     SETTINGS_VIEW_PATH
@@ -44,10 +44,10 @@ const problemRoutesInfo: navBarRouteInfo[] = [
         component: ProblemView,
     },
     {
-        path: PROBLEM_ADD_VIEW_PATH,
-        name: "افزودن مسئله",
+        path: PROBLEM_CREATE_VIEW_PATH,
+        name: "ایجاد مسئله",
         icon: NoteAddIcon,
-        component: ProblemAddView,
+        component: ProblemCreateView,
     },
 ]
 
