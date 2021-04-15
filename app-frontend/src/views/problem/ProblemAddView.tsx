@@ -1,13 +1,16 @@
-import {Tab, Tabs} from "@material-ui/core";
+import {Paper, Tab, Tabs} from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
-import {makeStyles} from "@material-ui/core/styles";
+import Grid from "@material-ui/core/Grid";
+import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import Typography from "@material-ui/core/Typography";
 import React from 'react';
 import SwipeableViews from "react-swipeable-views";
+import {rtlTheme} from "../../App";
 
 const useStyles = makeStyles((theme) => ({
     root: {},
     tabPanel: {
-        direction: "rtl",
         padding: theme.spacing(3, 0)
     },
     paper: {
@@ -53,9 +56,10 @@ const ProblemAddView: React.FunctionComponent = () => {
     };
 
     return (
-        <div className={classes.root} dir="rtl">
+        <div className={classes.root}>
             <AppBar position="static">
                 <Tabs
+                    dir="rtl"
                     value={tabIndex}
                     onChange={handleTabChange}
                     centered
@@ -73,13 +77,39 @@ const ProblemAddView: React.FunctionComponent = () => {
                 onChangeIndex={handleChangeIndex}
             >
                 <TabPanel value={tabIndex} index={0}>
-                    اطلاعات کلی
+                    <Grid dir="rtl" container className={classes.root}>
+                        <Grid item sm={12} md={6}>
+                            <Paper square elevation={3} className={classes.paper}>
+                                توضیحات کلی
+                            </Paper>
+                        </Grid>
+                        <Grid item sm={12} md={6}>
+                            <Paper square elevation={3} className={classes.paper}>
+                                <ThemeProvider theme={rtlTheme}>
+                                    <TextField
+                                        dir="rtl"
+                                        variant="outlined"
+                                        margin="normal"
+                                        required
+                                        fullWidth
+                                        label="عنوان فارسی"
+                                        // placeholder="عنوان فارسی"
+                                        helperText="خطا عنوان فارسی باید وارد شود!"
+                                        error
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                    />
+                                </ThemeProvider>
+                            </Paper>
+                        </Grid>
+                    </Grid>
                 </TabPanel>
                 <TabPanel value={tabIndex} index={1}>
-                    اطلاعات تکمیلی
+                    <Typography dir="rtl">اطلاعات تکمیلی</Typography>
                 </TabPanel>
                 <TabPanel value={tabIndex} index={2}>
-                    بازبینی
+                    <Typography dir="rtl">بازبینی</Typography>
                 </TabPanel>
             </SwipeableViews>
         </div>
