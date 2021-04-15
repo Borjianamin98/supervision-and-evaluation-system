@@ -1,3 +1,4 @@
+import Divider from "@material-ui/core/Divider";
 import List from '@material-ui/core/List';
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import PersonIcon from '@material-ui/icons/Person';
@@ -42,6 +43,8 @@ const MainViewNavBarLinks: React.FunctionComponent = () => {
                         icon={React.createElement(value.icon, {})}
                     />)}
             </List>
+            <Divider/>
+
         </>
     );
 }

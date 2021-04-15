@@ -9,7 +9,7 @@ import {AuthenticationRoute, PrivateRoute} from './components/Route/CustomRoute'
 import {configAxios} from "./config/axios-config";
 import browserHistory from './config/browserHistory';
 import ErrorView from "./views/error/ErrorView";
-import MainView from "./views/MainView";
+import MainView from "./views/main/MainView";
 import SignInView from './views/SignInView';
 
 // Configuration

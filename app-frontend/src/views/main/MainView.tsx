@@ -1,9 +1,9 @@
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import React from 'react';
-import NavBar from "../components/NavBar/NavBar";
-import MainViewAppBar from "./main-view/MainViewAppBar";
-import MainViewContent from "./main-view/MainViewContent";
-import DashboardNavBarLinks from "./main-view/MainViewNavBarLinks";
+import NavBar from "../../components/NavBar/NavBar";
+import MainViewAppBar from "./MainViewAppBar";
+import MainViewContent from "./MainViewContent";
+import DashboardNavBarLinks from "./MainViewNavBarLinks";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({

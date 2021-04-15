@@ -46,7 +46,7 @@ class AuthenticationService {
             })
         localStorage.setItem(AuthenticationService.AUTH_ACCESS_TOKEN_KEY, response.data.access_token!);
         localStorage.setItem(AuthenticationService.AUTH_REFRESH_TOKEN_KEY, response.data.refresh_token!);
-        browserHistory.push("/main-view");
+        browserHistory.push("/dashboard");
     }
 
     static async refresh() {
