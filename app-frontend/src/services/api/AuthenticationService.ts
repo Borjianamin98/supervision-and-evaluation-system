@@ -1,7 +1,8 @@
 import {AxiosError} from "axios";
-import {API_AUTHENTICATION_LOGIN_PATH, API_AUTHENTICATION_REFRESH_PATH} from "../ApiPaths";
-import browserHistory from "../../config/browserHistory";
 import apiAxios from "../../config/axios-config";
+import browserHistory from "../../config/browserHistory";
+import {DASHBOARD_VIEW_PATH, LOGIN_VIEW_PATH} from "../../views/ViewPaths";
+import {API_AUTHENTICATION_LOGIN_PATH, API_AUTHENTICATION_REFRESH_PATH} from "../ApiPaths";
 
 export interface AuthResponse {
     username: string,
@@ -24,7 +25,7 @@ class AuthenticationService {
     static logout() {
         localStorage.removeItem(AuthenticationService.AUTH_ACCESS_TOKEN_KEY);
         localStorage.removeItem(AuthenticationService.AUTH_REFRESH_TOKEN_KEY);
-        browserHistory.push("/login");
+        browserHistory.push(LOGIN_VIEW_PATH);
     }
 
     static getAccessToken() {
@@ -46,7 +47,7 @@ class AuthenticationService {
             })
         localStorage.setItem(AuthenticationService.AUTH_ACCESS_TOKEN_KEY, response.data.access_token!);
         localStorage.setItem(AuthenticationService.AUTH_REFRESH_TOKEN_KEY, response.data.refresh_token!);
-        browserHistory.push("/dashboard");
+        browserHistory.push(DASHBOARD_VIEW_PATH);
     }
 
     static async refresh() {

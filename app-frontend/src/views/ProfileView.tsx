@@ -8,6 +8,7 @@ import apiAxios, {getGeneralErrorMessage} from "../config/axios-config";
 import browserHistory from "../config/browserHistory";
 import {API_USER_PROFILE_PICTURE_PATH} from "../services/ApiPaths";
 import {resizeImage} from "../utility/image-resize";
+import {ERROR_VIEW_PATH} from "./ViewPaths";
 
 const PROFILE_PICTURE_MIME_TYPES = ["image/png", "image/jpeg"];
 const PROFILE_PICTURE_MAX_SIZE = 500;
@@ -48,7 +49,7 @@ const ProfileView: React.FunctionComponent = () => {
                     enqueueSnackbar(`در دریافت تصویر از سرور خطای ${statusCode} دریافت شد.`,
                         {variant: "error"});
                 } else if (!statusCode) {
-                    browserHistory.push("/error");
+                    browserHistory.push(ERROR_VIEW_PATH);
                 }
             });
     }, [enqueueSnackbar])

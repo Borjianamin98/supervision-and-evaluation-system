@@ -1,6 +1,7 @@
 import axios, {AxiosError} from "axios";
 import AuthenticationService from "../services/api/AuthenticationService";
 import {API_AUTHENTICATION_LOGIN_PATH, API_AUTHENTICATION_REFRESH_PATH, API_ROOT_PATH} from "../services/ApiPaths";
+import {LOGIN_VIEW_PATH} from "../views/ViewPaths";
 import browserHistory from "./browserHistory";
 
 // Extend any library types, by using the typescript declaration merging feature:
@@ -42,12 +43,12 @@ export function configAxios() {
                 if (axiosRequestConfig.url?.includes(API_AUTHENTICATION_REFRESH_PATH)) {
                     // Refresh token invalidated/expired and we should login again.
                     AuthenticationService.logout();
-                    browserHistory.push("/login");
+                    browserHistory.push(LOGIN_VIEW_PATH);
                     return Promise.reject(error);
                 } else if (axiosRequestConfig.url?.includes(API_AUTHENTICATION_LOGIN_PATH)) {
                     // Incorrect username/password provided for authentication
                     AuthenticationService.logout();
-                    browserHistory.push("/login");
+                    browserHistory.push(LOGIN_VIEW_PATH);
                     return Promise.reject(error);
                 } else if (axiosRequestConfig.isRetryable) {
                     // Access token expired. We should try to refresh our token before force

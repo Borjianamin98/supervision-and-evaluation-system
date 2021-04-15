@@ -8,22 +8,23 @@ import ListItemLink from '../../components/List/ListItemLink';
 import DashboardView from "../DashboardView";
 import ProfileView from "../ProfileView";
 import SettingsView from "../SettingsView";
+import {DASHBOARD_VIEW_PATH, PROFILE_VIEW_PATH, SETTINGS_VIEW_PATH} from "../ViewPaths";
 
 const navBarRoutesInfo = [
     {
-        path: "/dashboard",
+        path: DASHBOARD_VIEW_PATH,
         name: "داشبورد",
         icon: DashboardIcon,
         component: DashboardView
     },
     {
-        path: "/user",
+        path: PROFILE_VIEW_PATH,
         name: "حساب کاربری",
         icon: PersonIcon,
         component: ProfileView,
     },
     {
-        path: "/settings",
+        path: SETTINGS_VIEW_PATH,
         name: "تنظیمات",
         icon: SettingsIcon,
         component: SettingsView,

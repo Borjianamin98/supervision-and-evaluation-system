@@ -11,6 +11,7 @@ import browserHistory from './config/browserHistory';
 import ErrorView from "./views/error/ErrorView";
 import MainView from "./views/main/MainView";
 import SignInView from './views/SignInView';
+import {LOGIN_VIEW_PATH} from "./views/ViewPaths";
 
 // Configuration
 // Configure axios library globally
@@ -52,7 +53,7 @@ const App: React.FunctionComponent = () => {
                 >
                     <Router history={browserHistory}>
                         <Switch>
-                            <AuthenticationRoute path="/login">
+                            <AuthenticationRoute path={LOGIN_VIEW_PATH}>
                                 <SignInView/>
                             </AuthenticationRoute>
                             <Route exact path="/error">

@@ -7,6 +7,7 @@ import {useSnackbar} from "notistack";
 import React from 'react';
 import browserHistory from "../../config/browserHistory";
 import ActuatorService from "../../services/api/ActuatorService";
+import {DASHBOARD_VIEW_PATH} from "../ViewPaths";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -26,7 +27,7 @@ const ErrorView: React.FunctionComponent = () => {
 
     function tryAgainHandler() {
         ActuatorService.isServerUp()
-            .then(() => browserHistory.push("/dashboard"))
+            .then(() => browserHistory.push(DASHBOARD_VIEW_PATH))
             .catch(() => enqueueSnackbar("سامانه همچنان در دسترس نمی‌باشد.", {variant: "error"}))
     }
 
