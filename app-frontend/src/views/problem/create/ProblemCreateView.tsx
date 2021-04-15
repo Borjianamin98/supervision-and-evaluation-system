@@ -7,41 +7,17 @@ import Typography from "@material-ui/core/Typography";
 import React from 'react';
 import SwipeableViews from "react-swipeable-views";
 import {rtlTheme} from "../../../App";
+import TabPanel from "./TabPanel";
 
 const useStyles = makeStyles((theme) => ({
-    root: {},
-    tabPanel: {
-        padding: theme.spacing(3, 0)
-    },
     paper: {
-        margin: theme.spacing(0, 1),
+        margin: theme.spacing(1),
         padding: theme.spacing(3),
         display: 'flex',
         flexGrow: 1,
         flexDirection: 'column',
-        height: "100%"
     },
 }));
-
-interface TabPanelProps {
-    index: number;
-    value: number;
-}
-
-const TabPanel: React.FunctionComponent<TabPanelProps> = (props) => {
-    const classes = useStyles();
-    const {value, index, ...rest} = props;
-
-    return (
-        <div
-            hidden={value !== index}
-            className={classes.tabPanel}
-            {...rest}
-        >
-            {props.children}
-        </div>
-    );
-}
 
 const ProblemCreateView: React.FunctionComponent = () => {
     const classes = useStyles();
@@ -56,7 +32,7 @@ const ProblemCreateView: React.FunctionComponent = () => {
     };
 
     return (
-        <div className={classes.root}>
+        <div>
             <AppBar position="static">
                 <Tabs
                     dir="rtl"
@@ -77,7 +53,7 @@ const ProblemCreateView: React.FunctionComponent = () => {
                 onChangeIndex={handleChangeIndex}
             >
                 <TabPanel value={tabIndex} index={0}>
-                    <Grid dir="rtl" container className={classes.root}>
+                    <Grid dir="rtl" container>
                         <Grid item sm={12} md={6}>
                             <Paper square elevation={3} className={classes.paper}>
                                 توضیحات کلی
