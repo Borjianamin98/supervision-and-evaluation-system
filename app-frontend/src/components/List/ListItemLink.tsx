@@ -28,8 +28,8 @@ const ListItemLink: React.FunctionComponent<ListItemLinkProps> = (props) => {
 
     const renderLink = React.useMemo(
         () =>
-            React.forwardRef<any, Omit<LinkProps, 'to'>>((itemProps, ref) => (
-                <NavLink exact to={to} ref={ref} {...itemProps} />
+            React.forwardRef<any, Omit<LinkProps, 'to'>>((refProps, ref) => (
+                <NavLink exact to={to} ref={ref} {...refProps} />
             )),
         [to],
     );
@@ -43,7 +43,8 @@ const ListItemLink: React.FunctionComponent<ListItemLinkProps> = (props) => {
                         [classes.listItemText]: true,
                         [classes.rtl]: dir === "rtl"
                     })}
-                    primary={primary}/>
+                    primary={primary}
+                />
             </ListItem>
         </li>
     );

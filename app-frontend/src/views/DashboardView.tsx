@@ -1,11 +1,12 @@
 import {Card, CardMedia, makeStyles} from "@material-ui/core";
-import Button from "@material-ui/core/Button";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import React from 'react';
 import addDocumentImage from "../assets/images/dashboard/add-document.jpg";
+import ButtonLink from "../components/Button/ButtonLink";
+import {PROBLEM_ADD_VIEW_PATH, PROBLEM_VIEW_PATH} from "./ViewPaths";
 
 const useStyles = makeStyles({
     root: {
@@ -22,26 +23,26 @@ const DashboardView: React.FunctionComponent = () => {
                 <CardActionArea>
                     <CardMedia
                         component="img"
-                        alt="Add project"
+                        alt="Add problem"
                         height="140"
                         image={addDocumentImage}
                     />
                     <CardContent>
                         <Typography gutterBottom variant="h5">
-                            افزودن پروژه
+                            افزودن مسئله
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
-                            پروژه‌ی دوره تحصیلی خود را برای ارائه نمودن اضافه نمایید.
+                            مسئله دوره تحصیلی خود را برای ارائه نمودن اضافه نمایید.
                         </Typography>
                     </CardContent>
                 </CardActionArea>
                 <CardActions>
-                    <Button size="small" color="primary">
-                        اضافه کردن
-                    </Button>
-                    <Button size="small" color="primary">
-                        مشاهده لیست
-                    </Button>
+                    <ButtonLink to={PROBLEM_ADD_VIEW_PATH} size="small" color="primary">
+                        افزودن
+                    </ButtonLink>
+                    <ButtonLink to={PROBLEM_VIEW_PATH} size="small" color="primary">
+                        مشاهده
+                    </ButtonLink>
                 </CardActions>
             </Card>
         </div>
