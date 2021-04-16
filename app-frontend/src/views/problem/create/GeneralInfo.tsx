@@ -6,6 +6,8 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import React from 'react';
 import {rtlTheme} from "../../../App";
 import CustomTextField from "../../../components/Text/CustomTextField";
+import ProblemService from "../../../services/api/ProblemService";
+import {ProblemTabProps} from "./ProblemCreateView";
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -23,12 +25,8 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-
-const GeneralInfo: React.FunctionComponent = () => {
+const GeneralInfo: React.FunctionComponent<ProblemTabProps> = ({problem, setProblem}) => {
     const classes = useStyles();
-
-    const educations = ["کارشناسی", "کارشناسی ارشد"];
-    const [education, setEducation] = React.useState(educations[0])
 
     return (
         <Grid dir="rtl" container>
@@ -44,10 +42,11 @@ const GeneralInfo: React.FunctionComponent = () => {
                             دوره تحصیلی
                         </Typography>
                         <Autocomplete
-                            options={educations}
+                            options={ProblemService.EDUCATIONS}
                             disableClearable
-                            value={education}
-                            onChange={(event, value) => setEducation(value)}
+                            value={problem.education}
+                            onChange={(event, value) =>
+                                setProblem({...problem, education: value})}
                             style={{width: 300}}
                             classes={{
                                 option: classes.option,
@@ -62,14 +61,29 @@ const GeneralInfo: React.FunctionComponent = () => {
                         <Typography className={classes.typography} variant="h5">
                             مسئله
                         </Typography>
-                        <CustomTextField label="عنوان فارسی" required/>
-                        <CustomTextField textDirection="ltr" label="عنوان انگلیسی" required/>
+                        <CustomTextField
+                            label="عنوان فارسی"
+                            value={problem.title}
+                            onChange={event => setProblem({...problem, title: event.target.value})}
+                            required
+                        />
+                        <CustomTextField
+                            label="عنوان انگلیسی"
+                            textDirection="ltr"
+                            value={problem.englishTitle}
+                            onChange={event => setProblem({...problem, englishTitle: event.target.value})}
+                            required
+                        />
                         <Autocomplete
                             multiple
                             options={[]}
                             limitTags={3}
                             id="tags"
                             freeSolo
+                            value={problem.keywords}
+                            onChange={(event, value: string[]) => {
+                                setProblem({...problem, keywords: value});
+                            }}
                             renderTags={(value: string[], getTagProps) =>
                                 value.map((option: string, index: number) => (
                                     <Chip variant="outlined" label={option} {...getTagProps({index})} />
@@ -86,7 +100,13 @@ const GeneralInfo: React.FunctionComponent = () => {
                         <Typography className={classes.typography} variant="h5">
                             استاد
                         </Typography>
-                        <CustomTextField label="استاد راهنما" required/>
+                        <CustomTextField
+                            label="استاد راهنما"
+                            textDirection="ltr"
+                            value={problem.supervisor}
+                            onChange={event => setProblem({...problem, supervisor: event.target.value})}
+                            required
+                        />
                     </ThemeProvider>
                 </Paper>
             </Grid>
