@@ -1,9 +1,9 @@
+import Button from "@material-ui/core/Button";
 import Chip from "@material-ui/core/Chip";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import classNames from "classnames";
 import React from 'react';
 import {rtlTheme} from "../../../App";
 import {ProblemTabProps} from "./ProblemCreateView";
@@ -14,6 +14,11 @@ const useStyles = makeStyles((theme) => ({
     },
     chip: {
         margin: theme.spacing(1),
+    },
+    buttons: {
+        display: "flex",
+        justifyContent: 'center',
+        margin: theme.spacing(2),
     }
 }));
 
@@ -21,7 +26,7 @@ const ReviewTab: React.FunctionComponent<ProblemTabProps> = ({commonClasses, pro
     const classes = useStyles();
 
     return (
-        <Grid container dir="rtl" alignItems="stretch">
+        <Grid container dir="rtl" alignItems="stretch"  justify="center">
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                 <Paper square elevation={3} className={commonClasses.paper}>
                     <ThemeProvider theme={rtlTheme}>
@@ -91,6 +96,17 @@ const ReviewTab: React.FunctionComponent<ProblemTabProps> = ({commonClasses, pro
                         </Typography>
                     </ThemeProvider>
                 </Paper>
+            </Grid>
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                <div className={classes.buttons}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                    >
+                        تایید و ارسال
+                    </Button>
+                </div>
+
             </Grid>
         </Grid>
     );

@@ -5,9 +5,9 @@ export interface Problem {
     englishTitle: string,
     keywords: string[],
 
-    supervisor?: string,
-
     definition: string,
     history?: string,
     considerations?: string
+
+    supervisor?: string,
 }
