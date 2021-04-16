@@ -15,11 +15,20 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         flexDirection: 'column',
     },
+    typography: {
+        margin: theme.spacing(1, 0, 0, 0),
+    },
+    option: {
+        direction: "rtl",
+    }
 }));
 
 
 const GeneralInfo: React.FunctionComponent = () => {
     const classes = useStyles();
+
+    const educations = ["کارشناسی", "کارشناسی ارشد"];
+    const [education, setEducation] = React.useState(educations[0])
 
     return (
         <Grid dir="rtl" container>
@@ -31,7 +40,26 @@ const GeneralInfo: React.FunctionComponent = () => {
             <Grid item sm={12} md={6}>
                 <Paper square elevation={3} className={classes.paper}>
                     <ThemeProvider theme={rtlTheme}>
-                        <Typography gutterBottom variant="h5">
+                        <Typography className={classes.typography} variant="h5">
+                            دوره تحصیلی
+                        </Typography>
+                        <Autocomplete
+                            options={educations}
+                            disableClearable
+                            value={education}
+                            onChange={(event, value) => setEducation(value)}
+                            style={{width: 300}}
+                            classes={{
+                                option: classes.option,
+                            }}
+                            renderInput={(params) =>
+                                <CustomTextField
+                                    {...params}
+                                    extraInputProps={{autoComplete: 'new-password'}}
+                                    label="دوره تحصیلی"
+                                />}
+                        />
+                        <Typography className={classes.typography} variant="h5">
                             مسئله
                         </Typography>
                         <CustomTextField label="عنوان فارسی" required/>
@@ -55,6 +83,10 @@ const GeneralInfo: React.FunctionComponent = () => {
                                 />
                             )}
                         />
+                        <Typography className={classes.typography} variant="h5">
+                            استاد
+                        </Typography>
+                        <CustomTextField label="استاد راهنما" required/>
                     </ThemeProvider>
                 </Paper>
             </Grid>
