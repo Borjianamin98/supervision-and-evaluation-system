@@ -9,8 +9,11 @@ class ProblemService {
 
     static createInitialProblem(): Problem {
         return {
-            education: this.EDUCATIONS[0],
-            keywords: []
+            education: ProblemService.EDUCATIONS[0],
+            title: "",
+            englishTitle: "",
+            keywords: [],
+            definition: "",
         }
     }
 }

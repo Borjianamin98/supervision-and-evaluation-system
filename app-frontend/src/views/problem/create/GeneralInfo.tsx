@@ -1,7 +1,6 @@
-import {Chip, MenuItem, Paper} from "@material-ui/core";
+import {Chip, Paper} from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
-import Select from "@material-ui/core/Select";
-import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
+import {ThemeProvider} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React from 'react';
@@ -11,36 +10,18 @@ import CustomTextField from "../../../components/Text/CustomTextField";
 import ProblemService from "../../../services/api/ProblemService";
 import {ProblemTabProps} from "./ProblemCreateView";
 
-const useStyles = makeStyles((theme) => ({
-    paper: {
-        margin: theme.spacing(1),
-        padding: theme.spacing(3),
-        display: 'flex',
-        flexGrow: 1,
-        flexDirection: 'column',
-    },
-    typography: {
-        margin: theme.spacing(1, 0, 0, 0),
-    },
-    option: {
-        direction: "rtl",
-    }
-}));
-
-const GeneralInfo: React.FunctionComponent<ProblemTabProps> = ({problem, setProblem}) => {
-    const classes = useStyles();
-
+const GeneralInfo: React.FunctionComponent<ProblemTabProps> = ({commonClasses, problem, setProblem}) => {
     return (
         <Grid dir="rtl" container>
             <Grid item sm={12} md={6}>
-                <Paper square elevation={3} className={classes.paper}>
+                <Paper square elevation={3} className={commonClasses.paper}>
                     توضیحات کلی
                 </Paper>
             </Grid>
             <Grid item sm={12} md={6}>
-                <Paper square elevation={3} className={classes.paper}>
+                <Paper square elevation={3} className={commonClasses.paper}>
                     <ThemeProvider theme={rtlTheme}>
-                        <Typography className={classes.typography} variant="h5">
+                        <Typography className={commonClasses.title} variant="h5">
                             دوره تحصیلی
                         </Typography>
                         <ComboBox
@@ -48,11 +29,8 @@ const GeneralInfo: React.FunctionComponent<ProblemTabProps> = ({problem, setProb
                             value={problem.education}
                             onChange={(event, value) =>
                                 setProblem({...problem, education: value})}
-                            classes={{
-                                option: classes.option,
-                            }}
                         />
-                        <Typography className={classes.typography} variant="h5">
+                        <Typography className={commonClasses.title} variant="h5">
                             مسئله
                         </Typography>
                         <CustomTextField
@@ -91,7 +69,7 @@ const GeneralInfo: React.FunctionComponent<ProblemTabProps> = ({problem, setProb
                                 />
                             )}
                         />
-                        <Typography className={classes.typography} variant="h5">
+                        <Typography className={commonClasses.title} variant="h5">
                             استاد
                         </Typography>
                         <CustomTextField
