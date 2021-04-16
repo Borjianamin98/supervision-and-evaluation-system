@@ -10,12 +10,12 @@ import {ProblemTabProps} from "./ProblemCreateView";
 const ExtraInfo: React.FunctionComponent<ProblemTabProps> = ({commonClasses, problem, setProblem}) => {
     return (
         <Grid dir="rtl" container>
-            <Grid item sm={12} md={6}>
+            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                 <Paper square elevation={3} className={commonClasses.paper}>
                     توضیحات کلی
                 </Paper>
             </Grid>
-            <Grid item sm={12} md={6}>
+            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                 <Paper square elevation={3} className={commonClasses.paper}>
                     <ThemeProvider theme={rtlTheme}>
                         <Typography className={commonClasses.title} variant="h5">جزییات مسئله</Typography>

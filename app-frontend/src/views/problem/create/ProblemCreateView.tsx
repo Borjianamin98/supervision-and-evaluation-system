@@ -15,20 +15,15 @@ const useCommonStyles = makeStyles((theme) => ({
     paper: {
         margin: theme.spacing(1),
         padding: theme.spacing(3),
-        display: 'flex',
-        flexGrow: 1,
-        flexDirection: 'column',
+        height:`calc(100% - ${theme.spacing(1) * 2}px)`, // Based on margin
     },
     title: {
         margin: theme.spacing(1, 0, 0, 0),
     },
-    fullHeight: {
-        height: "100%",
-    }
 }));
 
 export interface ProblemTabProps {
-    commonClasses: ClassNameMap<"title" | "paper" | "fullHeight">,
+    commonClasses: ClassNameMap<"title" | "paper">,
     problem: Problem,
     setProblem: React.Dispatch<React.SetStateAction<Problem>>,
 }

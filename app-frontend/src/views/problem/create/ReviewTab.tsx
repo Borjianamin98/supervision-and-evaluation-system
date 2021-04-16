@@ -21,41 +21,37 @@ const ReviewTab: React.FunctionComponent<ProblemTabProps> = ({commonClasses, pro
     const classes = useStyles();
 
     return (
-        <Grid dir="rtl" container>
-            <Grid item sm={12} md={6}>
-                <Paper square elevation={3}
-                       className={classNames({
-                           [commonClasses.paper]: true,
-                           [commonClasses.fullHeight]: true
-                       })}>
+        <Grid container dir="rtl" alignItems="stretch">
+            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                <Paper square elevation={3} className={commonClasses.paper}>
                     <ThemeProvider theme={rtlTheme}>
                         <Grid container alignItems="center">
-                            <Grid item md={6} className={classes.gridItem}>
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
                                 <Typography variant="h6">دوره تحصیلی:</Typography>
                             </Grid>
-                            <Grid item md={6} className={classes.gridItem}>
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
                                 <Typography>{problem.education}</Typography>
                             </Grid>
-                            <Grid item md={6} className={classes.gridItem}>
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
                                 <Typography variant="h6">عنوان فارسی:</Typography>
                             </Grid>
-                            <Grid item md={6} className={classes.gridItem}>
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
                                 <Typography>
                                     {problem.title.length === 0 ? "عنوانی مشخص نشده است." : problem.title}
                                 </Typography>
                             </Grid>
-                            <Grid item md={6} className={classes.gridItem}>
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
                                 <Typography variant="h6">عنوان انگلیسی:</Typography>
                             </Grid>
-                            <Grid item md={6} className={classes.gridItem}>
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
                                 <Typography>
                                     {problem.englishTitle.length === 0 ? "عنوانی مشخص نشده است." : problem.englishTitle}
                                 </Typography>
                             </Grid>
-                            <Grid item md={6} className={classes.gridItem}>
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
                                 <Typography variant="h6">کلیدواژه‌ها:</Typography>
                             </Grid>
-                            <Grid item md={6} className={classes.gridItem}>
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
                                 {problem.keywords.length === 0 ? "کلیدواژه‌ای ارائه نشده است." :
                                     (problem.keywords.map(keyword => <Chip
                                         variant="outlined" color="primary"
@@ -63,10 +59,10 @@ const ReviewTab: React.FunctionComponent<ProblemTabProps> = ({commonClasses, pro
                                         label={keyword}/>
                                     ))}
                             </Grid>
-                            <Grid item md={6} className={classes.gridItem}>
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
                                 <Typography variant="h6">استاد راهنما:</Typography>
                             </Grid>
-                            <Grid item md={6} className={classes.gridItem}>
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
                                 <Typography>
                                     {problem.supervisor && problem.supervisor?.length > 0 ?
                                         problem.supervisor : "استاد راهنما مشخص نشده است."}
@@ -76,12 +72,8 @@ const ReviewTab: React.FunctionComponent<ProblemTabProps> = ({commonClasses, pro
                     </ThemeProvider>
                 </Paper>
             </Grid>
-            <Grid item sm={12} md={6}>
-                <Paper square elevation={3}
-                       className={classNames({
-                           [commonClasses.paper]: true,
-                           [commonClasses.fullHeight]: true
-                       })}>
+            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                <Paper square elevation={3} className={commonClasses.paper}>
                     <ThemeProvider theme={rtlTheme}>
                         <Typography className={classes.gridItem} variant="h6">تعریف مسئله و نیازمندی</Typography>
                         <Typography className={classes.gridItem}>
