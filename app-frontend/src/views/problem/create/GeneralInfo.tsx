@@ -1,9 +1,11 @@
-import {Paper} from "@material-ui/core";
+import {Chip, Paper} from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
+import Typography from "@material-ui/core/Typography";
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import React from 'react';
 import {rtlTheme} from "../../../App";
+import CustomTextField from "../../../components/Text/CustomTextField";
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -14,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
     },
 }));
+
 
 const GeneralInfo: React.FunctionComponent = () => {
     const classes = useStyles();
@@ -28,19 +31,29 @@ const GeneralInfo: React.FunctionComponent = () => {
             <Grid item sm={12} md={6}>
                 <Paper square elevation={3} className={classes.paper}>
                     <ThemeProvider theme={rtlTheme}>
-                        <TextField
-                            dir="rtl"
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            label="عنوان فارسی"
-                            // placeholder="عنوان فارسی"
-                            helperText="خطا عنوان فارسی باید وارد شود!"
-                            error
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
+                        <Typography gutterBottom variant="h5">
+                            مسئله
+                        </Typography>
+                        <CustomTextField label="عنوان فارسی" required/>
+                        <CustomTextField textDirection="ltr" label="عنوان انگلیسی" required/>
+                        <Autocomplete
+                            multiple
+                            options={[]}
+                            limitTags={3}
+                            id="tags"
+                            freeSolo
+                            renderTags={(value: string[], getTagProps) =>
+                                value.map((option: string, index: number) => (
+                                    <Chip variant="outlined" label={option} {...getTagProps({index})} />
+                                ))
+                            }
+                            renderInput={(params) => (
+                                <CustomTextField
+                                    {...params}
+                                    extraInputProps={{autoComplete: 'new-password'}}
+                                    label="کلیدواژه"
+                                />
+                            )}
                         />
                     </ThemeProvider>
                 </Paper>

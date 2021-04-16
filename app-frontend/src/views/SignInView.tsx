@@ -4,13 +4,13 @@ import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import {makeStyles, ThemeProvider} from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import {AxiosError} from "axios";
 import React, {FormEventHandler, useState} from 'react';
 import {rtlTheme} from '../App';
 import signInImage from "../assets/images/signIn.png";
+import CustomTextField from "../components/Text/CustomTextField";
 import PasswordTextField from '../components/Text/PasswordTextField';
 import {getGeneralErrorMessage} from "../config/axios-config";
 import AuthenticationService from "../services/api/AuthenticationService";
@@ -82,15 +82,9 @@ const SignInView: React.FunctionComponent = (props) => {
                     </Typography>
                     <ThemeProvider theme={rtlTheme}>
                         <form dir="rtl" onSubmit={formSubmitHandler} className={classes.form} noValidate>
-                            <TextField
-                                dir="rtl"
-                                variant="outlined"
-                                margin="normal"
+                            <CustomTextField
                                 required
-                                fullWidth
                                 label="نام کاربری"
-                                id="username"
-                                name="username"
                                 value={username}
                                 onChange={(event) => setUsername(event.target.value)}
                                 autoComplete="username"
