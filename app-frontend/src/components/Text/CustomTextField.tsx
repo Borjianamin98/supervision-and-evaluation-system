@@ -3,7 +3,7 @@ import TextField from "@material-ui/core/TextField";
 import {TextFieldProps} from "@material-ui/core/TextField/TextField";
 import React from "react";
 
-type CustomTextFieldProps = TextFieldProps & {
+export type CustomTextFieldProps = TextFieldProps & {
     textDirection?: "rtl" | "ltr",
     extraInputProps?: InputBaseComponentProps
 }

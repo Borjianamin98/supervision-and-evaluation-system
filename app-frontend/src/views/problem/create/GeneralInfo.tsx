@@ -1,10 +1,12 @@
-import {Chip, Paper} from "@material-ui/core";
+import {Chip, MenuItem, Paper} from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
+import Select from "@material-ui/core/Select";
 import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React from 'react';
 import {rtlTheme} from "../../../App";
+import ComboBox from "../../../components/ComboBox/ComboBox";
 import CustomTextField from "../../../components/Text/CustomTextField";
 import ProblemService from "../../../services/api/ProblemService";
 import {ProblemTabProps} from "./ProblemCreateView";
@@ -41,22 +43,14 @@ const GeneralInfo: React.FunctionComponent<ProblemTabProps> = ({problem, setProb
                         <Typography className={classes.typography} variant="h5">
                             دوره تحصیلی
                         </Typography>
-                        <Autocomplete
+                        <ComboBox
                             options={ProblemService.EDUCATIONS}
-                            disableClearable
                             value={problem.education}
                             onChange={(event, value) =>
                                 setProblem({...problem, education: value})}
-                            style={{width: 300}}
                             classes={{
                                 option: classes.option,
                             }}
-                            renderInput={(params) =>
-                                <CustomTextField
-                                    {...params}
-                                    extraInputProps={{autoComplete: 'new-password'}}
-                                    label="دوره تحصیلی"
-                                />}
                         />
                         <Typography className={classes.typography} variant="h5">
                             مسئله

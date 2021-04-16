@@ -48,7 +48,7 @@ const ProblemCreateView: React.FunctionComponent = () => {
                     <GeneralInfo problem={problem} setProblem={setProblem}/>
                 </TabPanel>
                 <TabPanel value={tabIndex} index={1}>
-                    <ExtraInfo/>
+                    <ExtraInfo problem={problem} setProblem={setProblem}/>
                 </TabPanel>
                 <TabPanel value={tabIndex} index={2}>
                     <Typography dir="rtl">بازبینی</Typography>
