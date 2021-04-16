@@ -1,7 +1,6 @@
 import {Tab, Tabs} from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import {makeStyles} from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
 import {ClassNameMap} from "notistack";
 import React from 'react';
 import SwipeableViews from "react-swipeable-views";
@@ -9,6 +8,7 @@ import {Problem} from "../../../model/problem";
 import ProblemService from "../../../services/api/ProblemService";
 import ExtraInfo from "./ExtraInfo";
 import GeneralInfo from "./GeneralInfo";
+import ReviewTab from "./ReviewTab";
 import TabPanel from "./TabPanel";
 
 const useCommonStyles = makeStyles((theme) => ({
@@ -21,11 +21,14 @@ const useCommonStyles = makeStyles((theme) => ({
     },
     title: {
         margin: theme.spacing(1, 0, 0, 0),
+    },
+    fullHeight: {
+        height: "100%",
     }
 }));
 
 export interface ProblemTabProps {
-    commonClasses: ClassNameMap<"title" | "paper">,
+    commonClasses: ClassNameMap<"title" | "paper" | "fullHeight">,
     problem: Problem,
     setProblem: React.Dispatch<React.SetStateAction<Problem>>,
 }
@@ -68,7 +71,7 @@ const ProblemCreateView: React.FunctionComponent = () => {
                     <ExtraInfo commonClasses={commonClasses} problem={problem} setProblem={setProblem}/>
                 </TabPanel>
                 <TabPanel value={tabIndex} index={2}>
-                    <Typography dir="rtl">بازبینی</Typography>
+                    <ReviewTab commonClasses={commonClasses} problem={problem} setProblem={setProblem}/>
                 </TabPanel>
             </SwipeableViews>
         </div>
