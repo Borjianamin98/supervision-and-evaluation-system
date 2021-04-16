@@ -1,13 +1,19 @@
-package ir.ac.sbu.evaluation.model;
+package ir.ac.sbu.evaluation.model.user;
 
+import ir.ac.sbu.evaluation.model.BaseEntity;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 import lombok.Builder;
 
 @Entity
 @Table(name = "user")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User extends BaseEntity {
 
     @Column(name = "username")
@@ -22,7 +28,7 @@ public class User extends BaseEntity {
     public User() {
     }
 
-    @Builder
+    @Builder(builderMethodName = "userBuilder")
     public User(Long id, String username, String password) {
         super(id);
         this.username = username;

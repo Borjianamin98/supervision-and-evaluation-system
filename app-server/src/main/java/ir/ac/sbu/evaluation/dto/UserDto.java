@@ -2,7 +2,7 @@ package ir.ac.sbu.evaluation.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
-import ir.ac.sbu.evaluation.model.User;
+import ir.ac.sbu.evaluation.model.user.User;
 import javax.validation.constraints.NotBlank;
 import lombok.Builder;
 
@@ -28,7 +28,7 @@ public class UserDto {
     }
 
     public User toUser() {
-        return User.builder().username(username).password(password).build();
+        return User.userBuilder().username(username).password(password).build();
     }
 
     public String getUsername() {

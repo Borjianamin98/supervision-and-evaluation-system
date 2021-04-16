@@ -1,6 +1,6 @@
 package ir.ac.sbu.evaluation.repository;
 
-import ir.ac.sbu.evaluation.model.User;
+import ir.ac.sbu.evaluation.model.user.User;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

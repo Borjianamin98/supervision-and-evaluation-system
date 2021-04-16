@@ -2,7 +2,7 @@ package ir.ac.sbu.evaluation.service;
 
 import ir.ac.sbu.evaluation.dto.UserDto;
 import ir.ac.sbu.evaluation.dto.UserListDto;
-import ir.ac.sbu.evaluation.model.User;
+import ir.ac.sbu.evaluation.model.user.User;
 import ir.ac.sbu.evaluation.repository.UserRepository;
 import ir.ac.sbu.evaluation.utility.ByteUtility;
 import java.util.Optional;

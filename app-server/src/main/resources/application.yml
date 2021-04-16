@@ -13,6 +13,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+    show-sql: true # TODO: Enabled for debug purpose and should be disabled
 
 # Application configurations
 # JWT configurations
