@@ -54,7 +54,8 @@ public class Problem extends BaseEntity {
     private Master supervisor;
 
     @ManyToMany
-    @JoinTable(name = "problems_referees", joinColumns = @JoinColumn(name = "problem_id"),
+    @JoinTable(name = "problems_referees",
+            joinColumns = @JoinColumn(name = "problem_id"),
             inverseJoinColumns = @JoinColumn(name = "referee_id"))
     private Set<Master> referees;
 

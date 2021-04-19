@@ -37,7 +37,7 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found: " + username));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public UserDto save(UserDto userDto) {
         User user = userDto.toUser();
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
