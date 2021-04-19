@@ -5,7 +5,6 @@ import ir.ac.sbu.evaluation.dto.UserListDto;
 import ir.ac.sbu.evaluation.model.user.User;
 import ir.ac.sbu.evaluation.repository.UserRepository;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
-import ir.ac.sbu.evaluation.security.SecurityConfig;
 import ir.ac.sbu.evaluation.utility.ByteUtility;
 import java.util.Collections;
 import java.util.Optional;
@@ -36,7 +35,7 @@ public class UserService implements UserDetailsService {
                         .userId(user.getId())
                         .username(user.getUsername())
                         .password(user.getPassword())
-                        .roles(Collections.singletonList(new SimpleGrantedAuthority(SecurityConfig.STUDENT_ROLE)))
+                        .roles(Collections.singletonList(new SimpleGrantedAuthority(user.getRole())))
                         .build())
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found: " + username));
     }

@@ -20,6 +20,9 @@ public class User extends BaseEntity {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "role")
+    private String role;
+
     @Lob
     Byte[] profilePicture;
 
@@ -27,10 +30,11 @@ public class User extends BaseEntity {
     }
 
     @Builder(builderMethodName = "userBuilder")
-    public User(Long id, String username, String password) {
+    public User(Long id, String username, String password, String role) {
         super(id);
         this.username = username;
         this.password = password;
+        this.role = role;
     }
 
     public String getUsername() {
@@ -47,6 +51,14 @@ public class User extends BaseEntity {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public Byte[] getProfilePicture() {

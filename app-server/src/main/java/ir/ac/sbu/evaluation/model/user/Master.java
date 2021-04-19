@@ -1,6 +1,7 @@
 package ir.ac.sbu.evaluation.model.user;
 
 import ir.ac.sbu.evaluation.model.Problem;
+import ir.ac.sbu.evaluation.security.SecurityRoles;
 import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
@@ -24,7 +25,7 @@ public class Master extends User {
     @Builder
     public Master(Long id, String username, String password,
             Set<Problem> problemsSupervisor, Set<Problem> problemsReferee) {
-        super(id, username, password);
+        super(id, username, password, SecurityRoles.MASTER_ROLE_NAME);
         this.problemsSupervisor = problemsSupervisor;
         this.problemsReferee = problemsReferee;
     }
