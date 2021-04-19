@@ -1,9 +1,8 @@
 package ir.ac.sbu.evaluation.controller.security;
 
-import ir.ac.sbu.evaluation.dto.authentication.AuthPrinciple;
-import ir.ac.sbu.evaluation.dto.authentication.AuthPrinciple.AuthPrincipleBuilder;
+import ir.ac.sbu.evaluation.security.AuthUserDetail;
+import ir.ac.sbu.evaluation.security.AuthUserDetail.AuthUserDetailBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
@@ -11,13 +10,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class SecurityControllerAdvice {
 
     @ModelAttribute
-    public AuthPrinciple customPrincipal(Authentication authentication) {
-        AuthPrincipleBuilder authPrincipleBuilder = AuthPrinciple.builder();
+    public AuthUserDetail customPrincipal(Authentication authentication) {
+        AuthUserDetailBuilder authUserDetailBuilder = AuthUserDetail.builder();
 
         if (authentication == null || authentication.getPrincipal() == null) {
-            return authPrincipleBuilder.build();
+            return authUserDetailBuilder.build();
         }
-        User principal = (User) authentication.getPrincipal();
-        return authPrincipleBuilder.username(principal.getUsername()).roles(principal.getAuthorities()).build();
+        return (AuthUserDetail) authentication.getPrincipal();
     }
 }

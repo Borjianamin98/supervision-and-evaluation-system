@@ -15,8 +15,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -65,6 +63,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Claims tokenClaims = jwtTokenProvider.parseToken(token);
             jwtTokenProvider.ensureIsAccessToken(tokenClaims);
             setSpringSecurityAuthentication(request,
+                    jwtTokenProvider.getUserId(tokenClaims),
                     jwtTokenProvider.getUsername(tokenClaims),
                     jwtTokenProvider.getRoles(tokenClaims));
         } catch (InvalidJwtTokenException e) {
@@ -72,12 +71,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private void setSpringSecurityAuthentication(HttpServletRequest request, String username, List<String> roles) {
-        UserDetails userDetails = new User(username, "",
-                roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
+    private void setSpringSecurityAuthentication(HttpServletRequest request, long userId, String username,
+            List<String> roles) {
+        AuthUserDetail authUserDetail = AuthUserDetail.builder()
+                .userId(userId)
+                .username(username)
+                .roles(roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()))
+                .build();
         // Manually provided authentication for Spring Security.
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                new UsernamePasswordAuthenticationToken(authUserDetail, null, authUserDetail.getAuthorities());
         usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         // After setting the Authentication in the context, we specify that the current user is authenticated.
         // So it passes the Spring Security configurations successfully.

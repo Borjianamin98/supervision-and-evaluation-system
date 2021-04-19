@@ -4,10 +4,13 @@ import ir.ac.sbu.evaluation.dto.UserDto;
 import ir.ac.sbu.evaluation.dto.UserListDto;
 import ir.ac.sbu.evaluation.model.user.User;
 import ir.ac.sbu.evaluation.repository.UserRepository;
+import ir.ac.sbu.evaluation.security.AuthUserDetail;
+import ir.ac.sbu.evaluation.security.SecurityConfig;
 import ir.ac.sbu.evaluation.utility.ByteUtility;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,12 +30,13 @@ public class UserService implements UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public AuthUserDetail loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)
-                .map(user -> org.springframework.security.core.userdetails.User
-                        .withUsername(user.getUsername())
+                .map(user -> AuthUserDetail.builder()
+                        .userId(user.getId())
+                        .username(user.getUsername())
                         .password(user.getPassword())
-                        .roles("USER")
+                        .roles(Collections.singletonList(new SimpleGrantedAuthority(SecurityConfig.STUDENT_ROLE)))
                         .build())
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found: " + username));
     }

@@ -21,6 +21,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    public static final String STUDENT_ROLE = "STUDENT_ROLE";
+
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -54,6 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/favicon.ico").permitAll()
                 .antMatchers("/actuator/**").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
+                .antMatchers(ApiPaths.API_PROBLEM_ROOT_PATH).hasRole(STUDENT_ROLE)
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()

@@ -5,6 +5,7 @@ import ir.ac.sbu.evaluation.dto.authentication.AuthLoginDto;
 import ir.ac.sbu.evaluation.dto.authentication.AuthRefreshDto;
 import ir.ac.sbu.evaluation.dto.authentication.AuthResponseDto;
 import ir.ac.sbu.evaluation.exception.InvalidJwtTokenException;
+import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.security.JwtTokenProvider;
 import ir.ac.sbu.evaluation.service.UserService;
 import javax.validation.Valid;
@@ -15,7 +16,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -55,22 +55,22 @@ public class AuthController {
                     .username(username).error("Invalid credential provided.").build());
         }
 
-        final UserDetails userDetails = userService.loadUserByUsername(username);
+        final AuthUserDetail authUserDetail = userService.loadUserByUsername(username);
         return ResponseEntity.status(HttpStatus.OK).body(AuthResponseDto.builder().username(username)
-                .accessToken(jwtTokenProvider.generateAccessToken(userDetails))
-                .refreshToken(jwtTokenProvider.generateRefreshToken(userDetails))
+                .accessToken(jwtTokenProvider.generateAccessToken(authUserDetail))
+                .refreshToken(jwtTokenProvider.generateRefreshToken(authUserDetail))
                 .build());
     }
 
     @PostMapping(path = "/refresh")
     public ResponseEntity<AuthResponseDto> refresh(@Valid @RequestBody AuthRefreshDto authRefreshDto) {
         String refreshToken = authRefreshDto.getRefreshToken();
-        UserDetails userDetails;
+        AuthUserDetail authUserDetail;
         try {
             Claims tokenClaims = jwtTokenProvider.parseToken(refreshToken);
             jwtTokenProvider.ensureIsRefreshToken(tokenClaims);
             // Find user provided by JWT refreshToken to validate its existence.
-            userDetails = userService.loadUserByUsername(jwtTokenProvider.getUsername(tokenClaims));
+            authUserDetail = userService.loadUserByUsername(jwtTokenProvider.getUsername(tokenClaims));
         } catch (InvalidJwtTokenException e) {
             return refreshTokenResponseWithError(refreshToken, e.getMessage());
         } catch (UsernameNotFoundException e) {
@@ -78,7 +78,7 @@ public class AuthController {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(AuthResponseDto.builder()
-                .refreshToken(refreshToken).accessToken(jwtTokenProvider.generateAccessToken(userDetails))
+                .refreshToken(refreshToken).accessToken(jwtTokenProvider.generateAccessToken(authUserDetail))
                 .build());
     }
 

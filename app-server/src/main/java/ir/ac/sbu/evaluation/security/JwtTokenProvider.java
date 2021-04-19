@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,6 +27,7 @@ public class JwtTokenProvider {
     private final static String TOKEN_TYPE_CLAIM_NAME = "token-type";
     private final static String ACCESS_TOKEN_TYPE_NAME = "access-token";
     private final static String REFRESH_TOKEN_TYPE_NAME = "refresh-token";
+    private final static String TOKEN_USER_ID_CLAIM_NAME = "user-id";
     private final static String TOKEN_ROLES_CLAIM_NAME = "roles";
 
     @Value("${jwt.secret}")
@@ -73,6 +73,10 @@ public class JwtTokenProvider {
         return tokenClaims.getSubject();
     }
 
+    public long getUserId(Claims tokenClaims) {
+        return tokenClaims.get(TOKEN_USER_ID_CLAIM_NAME, Long.class);
+    }
+
     public List<String> getRoles(Claims tokenClaims) {
         try {
             @SuppressWarnings("unchecked")
@@ -83,12 +87,12 @@ public class JwtTokenProvider {
         }
     }
 
-    public String generateRefreshToken(UserDetails userDetails) {
-        return generateToken(userDetails, REFRESH_TOKEN_TYPE_NAME);
+    public String generateRefreshToken(AuthUserDetail authUserDetail) {
+        return generateToken(authUserDetail, REFRESH_TOKEN_TYPE_NAME);
     }
 
-    public String generateAccessToken(UserDetails userDetails) {
-        return generateToken(userDetails, ACCESS_TOKEN_TYPE_NAME);
+    public String generateAccessToken(AuthUserDetail authUserDetail) {
+        return generateToken(authUserDetail, ACCESS_TOKEN_TYPE_NAME);
     }
 
     public void ensureIsAccessToken(Claims tokenClaims) throws InvalidJwtTokenException {
@@ -111,7 +115,8 @@ public class JwtTokenProvider {
     /**
      * Generate a JWT token with below defined structure:
      * <ul>
-     *     <li>subject: {@code subject}</li>
+     *     <li>subject: {@code username}</li>
+     *     <li>user-id: {@code userId}</li>
      *     <li>roles: roles</li>
      *     <li>token-type: {@code tokenType}</li>
      *     <li>issue-at: current time</li>
@@ -120,11 +125,12 @@ public class JwtTokenProvider {
      *
      * @return generate token based on give configurations
      */
-    private String generateToken(UserDetails userDetails, String tokenType) {
+    private String generateToken(AuthUserDetail authUserDetail, String tokenType) {
         Map<String, Object> customClaims = new HashMap<>();
         customClaims.put(TOKEN_TYPE_CLAIM_NAME, tokenType);
         customClaims.put(TOKEN_ROLES_CLAIM_NAME,
-                userDetails.getAuthorities().stream().map(Object::toString).collect(Collectors.toList()));
+                authUserDetail.getAuthorities().stream().map(Object::toString).collect(Collectors.toList()));
+        customClaims.put(TOKEN_USER_ID_CLAIM_NAME, authUserDetail.getUserId());
 
         long currentTime = System.currentTimeMillis();
         long expirationOffset = tokenType.equals(ACCESS_TOKEN_TYPE_NAME) ?
@@ -132,7 +138,7 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setClaims(customClaims)
-                .setSubject(userDetails.getUsername())
+                .setSubject(authUserDetail.getUsername())
                 .setIssuedAt(new Date(currentTime))
                 .setExpiration(new Date(currentTime + expirationOffset * 1000))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret.getBytes(StandardCharsets.UTF_8))
