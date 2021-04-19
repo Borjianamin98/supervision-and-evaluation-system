@@ -65,7 +65,7 @@ public class Problem extends BaseEntity {
     @Builder
     public Problem(Long id, Education education, String title, String englishTitle,
             Set<String> keywords, String definition, String history, String considerations,
-            Master supervisor, Set<Master> referees) {
+            Student student, Master supervisor, Set<Master> referees) {
         super(id);
         this.education = education;
         this.title = title;
@@ -74,6 +74,7 @@ public class Problem extends BaseEntity {
         this.definition = definition;
         this.history = history;
         this.considerations = considerations;
+        this.student = student;
         this.supervisor = supervisor;
         this.referees = referees;
     }
@@ -132,6 +133,14 @@ public class Problem extends BaseEntity {
 
     public void setConsiderations(String considerations) {
         this.considerations = considerations;
+    }
+
+    public Student getStudent() {
+        return student;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
     }
 
     public Master getSupervisor() {

@@ -1,13 +1,18 @@
 package ir.ac.sbu.evaluation.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import ir.ac.sbu.evaluation.enumeration.Education;
+import ir.ac.sbu.evaluation.model.Problem;
 import java.util.Set;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.Builder;
 
 public class ProblemDto {
+
+    @JsonProperty(access = Access.READ_ONLY)
+    private long id;
 
     @NotNull
     private Education education;
@@ -35,8 +40,9 @@ public class ProblemDto {
     }
 
     @Builder
-    public ProblemDto(Education education, String title, String englishTitle, Set<String> keywords,
+    public ProblemDto(long id, Education education, String title, String englishTitle, Set<String> keywords,
             String definition, String history, String considerations) {
+        this.id = id;
         this.education = education;
         this.title = title;
         this.englishTitle = englishTitle;
@@ -44,6 +50,30 @@ public class ProblemDto {
         this.definition = definition;
         this.history = history;
         this.considerations = considerations;
+    }
+
+    public static ProblemDto from(Problem problem) {
+        return ProblemDto.builder().education(problem.getEducation())
+                .title(problem.getTitle()).englishTitle(problem.getEnglishTitle())
+                .keywords(problem.getKeywords())
+                .definition(problem.getDefinition()).history(problem.getHistory())
+                .considerations(problem.getConsiderations())
+                .id(problem.getId())
+                .build();
+    }
+
+    public Problem toProblem() {
+        return Problem.builder().education(education).title(title).englishTitle(englishTitle)
+                .keywords(keywords).definition(definition).history(history).considerations(considerations)
+                .build();
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public Education getEducation() {
