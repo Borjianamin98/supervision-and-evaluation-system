@@ -21,7 +21,7 @@ public class Master extends User {
     public Master() {
     }
 
-    @Builder(builderMethodName = "masterBuilder")
+    @Builder
     public Master(Long id, String username, String password,
             Set<Problem> problemsSupervisor, Set<Problem> problemsReferee) {
         super(id, username, password);

@@ -46,7 +46,7 @@ public class DataLoader implements CommandLineRunner {
                 .build();
         Problem savedProblem1 = problemRepository.save(problem1);
 
-        Master master1 = Master.masterBuilder()
+        Master master1 = Master.builder()
                 .username("master1")
                 .password("pass")
                 .build();

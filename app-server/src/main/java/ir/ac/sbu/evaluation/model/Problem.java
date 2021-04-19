@@ -2,6 +2,7 @@ package ir.ac.sbu.evaluation.model;
 
 import ir.ac.sbu.evaluation.enumeration.Education;
 import ir.ac.sbu.evaluation.model.user.Master;
+import ir.ac.sbu.evaluation.model.user.Student;
 import java.util.Set;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -43,6 +44,10 @@ public class Problem extends BaseEntity {
 
     @Column(name = "considerations")
     private String considerations;
+
+    @ManyToOne
+    @JoinColumn(name = "student_id")
+    private Student student;
 
     @ManyToOne
     @JoinColumn(name = "supervisor_id")
