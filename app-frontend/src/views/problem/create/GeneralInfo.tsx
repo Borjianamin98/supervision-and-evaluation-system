@@ -10,7 +10,13 @@ import CustomTextField from "../../../components/Text/CustomTextField";
 import ProblemService from "../../../services/api/ProblemService";
 import {ProblemTabProps} from "./ProblemCreateView";
 
-const GeneralInfo: React.FunctionComponent<ProblemTabProps> = ({commonClasses, problem, setProblem}) => {
+const GeneralInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
+    const {commonClasses, problem, setProblem, errorChecking} = props;
+
+    const isKeywordsValid = (definition: string[]) =>
+        !errorChecking || ProblemService.isKeywordsValid(definition);
+    const isNotBlank = (c: string) => !errorChecking || c.length > 0;
+
     return (
         <Grid dir="rtl" container>
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
@@ -37,6 +43,8 @@ const GeneralInfo: React.FunctionComponent<ProblemTabProps> = ({commonClasses, p
                             label="عنوان فارسی"
                             value={problem.title}
                             onChange={event => setProblem({...problem, title: event.target.value})}
+                            helperText={isNotBlank(problem.title) ? "" : "عنوان مسئله باید ذکر شود."}
+                            error={!isNotBlank(problem.title)}
                             required
                         />
                         <CustomTextField
@@ -44,6 +52,8 @@ const GeneralInfo: React.FunctionComponent<ProblemTabProps> = ({commonClasses, p
                             textDirection="ltr"
                             value={problem.englishTitle}
                             onChange={event => setProblem({...problem, englishTitle: event.target.value})}
+                            helperText={isNotBlank(problem.englishTitle) ? "" : "عنوان انگلیسی مسئله باید ذکر شود."}
+                            error={!isNotBlank(problem.englishTitle)}
                             required
                         />
                         <Autocomplete
@@ -66,6 +76,9 @@ const GeneralInfo: React.FunctionComponent<ProblemTabProps> = ({commonClasses, p
                                     {...params}
                                     extraInputProps={{autoComplete: 'new-password'}}
                                     label="کلیدواژه"
+                                    helperText={isKeywordsValid(problem.keywords)
+                                        ? "" : "حداقل باید دو کلیدواژه مشخص شود. همچنین هر کلیدواژه حداقل 2 حرف می‌باشد."}
+                                    error={!isKeywordsValid(problem.keywords)}
                                 />
                             )}
                         />
@@ -74,7 +87,6 @@ const GeneralInfo: React.FunctionComponent<ProblemTabProps> = ({commonClasses, p
                         </Typography>
                         <CustomTextField
                             label="استاد راهنما"
-                            textDirection="ltr"
                             value={problem.supervisor}
                             onChange={event => setProblem({...problem, supervisor: event.target.value})}
                             required

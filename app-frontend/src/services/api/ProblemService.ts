@@ -14,7 +14,16 @@ class ProblemService {
             englishTitle: "",
             keywords: [],
             definition: "",
+            considerations: "",
         }
+    }
+
+    static isDefinitionValid(definition: string) {
+        return definition.split(/[ ]+/).length >= 15;
+    }
+
+    static isKeywordsValid(keywords: string[]) {
+        return keywords.length >= 2 && keywords.every(value => value.length >= 2);
     }
 }
 

@@ -15,7 +15,7 @@ const useCommonStyles = makeStyles((theme) => ({
     paper: {
         margin: theme.spacing(1),
         padding: theme.spacing(3),
-        height:`calc(100% - ${theme.spacing(1) * 2}px)`, // Based on margin
+        height: `calc(100% - ${theme.spacing(1) * 2}px)`, // Based on margin
     },
     title: {
         margin: theme.spacing(1, 0, 0, 0),
@@ -26,17 +26,27 @@ export interface ProblemTabProps {
     commonClasses: ClassNameMap<"title" | "paper">,
     problem: Problem,
     setProblem: React.Dispatch<React.SetStateAction<Problem>>,
+    errorChecking: boolean,
+    setErrorChecking: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
 const ProblemCreateView: React.FunctionComponent = () => {
     const commonClasses = useCommonStyles();
     const [tabIndex, setTabIndex] = React.useState(0);
+    const [errorChecking, setErrorChecking] = React.useState(false);
 
     const handleChangeIndex = (index: number) => {
         setTabIndex(index);
     };
 
     const [problem, setProblem] = React.useState<Problem>(ProblemService.createInitialProblem());
+    const commonTabProperties = {
+        commonClasses: commonClasses,
+        problem: problem,
+        setProblem: setProblem,
+        errorChecking: errorChecking,
+        setErrorChecking: setErrorChecking,
+    }
 
     return (
         <div>
@@ -60,13 +70,13 @@ const ProblemCreateView: React.FunctionComponent = () => {
                 onChangeIndex={handleChangeIndex}
             >
                 <TabPanel value={tabIndex} index={0}>
-                    <GeneralInfo commonClasses={commonClasses} problem={problem} setProblem={setProblem}/>
+                    <GeneralInfo {...commonTabProperties}/>
                 </TabPanel>
                 <TabPanel value={tabIndex} index={1}>
-                    <ExtraInfo commonClasses={commonClasses} problem={problem} setProblem={setProblem}/>
+                    <ExtraInfo {...commonTabProperties}/>
                 </TabPanel>
                 <TabPanel value={tabIndex} index={2}>
-                    <ReviewTab commonClasses={commonClasses} problem={problem} setProblem={setProblem}/>
+                    <ReviewTab {...commonTabProperties}/>
                 </TabPanel>
             </SwipeableViews>
         </div>

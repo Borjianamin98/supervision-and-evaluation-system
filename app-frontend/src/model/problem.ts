@@ -7,7 +7,7 @@ export interface Problem {
 
     definition: string,
     history?: string,
-    considerations?: string
+    considerations: string
 
     supervisor?: string,
 }

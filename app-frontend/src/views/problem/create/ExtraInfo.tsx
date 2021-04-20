@@ -5,9 +5,16 @@ import Typography from "@material-ui/core/Typography";
 import React from 'react';
 import {rtlTheme} from "../../../App";
 import CustomTextField from "../../../components/Text/CustomTextField";
+import ProblemService from "../../../services/api/ProblemService";
 import {ProblemTabProps} from "./ProblemCreateView";
 
-const ExtraInfo: React.FunctionComponent<ProblemTabProps> = ({commonClasses, problem, setProblem}) => {
+const ExtraInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
+    const {commonClasses, problem, setProblem, errorChecking} = props;
+
+    const isDefinitionValid = (definition: string) =>
+        !errorChecking || ProblemService.isDefinitionValid(definition);
+    const isNotBlank = (c: string) => !errorChecking || c.length > 0;
+
     return (
         <Grid dir="rtl" container>
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
@@ -25,6 +32,9 @@ const ExtraInfo: React.FunctionComponent<ProblemTabProps> = ({commonClasses, pro
                             rows={2}
                             value={problem.definition}
                             onChange={event => setProblem({...problem, definition: event.target.value})}
+                            helperText={isDefinitionValid(problem.definition) ?
+                                "" : "تعریف مسئله در حداقل 15 کلمه توضیح داده شود."}
+                            error={!isDefinitionValid(problem.definition)}
                             required
                         />
                         <CustomTextField
@@ -40,6 +50,9 @@ const ExtraInfo: React.FunctionComponent<ProblemTabProps> = ({commonClasses, pro
                             rows={2}
                             value={problem.considerations}
                             onChange={event => setProblem({...problem, considerations: event.target.value})}
+                            helperText={isNotBlank(problem.considerations) ? "" : "ملاحضات مسئله باید ذکر شود."}
+                            error={!isNotBlank(problem.considerations)}
+                            required
                         />
                     </ThemeProvider>
                 </Paper>

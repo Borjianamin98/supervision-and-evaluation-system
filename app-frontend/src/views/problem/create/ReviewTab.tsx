@@ -4,8 +4,10 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
+import {useSnackbar} from "notistack";
 import React from 'react';
 import {rtlTheme} from "../../../App";
+import {Problem} from "../../../model/problem";
 import {ProblemTabProps} from "./ProblemCreateView";
 
 const useStyles = makeStyles((theme) => ({
@@ -22,11 +24,27 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ReviewTab: React.FunctionComponent<ProblemTabProps> = ({commonClasses, problem, setProblem}) => {
+const ReviewTab: React.FunctionComponent<ProblemTabProps> = (props) => {
     const classes = useStyles();
+    const {enqueueSnackbar} = useSnackbar();
+    const {commonClasses, problem, setErrorChecking} = props;
+
+    const isValidProblem = (problem: Problem) => {
+        return false;
+    }
+
+    const submitProblemCreation = () => {
+        setErrorChecking(true);
+        if (isValidProblem(problem)) {
+            // TODO: Send it to API server.
+        } else {
+            enqueueSnackbar("تمامی اطلاعات لازم ارائه نشده است. بعد از اصلاح موارد لازم، دوباره تلاش نمایید.",
+                {variant: "error"})
+        }
+    }
 
     return (
-        <Grid container dir="rtl" alignItems="stretch"  justify="center">
+        <Grid container dir="rtl" alignItems="stretch" justify="center">
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                 <Paper square elevation={3} className={commonClasses.paper}>
                     <ThemeProvider theme={rtlTheme}>
@@ -102,6 +120,7 @@ const ReviewTab: React.FunctionComponent<ProblemTabProps> = ({commonClasses, pro
                     <Button
                         variant="contained"
                         color="primary"
+                        onClick={submitProblemCreation}
                     >
                         تایید و ارسال
                     </Button>
