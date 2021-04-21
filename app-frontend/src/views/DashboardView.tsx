@@ -1,53 +1,52 @@
-import {Card, CardMedia, makeStyles} from "@material-ui/core";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
+import {makeStyles} from "@material-ui/core";
+import Grid from "@material-ui/core/Grid";
 import React from 'react';
-import addDocumentImage from "../assets/images/dashboard/add-document.jpg";
+import addProblemImage from "../assets/images/problem/add-prbolem.jpg";
+import viewProblemImage from "../assets/images/problem/view-problem.jpg";
 import ButtonLink from "../components/Button/ButtonLink";
+import MediaCard from "../components/MediaCard/MediaCard";
 import {PROBLEM_CREATE_VIEW_PATH, PROBLEM_VIEW_PATH} from "./ViewPaths";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
     root: {
-        maxWidth: 345,
+        // maxWidth: 345,
     },
-});
+    mediaCard: {
+        margin: theme.spacing(1)
+    },
+}));
 
 const DashboardView: React.FunctionComponent = () => {
     const classes = useStyles();
 
     return (
-        <div dir="rtl" style={{display: "flex", flexGrow: 0}}>
-            <Card className={classes.root}>
-                <CardActionArea>
-                    <CardMedia
-                        component="img"
-                        alt="Add problem"
-                        height="140"
-                        image={addDocumentImage}
-                    />
-                    <CardContent>
-                        <Typography gutterBottom variant="h5">
-                            افزودن مسئله
-                        </Typography>
-                        <Typography variant="body2" color="textSecondary">
-                            مسئله دوره تحصیلی خود را برای ارائه نمودن اضافه نمایید.
-                        </Typography>
-                    </CardContent>
-                </CardActionArea>
-                <CardActions>
-                    <ButtonLink to={PROBLEM_CREATE_VIEW_PATH} size="small" color="primary">
+        <Grid container dir="rtl">
+            <Grid item xs={12} sm={6} md={4} lg={4} xl={4}>
+                <MediaCard
+                    className={classes.mediaCard}
+                    media={addProblemImage}
+                    title="افزودن مسئله"
+                    subTitle="مسئله دوره تحصیلی خود را برای ارائه نمودن اضافه نمایید."
+                >
+                    <ButtonLink to={PROBLEM_CREATE_VIEW_PATH} color="primary">
                         ایجاد
                     </ButtonLink>
-                    <ButtonLink to={PROBLEM_VIEW_PATH} size="small" color="primary">
+                </MediaCard>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} lg={4} xl={4}>
+                <MediaCard
+                    className={classes.mediaCard}
+                    media={viewProblemImage}
+                    title="مشاهده مسائل"
+                    subTitle="مسائل افزوده‌شده یا در حال پیگیری را مشاهده نمایید."
+                >
+                    <ButtonLink to={PROBLEM_VIEW_PATH} color="primary">
                         مشاهده
                     </ButtonLink>
-                </CardActions>
-            </Card>
-        </div>
-    )
-        ;
+                </MediaCard>
+            </Grid>
+        </Grid>
+    );
 }
 
 export default DashboardView;
