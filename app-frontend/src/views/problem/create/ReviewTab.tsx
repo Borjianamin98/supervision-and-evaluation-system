@@ -7,7 +7,9 @@ import Typography from "@material-ui/core/Typography";
 import {useSnackbar} from "notistack";
 import React from 'react';
 import {rtlTheme} from "../../../App";
-import {Problem} from "../../../model/problem";
+import browserHistory from "../../../config/browserHistory";
+import ProblemService from "../../../services/api/ProblemService";
+import {PROBLEM_VIEW_PATH} from "../../ViewPaths";
 import {ProblemTabProps} from "./ProblemCreateView";
 
 const useStyles = makeStyles((theme) => ({
@@ -29,14 +31,13 @@ const ReviewTab: React.FunctionComponent<ProblemTabProps> = (props) => {
     const {enqueueSnackbar} = useSnackbar();
     const {commonClasses, problem, setErrorChecking} = props;
 
-    const isValidProblem = (problem: Problem) => {
-        return false;
-    }
-
     const submitProblemCreation = () => {
         setErrorChecking(true);
-        if (isValidProblem(problem)) {
-            // TODO: Send it to API server.
+        if (ProblemService.validateInitialProblem(problem)) {
+            ProblemService.sendCreateProblem(problem)
+                .then(() => browserHistory.push(PROBLEM_VIEW_PATH))
+                .catch(() => enqueueSnackbar("ایجاد مسئله ناموفق بود. بعد از بررسی اطلاعات، دوباره تلاش نمایید.",
+                    {variant: "error"}))
         } else {
             enqueueSnackbar("تمامی اطلاعات لازم ارائه نشده است. بعد از اصلاح موارد لازم، دوباره تلاش نمایید.",
                 {variant: "error"})

@@ -6,10 +6,12 @@ import ir.ac.sbu.evaluation.dto.ProblemDto;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.service.ProblemService;
 import javax.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -25,6 +27,7 @@ public class ProblemController {
     }
 
     @PostMapping(path = API_PROBLEM_CREATE_PATH)
+    @ResponseStatus(HttpStatus.CREATED)
     public ProblemDto createProblem(@Valid @RequestBody ProblemDto problemDto,
             @ModelAttribute AuthUserDetail authUserDetail) {
         return problemService.addProblem(authUserDetail.getUserId(), problemDto);

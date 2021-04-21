@@ -7,6 +7,7 @@ import ir.ac.sbu.evaluation.model.Problem;
 import java.util.Set;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.Builder;
 
 public class ProblemDto {
@@ -21,11 +22,11 @@ public class ProblemDto {
     private String title;
 
     @NotBlank
-    @JsonProperty("english_title")
     private String englishTitle;
 
     @NotNull
-    private Set<String> keywords;
+    @Size(min = 2)
+    private Set<@Size(min = 2) String> keywords;
 
     @NotBlank
     private String definition;
@@ -33,7 +34,7 @@ public class ProblemDto {
     @NotNull
     private String history;
 
-    @NotNull
+    @NotBlank
     private String considerations;
 
     public ProblemDto() {

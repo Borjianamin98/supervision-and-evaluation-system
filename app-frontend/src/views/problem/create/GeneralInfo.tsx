@@ -7,6 +7,7 @@ import React from 'react';
 import {rtlTheme} from "../../../App";
 import ComboBox from "../../../components/ComboBox/ComboBox";
 import CustomTextField from "../../../components/Text/CustomTextField";
+import {PERSIAN_EDUCATIONS} from "../../../model/problem";
 import ProblemService from "../../../services/api/ProblemService";
 import {ProblemTabProps} from "./ProblemCreateView";
 
@@ -31,7 +32,7 @@ const GeneralInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
                             دوره تحصیلی
                         </Typography>
                         <ComboBox
-                            options={ProblemService.EDUCATIONS}
+                            options={PERSIAN_EDUCATIONS}
                             value={problem.education}
                             onChange={(event, value) =>
                                 setProblem({...problem, education: value})}

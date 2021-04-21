@@ -1,25 +1,49 @@
-import {Problem} from "../../model/problem";
+import apiAxios from "../../config/axios-config";
+import {educationPersianMapping, PERSIAN_EDUCATIONS, Problem} from "../../model/problem";
+import {API_PROBLEM_CREATE_PATH} from "../ApiPaths";
 
 class ProblemService {
 
-    public static readonly EDUCATIONS = ["کارشناسی", "کارشناسی ارشد"];
 
     private constructor() {
     }
 
     static createInitialProblem(): Problem {
         return {
-            education: ProblemService.EDUCATIONS[0],
+            education: PERSIAN_EDUCATIONS[0],
             title: "",
             englishTitle: "",
             keywords: [],
             definition: "",
+            history: "",
             considerations: "",
         }
     }
 
+    static sendCreateProblem(problem: Problem) {
+        const problemData: Problem = {
+            ...problem,
+            education: educationPersianMapping(problem.education),
+        }
+        return apiAxios.post(API_PROBLEM_CREATE_PATH,
+            problemData,
+            {
+                validateStatus: status => status === 201
+            })
+    }
+
+    static validateInitialProblem(problem: Problem) {
+        return PERSIAN_EDUCATIONS.includes(problem.education) &&
+            problem.title.length > 0 &&
+            problem.englishTitle.length > 0 &&
+            ProblemService.isKeywordsValid(problem.keywords) &&
+            ProblemService.isDefinitionValid(problem.definition) &&
+            problem.considerations.length > 0 &&
+            problem.supervisor
+    }
+
     static isDefinitionValid(definition: string) {
-        return definition.split(/[ ]+/).length >= 15;
+        return definition.split(/[ ]+/).length >= 10;
     }
 
     static isKeywordsValid(keywords: string[]) {

@@ -6,8 +6,24 @@ export interface Problem {
     keywords: string[],
 
     definition: string,
-    history?: string,
+    history: string,
     considerations: string
 
     supervisor?: string,
+}
+
+export const PERSIAN_EDUCATIONS = [
+    "کارشناسی",
+    "کارشناسی ارشد",
+    "دکتری"
+];
+
+export const ENGLISH_EDUCATIONS = [
+    "BACHELOR",
+    "MASTER",
+    "DOCTORATE"
+];
+
+export const educationPersianMapping = (education: string) => {
+    return ENGLISH_EDUCATIONS[PERSIAN_EDUCATIONS.indexOf(education)];
 }

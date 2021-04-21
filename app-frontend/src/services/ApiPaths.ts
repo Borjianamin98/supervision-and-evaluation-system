@@ -12,3 +12,7 @@ export const API_AUTHENTICATION_REFRESH_PATH = `${API_AUTHENTICATION_PATH}/refre
 // User Paths
 export const API_USER_PATH = "/user"
 export const API_USER_PROFILE_PICTURE_PATH = `${API_USER_PATH}/profile/picture`
+
+// Problem Paths
+const API_PROBLEM_PATH = "/problem"
+export const API_PROBLEM_CREATE_PATH = `${API_PROBLEM_PATH}/create`
