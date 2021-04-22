@@ -1,7 +1,7 @@
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Autocomplete, {AutocompleteProps} from '@material-ui/lab/Autocomplete';
-import React from 'react';
+import React, {PropsWithChildren} from 'react';
 import CustomTextField, {CustomTextFieldProps} from "../Text/CustomTextField";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -11,11 +11,11 @@ const useStyles = makeStyles((theme: Theme) =>
         }
     }));
 
-interface ComboBoxProps extends Omit<AutocompleteProps<string, false, true, false>, "renderInput"> {
+type ComboBoxProps<T> = Omit<AutocompleteProps<T, false, true, false>, "renderInput"> & {
     inputProps?: CustomTextFieldProps
 }
 
-const ComboBox: React.FunctionComponent<ComboBoxProps> = (props) => {
+function ComboBox<T>(props: PropsWithChildren<ComboBoxProps<T>>) {
     const classes = useStyles();
     const {options, inputProps, ...rest} = props;
 

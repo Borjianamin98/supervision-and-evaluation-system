@@ -81,8 +81,8 @@ const ReviewTab: React.FunctionComponent<ProblemTabProps> = (props) => {
                         </Grid>
                         <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
                             <Typography>
-                                {problem.supervisor && problem.supervisor?.length > 0 ?
-                                    problem.supervisor : "استاد راهنما مشخص نشده است."}
+                                {problem.supervisor ?
+                                    `${problem.supervisor.firstName} ${problem.supervisor.lastName}` : "استاد راهنما مشخص نشده است."}
                             </Typography>
                         </Grid>
                     </Grid>

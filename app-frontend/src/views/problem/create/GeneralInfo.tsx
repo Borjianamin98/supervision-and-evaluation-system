@@ -3,20 +3,41 @@ import Grid from "@material-ui/core/Grid";
 import {ThemeProvider} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import {useSnackbar} from "notistack";
 import React from 'react';
 import {rtlTheme} from "../../../App";
 import ComboBox from "../../../components/ComboBox/ComboBox";
 import CustomTextField from "../../../components/Text/CustomTextField";
+import {getGeneralErrorMessage} from "../../../config/axios-config";
 import {PERSIAN_EDUCATIONS} from "../../../model/problem";
+import {User} from "../../../model/user";
 import ProblemService from "../../../services/api/ProblemService";
+import UserService from "../../../services/api/UserService";
 import {ProblemTabProps} from "./ProblemCreateView";
 
 const GeneralInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
     const {commonClasses, problem, setProblem, errorChecking} = props;
+    const {enqueueSnackbar} = useSnackbar();
+
+    const [masterUsers, setMasterUsers] = React.useState<User[]>([]);
+    React.useEffect(() => {
+        UserService.retrieveMasterUsers()
+            .then(value => setMasterUsers(value.data))
+            .catch(error => {
+                const {message, statusCode} = getGeneralErrorMessage(error);
+                if (statusCode) {
+                    enqueueSnackbar(`در دریافت اطلاعات از سرور خطای ${statusCode} دریافت شد. دوباره تلاش نمایید.`,
+                        {variant: "error"});
+                } else {
+                    enqueueSnackbar(message, {variant: "error"});
+                }
+            });
+    }, [enqueueSnackbar])
 
     const isKeywordsValid = (definition: string[]) =>
         !errorChecking || ProblemService.isKeywordsValid(definition);
     const isNotBlank = (c: string) => !errorChecking || c.length > 0;
+    const isNotNull = <T extends {}>(c?: T) => !errorChecking || c !== undefined;
 
     return (
         <Grid dir="rtl" container>
@@ -92,11 +113,17 @@ const GeneralInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
                         <Typography className={commonClasses.title} variant="h5">
                             استاد
                         </Typography>
-                        <CustomTextField
-                            label="استاد راهنما"
+                        <ComboBox
+                            options={masterUsers}
+                            getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
                             value={problem.supervisor}
-                            onChange={event => setProblem({...problem, supervisor: event.target.value})}
-                            required
+                            onChange={(event, newValue) => setProblem({...problem, supervisor: newValue})}
+                            inputProps={{
+                                label: "استاد راهنما",
+                                required: true,
+                                helperText: (isNotNull(problem.supervisor) ? "" : "استاد راهنمای مربوط به مسئله باید انتخاب شود."),
+                                error: !isNotNull(problem.supervisor)
+                            }}
                         />
                     </ThemeProvider>
                 </Paper>

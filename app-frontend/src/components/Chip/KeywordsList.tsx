@@ -4,7 +4,7 @@ import React from 'react';
 
 const useStyles = makeStyles((theme) => ({
     chip: {
-        margin: theme.spacing(0, 0, 0, 1),
+        margin: theme.spacing(1, 0, 1, 1),
     },
 }));
 

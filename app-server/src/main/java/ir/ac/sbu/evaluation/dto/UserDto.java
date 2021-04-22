@@ -11,6 +11,9 @@ import lombok.Builder;
 @JsonInclude(Include.NON_NULL)
 public class UserDto {
 
+    @JsonProperty(access = Access.READ_ONLY)
+    private long id;
+
     @NotBlank
     private String firstName;
 
@@ -28,8 +31,9 @@ public class UserDto {
     }
 
     @Builder
-    public UserDto(@NotBlank String firstName, @NotBlank String lastName,
-            @NotBlank String username, @NotBlank String password) {
+    public UserDto(long id, String firstName, String lastName,
+            String username, String password) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -46,6 +50,7 @@ public class UserDto {
 
     private static UserDto internalFrom(UserDtoBuilder builder, User user) {
         return builder
+                .id(user.getId())
                 .firstName(user.getFirstName()).lastName(user.getLastName())
                 .build();
     }

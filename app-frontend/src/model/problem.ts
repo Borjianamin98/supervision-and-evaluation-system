@@ -1,3 +1,5 @@
+import {User} from "./user";
+
 export interface Problem {
     id?: number,
 
@@ -11,7 +13,7 @@ export interface Problem {
     history: string,
     considerations: string
 
-    supervisor?: string,
+    supervisor?: User,
 }
 
 export const PERSIAN_EDUCATIONS = [
