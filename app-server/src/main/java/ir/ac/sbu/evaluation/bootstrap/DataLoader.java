@@ -38,13 +38,23 @@ public class DataLoader implements CommandLineRunner {
         Problem problem1 = Problem.builder()
                 .education(Education.BACHELOR)
                 .title("سامانه ارزیابی و نظارت یکپارچه")
-                .englishTitle("integrated supervision and evaluation system")
+                .englishTitle("Integrated supervision and evaluation system")
                 .keywords(new HashSet<>(Arrays.asList("مجتمع", "ارزیابی", "یکپارچه", "نظارت")))
                 .definition("تعریف سامانه")
                 .history("بیشینه مسئله")
                 .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
                 .build();
+        Problem problem2 = Problem.builder()
+                .education(Education.BACHELOR)
+                .title("سامانه مدیریت خرید و فروش رستوران")
+                .englishTitle("Restaurant sales management system")
+                .keywords(new HashSet<>(Arrays.asList("رستوران", "فروش", "خرید", "سامانه")))
+                .definition("تعریف سامانه")
+                .history("بیشینه مسئله")
+                .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
+                .build();
         Problem savedProblem1 = problemRepository.save(problem1);
+        Problem savedProblem2 = problemRepository.save(problem2);
 
         Master master1 = Master.builder()
                 .firstName("صادق")
@@ -53,6 +63,7 @@ public class DataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("pass"))
                 .build();
         master1.setProblemsSupervisor(Collections.singleton(savedProblem1));
+        master1.setProblemsSupervisor(Collections.singleton(savedProblem2));
         Master savedMaster1 = masterRepository.save(master1);
 
         Student student1 = Student.builder()
@@ -62,10 +73,15 @@ public class DataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("pass"))
                 .build();
         student1.setProblems(Collections.singleton(savedProblem1));
+        student1.setProblems(Collections.singleton(savedProblem2));
         Student savedStudent1 = studentRepository.save(student1);
 
         savedProblem1.setSupervisor(savedMaster1);
         savedProblem1.setStudent(savedStudent1);
         problemRepository.save(savedProblem1);
+
+        savedProblem2.setSupervisor(savedMaster1);
+        savedProblem2.setStudent(savedStudent1);
+        problemRepository.save(savedProblem2);
     }
 }
