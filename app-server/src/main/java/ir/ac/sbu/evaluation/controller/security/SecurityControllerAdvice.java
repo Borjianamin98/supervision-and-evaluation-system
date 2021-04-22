@@ -11,10 +11,8 @@ public class SecurityControllerAdvice {
 
     @ModelAttribute
     public AuthUserDetail customPrincipal(Authentication authentication) {
-        AuthUserDetailBuilder authUserDetailBuilder = AuthUserDetail.builder();
-
         if (authentication == null || authentication.getPrincipal() == null) {
-            return authUserDetailBuilder.build();
+            return AuthUserDetail.builder().build();
         }
         return (AuthUserDetail) authentication.getPrincipal();
     }

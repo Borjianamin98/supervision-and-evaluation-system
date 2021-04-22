@@ -35,7 +35,7 @@ public class UserService implements UserDetailsService {
                         .userId(user.getId())
                         .username(user.getUsername())
                         .password(user.getPassword())
-                        .roles(Collections.singletonList(new SimpleGrantedAuthority(user.getRole())))
+                        .roles(Collections.singletonList(user.getRole()))
                         .build())
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found: " + username));
     }

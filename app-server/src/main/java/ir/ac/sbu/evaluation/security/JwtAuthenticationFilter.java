@@ -76,7 +76,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         AuthUserDetail authUserDetail = AuthUserDetail.builder()
                 .userId(userId)
                 .username(username)
-                .roles(roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()))
+                .roles(roles)
                 .build();
         // Manually provided authentication for Spring Security.
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =

@@ -1,8 +1,10 @@
 package ir.ac.sbu.evaluation.security;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 import lombok.Builder;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class AuthUserDetail implements UserDetails {
@@ -10,10 +12,10 @@ public class AuthUserDetail implements UserDetails {
     private final long userId;
     private final String username;
     private final String password;
-    private final Collection<GrantedAuthority> roles;
+    private final Collection<String> roles;
 
     @Builder
-    public AuthUserDetail(long userId, String username, String password, Collection<GrantedAuthority> roles) {
+    public AuthUserDetail(long userId, String username, String password, Collection<String> roles) {
         this.userId = userId;
         this.username = username;
         this.password = password;
@@ -24,9 +26,13 @@ public class AuthUserDetail implements UserDetails {
         return userId;
     }
 
+    public Collection<String> getRoles() {
+        return roles;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles;
+        return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 
     @Override

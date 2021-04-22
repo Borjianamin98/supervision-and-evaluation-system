@@ -1,5 +1,6 @@
 package ir.ac.sbu.evaluation.security;
 
+import static ir.ac.sbu.evaluation.security.SecurityRoles.MASTER_ROLE_NAME;
 import static ir.ac.sbu.evaluation.security.SecurityRoles.STUDENT_ROLE_NAME;
 
 import ir.ac.sbu.evaluation.controller.ApiPaths;
@@ -56,7 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/favicon.ico").permitAll()
                 .antMatchers("/actuator/**").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
-                .antMatchers(ApiPaths.API_PROBLEM_ROOT_PATH).hasRole(STUDENT_ROLE_NAME)
+                .antMatchers(ApiPaths.API_PROBLEM_ROOT_PATH).hasAnyAuthority(STUDENT_ROLE_NAME, MASTER_ROLE_NAME)
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()

@@ -5,6 +5,8 @@ import ir.ac.sbu.evaluation.model.Problem;
 import ir.ac.sbu.evaluation.model.user.Student;
 import ir.ac.sbu.evaluation.repository.ProblemRepository;
 import ir.ac.sbu.evaluation.repository.StudentRepository;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,5 +29,11 @@ public class ProblemService {
         Problem problem = problemDto.toProblem();
         problem.setStudent(student);
         return ProblemDto.from(problemRepository.save(problem));
+    }
+
+    public List<ProblemDto> retrieveProblems(long studentUserId) {
+        return problemRepository.findAllByStudentId(studentUserId)
+                .stream().map(ProblemDto::from)
+                .collect(Collectors.toList());
     }
 }
