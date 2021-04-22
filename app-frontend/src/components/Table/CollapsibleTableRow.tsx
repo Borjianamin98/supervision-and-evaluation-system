@@ -1,9 +1,10 @@
-import {Box, Collapse, Hidden, TableCell, TableRow} from "@material-ui/core";
+import {Box, Collapse, TableCell, TableRow} from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import {makeStyles} from "@material-ui/core/styles";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import React from "react";
+import OptionalTableCell, {OptionalTableCellProps} from "./OptionalTableCell";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -13,13 +14,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export interface CollapsibleTableRowCell {
-    content: React.ReactNode,
-    isOptional?: boolean,
-}
-
 interface CollapsibleTableRowProps {
-    cells: Array<CollapsibleTableRowCell>,
+    cells: Array<OptionalTableCellProps>,
 }
 
 const CollapsibleTableRow: React.FunctionComponent<CollapsibleTableRowProps> = (props) => {
@@ -31,24 +27,13 @@ const CollapsibleTableRow: React.FunctionComponent<CollapsibleTableRowProps> = (
         <React.Fragment>
             <TableRow className={classes.root}>
                 {cells.map((cell, index) => {
-                    function CustomTableCell() {
-                        return <TableCell
-                            key={index}
-                            align="right"
-                            component={index === 0 ? "th" : undefined}
-                            scope={index === 0 ? "row" : undefined}
-                        >
-                            {cell.content}
-                        </TableCell>
-                    }
-
-                    return cell.isOptional ? (
-                        <Hidden smDown>
-                            <CustomTableCell/>
-                        </Hidden>
-                    ) : (
-                        <CustomTableCell/>
-                    );
+                    return <OptionalTableCell
+                        key={index}
+                        align="right"
+                        component={index === 0 ? "th" : undefined}
+                        scope={index === 0 ? "row" : undefined}
+                        {...cell}
+                    />
                 })}
                 <TableCell>
                     <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
