@@ -3,6 +3,7 @@ package ir.ac.sbu.evaluation.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import ir.ac.sbu.evaluation.enumeration.Education;
+import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.model.Problem;
 import java.util.Set;
 import javax.validation.constraints.NotBlank;
@@ -42,6 +43,9 @@ public class ProblemDto {
     @Size(max = 400)
     private String considerations;
 
+    @JsonProperty(access = Access.READ_ONLY)
+    private ProblemState state;
+
     @NotNull
     private UserDto supervisor;
 
@@ -50,7 +54,8 @@ public class ProblemDto {
 
     @Builder
     public ProblemDto(long id, Education education, String title, String englishTitle, Set<String> keywords,
-            String definition, String history, String considerations, UserDto supervisor) {
+            String definition, String history, String considerations, ProblemState state,
+            UserDto supervisor) {
         this.id = id;
         this.education = education;
         this.title = title;
@@ -59,6 +64,7 @@ public class ProblemDto {
         this.definition = definition;
         this.history = history;
         this.considerations = considerations;
+        this.state = state;
         this.supervisor = supervisor;
     }
 
@@ -70,6 +76,7 @@ public class ProblemDto {
                 .keywords(problem.getKeywords())
                 .definition(problem.getDefinition()).history(problem.getHistory())
                 .considerations(problem.getConsiderations())
+                .state(problem.getState())
                 .supervisor(UserDto.from(problem.getSupervisor()))
                 .build();
     }
@@ -83,6 +90,7 @@ public class ProblemDto {
                 .title(title).englishTitle(englishTitle)
                 .keywords(keywords)
                 .definition(definition).history(history)
+                .state(state)
                 .considerations(considerations)
                 .build();
     }
@@ -149,6 +157,14 @@ public class ProblemDto {
 
     public void setConsiderations(String considerations) {
         this.considerations = considerations;
+    }
+
+    public ProblemState getState() {
+        return state;
+    }
+
+    public void setState(ProblemState state) {
+        this.state = state;
     }
 
     public UserDto getSupervisor() {

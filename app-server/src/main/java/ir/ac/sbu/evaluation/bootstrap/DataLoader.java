@@ -1,6 +1,7 @@
 package ir.ac.sbu.evaluation.bootstrap;
 
 import ir.ac.sbu.evaluation.enumeration.Education;
+import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.model.Problem;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.Student;
@@ -43,6 +44,7 @@ public class DataLoader implements CommandLineRunner {
                 .definition("تعریف سامانه")
                 .history("بیشینه مسئله")
                 .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
+                .state(ProblemState.CREATED)
                 .build();
         Problem problem2 = Problem.builder()
                 .education(Education.BACHELOR)
@@ -52,6 +54,7 @@ public class DataLoader implements CommandLineRunner {
                 .definition("تعریف سامانه")
                 .history("بیشینه مسئله")
                 .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
+                .state(ProblemState.CREATED)
                 .build();
         Problem savedProblem1 = problemRepository.save(problem1);
         Problem savedProblem2 = problemRepository.save(problem2);

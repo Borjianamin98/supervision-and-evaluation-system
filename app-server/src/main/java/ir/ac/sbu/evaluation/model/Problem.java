@@ -1,6 +1,7 @@
 package ir.ac.sbu.evaluation.model;
 
 import ir.ac.sbu.evaluation.enumeration.Education;
+import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.Student;
 import java.util.Set;
@@ -45,6 +46,10 @@ public class Problem extends BaseEntity {
     @Column(name = "considerations")
     private String considerations;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "state")
+    private ProblemState state;
+
     @ManyToOne
     @JoinColumn(name = "student_id")
     private Student student;
@@ -65,7 +70,8 @@ public class Problem extends BaseEntity {
     @Builder
     public Problem(Long id, Education education, String title, String englishTitle,
             Set<String> keywords, String definition, String history, String considerations,
-            Student student, Master supervisor, Set<Master> referees) {
+            ProblemState state, Student student, Master supervisor,
+            Set<Master> referees) {
         super(id);
         this.education = education;
         this.title = title;
@@ -74,6 +80,7 @@ public class Problem extends BaseEntity {
         this.definition = definition;
         this.history = history;
         this.considerations = considerations;
+        this.state = state;
         this.student = student;
         this.supervisor = supervisor;
         this.referees = referees;
@@ -133,6 +140,14 @@ public class Problem extends BaseEntity {
 
     public void setConsiderations(String considerations) {
         this.considerations = considerations;
+    }
+
+    public ProblemState getState() {
+        return state;
+    }
+
+    public void setState(ProblemState generalState) {
+        this.state = generalState;
     }
 
     public Student getStudent() {

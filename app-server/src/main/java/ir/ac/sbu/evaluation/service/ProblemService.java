@@ -1,6 +1,7 @@
 package ir.ac.sbu.evaluation.service;
 
 import ir.ac.sbu.evaluation.dto.ProblemDto;
+import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.model.Problem;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.Student;
@@ -37,6 +38,7 @@ public class ProblemService {
         Problem problem = problemDto.toProblem();
         problem.setStudent(student);
         problem.setSupervisor(supervisor);
+        problem.setState(ProblemState.CREATED);
         return ProblemDto.from(problemRepository.save(problem));
     }
 
