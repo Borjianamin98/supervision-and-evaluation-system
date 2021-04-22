@@ -29,3 +29,7 @@ export const ENGLISH_EDUCATIONS = [
 export const educationPersianMapping = (education: string) => {
     return ENGLISH_EDUCATIONS[PERSIAN_EDUCATIONS.indexOf(education)];
 }
+
+export const educationEnglishMapping = (education: string) => {
+    return PERSIAN_EDUCATIONS[ENGLISH_EDUCATIONS.indexOf(education)];
+}
