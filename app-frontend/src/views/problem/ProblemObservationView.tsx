@@ -8,7 +8,7 @@ import KeywordsList from "../../components/Chip/KeywordsList";
 import CollapsibleTableRow from "../../components/Table/CollapsibleTableRow";
 import OptionalTableCell, {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
 import {getGeneralErrorMessage} from "../../config/axios-config";
-import {educationEnglishMapping, Problem} from "../../model/problem";
+import {educationEnglishMapping, Problem, ProblemState} from "../../model/problem";
 import ProblemService from "../../services/api/ProblemService";
 
 const useStyles = makeStyles((theme) => ({
@@ -17,6 +17,9 @@ const useStyles = makeStyles((theme) => ({
     },
     header: {
         margin: theme.spacing(3, 0),
+        padding: theme.spacing(1, 0),
+        backgroundColor: theme.palette.primary.light,
+        textAlign: "center",
     },
     rtl: {
         textAlign: "right",
@@ -56,7 +59,7 @@ const CollapsibleTable: React.FunctionComponent<{ problems: Array<Problem> }> = 
     });
 
     return (
-        <TableContainer dir="rtl" component={Paper}>
+        <TableContainer dir="rtl" component={Paper} elevation={4}>
             <Table>
                 <TableHead>
                     <TableRow>
@@ -72,7 +75,8 @@ const CollapsibleTable: React.FunctionComponent<{ problems: Array<Problem> }> = 
                     {
                         problems.length === 0 ? (
                             <TableRow>
-                                <TableCell align="center" colSpan={tableHeaderCells.length + 1}>مسئله‌ای یافت نشد.</TableCell>
+                                <TableCell align="center" colSpan={tableHeaderCells.length + 1}>مسئله‌ای یافت
+                                    نشد.</TableCell>
                             </TableRow>
                         ) : (
                             tableRows
@@ -86,12 +90,12 @@ const CollapsibleTable: React.FunctionComponent<{ problems: Array<Problem> }> = 
 
 const ProblemObservationView: React.FunctionComponent = () => {
     const classes = useStyles();
-    const [newProblems, setNewProblems] = React.useState<Problem[]>([]);
+    const [ownerProblems, setOwnerProblems] = React.useState<Problem[]>([]);
     const {enqueueSnackbar} = useSnackbar();
 
     React.useEffect(() => {
         ProblemService.retrieveOwnerProblem()
-            .then(value => setNewProblems(value.data))
+            .then(value => setOwnerProblems(value.data))
             .catch(error => {
                 const {message, statusCode} = getGeneralErrorMessage(error);
                 if (statusCode) {
@@ -104,17 +108,19 @@ const ProblemObservationView: React.FunctionComponent = () => {
     }, [enqueueSnackbar])
 
     return (
-        <Paper elevation={6} variant="outlined" square className={classes.root}>
-            <Typography dir="rtl" variant="h6" className={classes.header}>
-                مسئله‌های جدید
-            </Typography>
-            <CollapsibleTable problems={newProblems}/>
-            <Typography dir="rtl" variant="h6" className={classes.header}>
-                مسئله‌های در حال پیگیری
-            </Typography>
-            <Typography dir="rtl" variant="h6" className={classes.header}>
-                مسئله‌های اتمام‌یافته
-            </Typography>
+        <Paper variant="outlined" square className={classes.root}>
+            <Paper dir="rtl" className={classes.header}>
+                <Typography variant="h6">مسئله‌های جدید</Typography>
+            </Paper>
+            <CollapsibleTable problems={ownerProblems.filter(problem => problem.state === ProblemState.CREATED)}/>
+            <Paper dir="rtl" className={classes.header}>
+                <Typography variant="h6">مسئله‌های در حال پیگیری</Typography>
+            </Paper>
+            <CollapsibleTable problems={ownerProblems.filter(problem => problem.state === ProblemState.IN_PROGRESS)}/>
+            <Paper dir="rtl" className={classes.header}>
+                <Typography variant="h6">مسئله‌های اتمام‌یافته</Typography>
+            </Paper>
+            <CollapsibleTable problems={ownerProblems.filter(problem => problem.state === ProblemState.COMPLETED)}/>
         </Paper>
     );
 }
