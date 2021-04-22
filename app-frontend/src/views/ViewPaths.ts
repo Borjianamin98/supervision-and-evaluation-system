@@ -8,7 +8,7 @@ export const DASHBOARD_VIEW_PATH = "/dashboard";
 export const PROFILE_VIEW_PATH = "/profile";
 
 // Problem Views
-export const PROBLEM_VIEW_PATH = "/problem";
+export const PROBLEM_OBSERVATION_PATH = "/problem/list";
 export const PROBLEM_CREATE_VIEW_PATH = "/problem/create";
 
 // Settings Views

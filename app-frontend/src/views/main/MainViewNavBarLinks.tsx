@@ -15,7 +15,7 @@ import SettingsView from "../SettingsView";
 import {
     DASHBOARD_VIEW_PATH,
     PROBLEM_CREATE_VIEW_PATH,
-    PROBLEM_VIEW_PATH,
+    PROBLEM_OBSERVATION_PATH,
     PROFILE_VIEW_PATH,
     SETTINGS_VIEW_PATH
 } from "../ViewPaths";
@@ -38,7 +38,7 @@ const dashboardRoutesInfo: navBarRouteInfo[] = [
 
 const problemRoutesInfo: navBarRouteInfo[] = [
     {
-        path: PROBLEM_VIEW_PATH,
+        path: PROBLEM_OBSERVATION_PATH,
         name: "مسئله‌ها",
         icon: ViewListIcon,
         component: ProblemObservationView,

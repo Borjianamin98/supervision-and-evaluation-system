@@ -5,7 +5,7 @@ import addProblemImage from "../assets/images/problem/add-prbolem.jpg";
 import viewProblemImage from "../assets/images/problem/view-problem.jpg";
 import ButtonLink from "../components/Button/ButtonLink";
 import MediaCard from "../components/MediaCard/MediaCard";
-import {PROBLEM_CREATE_VIEW_PATH, PROBLEM_VIEW_PATH} from "./ViewPaths";
+import {PROBLEM_CREATE_VIEW_PATH, PROBLEM_OBSERVATION_PATH} from "./ViewPaths";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -40,7 +40,7 @@ const DashboardView: React.FunctionComponent = () => {
                     title="مشاهده مسائل"
                     subTitle="مسائل افزوده‌شده یا در حال پیگیری را مشاهده نمایید."
                 >
-                    <ButtonLink to={PROBLEM_VIEW_PATH} color="primary">
+                    <ButtonLink to={PROBLEM_OBSERVATION_PATH} color="primary">
                         مشاهده
                     </ButtonLink>
                 </MediaCard>
