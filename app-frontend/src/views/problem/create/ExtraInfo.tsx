@@ -29,30 +29,39 @@ const ExtraInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
                         <CustomTextField
                             label="تعریف مسئله و نیازمندی"
                             multiline={true}
-                            rows={2}
+                            rowsMax={4}
                             value={problem.definition}
                             onChange={event => setProblem({...problem, definition: event.target.value})}
                             helperText={isDefinitionValid(problem.definition) ?
                                 "" : "تعریف مسئله در حداقل 15 کلمه توضیح داده شود."}
                             error={!isDefinitionValid(problem.definition)}
                             required
+                            extraInputProps={{
+                                maxLength: 400
+                            }}
                         />
                         <CustomTextField
                             label="پیشینه مسئله"
                             multiline={true}
-                            rows={2}
+                            rowsMax={4}
                             value={problem.history}
                             onChange={event => setProblem({...problem, history: event.target.value})}
+                            extraInputProps={{
+                                maxLength: 400
+                            }}
                         />
                         <CustomTextField
                             label="ملاحظات"
                             multiline={true}
-                            rows={2}
+                            rowsMax={4}
                             value={problem.considerations}
                             onChange={event => setProblem({...problem, considerations: event.target.value})}
                             helperText={isNotBlank(problem.considerations) ? "" : "ملاحضات مسئله باید ذکر شود."}
                             error={!isNotBlank(problem.considerations)}
                             required
+                            extraInputProps={{
+                                maxLength: 400
+                            }}
                         />
                     </ThemeProvider>
                 </Paper>

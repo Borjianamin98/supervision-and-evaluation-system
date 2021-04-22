@@ -22,7 +22,7 @@ const ComboBox: React.FunctionComponent<ComboBoxProps> = (props) => {
     return (
         <Autocomplete
             {...rest}
-            debug
+            // debug // Enabled just for debug purpose
             noOptionsText={
                 <Typography dir="rtl">موردی یافت نشد</Typography>
             }

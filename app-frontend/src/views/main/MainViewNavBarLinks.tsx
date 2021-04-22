@@ -9,7 +9,7 @@ import React from 'react';
 import ListItemLink from '../../components/List/ListItemLink';
 import DashboardView from "../DashboardView";
 import ProblemCreateView from "../problem/create/ProblemCreateView";
-import ProblemView from "../problem/ProblemView";
+import ProblemObservationView from "../problem/ProblemObservationView";
 import ProfileView from "../ProfileView";
 import SettingsView from "../SettingsView";
 import {
@@ -41,7 +41,7 @@ const problemRoutesInfo: navBarRouteInfo[] = [
         path: PROBLEM_VIEW_PATH,
         name: "مسئله‌ها",
         icon: ViewListIcon,
-        component: ProblemView,
+        component: ProblemObservationView,
     },
     {
         path: PROBLEM_CREATE_VIEW_PATH,

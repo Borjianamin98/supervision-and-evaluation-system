@@ -19,22 +19,27 @@ public class ProblemDto {
     private Education education;
 
     @NotBlank
+    @Size(max = 70)
     private String title;
 
     @NotBlank
+    @Size(max = 70)
     private String englishTitle;
 
     @NotNull
-    @Size(min = 2)
+    @Size(min = 2, max = 5)
     private Set<@Size(min = 2) String> keywords;
 
     @NotBlank
+    @Size(max = 400)
     private String definition;
 
     @NotNull
+    @Size(max = 400)
     private String history;
 
     @NotBlank
+    @Size(max = 400)
     private String considerations;
 
     public ProblemDto() {

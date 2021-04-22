@@ -47,6 +47,9 @@ const GeneralInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
                             helperText={isNotBlank(problem.title) ? "" : "عنوان مسئله باید ذکر شود."}
                             error={!isNotBlank(problem.title)}
                             required
+                            extraInputProps={{
+                                maxLength: 70
+                            }}
                         />
                         <CustomTextField
                             label="عنوان انگلیسی"
@@ -56,6 +59,9 @@ const GeneralInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
                             helperText={isNotBlank(problem.englishTitle) ? "" : "عنوان انگلیسی مسئله باید ذکر شود."}
                             error={!isNotBlank(problem.englishTitle)}
                             required
+                            extraInputProps={{
+                                maxLength: 70
+                            }}
                         />
                         <Autocomplete
                             multiple
@@ -78,7 +84,7 @@ const GeneralInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
                                     extraInputProps={{autoComplete: 'new-password'}}
                                     label="کلیدواژه"
                                     helperText={isKeywordsValid(problem.keywords)
-                                        ? "" : "حداقل باید دو کلیدواژه مشخص شود. همچنین هر کلیدواژه حداقل 2 حرف می‌باشد."}
+                                        ? "" : "تعداد کلیدواژه‌ها باید بین 2 الی 5 مورد باشد. همچنین هر کلیدواژه حداقل 2 حرف می‌باشد."}
                                     error={!isKeywordsValid(problem.keywords)}
                                 />
                             )}
