@@ -23,9 +23,10 @@ public class Master extends User {
     }
 
     @Builder
-    public Master(Long id, String username, String password,
-            Set<Problem> problemsSupervisor, Set<Problem> problemsReferee) {
-        super(id, username, password, SecurityRoles.MASTER_ROLE_NAME);
+    public Master(Long id, String firstName, String lastName, String username, String password, String role,
+            Byte[] profilePicture, Set<Problem> problemsSupervisor,
+            Set<Problem> problemsReferee) {
+        super(id, firstName, lastName, username, password, SecurityRoles.MASTER_ROLE_NAME, profilePicture);
         this.problemsSupervisor = problemsSupervisor;
         this.problemsReferee = problemsReferee;
     }

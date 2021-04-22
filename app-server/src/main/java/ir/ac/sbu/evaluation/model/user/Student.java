@@ -19,8 +19,9 @@ public class Student extends User {
     }
 
     @Builder
-    public Student(Long id, String username, String password, Set<Problem> problems) {
-        super(id, username, password, SecurityRoles.STUDENT_ROLE_NAME);
+    public Student(Long id, String firstName, String lastName, String username, String password, String role,
+            Byte[] profilePicture, Set<Problem> problems) {
+        super(id, firstName, lastName, username, password, SecurityRoles.STUDENT_ROLE_NAME, profilePicture);
         this.problems = problems;
     }
 

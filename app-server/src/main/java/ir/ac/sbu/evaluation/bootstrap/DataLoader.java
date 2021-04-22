@@ -37,24 +37,28 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) {
         Problem problem1 = Problem.builder()
                 .education(Education.BACHELOR)
-                .title("title1")
-                .englishTitle("english title1")
-                .keywords(new HashSet<>(Arrays.asList("keyword1", "keyword2")))
-                .definition("definition1")
-                .history("history1")
-                .considerations("consideration1")
+                .title("سامانه ارزیابی و نظارت یکپارچه")
+                .englishTitle("integrated supervision and evaluation system")
+                .keywords(new HashSet<>(Arrays.asList("مجمتع", "ارزیابی", "یکپارچه", "نظارت")))
+                .definition("تعریف سامانه")
+                .history("بیشینه مسئله")
+                .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
                 .build();
         Problem savedProblem1 = problemRepository.save(problem1);
 
         Master master1 = Master.builder()
-                .username("master1")
+                .firstName("صادق")
+                .lastName("علی اکبری")
+                .username("master")
                 .password(passwordEncoder.encode("pass"))
                 .build();
         master1.setProblemsSupervisor(Collections.singleton(savedProblem1));
         Master savedMaster1 = masterRepository.save(master1);
 
         Student student1 = Student.builder()
-                .username("student1")
+                .firstName("امین")
+                .lastName("برجیان")
+                .username("student")
                 .password(passwordEncoder.encode("pass"))
                 .build();
         student1.setProblems(Collections.singleton(savedProblem1));
