@@ -1,5 +1,5 @@
 import apiAxios from "../../config/axios-config";
-import {educationPersianMapping, PERSIAN_EDUCATIONS, Problem} from "../../model/problem";
+import {educationPersianMapping, PERSIAN_EDUCATIONS, Problem, ProblemState} from "../../model/problem";
 import {API_PROBLEM_CREATE_PATH, API_PROBLEM_RETRIEVE_OWNER_PROBLEMS_PATH} from "../ApiPaths";
 
 class ProblemService {
@@ -17,6 +17,7 @@ class ProblemService {
             definition: "",
             history: "",
             considerations: "",
+            state: ProblemState.CREATED,
         }
     }
 

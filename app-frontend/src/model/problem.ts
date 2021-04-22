@@ -11,9 +11,18 @@ export interface Problem {
 
     definition: string,
     history: string,
-    considerations: string
+    considerations: string,
+
+    state: ProblemState,
 
     supervisor?: User,
+}
+
+export enum ProblemState {
+    CREATED = "CREATED",
+    ABANDONED = "ABANDONED",
+    IN_PROGRESS = "IN_PROGRESS",
+    COMPLETED = "COMPLETED"
 }
 
 export const PERSIAN_EDUCATIONS = [
