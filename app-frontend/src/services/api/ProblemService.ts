@@ -1,6 +1,6 @@
 import apiAxios from "../../config/axios-config";
 import {educationPersianMapping, PERSIAN_EDUCATIONS, Problem} from "../../model/problem";
-import {API_PROBLEM_CREATE_PATH} from "../ApiPaths";
+import {API_PROBLEM_CREATE_PATH, API_PROBLEM_RETRIEVE_OWNER_PROBLEMS_PATH} from "../ApiPaths";
 
 class ProblemService {
 
@@ -29,6 +29,13 @@ class ProblemService {
             problemData,
             {
                 validateStatus: status => status === 201
+            })
+    }
+
+    static retrieveOwnerProblem() {
+        return apiAxios.get<Array<Problem>>(API_PROBLEM_RETRIEVE_OWNER_PROBLEMS_PATH,
+            {
+                validateStatus: status => status === 200
             })
     }
 

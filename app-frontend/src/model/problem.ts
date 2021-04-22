@@ -1,4 +1,6 @@
 export interface Problem {
+    id?: number,
+
     education: string,
 
     title: string,
