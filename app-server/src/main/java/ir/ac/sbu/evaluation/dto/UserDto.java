@@ -1,15 +1,25 @@
 package ir.ac.sbu.evaluation.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import ir.ac.sbu.evaluation.model.user.User;
 import javax.validation.constraints.NotBlank;
 import lombok.Builder;
 
+@JsonInclude(Include.NON_NULL)
 public class UserDto {
 
     @NotBlank
+    private String firstName;
+
+    @NotBlank
+    private String lastName;
+
+    @NotBlank
     private String username;
+
     @NotBlank
     @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
@@ -18,17 +28,49 @@ public class UserDto {
     }
 
     @Builder
-    public UserDto(String username, String password) {
+    public UserDto(@NotBlank String firstName, @NotBlank String lastName,
+            @NotBlank String username, @NotBlank String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.username = username;
         this.password = password;
     }
 
     public static UserDto from(User user) {
-        return new UserDto(user.getUsername(), user.getPassword());
+        return internalFrom(builder().username(user.getUsername()).password(user.getPassword()), user);
+    }
+
+    public static UserDto fromWithoutAuth(User user) {
+        return internalFrom(builder(), user);
+    }
+
+    private static UserDto internalFrom(UserDtoBuilder builder, User user) {
+        return builder
+                .firstName(user.getFirstName()).lastName(user.getLastName())
+                .build();
     }
 
     public User toUser() {
-        return User.userBuilder().username(username).password(password).build();
+        return User.userBuilder()
+                .firstName(firstName).lastName(lastName)
+                .username(username).password(password)
+                .build();
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getUsername() {

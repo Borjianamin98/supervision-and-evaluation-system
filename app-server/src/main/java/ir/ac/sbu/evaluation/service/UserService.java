@@ -1,15 +1,16 @@
 package ir.ac.sbu.evaluation.service;
 
 import ir.ac.sbu.evaluation.dto.UserDto;
-import ir.ac.sbu.evaluation.dto.UserListDto;
 import ir.ac.sbu.evaluation.model.user.User;
+import ir.ac.sbu.evaluation.repository.MasterRepository;
+import ir.ac.sbu.evaluation.repository.StudentRepository;
 import ir.ac.sbu.evaluation.repository.UserRepository;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.utility.ByteUtility;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,10 +22,15 @@ public class UserService implements UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final StudentRepository studentRepository;
+    private final MasterRepository masterRepository;
 
-    public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository) {
+    public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository,
+            StudentRepository studentRepository, MasterRepository masterRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.studentRepository = studentRepository;
+        this.masterRepository = masterRepository;
     }
 
     @Override
@@ -38,6 +44,10 @@ public class UserService implements UserDetailsService {
                         .roles(Collections.singletonList(user.getRole()))
                         .build())
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found: " + username));
+    }
+
+    public List<UserDto> getAllMasters() {
+        return masterRepository.findAll().stream().map(UserDto::fromWithoutAuth).collect(Collectors.toList());
     }
 
     @Transactional
@@ -66,9 +76,5 @@ public class UserService implements UserDetailsService {
         }
         Byte[] profilePicture = optionalUser.get().getProfilePicture();
         return profilePicture == null ? Optional.empty() : Optional.of(ByteUtility.toPrimitiveBytes(profilePicture));
-    }
-
-    public UserListDto getAllUsers() {
-        return new UserListDto(userRepository.findAll().stream().map(UserDto::from).collect(Collectors.toList()));
     }
 }
