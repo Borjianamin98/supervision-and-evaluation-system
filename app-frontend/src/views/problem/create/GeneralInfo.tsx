@@ -86,17 +86,21 @@ const GeneralInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
                         />
                         <Autocomplete
                             multiple
-                            options={[]}
+                            options={[] as string[]}
                             limitTags={3}
                             id="tags"
                             freeSolo
                             value={problem.keywords}
-                            onChange={(event, value: string[]) => {
-                                setProblem({...problem, keywords: value});
+                            onChange={(event, newValue) => {
+                                setProblem({...problem, keywords: newValue});
                             }}
-                            renderTags={(value: string[], getTagProps) =>
-                                value.map((option: string, index: number) => (
-                                    <Chip variant="outlined" label={option} {...getTagProps({index})} />
+                            renderTags={(values: string[], getTagProps) =>
+                                values.map((option: string, index: number) => (
+                                    <Chip key={index}
+                                          variant="outlined"
+                                          label={option}
+                                          {...getTagProps({index})}
+                                    />
                                 ))
                             }
                             renderInput={(params) => (

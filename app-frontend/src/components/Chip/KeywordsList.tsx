@@ -22,8 +22,9 @@ const KeywordsList: React.FunctionComponent<ChipListProps> = (props) => {
                 keywords.length === 0 ? (
                     props.children
                 ) : (
-                    keywords.map(keyword =>
+                    keywords.map((keyword, index) =>
                         <Chip
+                            key={index}
                             variant="outlined" color="primary"
                             className={classes.chip}
                             label={keyword}

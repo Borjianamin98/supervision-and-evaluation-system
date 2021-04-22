@@ -25,7 +25,6 @@ class ProblemService {
             {
                 ...problem,
                 education: educationPersianMapping(problem.education),
-                supervisor: problem.supervisor?.username
             },
             {
                 validateStatus: status => status === 201

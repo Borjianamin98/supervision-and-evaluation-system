@@ -42,15 +42,15 @@ public class ProblemDto {
     @Size(max = 400)
     private String considerations;
 
-    @NotBlank
-    private String supervisor;
+    @NotNull
+    private UserDto supervisor;
 
     public ProblemDto() {
     }
 
     @Builder
     public ProblemDto(long id, Education education, String title, String englishTitle, Set<String> keywords,
-            String definition, String history, String considerations, String supervisor) {
+            String definition, String history, String considerations, UserDto supervisor) {
         this.id = id;
         this.education = education;
         this.title = title;
@@ -70,7 +70,7 @@ public class ProblemDto {
                 .keywords(problem.getKeywords())
                 .definition(problem.getDefinition()).history(problem.getHistory())
                 .considerations(problem.getConsiderations())
-                .supervisor(problem.getSupervisor().getUsername())
+                .supervisor(UserDto.from(problem.getSupervisor()))
                 .build();
     }
 
@@ -151,11 +151,11 @@ public class ProblemDto {
         this.considerations = considerations;
     }
 
-    public String getSupervisor() {
+    public UserDto getSupervisor() {
         return supervisor;
     }
 
-    public void setSupervisor(String supervisor) {
+    public void setSupervisor(UserDto supervisor) {
         this.supervisor = supervisor;
     }
 }

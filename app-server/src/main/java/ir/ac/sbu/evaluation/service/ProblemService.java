@@ -30,7 +30,7 @@ public class ProblemService {
     public ProblemDto addProblem(long studentUserId, ProblemDto problemDto) {
         Student student = studentRepository.findById(studentUserId)
                 .orElseThrow(() -> new IllegalArgumentException("Student with given ID not found: " + studentUserId));
-        Master supervisor = masterRepository.findByUsername(problemDto.getSupervisor())
+        Master supervisor = masterRepository.findByUsername(problemDto.getSupervisor().getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Master with given username not found: "
                         + problemDto.getSupervisor()));
 
