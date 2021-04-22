@@ -39,7 +39,7 @@ public class DataLoader implements CommandLineRunner {
                 .education(Education.BACHELOR)
                 .title("سامانه ارزیابی و نظارت یکپارچه")
                 .englishTitle("integrated supervision and evaluation system")
-                .keywords(new HashSet<>(Arrays.asList("مجمتع", "ارزیابی", "یکپارچه", "نظارت")))
+                .keywords(new HashSet<>(Arrays.asList("مجتمع", "ارزیابی", "یکپارچه", "نظارت")))
                 .definition("تعریف سامانه")
                 .history("بیشینه مسئله")
                 .considerations("ملاحظاتی که باید در نظر گرفته شوند.")

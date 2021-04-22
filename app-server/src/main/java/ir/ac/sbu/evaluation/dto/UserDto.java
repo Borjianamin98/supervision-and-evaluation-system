@@ -41,16 +41,9 @@ public class UserDto {
     }
 
     public static UserDto from(User user) {
-        return internalFrom(builder().username(user.getUsername()).password(user.getPassword()), user);
-    }
-
-    public static UserDto fromWithoutAuth(User user) {
-        return internalFrom(builder(), user);
-    }
-
-    private static UserDto internalFrom(UserDtoBuilder builder, User user) {
-        return builder
+        return builder()
                 .id(user.getId())
+                .username(user.getUsername()).password(user.getPassword())
                 .firstName(user.getFirstName()).lastName(user.getLastName())
                 .build();
     }

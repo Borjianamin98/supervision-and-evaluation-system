@@ -47,7 +47,7 @@ public class UserService implements UserDetailsService {
     }
 
     public List<UserDto> getAllMasters() {
-        return masterRepository.findAll().stream().map(UserDto::fromWithoutAuth).collect(Collectors.toList());
+        return masterRepository.findAll().stream().map(UserDto::from).collect(Collectors.toList());
     }
 
     @Transactional

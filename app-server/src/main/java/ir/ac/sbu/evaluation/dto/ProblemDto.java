@@ -42,12 +42,15 @@ public class ProblemDto {
     @Size(max = 400)
     private String considerations;
 
+    @NotBlank
+    private String supervisor;
+
     public ProblemDto() {
     }
 
     @Builder
     public ProblemDto(long id, Education education, String title, String englishTitle, Set<String> keywords,
-            String definition, String history, String considerations) {
+            String definition, String history, String considerations, String supervisor) {
         this.id = id;
         this.education = education;
         this.title = title;
@@ -56,21 +59,31 @@ public class ProblemDto {
         this.definition = definition;
         this.history = history;
         this.considerations = considerations;
+        this.supervisor = supervisor;
     }
 
     public static ProblemDto from(Problem problem) {
-        return ProblemDto.builder().education(problem.getEducation())
+        return ProblemDto.builder()
+                .id(problem.getId())
+                .education(problem.getEducation())
                 .title(problem.getTitle()).englishTitle(problem.getEnglishTitle())
                 .keywords(problem.getKeywords())
                 .definition(problem.getDefinition()).history(problem.getHistory())
                 .considerations(problem.getConsiderations())
-                .id(problem.getId())
+                .supervisor(problem.getSupervisor().getUsername())
                 .build();
     }
 
     public Problem toProblem() {
-        return Problem.builder().education(education).title(title).englishTitle(englishTitle)
-                .keywords(keywords).definition(definition).history(history).considerations(considerations)
+        // Ignore below fields (they should injected separately):
+        //   + supervisor
+        return Problem.builder()
+                .id(id)
+                .education(education)
+                .title(title).englishTitle(englishTitle)
+                .keywords(keywords)
+                .definition(definition).history(history)
+                .considerations(considerations)
                 .build();
     }
 
@@ -136,5 +149,13 @@ public class ProblemDto {
 
     public void setConsiderations(String considerations) {
         this.considerations = considerations;
+    }
+
+    public String getSupervisor() {
+        return supervisor;
+    }
+
+    public void setSupervisor(String supervisor) {
+        this.supervisor = supervisor;
     }
 }

@@ -21,12 +21,12 @@ class ProblemService {
     }
 
     static sendCreateProblem(problem: Problem) {
-        const problemData: Problem = {
-            ...problem,
-            education: educationPersianMapping(problem.education),
-        }
         return apiAxios.post(API_PROBLEM_CREATE_PATH,
-            problemData,
+            {
+                ...problem,
+                education: educationPersianMapping(problem.education),
+                supervisor: problem.supervisor?.username
+            },
             {
                 validateStatus: status => status === 201
             })
