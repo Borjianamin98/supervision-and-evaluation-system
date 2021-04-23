@@ -32,15 +32,15 @@ public class ProblemDto {
     private Set<@Size(min = 2) String> keywords;
 
     @NotBlank
-    @Size(max = 400)
+    @Size(max = 1000)
     private String definition;
 
     @NotNull
-    @Size(max = 400)
+    @Size(max = 1000)
     private String history;
 
     @NotBlank
-    @Size(max = 400)
+    @Size(max = 1000)
     private String considerations;
 
     @JsonProperty(access = Access.READ_ONLY)

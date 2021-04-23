@@ -37,13 +37,13 @@ public class Problem extends BaseEntity {
     @CollectionTable(name = "problem_keyword", joinColumns = @JoinColumn(name = "problem_id"))
     private Set<String> keywords;
 
-    @Column(name = "definition")
+    @Column(name = "definition", length = 1000)
     private String definition;
 
-    @Column(name = "history")
+    @Column(name = "history", length = 1000)
     private String history;
 
-    @Column(name = "considerations")
+    @Column(name = "considerations", length = 1000)
     private String considerations;
 
     @Enumerated(EnumType.STRING)
