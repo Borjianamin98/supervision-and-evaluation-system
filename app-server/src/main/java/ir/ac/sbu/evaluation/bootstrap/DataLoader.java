@@ -3,13 +3,17 @@ package ir.ac.sbu.evaluation.bootstrap;
 import ir.ac.sbu.evaluation.enumeration.Education;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.model.Problem;
+import ir.ac.sbu.evaluation.model.university.Faculty;
+import ir.ac.sbu.evaluation.model.university.University;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.PersonalInfo;
 import ir.ac.sbu.evaluation.model.user.Student;
+import ir.ac.sbu.evaluation.repository.FacultyRepository;
 import ir.ac.sbu.evaluation.repository.MasterRepository;
 import ir.ac.sbu.evaluation.repository.PersonalInfoRepository;
 import ir.ac.sbu.evaluation.repository.ProblemRepository;
 import ir.ac.sbu.evaluation.repository.StudentRepository;
+import ir.ac.sbu.evaluation.repository.UniversityRepository;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -20,6 +24,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class DataLoader implements CommandLineRunner {
 
+    private final UniversityRepository universityRepository;
+    private final FacultyRepository facultyRepository;
+
     private final PersonalInfoRepository personalInfoRepository;
     private final StudentRepository studentRepository;
     private final MasterRepository masterRepository;
@@ -27,10 +34,14 @@ public class DataLoader implements CommandLineRunner {
 
     private final PasswordEncoder passwordEncoder;
 
-    public DataLoader(PersonalInfoRepository personalInfoRepository, StudentRepository studentRepository,
-            MasterRepository masterRepository,
+    public DataLoader(UniversityRepository universityRepository,
+            FacultyRepository facultyRepository,
+            PersonalInfoRepository personalInfoRepository,
+            StudentRepository studentRepository, MasterRepository masterRepository,
             ProblemRepository problemRepository,
             PasswordEncoder passwordEncoder) {
+        this.universityRepository = universityRepository;
+        this.facultyRepository = facultyRepository;
         this.personalInfoRepository = personalInfoRepository;
         this.studentRepository = studentRepository;
         this.masterRepository = masterRepository;
@@ -40,6 +51,24 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        University savedUniversity1 = universityRepository.save(University.builder()
+                .name("دانشگاه شهیدبهشتی")
+                .location("تهران").webAddress("https://www.sbu.ac.ir/")
+                .build());
+        Faculty savedFaculty1 = facultyRepository.save(Faculty.builder()
+                .name("دانشکده‌ مهندسی کامپیوتر")
+                .location("بخش شمالی دانشگاه")
+                .university(savedUniversity1)
+                .build());
+        Faculty savedFaculty2 = facultyRepository.save(Faculty.builder()
+                .name("دانشکده‌ فیزیک")
+                .location("بخش شرقی دانشگاه")
+                .university(savedUniversity1)
+                .build());
+        savedUniversity1.getFaculties().add(savedFaculty1);
+        savedUniversity1.getFaculties().add(savedFaculty2);
+        universityRepository.save(savedUniversity1);
+
         Problem problem1 = Problem.builder()
                 .education(Education.BACHELOR)
                 .title("سامانه ارزیابی و نظارت یکپارچه")
