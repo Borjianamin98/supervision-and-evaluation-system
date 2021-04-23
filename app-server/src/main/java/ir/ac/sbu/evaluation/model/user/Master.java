@@ -1,8 +1,8 @@
 package ir.ac.sbu.evaluation.model.user;
 
 import ir.ac.sbu.evaluation.model.Problem;
-import ir.ac.sbu.evaluation.security.SecurityRoles;
 import java.util.Set;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
@@ -12,6 +12,9 @@ import lombok.Builder;
 @Entity
 @Table(name = "master")
 public class Master extends User {
+
+    @Column(name = "degree")
+    private String degree;
 
     @OneToMany(mappedBy = "supervisor")
     private Set<Problem> problemsSupervisor;
@@ -24,11 +27,20 @@ public class Master extends User {
 
     @Builder
     public Master(Long id, String firstName, String lastName, String username, String password, String role,
-            Byte[] profilePicture, Set<Problem> problemsSupervisor,
-            Set<Problem> problemsReferee) {
-        super(id, firstName, lastName, username, password, SecurityRoles.MASTER_ROLE_NAME, profilePicture);
+            PersonalInfo personalInfo, Byte[] profilePicture, String degree,
+            Set<Problem> problemsSupervisor, Set<Problem> problemsReferee) {
+        super(id, firstName, lastName, username, password, role, personalInfo, profilePicture);
+        this.degree = degree;
         this.problemsSupervisor = problemsSupervisor;
         this.problemsReferee = problemsReferee;
+    }
+
+    public String getDegree() {
+        return degree;
+    }
+
+    public void setDegree(String degree) {
+        this.degree = degree;
     }
 
     public Set<Problem> getProblemsSupervisor() {

@@ -5,7 +5,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Builder;
 
@@ -29,6 +31,10 @@ public class User extends BaseEntity {
     @Column(name = "role")
     private String role;
 
+    @OneToOne
+    @JoinColumn(name = "personal_info", referencedColumnName = "id")
+    private PersonalInfo personalInfo;
+
     @Lob
     Byte[] profilePicture;
 
@@ -37,13 +43,14 @@ public class User extends BaseEntity {
 
     @Builder(builderMethodName = "userBuilder")
     public User(Long id, String firstName, String lastName, String username, String password, String role,
-            Byte[] profilePicture) {
+            PersonalInfo personalInfo, Byte[] profilePicture) {
         super(id);
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
         this.password = password;
         this.role = role;
+        this.personalInfo = personalInfo;
         this.profilePicture = profilePicture;
     }
 
@@ -93,5 +100,13 @@ public class User extends BaseEntity {
 
     public void setProfilePicture(Byte[] profilePicture) {
         this.profilePicture = profilePicture;
+    }
+
+    public PersonalInfo getPersonalInfo() {
+        return personalInfo;
+    }
+
+    public void setPersonalInfo(PersonalInfo personalInfo) {
+        this.personalInfo = personalInfo;
     }
 }
