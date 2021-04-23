@@ -1,4 +1,4 @@
-import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@material-ui/core";
+import {CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import {makeStyles} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
@@ -21,14 +21,17 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.primary.light,
         textAlign: "center",
     },
+    circularProgress: {
+        margin: theme.spacing(2),
+    },
     rtl: {
         textAlign: "right",
     },
 }));
 
-const CollapsibleTable: React.FunctionComponent<{ problems: Array<Problem> }> = (props) => {
+const CollapsibleTable: React.FunctionComponent<{ problems: Array<Problem>, loaded: boolean }> = (props) => {
     const classes = useStyles();
-    const {problems} = props;
+    const {problems, loaded} = props;
 
     const tableHeaderCells: OptionalTableCellProps[] = [
         {content: "دوره تحصیلی"},
@@ -58,6 +61,11 @@ const CollapsibleTable: React.FunctionComponent<{ problems: Array<Problem> }> = 
         );
     });
 
+    const FullRowCell: React.FunctionComponent = (props) =>
+        <TableRow>
+            <TableCell align="center" colSpan={tableHeaderCells.length + 1}>{props.children}</TableCell>
+        </TableRow>
+
     return (
         <TableContainer dir="rtl" component={Paper} elevation={4}>
             <Table>
@@ -73,14 +81,12 @@ const CollapsibleTable: React.FunctionComponent<{ problems: Array<Problem> }> = 
                 </TableHead>
                 <TableBody>
                     {
-                        problems.length === 0 ? (
-                            <TableRow>
-                                <TableCell align="center" colSpan={tableHeaderCells.length + 1}>مسئله‌ای یافت
-                                    نشد.</TableCell>
-                            </TableRow>
-                        ) : (
-                            tableRows
-                        )
+                        loaded ? (problems.length === 0 ? <FullRowCell>مسئله‌ای یافت نشد.</FullRowCell> : tableRows) :
+                            (
+                                <FullRowCell>
+                                    <CircularProgress className={classes.circularProgress}/>
+                                </FullRowCell>
+                            )
                     }
                 </TableBody>
             </Table>
@@ -91,11 +97,15 @@ const CollapsibleTable: React.FunctionComponent<{ problems: Array<Problem> }> = 
 const ProblemObservationView: React.FunctionComponent = () => {
     const classes = useStyles();
     const [ownerProblems, setOwnerProblems] = React.useState<Problem[]>([]);
+    const [loaded, setLoaded] = React.useState<boolean>(false);
     const {enqueueSnackbar} = useSnackbar();
 
     React.useEffect(() => {
         ProblemService.retrieveOwnerProblem()
-            .then(value => setOwnerProblems(value.data))
+            .then(value => {
+                setOwnerProblems(value.data);
+                setLoaded(true);
+            })
             .catch(error => {
                 const {message, statusCode} = getGeneralErrorMessage(error);
                 if (statusCode) {
@@ -112,15 +122,18 @@ const ProblemObservationView: React.FunctionComponent = () => {
             <Paper dir="rtl" className={classes.header}>
                 <Typography variant="h6">مسئله‌های جدید</Typography>
             </Paper>
-            <CollapsibleTable problems={ownerProblems.filter(problem => problem.state === ProblemState.CREATED)}/>
+            <CollapsibleTable loaded={loaded}
+                              problems={ownerProblems.filter(problem => problem.state === ProblemState.CREATED)}/>
             <Paper dir="rtl" className={classes.header}>
                 <Typography variant="h6">مسئله‌های در حال پیگیری</Typography>
             </Paper>
-            <CollapsibleTable problems={ownerProblems.filter(problem => problem.state === ProblemState.IN_PROGRESS)}/>
+            <CollapsibleTable loaded={loaded}
+                              problems={ownerProblems.filter(problem => problem.state === ProblemState.IN_PROGRESS)}/>
             <Paper dir="rtl" className={classes.header}>
                 <Typography variant="h6">مسئله‌های اتمام‌یافته</Typography>
             </Paper>
-            <CollapsibleTable problems={ownerProblems.filter(problem => problem.state === ProblemState.COMPLETED)}/>
+            <CollapsibleTable loaded={loaded}
+                              problems={ownerProblems.filter(problem => problem.state === ProblemState.COMPLETED)}/>
         </Paper>
     );
 }
