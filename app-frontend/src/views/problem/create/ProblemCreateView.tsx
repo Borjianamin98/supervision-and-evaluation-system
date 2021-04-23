@@ -20,10 +20,13 @@ const useCommonStyles = makeStyles((theme) => ({
     title: {
         margin: theme.spacing(1, 0, 0, 0),
     },
+    justifyAlign: {
+        textAlign: "justify",
+    }
 }));
 
 export interface ProblemTabProps {
-    commonClasses: ClassNameMap<"title" | "paper">,
+    commonClasses: ClassNameMap<"title" | "paper" | "justifyAlign">,
     problem: Problem,
     setProblem: React.Dispatch<React.SetStateAction<Problem>>,
     errorChecking: boolean,

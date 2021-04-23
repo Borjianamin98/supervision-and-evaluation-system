@@ -1,4 +1,14 @@
-import {CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@material-ui/core";
+import {
+    Box,
+    CircularProgress,
+    Hidden,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow
+} from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import {makeStyles} from "@material-ui/core/styles";
@@ -28,14 +38,15 @@ const useStyles = makeStyles((theme) => ({
     circularProgress: {
         margin: theme.spacing(2),
     },
-    rtl: {
-        textAlign: "right",
+    text: {
+        textAlign: "justify",
     },
 }));
 
 const CollapsibleTable: React.FunctionComponent<{ problems: Array<Problem>, loaded: boolean }> = (props) => {
     const classes = useStyles();
     const {problems, loaded} = props;
+
 
     const tableHeaderCells: OptionalTableCellProps[] = [
         {content: "دوره تحصیلی"},
@@ -46,23 +57,34 @@ const CollapsibleTable: React.FunctionComponent<{ problems: Array<Problem>, load
     ]
 
     const tableRows = problems.map(problem => {
+        const keywordsList =<KeywordsList keywords={problem.keywords}/>;
         const cells: OptionalTableCellProps[] = [
             {content: educationEnglishMapping(problem.education)},
             {content: problem.title},
             {content: problem.englishTitle, optional: true},
-            {content: <KeywordsList keywords={problem.keywords}/>, optional: true},
+            {content: keywordsList, optional: true},
             {content: `${problem.supervisor?.firstName} ${problem.supervisor?.lastName}`},
         ];
+
         return (
             <CollapsibleTableRow
                 key={problem.id}
                 cells={cells}
             >
-                <Grid dir="rtl" container className={classes.rtl}>
+                <Grid dir="rtl" container className={classes.text}>
                     <Grid item xs={12} sm={12} md={5} lg={5} xl={5}>
                         <Typography variant="h6" className={classes.tableContentHeader}>اطلاعات کلی:</Typography>
                         <Typography paragraph>{`عنوان: ${problem.title}`}</Typography>
                         <Typography paragraph>{`عنوان انگلیسی: ${problem.englishTitle}`}</Typography>
+                        <Hidden mdUp>
+                            <Box marginY={1}>
+                                <Typography paragraph component="span">کلیدواژه‌ها: </Typography>
+                                {keywordsList}
+                            </Box>
+                        </Hidden>
+                        <Typography paragraph>{`تعریف: ${problem.definition}`}</Typography>
+                        <Typography paragraph>{`بیشینه: ${problem.history}`}</Typography>
+                        <Typography paragraph>{`ملاحظات: ${problem.considerations}`}</Typography>
                     </Grid>
                     <Grid item xs={false} sm={false} md={1} lg={1} xl={1}/>
                     <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>

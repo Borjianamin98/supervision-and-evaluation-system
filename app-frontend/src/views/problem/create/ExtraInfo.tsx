@@ -37,7 +37,7 @@ const ExtraInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
                             error={!isDefinitionValid(problem.definition)}
                             required
                             extraInputProps={{
-                                maxLength: 400
+                                maxLength: ProblemService.MAX_LONG_STRING_LENGTH,
                             }}
                         />
                         <CustomTextField
@@ -47,7 +47,7 @@ const ExtraInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
                             value={problem.history}
                             onChange={event => setProblem({...problem, history: event.target.value})}
                             extraInputProps={{
-                                maxLength: 400
+                                maxLength: ProblemService.MAX_LONG_STRING_LENGTH
                             }}
                         />
                         <CustomTextField
@@ -60,7 +60,7 @@ const ExtraInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
                             error={!isNotBlank(problem.considerations)}
                             required
                             extraInputProps={{
-                                maxLength: 400
+                                maxLength: ProblemService.MAX_LONG_STRING_LENGTH
                             }}
                         />
                     </ThemeProvider>

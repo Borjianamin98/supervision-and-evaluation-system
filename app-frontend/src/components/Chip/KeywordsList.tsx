@@ -17,7 +17,7 @@ const KeywordsList: React.FunctionComponent<ChipListProps> = (props) => {
     const {keywords} = props;
 
     return (
-        <div dir={"rtl"}>
+        <span dir={"rtl"}>
             {
                 keywords.length === 0 ? (
                     props.children
@@ -32,7 +32,7 @@ const KeywordsList: React.FunctionComponent<ChipListProps> = (props) => {
                     )
                 )
             }
-        </div>
+        </span>
     )
 }
 

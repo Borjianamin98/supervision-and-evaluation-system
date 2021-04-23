@@ -3,7 +3,7 @@ import {educationPersianMapping, PERSIAN_EDUCATIONS, Problem, ProblemState} from
 import {API_PROBLEM_CREATE_PATH, API_PROBLEM_RETRIEVE_OWNER_PROBLEMS_PATH} from "../ApiPaths";
 
 class ProblemService {
-
+    public static readonly MAX_LONG_STRING_LENGTH = 1000;
 
     private constructor() {
     }
@@ -45,13 +45,13 @@ class ProblemService {
             problem.englishTitle.length > 0 && problem.englishTitle.length <= 70 &&
             ProblemService.isKeywordsValid(problem.keywords) &&
             ProblemService.isDefinitionValid(problem.definition) &&
-            problem.considerations.length > 0 && problem.considerations.length <= 400 &&
-            problem.history.length <= 400 &&
+            problem.considerations.length > 0 && problem.considerations.length <= ProblemService.MAX_LONG_STRING_LENGTH &&
+            problem.history.length <= ProblemService.MAX_LONG_STRING_LENGTH &&
             problem.supervisor
     }
 
     static isDefinitionValid(definition: string) {
-        return definition.split(/[ ]+/).length >= 10 && definition.length <= 400;
+        return definition.split(/[ ]+/).length >= 10 && definition.length <= ProblemService.MAX_LONG_STRING_LENGTH;
     }
 
     static isKeywordsValid(keywords: string[]) {
