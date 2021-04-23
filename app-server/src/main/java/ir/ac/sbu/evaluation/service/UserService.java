@@ -2,9 +2,9 @@ package ir.ac.sbu.evaluation.service;
 
 import ir.ac.sbu.evaluation.dto.UserDto;
 import ir.ac.sbu.evaluation.model.user.User;
-import ir.ac.sbu.evaluation.repository.MasterRepository;
-import ir.ac.sbu.evaluation.repository.StudentRepository;
-import ir.ac.sbu.evaluation.repository.UserRepository;
+import ir.ac.sbu.evaluation.repository.user.MasterRepository;
+import ir.ac.sbu.evaluation.repository.user.StudentRepository;
+import ir.ac.sbu.evaluation.repository.user.UserRepository;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.utility.ByteUtility;
 import java.util.Collections;

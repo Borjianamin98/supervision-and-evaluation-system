@@ -1,9 +1,12 @@
 package ir.ac.sbu.evaluation.model.user;
 
 import ir.ac.sbu.evaluation.model.Problem;
+import ir.ac.sbu.evaluation.model.university.Faculty;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Builder;
@@ -18,16 +21,21 @@ public class Student extends User {
     @OneToMany(mappedBy = "student")
     private Set<Problem> problems;
 
+    @ManyToOne
+    @JoinColumn(name = "faculty_id")
+    private Faculty faculty;
+
     public Student() {
     }
 
     @Builder
     public Student(Long id, String firstName, String lastName, String username, String password, String role,
             PersonalInfo personalInfo, Byte[] profilePicture, String studentNumber,
-            Set<Problem> problems) {
+            Set<Problem> problems, Faculty faculty) {
         super(id, firstName, lastName, username, password, role, personalInfo, profilePicture);
         this.studentNumber = studentNumber;
         this.problems = problems;
+        this.faculty = faculty;
     }
 
     public String getStudentNumber() {
@@ -44,5 +52,13 @@ public class Student extends User {
 
     public void setProblems(Set<Problem> problems) {
         this.problems = problems;
+    }
+
+    public Faculty getFaculty() {
+        return faculty;
+    }
+
+    public void setFaculty(Faculty faculty) {
+        this.faculty = faculty;
     }
 }

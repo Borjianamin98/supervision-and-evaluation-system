@@ -1,4 +1,4 @@
-package ir.ac.sbu.evaluation.repository;
+package ir.ac.sbu.evaluation.repository.university;
 
 import ir.ac.sbu.evaluation.model.university.University;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,4 +1,4 @@
-package ir.ac.sbu.evaluation.repository;
+package ir.ac.sbu.evaluation.repository.user;
 
 import ir.ac.sbu.evaluation.model.user.User;
 import java.util.Optional;

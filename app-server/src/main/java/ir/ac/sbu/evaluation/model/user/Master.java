@@ -1,13 +1,17 @@
 package ir.ac.sbu.evaluation.model.user;
 
 import ir.ac.sbu.evaluation.model.Problem;
+import ir.ac.sbu.evaluation.model.university.Faculty;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Table(name = "master")
@@ -22,17 +26,23 @@ public class Master extends User {
     @ManyToMany(mappedBy = "referees")
     private Set<Problem> problemsReferee;
 
+    @ManyToOne
+    @JoinColumn(name = "faculty_id")
+    private Faculty faculty;
+
     public Master() {
     }
 
     @Builder
     public Master(Long id, String firstName, String lastName, String username, String password, String role,
             PersonalInfo personalInfo, Byte[] profilePicture, String degree,
-            Set<Problem> problemsSupervisor, Set<Problem> problemsReferee) {
+            Set<Problem> problemsSupervisor, Set<Problem> problemsReferee,
+            Faculty faculty) {
         super(id, firstName, lastName, username, password, role, personalInfo, profilePicture);
         this.degree = degree;
         this.problemsSupervisor = problemsSupervisor;
         this.problemsReferee = problemsReferee;
+        this.faculty = faculty;
     }
 
     public String getDegree() {
@@ -58,4 +68,14 @@ public class Master extends User {
     public void setProblemsReferee(Set<Problem> problemsReferee) {
         this.problemsReferee = problemsReferee;
     }
+
+    public Faculty getFaculty() {
+        return faculty;
+    }
+
+    public void setFaculty(Faculty faculty) {
+        this.faculty = faculty;
+    }
+
+
 }

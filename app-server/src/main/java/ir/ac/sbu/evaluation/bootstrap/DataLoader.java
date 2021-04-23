@@ -5,15 +5,18 @@ import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.model.Problem;
 import ir.ac.sbu.evaluation.model.university.Faculty;
 import ir.ac.sbu.evaluation.model.university.University;
+import ir.ac.sbu.evaluation.model.user.Admin;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.PersonalInfo;
 import ir.ac.sbu.evaluation.model.user.Student;
-import ir.ac.sbu.evaluation.repository.FacultyRepository;
-import ir.ac.sbu.evaluation.repository.MasterRepository;
-import ir.ac.sbu.evaluation.repository.PersonalInfoRepository;
 import ir.ac.sbu.evaluation.repository.ProblemRepository;
-import ir.ac.sbu.evaluation.repository.StudentRepository;
-import ir.ac.sbu.evaluation.repository.UniversityRepository;
+import ir.ac.sbu.evaluation.repository.university.FacultyRepository;
+import ir.ac.sbu.evaluation.repository.university.UniversityRepository;
+import ir.ac.sbu.evaluation.repository.user.AdminRepository;
+import ir.ac.sbu.evaluation.repository.user.MasterRepository;
+import ir.ac.sbu.evaluation.repository.user.PersonalInfoRepository;
+import ir.ac.sbu.evaluation.repository.user.StudentRepository;
+import ir.ac.sbu.evaluation.security.SecurityRoles;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -28,8 +31,9 @@ public class DataLoader implements CommandLineRunner {
     private final FacultyRepository facultyRepository;
 
     private final PersonalInfoRepository personalInfoRepository;
-    private final StudentRepository studentRepository;
     private final MasterRepository masterRepository;
+    private final AdminRepository adminRepository;
+    private final StudentRepository studentRepository;
     private final ProblemRepository problemRepository;
 
     private final PasswordEncoder passwordEncoder;
@@ -37,12 +41,14 @@ public class DataLoader implements CommandLineRunner {
     public DataLoader(UniversityRepository universityRepository,
             FacultyRepository facultyRepository,
             PersonalInfoRepository personalInfoRepository,
-            StudentRepository studentRepository, MasterRepository masterRepository,
+            AdminRepository adminRepository, StudentRepository studentRepository,
+            MasterRepository masterRepository,
             ProblemRepository problemRepository,
             PasswordEncoder passwordEncoder) {
         this.universityRepository = universityRepository;
         this.facultyRepository = facultyRepository;
         this.personalInfoRepository = personalInfoRepository;
+        this.adminRepository = adminRepository;
         this.studentRepository = studentRepository;
         this.masterRepository = masterRepository;
         this.problemRepository = problemRepository;
@@ -55,18 +61,18 @@ public class DataLoader implements CommandLineRunner {
                 .name("دانشگاه شهیدبهشتی")
                 .location("تهران").webAddress("https://www.sbu.ac.ir/")
                 .build());
-        Faculty savedFaculty1 = facultyRepository.save(Faculty.builder()
+        Faculty computerEngineeringFaculty = facultyRepository.save(Faculty.builder()
                 .name("دانشکده‌ مهندسی کامپیوتر")
                 .location("بخش شمالی دانشگاه")
                 .university(savedUniversity1)
                 .build());
-        Faculty savedFaculty2 = facultyRepository.save(Faculty.builder()
+        Faculty PhysicFaculty = facultyRepository.save(Faculty.builder()
                 .name("دانشکده‌ فیزیک")
                 .location("بخش شرقی دانشگاه")
                 .university(savedUniversity1)
                 .build());
-        savedUniversity1.getFaculties().add(savedFaculty1);
-        savedUniversity1.getFaculties().add(savedFaculty2);
+        savedUniversity1.getFaculties().add(computerEngineeringFaculty);
+        savedUniversity1.getFaculties().add(PhysicFaculty);
         universityRepository.save(savedUniversity1);
 
         Problem problem1 = Problem.builder()
@@ -93,36 +99,52 @@ public class DataLoader implements CommandLineRunner {
         Problem savedProblem1 = problemRepository.save(problem1);
         Problem savedProblem2 = problemRepository.save(problem2);
 
-        PersonalInfo personalInfo1 = personalInfoRepository.save(PersonalInfo.builder()
+        PersonalInfo masterPersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
                 .telephoneNumber("09131234567")
-                .email("sample@gmail.com")
+                .email("sadeg.aliakbari@gmail.com")
                 .build());
-        PersonalInfo personalInfo2 = personalInfoRepository.save(PersonalInfo.builder()
+        PersonalInfo studentPersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
                 .telephoneNumber("09137654321")
-                .email("sample1@gmail.com")
+                .email("student@gmail.com")
+                .build());
+        PersonalInfo adminPersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
+                .telephoneNumber("09137654321")
+                .email("admin@gmail.com")
                 .build());
 
         Master master1 = Master.builder()
                 .firstName("صادق")
                 .lastName("علی اکبری")
+                .degree("استاد")
                 .username("master")
                 .password(passwordEncoder.encode("pass"))
-                .personalInfo(personalInfo1)
+                .role(SecurityRoles.MASTER_ROLE_NAME)
+                .personalInfo(masterPersonalInfo)
+                .faculty(computerEngineeringFaculty)
                 .build();
         master1.setProblemsSupervisor(Collections.singleton(savedProblem1));
         master1.setProblemsSupervisor(Collections.singleton(savedProblem2));
         Master savedMaster1 = masterRepository.save(master1);
 
+        computerEngineeringFaculty.getMasters().add(master1);
+        facultyRepository.save(computerEngineeringFaculty);
+
         Student student1 = Student.builder()
                 .firstName("امین")
                 .lastName("برجیان")
+                .studentNumber("96243012")
                 .username("student")
                 .password(passwordEncoder.encode("pass"))
-                .personalInfo(personalInfo2)
+                .role(SecurityRoles.STUDENT_ROLE_NAME)
+                .personalInfo(studentPersonalInfo)
+                .faculty(computerEngineeringFaculty)
                 .build();
         student1.setProblems(Collections.singleton(savedProblem1));
         student1.setProblems(Collections.singleton(savedProblem2));
         Student savedStudent1 = studentRepository.save(student1);
+
+        computerEngineeringFaculty.getStudents().add(student1);
+        facultyRepository.save(computerEngineeringFaculty);
 
         savedProblem1.setSupervisor(savedMaster1);
         savedProblem1.setStudent(savedStudent1);
@@ -131,5 +153,15 @@ public class DataLoader implements CommandLineRunner {
         savedProblem2.setSupervisor(savedMaster1);
         savedProblem2.setStudent(savedStudent1);
         problemRepository.save(savedProblem2);
+
+        Admin admin1 = Admin.builder()
+                .firstName("مدیر")
+                .lastName("سامانه")
+                .username("admin")
+                .password(passwordEncoder.encode("pass"))
+                .role(SecurityRoles.ADMIN_ROLE_NAME)
+                .personalInfo(adminPersonalInfo)
+                .build();
+        Admin savedAdmin1 = adminRepository.save(admin1);
     }
 }
