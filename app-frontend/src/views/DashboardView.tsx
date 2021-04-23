@@ -38,7 +38,7 @@ const DashboardView: React.FunctionComponent = () => {
                     className={classes.mediaCard}
                     media={viewProblemImage}
                     title="مشاهده مسائل"
-                    subTitle="مسائل افزوده‌شده یا در حال پیگیری را مشاهده نمایید."
+                    subTitle="مسئله‌های افزوده‌شده و در حال پیگیری را مشاهده نمایید."
                 >
                     <ButtonLink to={PROBLEM_OBSERVATION_PATH} color="primary">
                         مشاهده

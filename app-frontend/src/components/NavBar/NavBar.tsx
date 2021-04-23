@@ -1,9 +1,11 @@
 import AppBar from "@material-ui/core/AppBar";
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
+import Hidden from "@material-ui/core/Hidden";
 import IconButton from '@material-ui/core/IconButton';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import Toolbar from "@material-ui/core/Toolbar";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import MenuIcon from "@material-ui/icons/Menu";
 import classNames from 'classnames';
@@ -47,6 +49,9 @@ const useStyles = makeStyles((theme: Theme) =>
             overflowX: 'hidden',
             width: theme.spacing(7) + 1,
         },
+        drawerTemporary: {
+            width: NAV_BAR_WIDTH,
+        },
         menuButton: {
             marginLeft: 18,
         },
@@ -63,28 +68,35 @@ interface NavBarProps {
 
 const NavBar: React.FunctionComponent<NavBarProps> = (props) => {
     const classes = useStyles();
+    const mobileMatches = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
+    const container = window !== undefined ? () => document.body : undefined;
 
     const [open, setOpen] = React.useState<boolean>(false);
-    const navBarOnOpenHandler = () => {
-        setOpen(true);
-    };
-    const navBarOnCloseHandler = () => {
-        setOpen(false);
+    const navBarToggleHandler = () => {
+        setOpen(prevState => !prevState);
     };
 
     return (
         <div>
             <AppBar
                 position="fixed"
-                className={classNames(classes.appBar, {[classes.appBarShift]: open})}
+                className={classNames({
+                        [classes.appBar]: true,
+                        [classes.appBarShift]: !mobileMatches && open
+                    }
+                )}
             >
                 <Toolbar dir="rtl">
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
                         edge="end"
-                        onClick={navBarOnOpenHandler}
-                        className={classNames(classes.menuButton, {[classes.menuButtonHidden]: open})}
+                        onClick={navBarToggleHandler}
+                        className={classNames({
+                                [classes.menuButton]: !mobileMatches,
+                                [classes.menuButtonHidden]: !mobileMatches && open
+                            }
+                        )}
                     >
                         <MenuIcon/>
                     </IconButton>
@@ -92,25 +104,35 @@ const NavBar: React.FunctionComponent<NavBarProps> = (props) => {
                 </Toolbar>
             </AppBar>
             <Drawer
-                variant="permanent"
+                container={mobileMatches ? container : undefined}
+                variant={mobileMatches ? "temporary" : "permanent"}
                 anchor="right"
-                className={classNames(classes.drawer, {
-                    [classes.drawerOpen]: open,
-                    [classes.drawerClose]: !open,
+                open={mobileMatches ? open : undefined}
+                onClose={() => mobileMatches ? navBarToggleHandler() : undefined}
+                ModalProps={{
+                    keepMounted: mobileMatches, // Better open performance on mobile.
+                }}
+                className={classNames({
+                    [classes.drawer]: !mobileMatches,
+                    [classes.drawerOpen]: !mobileMatches && open,
+                    [classes.drawerClose]: !mobileMatches && !open,
                 })}
                 classes={{
                     paper: classNames({
-                        [classes.drawerOpen]: open,
-                        [classes.drawerClose]: !open,
-                    }),
+                        [classes.drawerTemporary]: mobileMatches,
+                        [classes.drawerOpen]: !mobileMatches && open,
+                        [classes.drawerClose]: !mobileMatches && !open,
+                    })
                 }}
             >
-                <div className={classes.offset}>
-                    <IconButton onClick={navBarOnCloseHandler}>
-                        <ChevronRightIcon/>
-                    </IconButton>
-                </div>
-                <Divider/>
+                <Hidden xsDown implementation="css">
+                    <div className={classes.offset}>
+                        <IconButton onClick={navBarToggleHandler}>
+                            <ChevronRightIcon/>
+                        </IconButton>
+                    </div>
+                    <Divider/>
+                </Hidden>
                 {props.children}
             </Drawer>
         </div>
