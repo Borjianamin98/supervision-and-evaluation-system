@@ -1,4 +1,6 @@
 import {CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@material-ui/core";
+import Divider from "@material-ui/core/Divider";
+import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import {makeStyles} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
@@ -20,6 +22,9 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(1, 0),
         backgroundColor: theme.palette.primary.light,
         textAlign: "center",
+    },
+    tableContentHeader: {
+        margin: theme.spacing(2, 0),
     },
     circularProgress: {
         margin: theme.spacing(2),
@@ -54,9 +59,17 @@ const CollapsibleTable: React.FunctionComponent<{ problems: Array<Problem>, load
                 key={problem.id}
                 cells={cells}
             >
-                <Typography className={classes.rtl} variant="h6" gutterBottom component="div">
-                    اطلاعات بیش‌تر
-                </Typography>
+                <Grid dir="rtl" container className={classes.rtl}>
+                    <Grid item xs={12} sm={12} md={5} lg={5} xl={5}>
+                        <Typography variant="h6" className={classes.tableContentHeader}>اطلاعات کلی:</Typography>
+                        <Typography paragraph>{`عنوان: ${problem.title}`}</Typography>
+                        <Typography paragraph>{`عنوان انگلیسی: ${problem.englishTitle}`}</Typography>
+                    </Grid>
+                    <Grid item xs={false} sm={false} md={1} lg={1} xl={1}/>
+                    <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                        <Typography variant="h6" className={classes.tableContentHeader}>نظرات:</Typography>
+                    </Grid>
+                </Grid>
             </CollapsibleTableRow>
         );
     });
