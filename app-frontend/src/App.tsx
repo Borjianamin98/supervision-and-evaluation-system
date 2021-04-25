@@ -8,9 +8,9 @@ import {Route, Router, Switch} from 'react-router-dom';
 import {AuthenticationRoute, PrivateRoute} from './components/Route/CustomRoute';
 import {configAxios} from "./config/axios-config";
 import browserHistory from './config/browserHistory';
+import LoginView from './views/auth/LoginView';
 import ErrorView from "./views/error/ErrorView";
 import MainView from "./views/main/MainView";
-import SignInView from './views/SignInView';
 import {LOGIN_VIEW_PATH} from "./views/ViewPaths";
 
 // Configuration
@@ -54,7 +54,7 @@ const App: React.FunctionComponent = () => {
                     <Router history={browserHistory}>
                         <Switch>
                             <AuthenticationRoute path={LOGIN_VIEW_PATH}>
-                                <SignInView/>
+                                <LoginView/>
                             </AuthenticationRoute>
                             <Route exact path="/error">
                                 <ErrorView/>

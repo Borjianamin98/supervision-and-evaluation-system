@@ -8,12 +8,12 @@ import Typography from '@material-ui/core/Typography';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import {AxiosError} from "axios";
 import React, {FormEventHandler, useState} from 'react';
-import {rtlTheme} from '../App';
-import signInImage from "../assets/images/signIn.png";
-import CustomTextField from "../components/Text/CustomTextField";
-import PasswordTextField from '../components/Text/PasswordTextField';
-import {getGeneralErrorMessage} from "../config/axios-config";
-import AuthenticationService from "../services/api/AuthenticationService";
+import {rtlTheme} from '../../App';
+import signInImage from "../../assets/images/signIn.png";
+import CustomTextField from "../../components/Text/CustomTextField";
+import PasswordTextField from '../../components/Text/PasswordTextField';
+import {getGeneralErrorMessage} from "../../config/axios-config";
+import AuthenticationService from "../../services/api/AuthenticationService";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const SignInView: React.FunctionComponent = (props) => {
+const LoginView: React.FunctionComponent = (props) => {
     const classes = useStyles();
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
@@ -128,4 +128,4 @@ const SignInView: React.FunctionComponent = (props) => {
     );
 }
 
-export default SignInView;
+export default LoginView;
