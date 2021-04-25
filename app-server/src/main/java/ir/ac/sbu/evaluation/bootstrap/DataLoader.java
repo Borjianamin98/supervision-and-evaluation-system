@@ -1,6 +1,7 @@
 package ir.ac.sbu.evaluation.bootstrap;
 
 import ir.ac.sbu.evaluation.enumeration.Education;
+import ir.ac.sbu.evaluation.enumeration.Gender;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.model.Problem;
 import ir.ac.sbu.evaluation.model.university.Faculty;
@@ -100,14 +101,17 @@ public class DataLoader implements CommandLineRunner {
         Problem savedProblem2 = problemRepository.save(problem2);
 
         PersonalInfo masterPersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
+                .gender(Gender.MALE)
                 .telephoneNumber("09131234567")
                 .email("sadeg.aliakbari@gmail.com")
                 .build());
         PersonalInfo studentPersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
+                .gender(Gender.MALE)
                 .telephoneNumber("09137654321")
                 .email("student@gmail.com")
                 .build());
         PersonalInfo adminPersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
+                .gender(Gender.MALE)
                 .telephoneNumber("09137654321")
                 .email("admin@gmail.com")
                 .build());
