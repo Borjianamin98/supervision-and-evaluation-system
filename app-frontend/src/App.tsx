@@ -9,9 +9,10 @@ import {AuthenticationRoute, PrivateRoute} from './components/Route/CustomRoute'
 import {configAxios} from "./config/axios-config";
 import browserHistory from './config/browserHistory';
 import LoginView from './views/auth/LoginView';
+import SignUpView from "./views/auth/SignUpView";
 import ErrorView from "./views/error/ErrorView";
 import MainView from "./views/main/MainView";
-import {LOGIN_VIEW_PATH} from "./views/ViewPaths";
+import {AUTH_VIEW_PATH, LOGIN_VIEW_PATH, SIGNUP_VIEW_PATH} from "./views/ViewPaths";
 
 // Configuration
 // Configure axios library globally
@@ -53,8 +54,15 @@ const App: React.FunctionComponent = () => {
                 >
                     <Router history={browserHistory}>
                         <Switch>
-                            <AuthenticationRoute path={LOGIN_VIEW_PATH}>
-                                <LoginView/>
+                            <AuthenticationRoute path={AUTH_VIEW_PATH}>
+                                <Switch>
+                                    <AuthenticationRoute path={LOGIN_VIEW_PATH}>
+                                        <LoginView/>
+                                    </AuthenticationRoute>
+                                    <AuthenticationRoute path={SIGNUP_VIEW_PATH}>
+                                        <SignUpView/>
+                                    </AuthenticationRoute>
+                                </Switch>
                             </AuthenticationRoute>
                             <Route exact path="/error">
                                 <ErrorView/>

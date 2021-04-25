@@ -1,5 +1,7 @@
 // Login Views
-export const LOGIN_VIEW_PATH = "/login";
+export const AUTH_VIEW_PATH = "/auth";
+export const LOGIN_VIEW_PATH = `${AUTH_VIEW_PATH}/login`;
+export const SIGNUP_VIEW_PATH = `${AUTH_VIEW_PATH}/signup`;
 
 // Dashboard Views
 export const DASHBOARD_VIEW_PATH = "/dashboard";
