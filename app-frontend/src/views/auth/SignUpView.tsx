@@ -21,7 +21,7 @@ import {LOGIN_VIEW_PATH} from "../ViewPaths";
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        margin: theme.spacing(8, 3, 3),
+        margin: theme.spacing(3, 3),
         padding: theme.spacing(4),
         display: 'flex',
         flexDirection: 'column',
@@ -33,13 +33,13 @@ const useStyles = makeStyles((theme) => ({
     },
     form: {
         width: '100%', // Fix IE 11 issue.
-        margin: theme.spacing(4, 0, 3),
+        margin: theme.spacing(2, 0),
     },
     submit: {
         margin: theme.spacing(3, 0, 2),
     },
-    button: {
-        maxWidth: 200,
+    title: {
+        margin: theme.spacing(1, 0),
     }
 }));
 
@@ -88,7 +88,7 @@ const SignUpView: React.FunctionComponent = (props) => {
                     <form className={classes.form} noValidate>
                         <Grid container spacing={3}>
                             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                                <Typography variant="h6">
+                                <Typography className={classes.title} variant="h6">
                                     مشخصات عمومی
                                 </Typography>
                                 <CustomTextField
@@ -121,8 +121,6 @@ const SignUpView: React.FunctionComponent = (props) => {
                                     }
                                     inputProps={{
                                         label: "جنسیت",
-                                        helperText: !isNotBlank(user.personalInfo!.gender) ? "جنسیت کاربر نمی‌تواند خالی باشد." : "",
-                                        error: !isNotBlank(user.personalInfo!.gender),
                                     }}
                                 />
                                 <CustomTextField
@@ -152,9 +150,24 @@ const SignUpView: React.FunctionComponent = (props) => {
                                     helperText={!isEmailValid(user.personalInfo!.email) ? "آدرس ایمیل معتبر نمی‌باشد." : ""}
                                     error={!isEmailValid(user.personalInfo!.email)}
                                 />
+                                <Typography className={classes.title} variant="h6">
+                                    اطلاعات دانشگاهی
+                                </Typography>
+                                <ComboBox
+                                    options={["لیست دانشگاه‌ها"]}
+                                    inputProps={{
+                                        label: "دانشگاه",
+                                    }}
+                                />
+                                <ComboBox
+                                    options={["لیست دانشکده‌ها"]}
+                                    inputProps={{
+                                        label: "دانشکده",
+                                    }}
+                                />
                             </Grid>
                             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                                <Typography variant="h6">
+                                <Typography className={classes.title} variant="h6">
                                     حساب کاربری
                                 </Typography>
                                 <CustomTextField
@@ -179,6 +192,23 @@ const SignUpView: React.FunctionComponent = (props) => {
                                         setUser({...user, password: e.target.value})}
                                     helperText={!isNotBlank(user.password!) ? "رمز عبور حساب کاربری معتبر نمی‌باشد." : ""}
                                     error={!isNotBlank(user.password!)}
+                                />
+                                <Typography className={classes.title} variant="h6">
+                                    اطلاعات حساب کاربری
+                                </Typography>
+                                <ComboBox
+                                    options={["دانشجو", "استاد"]}
+                                    inputProps={{
+                                        label: "نوع حساب",
+                                    }}
+                                />
+                                <CustomTextField
+                                    required
+                                    label="مدرک"
+                                />
+                                <CustomTextField
+                                    required
+                                    label="شماره دانشجویی"
                                 />
                             </Grid>
                         </Grid>

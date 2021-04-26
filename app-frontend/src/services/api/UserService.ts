@@ -23,7 +23,6 @@ class UserService {
     }
 
     static isTelephoneNumberValid(telephoneNumber: string) {
-        console.log(telephoneNumber);
         return telephoneNumber.length === 10;
     }
 
