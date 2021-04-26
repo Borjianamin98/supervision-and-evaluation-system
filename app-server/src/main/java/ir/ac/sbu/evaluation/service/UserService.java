@@ -1,8 +1,10 @@
 package ir.ac.sbu.evaluation.service;
 
 import ir.ac.sbu.evaluation.dto.user.UserDto;
+import ir.ac.sbu.evaluation.model.user.PersonalInfo;
 import ir.ac.sbu.evaluation.model.user.User;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
+import ir.ac.sbu.evaluation.repository.user.PersonalInfoRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
 import ir.ac.sbu.evaluation.repository.user.UserRepository;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
@@ -21,14 +23,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService implements UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
+
     private final UserRepository userRepository;
+    private final PersonalInfoRepository personalInfoRepository;
     private final StudentRepository studentRepository;
     private final MasterRepository masterRepository;
 
     public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository,
+            PersonalInfoRepository personalInfoRepository,
             StudentRepository studentRepository, MasterRepository masterRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.personalInfoRepository = personalInfoRepository;
         this.studentRepository = studentRepository;
         this.masterRepository = masterRepository;
     }
@@ -53,7 +59,12 @@ public class UserService implements UserDetailsService {
     @Transactional
     public UserDto save(UserDto userDto) {
         User user = userDto.toUser();
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        if (user.getPersonalInfo() != null) {
+            PersonalInfo savedInfo = personalInfoRepository.save(user.getPersonalInfo());
+            user.setPersonalInfo(savedInfo);
+        }
         return UserDto.from(userRepository.save(user));
     }
 

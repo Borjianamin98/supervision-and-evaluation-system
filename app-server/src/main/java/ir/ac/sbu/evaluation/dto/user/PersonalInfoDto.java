@@ -5,20 +5,26 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import ir.ac.sbu.evaluation.enumeration.Gender;
 import ir.ac.sbu.evaluation.model.user.PersonalInfo;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import lombok.Builder;
 
 public class PersonalInfoDto {
 
+    private final static String EMAIL_REGEX_PATTERN = "^(([^<>()\\[\\]\\\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+
     @JsonProperty(access = Access.READ_ONLY)
     private long id;
 
-    @NotBlank
+    @NotNull
     private Gender gender;
 
     @NotBlank
+    @Pattern(regexp = "[0-9]{10}")
     private String telephoneNumber;
 
     @NotBlank
+    @Pattern(regexp = EMAIL_REGEX_PATTERN)
     private String email;
 
     public PersonalInfoDto() {

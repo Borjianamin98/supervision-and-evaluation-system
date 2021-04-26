@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import ir.ac.sbu.evaluation.model.user.User;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.Builder;
 
 @JsonInclude(Include.NON_NULL)
@@ -27,6 +29,8 @@ public class UserDto {
     @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
 
+    @NotNull
+    @Valid
     private PersonalInfoDto personalInfo;
 
     public UserDto() {
@@ -48,7 +52,7 @@ public class UserDto {
                 .id(user.getId())
                 .username(user.getUsername()).password(user.getPassword())
                 .firstName(user.getFirstName()).lastName(user.getLastName())
-                .personalInfo(PersonalInfoDto.from(user.getPersonalInfo()))
+                .personalInfo(user.getPersonalInfo() != null ? PersonalInfoDto.from(user.getPersonalInfo()) : null)
                 .build();
     }
 
@@ -56,7 +60,7 @@ public class UserDto {
         return User.userBuilder()
                 .firstName(firstName).lastName(lastName)
                 .username(username).password(password)
-                .personalInfo(personalInfo.toPersonalInfo())
+                .personalInfo(personalInfo != null ? personalInfo.toPersonalInfo() : null)
                 .build();
     }
 
