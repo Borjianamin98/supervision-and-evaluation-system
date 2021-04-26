@@ -1,5 +1,6 @@
 import apiAxios from "../../config/axios-config";
 import {User} from "../../model/user/user";
+import {validateEmail} from "../../utility/email-utils";
 import {API_USER_RETRIEVE_MASTERS_PATH} from "../ApiPaths";
 
 class UserService {
@@ -19,6 +20,15 @@ class UserService {
                 email: "",
             }
         }
+    }
+
+    static isTelephoneNumberValid(telephoneNumber: string) {
+        console.log(telephoneNumber);
+        return telephoneNumber.length === 10;
+    }
+
+    static isEmailValid(email: string) {
+        return validateEmail(email)
     }
 
     static retrieveMasterUsers() {

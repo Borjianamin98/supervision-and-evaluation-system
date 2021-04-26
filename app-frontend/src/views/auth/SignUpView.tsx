@@ -46,10 +46,16 @@ const useStyles = makeStyles((theme) => ({
 const SignUpView: React.FunctionComponent = (props) => {
     const classes = useStyles();
     const [user, setUser] = useState<User>(UserService.createInitialUser());
-    // const [errorMessage, setErrorMessage] = useState<string>("");
+    const [errorChecking, setErrorChecking] = React.useState(false);
+
+    const isEmailValid = (email: string) => !errorChecking || UserService.isEmailValid(email);
+    const isTelephoneNumberValid = (telephoneNumber: string) =>
+        !errorChecking || UserService.isTelephoneNumberValid(telephoneNumber.replaceAll(' ', ''));
+    const isNotBlank = (c: string) => !errorChecking || c.length > 0;
 
     const formSubmitHandler: FormEventHandler = (event) => {
         event.preventDefault();
+        setErrorChecking(true);
     }
 
     const setPhoneNumber = (telephoneNumber: string) => {
@@ -79,7 +85,7 @@ const SignUpView: React.FunctionComponent = (props) => {
                     <Typography variant="h5">
                         ثبت نام
                     </Typography>
-                    <form onSubmit={formSubmitHandler} className={classes.form} noValidate>
+                    <form className={classes.form} noValidate>
                         <Grid container spacing={3}>
                             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                                 <Typography variant="h6">
@@ -91,6 +97,8 @@ const SignUpView: React.FunctionComponent = (props) => {
                                     value={user.firstName}
                                     onChange={(e) =>
                                         setUser({...user, firstName: e.target.value})}
+                                    helperText={!isNotBlank(user.firstName) ? "نام کاربر نمی‌تواند خالی باشد." : ""}
+                                    error={!isNotBlank(user.firstName)}
                                 />
                                 <CustomTextField
                                     required
@@ -98,6 +106,8 @@ const SignUpView: React.FunctionComponent = (props) => {
                                     value={user.lastName}
                                     onChange={(e) =>
                                         setUser({...user, lastName: e.target.value})}
+                                    helperText={!isNotBlank(user.lastName) ? "نام خانوادگی نمی‌تواند خالی باشد." : ""}
+                                    error={!isNotBlank(user.lastName)}
                                 />
                                 <ComboBox
                                     options={PERSIAN_GENDERS}
@@ -110,7 +120,9 @@ const SignUpView: React.FunctionComponent = (props) => {
                                         }))
                                     }
                                     inputProps={{
-                                        label: "جنسیت"
+                                        label: "جنسیت",
+                                        helperText: !isNotBlank(user.personalInfo!.gender) ? "جنسیت کاربر نمی‌تواند خالی باشد." : "",
+                                        error: !isNotBlank(user.personalInfo!.gender),
                                     }}
                                 />
                                 <CustomTextField
@@ -122,19 +134,23 @@ const SignUpView: React.FunctionComponent = (props) => {
                                     InputProps={{
                                         endAdornment: <InputAdornment position="end">98+</InputAdornment>,
                                     }}
+                                    helperText={!isTelephoneNumberValid(user.personalInfo!.telephoneNumber) ? "شماره تلفن معتبر نمی‌باشد." : ""}
+                                    error={!isTelephoneNumberValid(user.personalInfo!.telephoneNumber)}
                                 />
                                 <CustomTextField
                                     textDirection={"ltr"}
                                     required
                                     label="آدرس ایمیل"
                                     value={user.personalInfo!.email}
-                                    onChange={(e)  =>
+                                    onChange={(e) =>
                                         setUser(update(user, {
                                             personalInfo: {
                                                 email: () => e.target.value,
                                             }
                                         }))
                                     }
+                                    helperText={!isEmailValid(user.personalInfo!.email) ? "آدرس ایمیل معتبر نمی‌باشد." : ""}
+                                    error={!isEmailValid(user.personalInfo!.email)}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
@@ -148,6 +164,8 @@ const SignUpView: React.FunctionComponent = (props) => {
                                     value={user.username}
                                     onChange={(e) =>
                                         setUser({...user, username: e.target.value})}
+                                    helperText={!isNotBlank(user.username) ? "نام کاربری معتبر نمی‌باشد." : ""}
+                                    error={!isNotBlank(user.username)}
                                 />
                                 <PasswordTextField
                                     dir="rtl"
@@ -159,6 +177,8 @@ const SignUpView: React.FunctionComponent = (props) => {
                                     value={user.password}
                                     onChange={(e) =>
                                         setUser({...user, password: e.target.value})}
+                                    helperText={!isNotBlank(user.password!) ? "رمز عبور حساب کاربری معتبر نمی‌باشد." : ""}
+                                    error={!isNotBlank(user.password!)}
                                 />
                             </Grid>
                         </Grid>
@@ -166,6 +186,7 @@ const SignUpView: React.FunctionComponent = (props) => {
                     <Grid container justify={"center"} spacing={2}>
                         <Grid item>
                             <Button
+                                onClick={formSubmitHandler}
                                 variant="contained"
                                 color="primary"
                             >
