@@ -9,8 +9,10 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import React, {FormEventHandler, useState} from 'react';
 import {rtlTheme} from '../../App';
 import ButtonLink from "../../components/Button/ButtonLink";
+import ComboBox from "../../components/ComboBox/ComboBox";
 import CustomTextField from "../../components/Text/CustomTextField";
 import PasswordTextField from '../../components/Text/PasswordTextField';
+import {genderMapToEnglish, genderMapToPersian, PERSIAN_GENDERS} from "../../model/enum/gender";
 import {User} from "../../model/user/user";
 import UserService from "../../services/api/UserService";
 import {LOGIN_VIEW_PATH} from "../ViewPaths";
@@ -77,6 +79,36 @@ const SignUpView: React.FunctionComponent = (props) => {
                                     value={user.lastName}
                                     onChange={(e) =>
                                         setUser({...user, lastName: e.target.value})}
+                                />
+                                <ComboBox
+                                    options={PERSIAN_GENDERS}
+                                    value={genderMapToPersian(user.personalInfo!.gender)}
+                                    onChange={(e, newValue) =>
+                                        setUser({
+                                            ...user,
+                                            personalInfo: {
+                                                ...user.personalInfo!,
+                                                gender: genderMapToEnglish(newValue)
+                                            }
+                                        })
+                                    }
+                                    inputProps={{
+                                        label: "جنسیت"
+                                    }}
+                                />
+                                <CustomTextField
+                                    required
+                                    label="شماره تلفن"
+                                    value={user.personalInfo!.telephoneNumber}
+                                    onChange={(e) =>
+                                        setUser({
+                                            ...user,
+                                            personalInfo: {
+                                                ...user.personalInfo!,
+                                                telephoneNumber: e.target.value
+                                            }
+                                        })
+                                    }
                                 />
                             </Grid>
                             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
