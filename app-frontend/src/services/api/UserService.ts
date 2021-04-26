@@ -1,10 +1,19 @@
 import apiAxios from "../../config/axios-config";
-import {User} from "../../model/user";
+import {User} from "../../model/user/user";
 import {API_USER_RETRIEVE_MASTERS_PATH} from "../ApiPaths";
 
 class UserService {
 
     private constructor() {
+    }
+
+    static createInitialUser(): User {
+        return {
+            firstName: "",
+            lastName: "",
+            username: "",
+            password: "",
+        }
     }
 
     static retrieveMasterUsers() {

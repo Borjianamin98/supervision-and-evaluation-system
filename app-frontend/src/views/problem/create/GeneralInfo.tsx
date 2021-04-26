@@ -10,7 +10,7 @@ import ComboBox from "../../../components/ComboBox/ComboBox";
 import CustomTextField from "../../../components/Text/CustomTextField";
 import {getGeneralErrorMessage} from "../../../config/axios-config";
 import {PERSIAN_EDUCATIONS} from "../../../model/problem";
-import {User} from "../../../model/user";
+import {User} from "../../../model/user/user";
 import ProblemService from "../../../services/api/ProblemService";
 import UserService from "../../../services/api/UserService";
 import {ProblemTabProps} from "./ProblemCreateView";
