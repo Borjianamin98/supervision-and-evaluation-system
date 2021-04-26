@@ -1,6 +1,6 @@
 package ir.ac.sbu.evaluation.service;
 
-import ir.ac.sbu.evaluation.dto.UserDto;
+import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.model.user.User;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;

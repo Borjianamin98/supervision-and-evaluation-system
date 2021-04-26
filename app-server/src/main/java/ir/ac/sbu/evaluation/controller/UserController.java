@@ -2,7 +2,7 @@ package ir.ac.sbu.evaluation.controller;
 
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_USER_ROOT_PATH;
 
-import ir.ac.sbu.evaluation.dto.UserDto;
+import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.exception.InitializationFailureException;
 import ir.ac.sbu.evaluation.service.UserService;
 import java.io.IOException;

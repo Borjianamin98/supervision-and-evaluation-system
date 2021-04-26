@@ -1,4 +1,4 @@
-package ir.ac.sbu.evaluation.dto;
+package ir.ac.sbu.evaluation.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -27,17 +27,20 @@ public class UserDto {
     @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
 
+    private PersonalInfoDto personalInfo;
+
     public UserDto() {
     }
 
     @Builder
-    public UserDto(long id, String firstName, String lastName,
-            String username, String password) {
+    public UserDto(long id, String firstName, String lastName, String username, String password,
+            PersonalInfoDto personalInfo) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
         this.password = password;
+        this.personalInfo = personalInfo;
     }
 
     public static UserDto from(User user) {
@@ -45,6 +48,7 @@ public class UserDto {
                 .id(user.getId())
                 .username(user.getUsername()).password(user.getPassword())
                 .firstName(user.getFirstName()).lastName(user.getLastName())
+                .personalInfo(PersonalInfoDto.from(user.getPersonalInfo()))
                 .build();
     }
 
@@ -52,6 +56,7 @@ public class UserDto {
         return User.userBuilder()
                 .firstName(firstName).lastName(lastName)
                 .username(username).password(password)
+                .personalInfo(personalInfo.toPersonalInfo())
                 .build();
     }
 
@@ -93,5 +98,13 @@ public class UserDto {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public PersonalInfoDto getPersonalInfo() {
+        return personalInfo;
+    }
+
+    public void setPersonalInfo(PersonalInfoDto personalInfo) {
+        this.personalInfo = personalInfo;
     }
 }

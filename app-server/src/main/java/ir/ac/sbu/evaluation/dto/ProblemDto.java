@@ -2,6 +2,7 @@ package ir.ac.sbu.evaluation.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.enumeration.Education;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.model.Problem;
