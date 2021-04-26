@@ -2,10 +2,12 @@ import {Container} from "@material-ui/core";
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import InputAdornment from "@material-ui/core/InputAdornment";
 import Paper from '@material-ui/core/Paper';
 import {makeStyles, ThemeProvider} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import update from 'immutability-helper';
 import React, {FormEventHandler, useState} from 'react';
 import {rtlTheme} from '../../App';
 import ButtonLink from "../../components/Button/ButtonLink";
@@ -50,6 +52,23 @@ const SignUpView: React.FunctionComponent = (props) => {
         event.preventDefault();
     }
 
+    const setPhoneNumber = (telephoneNumber: string) => {
+        setUser(update(user, {personalInfo: {telephoneNumber: () => telephoneNumber}}))
+    }
+
+    const handlePhoneNumberChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+        const onlyNumbers = event.target.value.replace(/[^0-9]/g, '');
+        if (onlyNumbers.length < 10) {
+            setPhoneNumber(onlyNumbers);
+        } else if (onlyNumbers.length === 10) {
+            const number = onlyNumbers.replace(
+                /(\d{3})(\d{3})(\d{4})/,
+                '$1 $2 $3'
+            );
+            setPhoneNumber(number);
+        }
+    }
+
     return (
         <Container component="main" maxWidth={"lg"}>
             <ThemeProvider theme={rtlTheme}>
@@ -84,30 +103,37 @@ const SignUpView: React.FunctionComponent = (props) => {
                                     options={PERSIAN_GENDERS}
                                     value={genderMapToPersian(user.personalInfo!.gender)}
                                     onChange={(e, newValue) =>
-                                        setUser({
-                                            ...user,
+                                        setUser(update(user, {
                                             personalInfo: {
-                                                ...user.personalInfo!,
-                                                gender: genderMapToEnglish(newValue)
+                                                gender: () => genderMapToEnglish(newValue),
                                             }
-                                        })
+                                        }))
                                     }
                                     inputProps={{
                                         label: "جنسیت"
                                     }}
                                 />
                                 <CustomTextField
+                                    textDirection={"ltr"}
                                     required
                                     label="شماره تلفن"
                                     value={user.personalInfo!.telephoneNumber}
-                                    onChange={(e) =>
-                                        setUser({
-                                            ...user,
+                                    onChange={(e) => handlePhoneNumberChange(e)}
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position="end">98+</InputAdornment>,
+                                    }}
+                                />
+                                <CustomTextField
+                                    textDirection={"ltr"}
+                                    required
+                                    label="آدرس ایمیل"
+                                    value={user.personalInfo!.email}
+                                    onChange={(e)  =>
+                                        setUser(update(user, {
                                             personalInfo: {
-                                                ...user.personalInfo!,
-                                                telephoneNumber: e.target.value
+                                                email: () => e.target.value,
                                             }
-                                        })
+                                        }))
                                     }
                                 />
                             </Grid>
