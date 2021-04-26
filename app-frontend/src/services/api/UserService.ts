@@ -13,6 +13,11 @@ class UserService {
             lastName: "",
             username: "",
             password: "",
+            personalInfo: {
+                gender: "MALE",
+                telephoneNumber: "",
+                email: "",
+            }
         }
     }
 
