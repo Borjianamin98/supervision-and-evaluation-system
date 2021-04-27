@@ -10,7 +10,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import React, {FormEventHandler, useState} from 'react';
 import {rtlTheme} from '../../../App';
 import ButtonLink from "../../../components/Button/ButtonLink";
-import {University} from "../../../model/university/university";
+import {Faculty} from "../../../model/university/faculty";
 import {User} from "../../../model/user/user";
 import UniversityService from "../../../services/api/university/UniversityService";
 import UserService from "../../../services/api/UserService";
@@ -48,8 +48,8 @@ export interface SignUpSectionsProps {
     commonClasses: ClassNameMap,
     user: User,
     setUser: React.Dispatch<React.SetStateAction<User>>,
-    university: University,
-    setUniversity: React.Dispatch<React.SetStateAction<University>>,
+    faculty: Faculty,
+    setFaculty: React.Dispatch<React.SetStateAction<Faculty>>,
     errorChecking: boolean,
 }
 
@@ -57,7 +57,7 @@ const SignUpView: React.FunctionComponent = (props) => {
     const classes = useStyles();
     const commonClasses = useCommonStyles();
     const [user, setUser] = useState<User>(UserService.createInitialUser());
-    const [university, setUniversity] = useState<University>(UniversityService.createInitialUniversity());
+    const [faculty, setFaculty] = useState<Faculty>(UniversityService.createInitialFaculty());
     const [errorChecking, setErrorChecking] = React.useState(false);
 
     const sectionProps: SignUpSectionsProps = {
@@ -65,8 +65,8 @@ const SignUpView: React.FunctionComponent = (props) => {
         errorChecking,
         setUser,
         user,
-        university,
-        setUniversity,
+        faculty,
+        setFaculty,
     }
 
     const formSubmitHandler: FormEventHandler = (event) => {

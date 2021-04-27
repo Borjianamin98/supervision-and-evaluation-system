@@ -1,17 +1,24 @@
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
+import React, {useState} from 'react';
 import AsynchronousComboBox from "../../../components/ComboBox/AsynchronousComboBox";
 import ComboBox from "../../../components/ComboBox/ComboBox";
 import {VirtualizedListBoxComponent, VirtualizedListBoxStyles} from "../../../components/ComboBox/VirtualizedComboBox";
 import CustomTextField from "../../../components/Text/CustomTextField";
+import {University} from "../../../model/university/university";
 import UniversityService from "../../../services/api/university/UniversityService";
 import {SignUpSectionsProps} from "./SignUpView";
 
 const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (props) => {
-    const {commonClasses, user, setUser, university, setUniversity, errorChecking} = props;
+    const {commonClasses, user, setUser, faculty, setFaculty, errorChecking} = props;
+    const [university, setUniversity] = useState<University>(UniversityService.createInitialUniversity());
 
     function loadUniversities() {
         return UniversityService.retrieveUniversities()
+            .then(value => value.data)
+    }
+
+    function loadUniversityFaculties(universityId: number) {
+        return UniversityService.retrieveUniversityFaculties(universityId)
             .then(value => value.data)
     }
 
@@ -32,17 +39,31 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
                 loadingFunction={loadUniversities}
                 textFieldInputProps={{
                     label: "دانشگاه",
-                    helperText: (!isNotBlank(university.name) ? "دانشگاه مربوطه باید انتخاب شود." : ""),
+                    helperText: (isNotBlank(university.name) ? "" : "دانشگاه مربوطه باید انتخاب شود."),
                     error: !isNotBlank(university.name),
                 }}
                 value={university}
-                onChange={(e, newValue) => setUniversity(newValue)}
+                onChange={(e, newValue) => {
+                    setUniversity(newValue);
+                    setFaculty(UniversityService.createInitialFaculty());
+                }}
             />
-            <ComboBox
-                options={["لیست دانشکده‌ها"]}
+            <AsynchronousComboBox
+                disableListWrap
+                getOptionSelected={(option, value) => option.name === value.name}
+                getOptionLabel={(option) => option.name}
+                renderOption={(option) => <Typography noWrap>{option.name}</Typography>}
+                extraClasses={VirtualizedListBoxStyles()}
+                ListboxComponent={VirtualizedListBoxComponent as React.ComponentType<React.HTMLAttributes<HTMLElement>>}
+                loadingFunction={() => loadUniversityFaculties(university.id!)}
                 textFieldInputProps={{
                     label: "دانشکده",
+                    helperText: (isNotBlank(faculty.name) ? "" : "دانشکده مربوطه باید انتخاب شود."),
+                    error: !isNotBlank(faculty.name),
                 }}
+                value={faculty}
+                onChange={(e, newValue) => setFaculty(newValue)}
+                disabled={university.name.length === 0}
             />
             <ComboBox
                 options={["دانشجو", "استاد"]}

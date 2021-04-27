@@ -21,3 +21,4 @@ export const API_PROBLEM_RETRIEVE_OWNER_PROBLEMS_PATH = `${API_PROBLEM_PATH}/own
 
 // University Paths
 export const API_UNIVERSITY_PATH = "/university"
+export const API_UNIVERSITY_LIST_FACULTIES_PATH = `${API_UNIVERSITY_PATH}/{0}/faculty`

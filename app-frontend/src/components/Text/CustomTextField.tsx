@@ -14,7 +14,6 @@ export type CustomTextFieldProps = TextFieldProps & {
 const CustomTextField: React.FunctionComponent<CustomTextFieldProps> = (params) => {
     const {textAlign, maxLength, InputProps, extraInputProps, ...rest} = params;
 
-    const textAlignStyle = {};
     return (
         <TextField
             variant="outlined"
