@@ -6,5 +6,8 @@ export interface User {
     lastName: string,
     username: string,
     password?: string,
-    personalInfo?: PersonalInfo
+    personalInfo?: PersonalInfo,
+
+    // Temporary
+    university: string,
 }

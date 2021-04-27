@@ -18,7 +18,8 @@ class UserService {
                 gender: "MALE",
                 telephoneNumber: "",
                 email: "",
-            }
+            },
+            university: "",
         }
     }
 
