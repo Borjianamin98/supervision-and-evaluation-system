@@ -6,12 +6,15 @@ import {TextFieldProps} from "@material-ui/core/TextField/TextField";
 import React from "react";
 
 export type CustomTextFieldProps = TextFieldProps & {
-    textAlign?: "center" | "end" | "justify" | "left" | "right" | "start",
     extraInputProps?: Partial<InputProps> | Partial<FilledInputProps> | Partial<OutlinedInputProps>
+    textAlign?: "center" | "end" | "justify" | "left" | "right" | "start",
+    maxLength?: number,
 }
 
 const CustomTextField: React.FunctionComponent<CustomTextFieldProps> = (params) => {
-    const {label, textAlign, InputProps, extraInputProps, ...rest} = params;
+    const {textAlign, maxLength, InputProps, extraInputProps, ...rest} = params;
+
+    const textAlignStyle = {};
     return (
         <TextField
             variant="outlined"
@@ -21,8 +24,10 @@ const CustomTextField: React.FunctionComponent<CustomTextFieldProps> = (params) 
                 ...InputProps,
                 ...extraInputProps,
             }}
-            inputProps={textAlign ? ({style: {textAlign: textAlign}}) : undefined}
-            label={label}
+            inputProps={{
+                maxLength: maxLength ?? undefined,
+                style: textAlign ? {textAlign: textAlign} : undefined
+            }}
             {...rest}
         />
     )
