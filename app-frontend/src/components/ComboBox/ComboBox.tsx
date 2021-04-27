@@ -1,6 +1,7 @@
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Autocomplete, {AutocompleteProps} from '@material-ui/lab/Autocomplete';
+import {ClassNameMap} from "notistack";
 import React, {PropsWithChildren} from 'react';
 import CustomTextField, {CustomTextFieldProps} from "../Text/CustomTextField";
 
@@ -12,12 +13,13 @@ const useStyles = makeStyles((theme: Theme) =>
     }));
 
 type ComboBoxProps<T> = Omit<AutocompleteProps<T, false, true, false>, "renderInput"> & {
-    inputProps?: CustomTextFieldProps
+    inputProps?: CustomTextFieldProps,
+    extraClasses?: Partial<ClassNameMap>,
 }
 
 function ComboBox<T>(props: PropsWithChildren<ComboBoxProps<T>>) {
     const classes = useStyles();
-    const {options, inputProps, ...rest} = props;
+    const {options, inputProps, extraClasses, ...rest} = props;
 
     return (
         <Autocomplete
@@ -30,6 +32,7 @@ function ComboBox<T>(props: PropsWithChildren<ComboBoxProps<T>>) {
             disableClearable
             classes={{
                 option: classes.comboItem,
+                ...extraClasses
             }}
             renderInput={(params) =>
                 <CustomTextField
