@@ -54,6 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers(ApiPaths.API_AUTHENTICATION_ROOT_PATH + "/**").permitAll()
+                .antMatchers(ApiPaths.API_UNIVERSITY_ROOT_PATH).permitAll()
                 .antMatchers("/favicon.ico").permitAll()
                 .antMatchers("/actuator/**").permitAll()
                 .antMatchers("/h2-console/**").permitAll()

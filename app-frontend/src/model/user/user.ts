@@ -1,3 +1,4 @@
+import {University} from "../university/university";
 import {PersonalInfo} from "./personalInfo";
 
 export interface User {
@@ -7,7 +8,4 @@ export interface User {
     username: string,
     password?: string,
     personalInfo?: PersonalInfo,
-
-    // Temporary
-    university: string,
 }

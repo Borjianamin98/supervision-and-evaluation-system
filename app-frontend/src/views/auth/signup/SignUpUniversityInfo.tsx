@@ -4,33 +4,15 @@ import AsynchronousComboBox from "../../../components/ComboBox/AsynchronousCombo
 import ComboBox from "../../../components/ComboBox/ComboBox";
 import {VirtualizedListBoxComponent, VirtualizedListBoxStyles} from "../../../components/ComboBox/VirtualizedComboBox";
 import CustomTextField from "../../../components/Text/CustomTextField";
+import UniversityService from "../../../services/api/university/UniversityService";
 import {SignUpSectionsProps} from "./SignUpView";
 
-function sleep(delay = 0) {
-    return new Promise((resolve) => {
-        setTimeout(resolve, delay);
-    });
-}
-
-function random(length: number) {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-
-    for (let i = 0; i < length; i += 1) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-
-    return result;
-}
-
 const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (props) => {
-    const {commonClasses, user, setUser, errorChecking} = props;
+    const {commonClasses, user, setUser, university, setUniversity, errorChecking} = props;
 
-    async function loadFunction() {
-        await sleep(3000); // For demo purposes.
-        return Array.from(new Array(10))
-            .map(() => random(30 + Math.ceil(Math.random() * 20)))
-            .sort((a: string, b: string) => a.toUpperCase().localeCompare(b.toUpperCase()));
+    function loadUniversities() {
+        return UniversityService.retrieveUniversities()
+            .then(value => value.data)
     }
 
     const isNotBlank = (c: string) => !errorChecking || c.length > 0;
@@ -42,21 +24,19 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
             </Typography>
             <AsynchronousComboBox
                 disableListWrap
-                getOptionSelected={(option, value) => option === value}
-                getOptionLabel={(option) => option}
+                getOptionSelected={(option, value) => option.name === value.name}
+                getOptionLabel={(option) => option.name}
+                renderOption={(option) => <Typography noWrap>{option.name}</Typography>}
                 extraClasses={VirtualizedListBoxStyles()}
                 ListboxComponent={VirtualizedListBoxComponent as React.ComponentType<React.HTMLAttributes<HTMLElement>>}
-                loadingFunction={loadFunction}
-                renderOption={(option) => <Typography noWrap>{option}</Typography>}
+                loadingFunction={loadUniversities}
                 textFieldInputProps={{
                     label: "دانشگاه",
-                    helperText: (!isNotBlank(user.university) ? "دانشگاه مربوطه باید انتخاب شود." : ""),
-                    error: !isNotBlank(user.university),
+                    helperText: (!isNotBlank(university.name) ? "دانشگاه مربوطه باید انتخاب شود." : ""),
+                    error: !isNotBlank(university.name),
                 }}
-                value={user.university}
-                onChange={(e, newValue) =>
-                    setUser({...user, university: newValue})
-                }
+                value={university}
+                onChange={(e, newValue) => setUniversity(newValue)}
             />
             <ComboBox
                 options={["لیست دانشکده‌ها"]}

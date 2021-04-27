@@ -19,7 +19,6 @@ class UserService {
                 telephoneNumber: "",
                 email: "",
             },
-            university: "",
         }
     }
 

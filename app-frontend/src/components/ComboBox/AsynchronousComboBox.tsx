@@ -9,6 +9,7 @@ type AsynchronousComboBoxProps<T> = Omit<ComboBoxProps<T>, "options"> & {
 function AsynchronousComboBox<T>(props: AsynchronousComboBoxProps<T>) {
     const [open, setOpen] = React.useState(false);
     const [options, setOptions] = React.useState<T[]>([]);
+    const [noOptionsText, setNoOptionsText] = React.useState<string>("");
     const loading = open && options.length === 0;
 
     const {loadingFunction, ...rest} = props;
@@ -19,12 +20,16 @@ function AsynchronousComboBox<T>(props: AsynchronousComboBoxProps<T>) {
         if (!loading) {
             return undefined;
         }
+        setNoOptionsText("در حال بارگیری ...");
 
         (async () => {
-            const retrievedOptions = await loadingFunction();
-            if (active) {
-                setOptions(retrievedOptions);
-            }
+            loadingFunction()
+                .then(retrievedOptions => {
+                    if (active) {
+                        setOptions(retrievedOptions);
+                    }
+                })
+                .catch(reason => setNoOptionsText("در بارگیری اطلاعات خطایی رخ داده است"));
         })();
 
         return () => {
@@ -49,10 +54,9 @@ function AsynchronousComboBox<T>(props: AsynchronousComboBoxProps<T>) {
             }}
             options={options}
             noOptionsText={
-                loading ? (<Typography dir="rtl">در حال بارگیری ...</Typography>) : (
+                loading ? (<Typography dir="rtl">{noOptionsText}</Typography>) : (
                     <Typography dir="rtl">موردی یافت نشد</Typography>)
             }
-            renderOption={(option) => <Typography noWrap>{option}</Typography>}
             {...rest}
         />
     );
