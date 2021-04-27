@@ -122,7 +122,7 @@ const GeneralInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
                             getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
                             value={problem.supervisor}
                             onChange={(event, newValue) => setProblem({...problem, supervisor: newValue})}
-                            inputProps={{
+                            textFieldInputProps={{
                                 label: "استاد راهنما",
                                 required: true,
                                 helperText: (isNotNull(problem.supervisor) ? "" : "استاد راهنمای مربوط به مسئله باید انتخاب شود."),

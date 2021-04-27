@@ -68,9 +68,9 @@ const SignUpView: React.FunctionComponent = (props) => {
     }
 
     return (
-        <Container component="main" maxWidth={"lg"}>
+        <Container dir="rtl" component="main" maxWidth={"lg"}>
             <ThemeProvider theme={rtlTheme}>
-                <Paper dir="rtl" className={classes.root} elevation={6}>
+                <Paper className={classes.root} elevation={6}>
                     <Avatar className={classes.avatar}>
                         <LockOutlinedIcon/>
                     </Avatar>

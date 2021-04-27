@@ -13,21 +13,21 @@ const useStyles = makeStyles((theme: Theme) =>
     }));
 
 type ComboBoxProps<T> = Omit<AutocompleteProps<T, false, true, false>, "renderInput"> & {
-    inputProps?: CustomTextFieldProps,
+    textFieldInputProps?: CustomTextFieldProps,
     extraClasses?: Partial<ClassNameMap>,
 }
 
 function ComboBox<T>(props: PropsWithChildren<ComboBoxProps<T>>) {
     const classes = useStyles();
-    const {options, inputProps, extraClasses, ...rest} = props;
+    const {options, textFieldInputProps, extraClasses, ...rest} = props;
 
     return (
         <Autocomplete
-            {...rest}
-            // debug // Enabled just for debug purpose
             noOptionsText={
                 <Typography dir="rtl">موردی یافت نشد</Typography>
             }
+            {...rest}
+            // debug={true} // Enabled just for debug purpose
             options={options}
             disableClearable
             classes={{
@@ -37,8 +37,12 @@ function ComboBox<T>(props: PropsWithChildren<ComboBoxProps<T>>) {
             renderInput={(params) =>
                 <CustomTextField
                     {...params}
-                    {...inputProps}
-                    extraInputProps={{autoComplete: 'new-password'}}
+                    {...textFieldInputProps}
+                    extraInputProps={{
+                        ...params.InputProps,
+                        ...textFieldInputProps?.extraInputProps,
+                        autoComplete: 'new-password',
+                    }}
                 />}
         />
     );
