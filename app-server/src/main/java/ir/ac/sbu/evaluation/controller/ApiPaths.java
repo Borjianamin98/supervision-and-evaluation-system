@@ -8,6 +8,8 @@ public class ApiPaths {
 
     public final static String API_PROBLEM_ROOT_PATH = API_ROOT_PATH + "/problem";
 
+    public final static String API_UNIVERSITY_ROOT_PATH = API_ROOT_PATH + "/university";
+
     private ApiPaths() {
     }
 
