@@ -1,24 +1,27 @@
-import {InputBaseComponentProps} from "@material-ui/core";
+import {OutlinedInputProps} from "@material-ui/core";
+import {FilledInputProps} from "@material-ui/core/FilledInput";
+import {InputProps} from "@material-ui/core/Input";
 import TextField from "@material-ui/core/TextField";
 import {TextFieldProps} from "@material-ui/core/TextField/TextField";
 import React from "react";
 
 export type CustomTextFieldProps = TextFieldProps & {
-    textDirection?: "rtl" | "ltr",
-    extraInputProps?: InputBaseComponentProps
+    textAlign?: "center" | "end" | "justify" | "left" | "right" | "start",
+    extraInputProps?: Partial<InputProps> | Partial<FilledInputProps> | Partial<OutlinedInputProps>
 }
 
 const CustomTextField: React.FunctionComponent<CustomTextFieldProps> = (params) => {
-    const {label, textDirection, extraInputProps, ...rest} = params;
+    const {label, textAlign, InputProps, extraInputProps, ...rest} = params;
     return (
         <TextField
             variant="outlined"
             margin="normal"
             fullWidth
-            inputProps={{
-                dir: textDirection ?? "rtl",
-                ...extraInputProps
+            InputProps={{
+                ...InputProps,
+                ...extraInputProps,
             }}
+            inputProps={textAlign ? ({style: {textAlign: textAlign}}) : undefined}
             label={label}
             {...rest}
         />

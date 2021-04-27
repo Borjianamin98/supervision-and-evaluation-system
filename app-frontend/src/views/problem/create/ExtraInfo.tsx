@@ -36,9 +36,9 @@ const ExtraInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
                                 "" : "تعریف مسئله در حداقل 15 کلمه توضیح داده شود."}
                             error={!isDefinitionValid(problem.definition)}
                             required
-                            extraInputProps={{
-                                maxLength: ProblemService.MAX_LONG_STRING_LENGTH,
-                            }}
+                            // extraInputProps={{
+                            //     maxLength: ProblemService.MAX_LONG_STRING_LENGTH,
+                            // }}
                         />
                         <CustomTextField
                             label="پیشینه مسئله"
@@ -46,9 +46,9 @@ const ExtraInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
                             rowsMax={4}
                             value={problem.history}
                             onChange={event => setProblem({...problem, history: event.target.value})}
-                            extraInputProps={{
-                                maxLength: ProblemService.MAX_LONG_STRING_LENGTH
-                            }}
+                            // extraInputProps={{
+                            //     maxLength: ProblemService.MAX_LONG_STRING_LENGTH
+                            // }}
                         />
                         <CustomTextField
                             label="ملاحظات"
@@ -59,9 +59,9 @@ const ExtraInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
                             helperText={isNotBlank(problem.considerations) ? "" : "ملاحضات مسئله باید ذکر شود."}
                             error={!isNotBlank(problem.considerations)}
                             required
-                            extraInputProps={{
-                                maxLength: ProblemService.MAX_LONG_STRING_LENGTH
-                            }}
+                            // extraInputProps={{
+                            //     maxLength: ProblemService.MAX_LONG_STRING_LENGTH
+                            // }}
                         />
                     </ThemeProvider>
                 </Paper>

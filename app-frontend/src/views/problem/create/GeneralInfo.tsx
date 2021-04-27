@@ -68,21 +68,21 @@ const GeneralInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
                             helperText={isNotBlank(problem.title) ? "" : "عنوان مسئله باید ذکر شود."}
                             error={!isNotBlank(problem.title)}
                             required
-                            extraInputProps={{
-                                maxLength: 70
-                            }}
+                            // extraInputProps={{
+                            //     maxLength: 70
+                            // }}
                         />
                         <CustomTextField
                             label="عنوان انگلیسی"
-                            textDirection="ltr"
+                            textAlign="left"
                             value={problem.englishTitle}
                             onChange={event => setProblem({...problem, englishTitle: event.target.value})}
                             helperText={isNotBlank(problem.englishTitle) ? "" : "عنوان انگلیسی مسئله باید ذکر شود."}
                             error={!isNotBlank(problem.englishTitle)}
                             required
-                            extraInputProps={{
-                                maxLength: 70
-                            }}
+                            // extraInputProps={{
+                            //     maxLength: 70
+                            // }}
                         />
                         <Autocomplete
                             multiple
