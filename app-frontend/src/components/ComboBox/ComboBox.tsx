@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme: Theme) =>
         }
     }));
 
-type ComboBoxProps<T> = Omit<AutocompleteProps<T, false, true, false>, "renderInput"> & {
+export type ComboBoxProps<T> = Omit<AutocompleteProps<T, false, true, false>, "renderInput"> & {
     textFieldInputProps?: CustomTextFieldProps,
     extraClasses?: Partial<ClassNameMap>,
 }
