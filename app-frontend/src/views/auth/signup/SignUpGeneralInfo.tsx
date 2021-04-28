@@ -121,8 +121,8 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
                 value={user.password}
                 onChange={(e) =>
                     setUser({...user, password: e.target.value})}
-                helperText={!isNotBlank(user.password!) ? "رمز عبور حساب کاربری معتبر نمی‌باشد." : ""}
-                error={!isNotBlank(user.password!)}
+                helperText={!UserService.isPasswordValid(user.password!) ? "رمز عبور حساب کاربری معتبر نمی‌باشد." : ""}
+                error={!UserService.isPasswordValid(user.password!)}
             />
         </React.Fragment>
     );

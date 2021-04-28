@@ -8,6 +8,7 @@ import ir.ac.sbu.evaluation.model.user.User;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.Builder;
 
 @JsonInclude(Include.NON_NULL)
@@ -26,6 +27,7 @@ public class UserDto {
     private String username;
 
     @NotBlank
+    @Size(min = 8)
     @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
 
@@ -52,7 +54,9 @@ public class UserDto {
                 .id(user.getId())
                 .username(user.getUsername()).password(user.getPassword())
                 .firstName(user.getFirstName()).lastName(user.getLastName())
-                .personalInfo(hasPersonalInfo && user.getPersonalInfo() != null ? PersonalInfoDto.from(user.getPersonalInfo()) : null)
+                .personalInfo(
+                        hasPersonalInfo && user.getPersonalInfo() != null ? PersonalInfoDto.from(user.getPersonalInfo())
+                                : null)
                 .build();
     }
 

@@ -82,7 +82,16 @@ const SignUpView: React.FunctionComponent = (props) => {
 
     const formSubmitHandler: FormEventHandler = (event) => {
         event.preventDefault();
-        setErrorChecking(true);
+        if (!UserService.isUserValid(user)) {
+            setErrorChecking(true);
+            return;
+        }
+        if ((extraUserInfo.role === "STUDENT" && UserService.isStudentNumberValid(extraUserInfo.studentNumber))
+            || (extraUserInfo.role === "MASTER" && extraUserInfo.degree.length > 1)) {
+            // TODO: Send to API
+        } else {
+            setErrorChecking(true);
+        }
     }
 
     return (

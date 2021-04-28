@@ -7,6 +7,7 @@ import CustomTextField from "../../../components/Text/CustomTextField";
 import {PERSIAN_ROLES, roleMapToEnglish, roleMapToPersian} from "../../../model/enum/role";
 import {University} from "../../../model/university/university";
 import UniversityService from "../../../services/api/university/UniversityService";
+import UserService from "../../../services/api/UserService";
 import {SignUpSectionsProps} from "./SignUpView";
 
 const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (props) => {
@@ -97,8 +98,8 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
                 label="شماره دانشجویی"
                 value={extraUserInfo.studentNumber}
                 onChange={handleStudentNumberChange}
-                helperText={isNotBlank(extraUserInfo.studentNumber) ? "" : "شماره دانشجویی را باید مشخص کنید."}
-                error={!isNotBlank(extraUserInfo.studentNumber)}
+                helperText={UserService.isStudentNumberValid(extraUserInfo.studentNumber) ? "" : "شماره دانشجویی را باید مشخص کنید."}
+                error={!UserService.isStudentNumberValid(extraUserInfo.studentNumber)}
                 maxLength={20}
             /> : undefined}
         </React.Fragment>
