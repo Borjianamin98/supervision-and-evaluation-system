@@ -15,7 +15,7 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
     const isPasswordValid = (password: string) => !errorChecking || UserService.isPasswordValid(password);
     const isEmailValid = (email: string) => !errorChecking || UserService.isEmailValid(email);
     const isTelephoneNumberValid = (telephoneNumber: string) =>
-        !errorChecking || UserService.isTelephoneNumberValid(telephoneNumber.replaceAll(' ', ''));
+        !errorChecking || UserService.isTelephoneNumberValid(telephoneNumber);
     const isNotBlank = (c: string) => !errorChecking || c.length > 0;
 
     const setPhoneNumber = (telephoneNumber: string) => {
@@ -24,14 +24,17 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
 
     const handlePhoneNumberChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
         const onlyNumbers = event.target.value.replace(/[^0-9]/g, '');
-        if (onlyNumbers.length < 10) {
-            setPhoneNumber(onlyNumbers);
-        } else if (onlyNumbers.length === 10) {
-            const number = onlyNumbers.replace(
+        setPhoneNumber(onlyNumbers);
+    }
+
+    const phoneNumberRepresentation = (phoneNumber: string) => {
+        if (phoneNumber.length < 10) {
+            return phoneNumber;
+        } else if (phoneNumber.length === 10) {
+            return phoneNumber.replace(
                 /(\d{3})(\d{3})(\d{4})/,
                 '$1 $2 $3'
             );
-            setPhoneNumber(number);
         }
     }
 
@@ -76,7 +79,7 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
                 textDir="ltr"
                 required
                 label="شماره تلفن"
-                value={user.personalInfo!.telephoneNumber}
+                value={phoneNumberRepresentation(user.personalInfo!.telephoneNumber)}
                 onChange={(e) => handlePhoneNumberChange(e)}
                 InputProps={{
                     endAdornment: <InputAdornment position="end">98+</InputAdornment>,
@@ -122,7 +125,7 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
                 value={user.password}
                 onChange={(e) =>
                     setUser({...user, password: e.target.value})}
-                helperText={!isPasswordValid(user.password!) ? "رمز عبور حساب کاربری معتبر نمی‌باشد." : ""}
+                helperText={!isPasswordValid(user.password!) ? "رمز عبور حساب کاربری معتبر نمی‌باشد. (رمز عبور حداقل 8 حرف می‌باشد.)" : ""}
                 error={!isPasswordValid(user.password!)}
             />
         </React.Fragment>

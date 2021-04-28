@@ -7,15 +7,20 @@ import {makeStyles, ThemeProvider} from '@material-ui/core/styles';
 import {ClassNameMap} from "@material-ui/core/styles/withStyles";
 import Typography from '@material-ui/core/Typography';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import {AxiosError} from "axios";
+import {useSnackbar} from "notistack";
 import React, {FormEventHandler, useState} from 'react';
 import {rtlTheme} from '../../../App';
 import ButtonLink from "../../../components/Button/ButtonLink";
+import {getGeneralErrorMessage} from "../../../config/axios-config";
+import browserHistory from "../../../config/browserHistory";
 import {ENGLISH_ROLES} from "../../../model/enum/role";
 import {Faculty} from "../../../model/university/faculty";
-import {Master} from "../../../model/user/master";
-import {Student} from "../../../model/user/student";
+import {MasterSpecialInfo} from "../../../model/user/master";
+import {StudentSpecialInfo} from "../../../model/user/student";
 import {User} from "../../../model/user/user";
 import UniversityService from "../../../services/api/university/UniversityService";
+import MasterService from "../../../services/api/user/MasterService";
 import StudentService from "../../../services/api/user/StudentService";
 import UserService from "../../../services/api/user/UserService";
 import {LOGIN_VIEW_PATH} from "../../ViewPaths";
@@ -48,7 +53,7 @@ const useCommonStyles = makeStyles((theme) => ({
     }
 }));
 
-type ExtraUserInfo = Omit<Student & Master, "user"> & { role: string };
+type ExtraUserInfo = MasterSpecialInfo & StudentSpecialInfo & { role: string };
 
 export interface SignUpSectionsProps {
     commonClasses: ClassNameMap,
@@ -69,6 +74,7 @@ const SignUpView: React.FunctionComponent = (props) => {
     const [extraUserInfo, setExtraUserInfo] = useState<ExtraUserInfo>(
         {degree: "", studentNumber: "", role: ENGLISH_ROLES[0]});
     const [errorChecking, setErrorChecking] = React.useState(false);
+    const {enqueueSnackbar} = useSnackbar();
 
     const sectionProps: SignUpSectionsProps = {
         commonClasses,
@@ -81,6 +87,21 @@ const SignUpView: React.FunctionComponent = (props) => {
         setExtraUserInfo
     }
 
+    const handleSuccessSubmit = () => {
+        enqueueSnackbar("حساب کاربری با موفقیت ایجاد شد.", {variant: "success"});
+        browserHistory.push(LOGIN_VIEW_PATH);
+    }
+
+    const handleFailedSubmit = (error: AxiosError) => {
+        const {statusCode, message} = getGeneralErrorMessage(error);
+        if (statusCode) {
+            enqueueSnackbar(`در ارسال درخواست از سرور خطای ${statusCode} دریافت شد.`,
+                {variant: "error"});
+        } else if (!statusCode) {
+            enqueueSnackbar(message, {variant: "error"});
+        }
+    }
+
     const formSubmitHandler: FormEventHandler = (event) => {
         event.preventDefault();
         if (!UserService.isUserValid(user)) {
@@ -88,10 +109,15 @@ const SignUpView: React.FunctionComponent = (props) => {
             return;
         }
         if (extraUserInfo.role === "STUDENT" && StudentService.isStudentNumberValid(extraUserInfo.studentNumber)) {
-            // TODO: Send to API
-
+            StudentService.registerStudent({
+                ...user,
+                studentNumber: extraUserInfo.studentNumber,
+            }).then(value => handleSuccessSubmit()).catch(error => handleFailedSubmit(error))
         } else if (extraUserInfo.role === "MASTER" && extraUserInfo.degree.length > 1) {
-
+            MasterService.registerMaster({
+                ...user,
+                degree: extraUserInfo.degree,
+            }).then(value => handleSuccessSubmit()).catch(error => handleFailedSubmit(error))
         } else {
             setErrorChecking(true);
         }

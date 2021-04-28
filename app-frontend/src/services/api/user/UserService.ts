@@ -28,7 +28,7 @@ class UserService {
             user.lastName.length > 0 &&
             user.personalInfo &&
             UserService.isTelephoneNumberValid(user.personalInfo.telephoneNumber) &&
-            UserService.isEmailValid(user.personalInfo.telephoneNumber) &&
+            UserService.isEmailValid(user.personalInfo.email) &&
             ENGLISH_GENDERS.includes(user.personalInfo.gender)
     }
 

@@ -1,6 +1,8 @@
 import {User} from "./user";
 
-export interface Student {
-    user: User,
+export interface Student extends User, StudentSpecialInfo {
+}
+
+export interface StudentSpecialInfo {
     studentNumber: string,
 }
