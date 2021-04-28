@@ -1,8 +1,6 @@
-import apiAxios from "../../config/axios-config";
-import {ENGLISH_GENDERS} from "../../model/enum/gender";
-import {User} from "../../model/user/user";
-import {validateEmail} from "../../utility/email-utils";
-import {API_USER_RETRIEVE_MASTERS_PATH} from "../ApiPaths";
+import {ENGLISH_GENDERS} from "../../../model/enum/gender";
+import {User} from "../../../model/user/user";
+import {validateEmail} from "../../../utility/email-utils";
 
 class UserService {
 
@@ -23,13 +21,6 @@ class UserService {
         }
     }
 
-    static retrieveMasterUsers() {
-        return apiAxios.get<Array<User>>(API_USER_RETRIEVE_MASTERS_PATH,
-            {
-                validateStatus: status => status === 200
-            })
-    }
-
     static isUserValid(user: User) {
         return user.username.length > 0 &&
             user.password && UserService.isPasswordValid(user.password) &&
@@ -43,11 +34,6 @@ class UserService {
 
     static isPasswordValid(password: string) {
         return password.length >= 8;
-    }
-
-    static isStudentNumberValid(studentNumber: string) {
-        return studentNumber.replace(/[^0-9]/g, '') === studentNumber
-            && studentNumber.length > 0;
     }
 
     static isTelephoneNumberValid(telephoneNumber: string) {

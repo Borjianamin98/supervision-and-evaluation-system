@@ -12,7 +12,7 @@ import {getGeneralErrorMessage} from "../../../config/axios-config";
 import {PERSIAN_EDUCATIONS} from "../../../model/problem";
 import {User} from "../../../model/user/user";
 import ProblemService from "../../../services/api/ProblemService";
-import UserService from "../../../services/api/UserService";
+import MasterService from "../../../services/api/user/MasterService";
 import {ProblemTabProps} from "./ProblemCreateView";
 
 const GeneralInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
@@ -21,7 +21,7 @@ const GeneralInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
 
     const [masterUsers, setMasterUsers] = React.useState<User[]>([]);
     React.useEffect(() => {
-        UserService.retrieveMasterUsers()
+        MasterService.retrieveMasterUsers()
             .then(value => setMasterUsers(value.data))
             .catch(error => {
                 const {message, statusCode} = getGeneralErrorMessage(error);

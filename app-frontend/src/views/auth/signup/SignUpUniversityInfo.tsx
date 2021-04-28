@@ -7,7 +7,7 @@ import CustomTextField from "../../../components/Text/CustomTextField";
 import {PERSIAN_ROLES, roleMapToEnglish, roleMapToPersian} from "../../../model/enum/role";
 import {University} from "../../../model/university/university";
 import UniversityService from "../../../services/api/university/UniversityService";
-import UserService from "../../../services/api/UserService";
+import StudentService from "../../../services/api/user/StudentService";
 import {SignUpSectionsProps} from "./SignUpView";
 
 const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (props) => {
@@ -29,6 +29,7 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
         setExtraUserInfo({...extraUserInfo, studentNumber: onlyNumbers})
     }
 
+    const isStudentNumberValid = (c: string) => !errorChecking || StudentService.isStudentNumberValid(c);
     const isNotBlank = (c: string) => !errorChecking || c.length > 0;
 
     return (
@@ -98,8 +99,8 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
                 label="شماره دانشجویی"
                 value={extraUserInfo.studentNumber}
                 onChange={handleStudentNumberChange}
-                helperText={UserService.isStudentNumberValid(extraUserInfo.studentNumber) ? "" : "شماره دانشجویی را باید مشخص کنید."}
-                error={!UserService.isStudentNumberValid(extraUserInfo.studentNumber)}
+                helperText={isStudentNumberValid(extraUserInfo.studentNumber) ? "" : "شماره دانشجویی را باید مشخص کنید."}
+                error={!isStudentNumberValid(extraUserInfo.studentNumber)}
                 maxLength={20}
             /> : undefined}
         </React.Fragment>

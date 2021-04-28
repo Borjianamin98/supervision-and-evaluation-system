@@ -6,12 +6,13 @@ import ComboBox from "../../../components/ComboBox/ComboBox";
 import CustomTextField from "../../../components/Text/CustomTextField";
 import PasswordTextField from '../../../components/Text/PasswordTextField';
 import {genderMapToEnglish, genderMapToPersian, PERSIAN_GENDERS} from "../../../model/enum/gender";
-import UserService from "../../../services/api/UserService";
+import UserService from "../../../services/api/user/UserService";
 import {SignUpSectionsProps} from "./SignUpView";
 
 const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) => {
     const {commonClasses, user, setUser, errorChecking} = props;
 
+    const isPasswordValid = (password: string) => !errorChecking || UserService.isPasswordValid(password);
     const isEmailValid = (email: string) => !errorChecking || UserService.isEmailValid(email);
     const isTelephoneNumberValid = (telephoneNumber: string) =>
         !errorChecking || UserService.isTelephoneNumberValid(telephoneNumber.replaceAll(' ', ''));
@@ -121,8 +122,8 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
                 value={user.password}
                 onChange={(e) =>
                     setUser({...user, password: e.target.value})}
-                helperText={!UserService.isPasswordValid(user.password!) ? "رمز عبور حساب کاربری معتبر نمی‌باشد." : ""}
-                error={!UserService.isPasswordValid(user.password!)}
+                helperText={!isPasswordValid(user.password!) ? "رمز عبور حساب کاربری معتبر نمی‌باشد." : ""}
+                error={!isPasswordValid(user.password!)}
             />
         </React.Fragment>
     );

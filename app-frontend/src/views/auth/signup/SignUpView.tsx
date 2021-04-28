@@ -16,7 +16,8 @@ import {Master} from "../../../model/user/master";
 import {Student} from "../../../model/user/student";
 import {User} from "../../../model/user/user";
 import UniversityService from "../../../services/api/university/UniversityService";
-import UserService from "../../../services/api/UserService";
+import StudentService from "../../../services/api/user/StudentService";
+import UserService from "../../../services/api/user/UserService";
 import {LOGIN_VIEW_PATH} from "../../ViewPaths";
 import SignUpGeneralInfo from "./SignUpGeneralInfo";
 import SignUpUniversityInfo from "./SignUpUniversityInfo";
@@ -86,9 +87,11 @@ const SignUpView: React.FunctionComponent = (props) => {
             setErrorChecking(true);
             return;
         }
-        if ((extraUserInfo.role === "STUDENT" && UserService.isStudentNumberValid(extraUserInfo.studentNumber))
-            || (extraUserInfo.role === "MASTER" && extraUserInfo.degree.length > 1)) {
+        if (extraUserInfo.role === "STUDENT" && StudentService.isStudentNumberValid(extraUserInfo.studentNumber)) {
             // TODO: Send to API
+
+        } else if (extraUserInfo.role === "MASTER" && extraUserInfo.degree.length > 1) {
+
         } else {
             setErrorChecking(true);
         }
