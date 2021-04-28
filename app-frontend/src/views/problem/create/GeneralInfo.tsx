@@ -72,7 +72,7 @@ const GeneralInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
                         />
                         <CustomTextField
                             label="عنوان انگلیسی"
-                            textAlign="left"
+                            textDir="ltr"
                             value={problem.englishTitle}
                             onChange={event => setProblem({...problem, englishTitle: event.target.value})}
                             helperText={isNotBlank(problem.englishTitle) ? "" : "عنوان انگلیسی مسئله باید ذکر شود."}

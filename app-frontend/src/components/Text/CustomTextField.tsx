@@ -7,12 +7,12 @@ import React from "react";
 
 export type CustomTextFieldProps = TextFieldProps & {
     extraInputProps?: Partial<InputProps> | Partial<FilledInputProps> | Partial<OutlinedInputProps>
-    textAlign?: "center" | "end" | "justify" | "left" | "right" | "start",
+    textDir?: "ltr" | "rtl",
     maxLength?: number,
 }
 
 const CustomTextField: React.FunctionComponent<CustomTextFieldProps> = (params) => {
-    const {textAlign, maxLength, InputProps, extraInputProps, ...rest} = params;
+    const {textDir, maxLength, InputProps, extraInputProps, ...rest} = params;
 
     return (
         <TextField
@@ -25,7 +25,7 @@ const CustomTextField: React.FunctionComponent<CustomTextFieldProps> = (params) 
             }}
             inputProps={{
                 maxLength: maxLength ?? undefined,
-                style: textAlign ? {textAlign: textAlign} : undefined
+                dir: textDir ? textDir : undefined
             }}
             {...rest}
         />

@@ -72,7 +72,7 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
                 }}
             />
             <CustomTextField
-                textAlign="left"
+                textDir="ltr"
                 required
                 label="شماره تلفن"
                 value={user.personalInfo!.telephoneNumber}
@@ -84,7 +84,7 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
                 error={!isTelephoneNumberValid(user.personalInfo!.telephoneNumber)}
             />
             <CustomTextField
-                textAlign="left"
+                textDir="ltr"
                 required
                 label="آدرس ایمیل"
                 value={user.personalInfo!.email}
