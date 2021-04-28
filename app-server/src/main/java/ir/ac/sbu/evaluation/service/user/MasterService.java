@@ -1,9 +1,11 @@
 package ir.ac.sbu.evaluation.service.user;
 
-import ir.ac.sbu.evaluation.dto.user.MasterDto;
 import ir.ac.sbu.evaluation.dto.user.UserDto;
+import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
+import ir.ac.sbu.evaluation.model.university.Faculty;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.PersonalInfo;
+import ir.ac.sbu.evaluation.repository.university.FacultyRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.PersonalInfoRepository;
 import java.util.List;
@@ -19,13 +21,16 @@ public class MasterService {
 
     private final PersonalInfoRepository personalInfoRepository;
     private final MasterRepository masterRepository;
+    private final FacultyRepository facultyRepository;
 
     public MasterService(PasswordEncoder passwordEncoder,
             PersonalInfoRepository personalInfoRepository,
-            MasterRepository masterRepository) {
+            MasterRepository masterRepository,
+            FacultyRepository facultyRepository) {
         this.passwordEncoder = passwordEncoder;
         this.personalInfoRepository = personalInfoRepository;
         this.masterRepository = masterRepository;
+        this.facultyRepository = facultyRepository;
     }
 
     public List<UserDto> listAsUser() {
@@ -35,9 +40,13 @@ public class MasterService {
     }
 
     @Transactional
-    public MasterDto save(MasterDto masterDto) {
+    public MasterDto save(MasterDto masterDto, long facultyId) {
+        Faculty faculty = facultyRepository.findById(facultyId)
+                .orElseThrow(() -> new IllegalArgumentException("Faculty not found: ID = " + facultyId));
+
         Master master = masterDto.toMaster();
         master.setPassword(passwordEncoder.encode(master.getPassword()));
+        master.setFaculty(faculty);
 
         if (master.getPersonalInfo() != null) {
             PersonalInfo savedInfo = personalInfoRepository.save(master.getPersonalInfo());

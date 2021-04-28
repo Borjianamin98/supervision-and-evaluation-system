@@ -1,7 +1,9 @@
-package ir.ac.sbu.evaluation.dto.user;
+package ir.ac.sbu.evaluation.dto.user.master;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import ir.ac.sbu.evaluation.dto.user.PersonalInfoDto;
+import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.model.user.Master;
 import javax.validation.constraints.NotBlank;
 import lombok.Builder;

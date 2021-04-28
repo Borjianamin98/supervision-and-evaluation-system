@@ -1,7 +1,9 @@
-package ir.ac.sbu.evaluation.dto.user;
+package ir.ac.sbu.evaluation.dto.user.student;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import ir.ac.sbu.evaluation.dto.user.PersonalInfoDto;
+import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.model.user.Student;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;

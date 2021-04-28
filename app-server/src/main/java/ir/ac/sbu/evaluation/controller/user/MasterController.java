@@ -2,8 +2,9 @@ package ir.ac.sbu.evaluation.controller.user;
 
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_MASTER_ROOT_PATH;
 
-import ir.ac.sbu.evaluation.dto.user.MasterDto;
+import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
 import ir.ac.sbu.evaluation.dto.user.UserDto;
+import ir.ac.sbu.evaluation.dto.user.master.MasterRegisterDto;
 import ir.ac.sbu.evaluation.service.user.MasterService;
 import java.util.List;
 import javax.validation.Valid;
@@ -31,7 +32,7 @@ public class MasterController {
     }
 
     @PostMapping(path = API_MASTER_REGISTER_PATH)
-    public MasterDto add(@Valid @RequestBody MasterDto masterDto) {
-        return masterService.save(masterDto);
+    public MasterDto add(@Valid @RequestBody MasterRegisterDto masterRegisterDto) {
+        return masterService.save(masterRegisterDto.getMaster(), masterRegisterDto.getFacultyId());
     }
 }

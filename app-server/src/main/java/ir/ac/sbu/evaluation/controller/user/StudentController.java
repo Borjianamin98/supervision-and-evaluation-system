@@ -2,8 +2,9 @@ package ir.ac.sbu.evaluation.controller.user;
 
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_STUDENT_ROOT_PATH;
 
-import ir.ac.sbu.evaluation.dto.user.StudentDto;
 import ir.ac.sbu.evaluation.dto.user.UserDto;
+import ir.ac.sbu.evaluation.dto.user.student.StudentDto;
+import ir.ac.sbu.evaluation.dto.user.student.StudentRegisterDto;
 import ir.ac.sbu.evaluation.service.user.StudentService;
 import java.util.List;
 import javax.validation.Valid;
@@ -31,7 +32,7 @@ public class StudentController {
     }
 
     @PostMapping(path = API_STUDENT_REGISTER_PATH)
-    public StudentDto add(@Valid @RequestBody StudentDto studentDto) {
-        return studentService.save(studentDto);
+    public StudentDto register(@Valid @RequestBody StudentRegisterDto studentRegisterDto) {
+        return studentService.save(studentRegisterDto.getStudent(), studentRegisterDto.getFacultyId());
     }
 }
