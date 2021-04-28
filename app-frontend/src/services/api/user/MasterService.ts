@@ -1,5 +1,5 @@
 import apiAxios from "../../../config/axios-config";
-import {Master} from "../../../model/user/master";
+import {Master, MasterRegister} from "../../../model/user/master";
 import {User} from "../../../model/user/user";
 import {API_MASTER_PATH, API_MASTER_REGISTER_PATH} from "../../ApiPaths";
 
@@ -8,8 +8,8 @@ class MasterService {
     private constructor() {
     }
 
-    static registerMaster(master: Master) {
-        return apiAxios.post<Master>(API_MASTER_REGISTER_PATH, master,
+    static registerMaster(masterRegister: MasterRegister) {
+        return apiAxios.post<Master>(API_MASTER_REGISTER_PATH, masterRegister,
             {
                 validateStatus: status => status === 200
             })

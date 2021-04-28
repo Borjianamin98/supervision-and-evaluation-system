@@ -1,5 +1,5 @@
 import apiAxios from "../../../config/axios-config";
-import {Student} from "../../../model/user/student";
+import {Student, StudentRegister} from "../../../model/user/student";
 import {API_STUDENT_REGISTER_PATH} from "../../ApiPaths";
 
 class StudentService {
@@ -7,8 +7,8 @@ class StudentService {
     private constructor() {
     }
 
-    static registerStudent(student: Student) {
-        return apiAxios.post<Student>(API_STUDENT_REGISTER_PATH, student,
+    static registerStudent(studentRegister: StudentRegister) {
+        return apiAxios.post<Student>(API_STUDENT_REGISTER_PATH, studentRegister,
             {
                 validateStatus: status => status === 200
             })

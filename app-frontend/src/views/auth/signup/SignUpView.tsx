@@ -110,13 +110,19 @@ const SignUpView: React.FunctionComponent = (props) => {
         }
         if (extraUserInfo.role === "STUDENT" && StudentService.isStudentNumberValid(extraUserInfo.studentNumber)) {
             StudentService.registerStudent({
-                ...user,
-                studentNumber: extraUserInfo.studentNumber,
+                student: {
+                    ...user,
+                    studentNumber: extraUserInfo.studentNumber,
+                },
+                facultyId: faculty.id!
             }).then(value => handleSuccessSubmit()).catch(error => handleFailedSubmit(error))
         } else if (extraUserInfo.role === "MASTER" && extraUserInfo.degree.length > 1) {
             MasterService.registerMaster({
-                ...user,
-                degree: extraUserInfo.degree,
+                master: {
+                    ...user,
+                    degree: extraUserInfo.degree,
+                },
+                facultyId: faculty.id!
             }).then(value => handleSuccessSubmit()).catch(error => handleFailedSubmit(error))
         } else {
             setErrorChecking(true);

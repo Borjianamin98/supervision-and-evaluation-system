@@ -24,7 +24,9 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
 
     const handlePhoneNumberChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
         const onlyNumbers = event.target.value.replace(/[^0-9]/g, '');
-        setPhoneNumber(onlyNumbers);
+        if (onlyNumbers.length <= 10) {
+            setPhoneNumber(onlyNumbers);
+        }
     }
 
     const phoneNumberRepresentation = (phoneNumber: string) => {
