@@ -1,4 +1,4 @@
-package ir.ac.sbu.evaluation.service;
+package ir.ac.sbu.evaluation.service.user;
 
 import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.model.user.PersonalInfo;

@@ -2,6 +2,7 @@ package ir.ac.sbu.evaluation.model.user;
 
 import ir.ac.sbu.evaluation.model.Problem;
 import ir.ac.sbu.evaluation.model.university.Faculty;
+import ir.ac.sbu.evaluation.security.SecurityRoles;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,10 +30,11 @@ public class Student extends User {
     }
 
     @Builder
-    public Student(Long id, String firstName, String lastName, String username, String password, String role,
+    public Student(Long id, String firstName, String lastName, String username, String password,
             PersonalInfo personalInfo, Byte[] profilePicture, String studentNumber,
             Set<Problem> problems, Faculty faculty) {
-        super(id, firstName, lastName, username, password, role, personalInfo, profilePicture);
+        super(id, firstName, lastName, username, password, SecurityRoles.STUDENT_ROLE_NAME, personalInfo,
+                profilePicture);
         this.studentNumber = studentNumber;
         this.problems = problems;
         this.faculty = faculty;

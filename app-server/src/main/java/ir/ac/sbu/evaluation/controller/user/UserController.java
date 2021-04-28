@@ -1,16 +1,15 @@
-package ir.ac.sbu.evaluation.controller;
+package ir.ac.sbu.evaluation.controller.user;
 
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_USER_ROOT_PATH;
 
 import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.exception.InitializationFailureException;
-import ir.ac.sbu.evaluation.service.UserService;
+import ir.ac.sbu.evaluation.service.user.UserService;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.Principal;
-import java.util.List;
 import java.util.Objects;
 import javax.validation.Valid;
 import org.slf4j.Logger;
@@ -34,7 +33,6 @@ public class UserController {
 
     private final static String API_USER_REGISTER_PATH = "/register";
     private final static String API_USER_PROFILE_PICTURE_PATH = "/profile/picture";
-    private final static String API_USER_RETRIEVE_MASTERS_PATH = "/masters";
 
     private final UserService userService;
     private final byte[] defaultUserProfilePicture;
@@ -48,16 +46,6 @@ public class UserController {
         } catch (IOException | URISyntaxException | NullPointerException e) {
             throw new InitializationFailureException("Unable to find or load default user profile picture", e);
         }
-    }
-
-    @GetMapping(path = API_USER_RETRIEVE_MASTERS_PATH)
-    public List<UserDto> getAllMasters() {
-        return userService.getAllMasters();
-    }
-
-    @PostMapping(path = API_USER_REGISTER_PATH)
-    public UserDto saveUser(@Valid @RequestBody UserDto userDto) {
-        return userService.save(userDto);
     }
 
     @PostMapping(value = API_USER_PROFILE_PICTURE_PATH, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

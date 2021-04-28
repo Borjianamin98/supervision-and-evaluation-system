@@ -36,7 +36,7 @@ public class UserDto {
     public UserDto() {
     }
 
-    @Builder
+    @Builder(builderMethodName = "userBuilder")
     public UserDto(long id, String firstName, String lastName, String username, String password,
             PersonalInfoDto personalInfo) {
         this.id = id;
@@ -47,13 +47,17 @@ public class UserDto {
         this.personalInfo = personalInfo;
     }
 
-    public static UserDto from(User user) {
-        return builder()
+    public static UserDto from(User user, boolean hasPersonalInfo) {
+        return userBuilder()
                 .id(user.getId())
                 .username(user.getUsername()).password(user.getPassword())
                 .firstName(user.getFirstName()).lastName(user.getLastName())
-                .personalInfo(user.getPersonalInfo() != null ? PersonalInfoDto.from(user.getPersonalInfo()) : null)
+                .personalInfo(hasPersonalInfo && user.getPersonalInfo() != null ? PersonalInfoDto.from(user.getPersonalInfo()) : null)
                 .build();
+    }
+
+    public static UserDto from(User user) {
+        return from(user, true);
     }
 
     public User toUser() {

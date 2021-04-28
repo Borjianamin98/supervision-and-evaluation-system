@@ -17,7 +17,6 @@ import ir.ac.sbu.evaluation.repository.user.AdminRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.PersonalInfoRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
-import ir.ac.sbu.evaluation.security.SecurityRoles;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -122,7 +121,6 @@ public class DataLoader implements CommandLineRunner {
                 .degree("استاد")
                 .username("master")
                 .password(passwordEncoder.encode("pass"))
-                .role(SecurityRoles.MASTER_ROLE_NAME)
                 .personalInfo(masterPersonalInfo)
                 .faculty(computerEngineeringFaculty)
                 .build();
@@ -139,7 +137,6 @@ public class DataLoader implements CommandLineRunner {
                 .studentNumber("96243012")
                 .username("student")
                 .password(passwordEncoder.encode("pass"))
-                .role(SecurityRoles.STUDENT_ROLE_NAME)
                 .personalInfo(studentPersonalInfo)
                 .faculty(computerEngineeringFaculty)
                 .build();
@@ -163,7 +160,6 @@ public class DataLoader implements CommandLineRunner {
                 .lastName("سامانه")
                 .username("admin")
                 .password(passwordEncoder.encode("pass"))
-                .role(SecurityRoles.ADMIN_ROLE_NAME)
                 .personalInfo(adminPersonalInfo)
                 .build();
         Admin savedAdmin1 = adminRepository.save(admin1);

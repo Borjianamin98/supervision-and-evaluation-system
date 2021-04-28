@@ -2,6 +2,7 @@ package ir.ac.sbu.evaluation.model.user;
 
 import ir.ac.sbu.evaluation.model.Problem;
 import ir.ac.sbu.evaluation.model.university.Faculty;
+import ir.ac.sbu.evaluation.security.SecurityRoles;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,7 +12,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 
 @Entity
 @Table(name = "master")
@@ -34,11 +34,12 @@ public class Master extends User {
     }
 
     @Builder
-    public Master(Long id, String firstName, String lastName, String username, String password, String role,
+    public Master(Long id, String firstName, String lastName, String username, String password,
             PersonalInfo personalInfo, Byte[] profilePicture, String degree,
             Set<Problem> problemsSupervisor, Set<Problem> problemsReferee,
             Faculty faculty) {
-        super(id, firstName, lastName, username, password, role, personalInfo, profilePicture);
+        super(id, firstName, lastName, username, password, SecurityRoles.MASTER_ROLE_NAME, personalInfo,
+                profilePicture);
         this.degree = degree;
         this.problemsSupervisor = problemsSupervisor;
         this.problemsReferee = problemsReferee;

@@ -7,7 +7,7 @@ import ir.ac.sbu.evaluation.dto.authentication.AuthResponseDto;
 import ir.ac.sbu.evaluation.exception.InvalidJwtTokenException;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.security.JwtTokenProvider;
-import ir.ac.sbu.evaluation.service.UserService;
+import ir.ac.sbu.evaluation.service.user.UserService;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
