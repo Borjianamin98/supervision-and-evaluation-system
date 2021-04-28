@@ -1,4 +1,3 @@
-import {University} from "../university/university";
 import {PersonalInfo} from "./personalInfo";
 
 export interface User {

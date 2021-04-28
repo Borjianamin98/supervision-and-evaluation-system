@@ -4,12 +4,13 @@ import AsynchronousComboBox from "../../../components/ComboBox/AsynchronousCombo
 import ComboBox from "../../../components/ComboBox/ComboBox";
 import {VirtualizedListBoxComponent, VirtualizedListBoxStyles} from "../../../components/ComboBox/VirtualizedComboBox";
 import CustomTextField from "../../../components/Text/CustomTextField";
+import {PERSIAN_ROLES, roleMapToEnglish, roleMapToPersian} from "../../../model/enum/role";
 import {University} from "../../../model/university/university";
 import UniversityService from "../../../services/api/university/UniversityService";
 import {SignUpSectionsProps} from "./SignUpView";
 
 const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (props) => {
-    const {commonClasses, user, setUser, faculty, setFaculty, errorChecking} = props;
+    const {commonClasses, extraUserInfo, setExtraUserInfo, faculty, setFaculty, errorChecking} = props;
     const [university, setUniversity] = useState<University>(UniversityService.createInitialUniversity());
 
     function loadUniversities() {
@@ -20,6 +21,11 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
     function loadUniversityFaculties(universityId: number) {
         return UniversityService.retrieveUniversityFaculties(universityId)
             .then(value => value.data)
+    }
+
+    const handleStudentNumberChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+        const onlyNumbers = event.target.value.replace(/[^0-9]/g, '');
+        setExtraUserInfo({...extraUserInfo, studentNumber: onlyNumbers})
     }
 
     const isNotBlank = (c: string) => !errorChecking || c.length > 0;
@@ -66,19 +72,35 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
                 disabled={university.name.length === 0}
             />
             <ComboBox
-                options={["دانشجو", "استاد"]}
+                options={PERSIAN_ROLES}
+                value={roleMapToPersian(extraUserInfo.role)}
+                onChange={(e, newValue) =>
+                    setExtraUserInfo({...extraUserInfo, role: roleMapToEnglish(newValue)})}
                 textFieldInputProps={{
                     label: "نوع کاربری",
+                    helperText: (isNotBlank(extraUserInfo.role) ? "" : "نوع کاربری باید انتخاب شود."),
+                    error: !isNotBlank(extraUserInfo.role),
                 }}
             />
-            <CustomTextField
+            {extraUserInfo.role === "MASTER" ? <CustomTextField
                 required
                 label="مدرک"
-            />
-            <CustomTextField
+                value={extraUserInfo.degree}
+                onChange={(e) =>
+                    setExtraUserInfo({...extraUserInfo, degree: e.target.value})}
+                helperText={isNotBlank(extraUserInfo.degree) ? "" : "مدرک تصحیلی را باید مشخص کنید."}
+                error={!isNotBlank(extraUserInfo.degree)}
+                maxLength={40}
+            /> : undefined}
+            {extraUserInfo.role === "STUDENT" ? <CustomTextField
                 required
                 label="شماره دانشجویی"
-            />
+                value={extraUserInfo.studentNumber}
+                onChange={handleStudentNumberChange}
+                helperText={isNotBlank(extraUserInfo.studentNumber) ? "" : "شماره دانشجویی را باید مشخص کنید."}
+                error={!isNotBlank(extraUserInfo.studentNumber)}
+                maxLength={20}
+            /> : undefined}
         </React.Fragment>
     );
 }

@@ -10,7 +10,10 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import React, {FormEventHandler, useState} from 'react';
 import {rtlTheme} from '../../../App';
 import ButtonLink from "../../../components/Button/ButtonLink";
+import {ENGLISH_ROLES} from "../../../model/enum/role";
 import {Faculty} from "../../../model/university/faculty";
+import {Master} from "../../../model/user/master";
+import {Student} from "../../../model/user/student";
 import {User} from "../../../model/user/user";
 import UniversityService from "../../../services/api/university/UniversityService";
 import UserService from "../../../services/api/UserService";
@@ -44,12 +47,16 @@ const useCommonStyles = makeStyles((theme) => ({
     }
 }));
 
+type ExtraUserInfo = Omit<Student & Master, "user"> & { role: string };
+
 export interface SignUpSectionsProps {
     commonClasses: ClassNameMap,
     user: User,
     setUser: React.Dispatch<React.SetStateAction<User>>,
     faculty: Faculty,
     setFaculty: React.Dispatch<React.SetStateAction<Faculty>>,
+    extraUserInfo: ExtraUserInfo,
+    setExtraUserInfo: React.Dispatch<React.SetStateAction<ExtraUserInfo>>,
     errorChecking: boolean,
 }
 
@@ -58,6 +65,8 @@ const SignUpView: React.FunctionComponent = (props) => {
     const commonClasses = useCommonStyles();
     const [user, setUser] = useState<User>(UserService.createInitialUser());
     const [faculty, setFaculty] = useState<Faculty>(UniversityService.createInitialFaculty());
+    const [extraUserInfo, setExtraUserInfo] = useState<ExtraUserInfo>(
+        {degree: "", studentNumber: "", role: ENGLISH_ROLES[0]});
     const [errorChecking, setErrorChecking] = React.useState(false);
 
     const sectionProps: SignUpSectionsProps = {
@@ -67,6 +76,8 @@ const SignUpView: React.FunctionComponent = (props) => {
         user,
         faculty,
         setFaculty,
+        extraUserInfo,
+        setExtraUserInfo
     }
 
     const formSubmitHandler: FormEventHandler = (event) => {

@@ -2,7 +2,7 @@ import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Autocomplete, {AutocompleteProps} from '@material-ui/lab/Autocomplete';
 import {ClassNameMap} from "notistack";
-import React, {PropsWithChildren} from 'react';
+import React from 'react';
 import CustomTextField, {CustomTextFieldProps} from "../Text/CustomTextField";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -17,7 +17,7 @@ export type ComboBoxProps<T> = Omit<AutocompleteProps<T, false, true, false>, "r
     extraClasses?: Partial<ClassNameMap>,
 }
 
-function ComboBox<T>(props: PropsWithChildren<ComboBoxProps<T>>) {
+function ComboBox<T>(props: ComboBoxProps<T>) {
     const classes = useStyles();
     const {options, textFieldInputProps, extraClasses, ...rest} = props;
 
@@ -26,7 +26,6 @@ function ComboBox<T>(props: PropsWithChildren<ComboBoxProps<T>>) {
             noOptionsText={
                 <Typography dir="rtl">موردی یافت نشد</Typography>
             }
-            {...rest}
             // debug={true} // Enabled just for debug purpose
             options={options}
             disableClearable
@@ -44,6 +43,7 @@ function ComboBox<T>(props: PropsWithChildren<ComboBoxProps<T>>) {
                         autoComplete: 'new-password',
                     }}
                 />}
+            {...rest}
         />
     );
 }
