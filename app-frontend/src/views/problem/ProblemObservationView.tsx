@@ -17,6 +17,7 @@ import {useSnackbar} from "notistack";
 import React from 'react';
 import KeywordsList from "../../components/Chip/KeywordsList";
 import CollapsibleTableRow from "../../components/Table/CollapsibleTableRow";
+import FullRowCell from "../../components/Table/FullRowCell";
 import OptionalTableCell, {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
 import {getGeneralErrorMessage} from "../../config/axios-config";
 import {educationEnglishMapping, Problem, ProblemState} from "../../model/problem";
@@ -47,7 +48,6 @@ const CollapsibleTable: React.FunctionComponent<{ problems: Array<Problem>, load
     const classes = useStyles();
     const {problems, loaded} = props;
 
-
     const tableHeaderCells: OptionalTableCellProps[] = [
         {content: "دوره تحصیلی"},
         {content: "عنوان"},
@@ -57,7 +57,7 @@ const CollapsibleTable: React.FunctionComponent<{ problems: Array<Problem>, load
     ]
 
     const tableRows = problems.map(problem => {
-        const keywordsList =<KeywordsList keywords={problem.keywords}/>;
+        const keywordsList = <KeywordsList keywords={problem.keywords}/>;
         const cells: OptionalTableCellProps[] = [
             {content: educationEnglishMapping(problem.education)},
             {content: problem.title},
@@ -95,10 +95,9 @@ const CollapsibleTable: React.FunctionComponent<{ problems: Array<Problem>, load
         );
     });
 
-    const FullRowCell: React.FunctionComponent = (props) =>
-        <TableRow>
-            <TableCell align="center" colSpan={tableHeaderCells.length + 1}>{props.children}</TableCell>
-        </TableRow>
+    const problemRows = problems.length === 0 ? (
+        <FullRowCell headersCount={tableHeaderCells.length}>مسئله‌ای یافت نشد.</FullRowCell>
+    ) : tableRows;
 
     return (
         <TableContainer dir="rtl" component={Paper} elevation={4}>
@@ -106,18 +105,16 @@ const CollapsibleTable: React.FunctionComponent<{ problems: Array<Problem>, load
                 <TableHead>
                     <TableRow>
                         {tableHeaderCells.map((cell, index) => (
-                            <OptionalTableCell key={index} align="right"
-                                               content={cell.content}
-                                               optional={cell.optional}/>
+                            <OptionalTableCell key={index} align="right" {...cell}/>
                         ))}
                         <TableCell width={"5%"}/>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {
-                        loaded ? (problems.length === 0 ? <FullRowCell>مسئله‌ای یافت نشد.</FullRowCell> : tableRows) :
+                        loaded ? problemRows :
                             (
-                                <FullRowCell>
+                                <FullRowCell headersCount={tableHeaderCells.length}>
                                     <CircularProgress className={classes.circularProgress}/>
                                 </FullRowCell>
                             )

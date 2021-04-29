@@ -4,7 +4,8 @@ import {makeStyles} from "@material-ui/core/styles";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import React from "react";
-import OptionalTableCell, {OptionalTableCellProps} from "./OptionalTableCell";
+import ExtendedTableRow from "./ExtendedTableRow";
+import {OptionalTableCellProps} from "./OptionalTableCell";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -26,15 +27,7 @@ const CollapsibleTableRow: React.FunctionComponent<CollapsibleTableRowProps> = (
     return (
         <React.Fragment>
             <TableRow className={classes.root}>
-                {cells.map((cell, index) => {
-                    return <OptionalTableCell
-                        key={index}
-                        align="right"
-                        component={index === 0 ? "th" : undefined}
-                        scope={index === 0 ? "row" : undefined}
-                        {...cell}
-                    />
-                })}
+                <ExtendedTableRow cells={cells}/>
                 <TableCell>
                     <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
                         {open ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/>}
