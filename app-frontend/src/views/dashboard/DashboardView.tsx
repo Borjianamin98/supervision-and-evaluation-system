@@ -9,30 +9,31 @@ import StudentDashboardView from "./StudentDashboardView";
 
 const DashboardView: React.FunctionComponent = () => {
     const routeMatch = useRouteMatch();
+    const [redirectPath, setRedirectPath] = React.useState("");
+    const adminDashboardPath = `${routeMatch.url}/admin`;
+    const masterDashboardPath = `${routeMatch.url}/master`;
+    const studentDashboardPath = `${routeMatch.url}/student`;
 
     React.useEffect(() => {
         AuthenticationService.check()
+            .then(value => {
+                const jwtPayloadRoles = AuthenticationService.getJwtPayloadRoles()!;
+                if (jwtPayloadRoles.includes(Role.STUDENT)) {
+                    setRedirectPath(studentDashboardPath);
+                } else if (jwtPayloadRoles.includes(Role.MASTER)) {
+                    setRedirectPath(masterDashboardPath);
+                } else if (jwtPayloadRoles.includes(Role.ADMIN)) {
+                    setRedirectPath(adminDashboardPath);
+                } else {
+                    throw new Error("Invalid user roles: " + jwtPayloadRoles)
+                }
+            })
             .catch(reason => {
                 // Invalid JWT token provided for authentication
                 AuthenticationService.logout();
                 browserHistory.push(LOGIN_VIEW_PATH);
             })
-    }, []);
-
-    const jwtPayloadRoles = AuthenticationService.getJwtPayloadRoles()!;
-    const adminDashboardPath = `${routeMatch.url}/admin`;
-    const masterDashboardPath = `${routeMatch.url}/master`;
-    const studentDashboardPath = `${routeMatch.url}/student`;
-    let redirectPath: string;
-    if (jwtPayloadRoles.includes(Role.STUDENT)) {
-        redirectPath = studentDashboardPath;
-    } else if (jwtPayloadRoles.includes(Role.MASTER)) {
-        redirectPath = masterDashboardPath;
-    } else if (jwtPayloadRoles.includes(Role.ADMIN)) {
-        redirectPath = adminDashboardPath;
-    } else {
-        throw new Error("Invalid user roles: " + jwtPayloadRoles)
-    }
+    }, [adminDashboardPath, masterDashboardPath, studentDashboardPath]);
 
     return (
         <Switch>
@@ -44,7 +45,7 @@ const DashboardView: React.FunctionComponent = () => {
                 <StudentDashboardView/>
             </PrivateRoute>
             <PrivateRoute path={`${routeMatch.path}`}>
-                <Redirect to={redirectPath}/>
+                {redirectPath.length > 0 ? <Redirect to={redirectPath}/> : undefined}
             </PrivateRoute>
         </Switch>
     );
