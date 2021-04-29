@@ -7,17 +7,21 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import React from 'react';
 import ListItemLink from '../../components/List/ListItemLink';
+import {Role} from "../../model/enum/role";
+import AuthenticationService from "../../services/api/AuthenticationService";
 import DashboardView from "../dashboard/DashboardView";
 import ProblemCreateView from "../problem/create/ProblemCreateView";
 import ProblemObservationView from "../problem/ProblemObservationView";
 import ProfileView from "../ProfileView";
 import SettingsView from "../SettingsView";
+import UniversityListView from "../university/UniversityListView";
 import {
     DASHBOARD_VIEW_PATH,
     PROBLEM_CREATE_VIEW_PATH,
     PROBLEM_OBSERVATION_PATH,
     PROFILE_VIEW_PATH,
-    SETTINGS_VIEW_PATH
+    SETTINGS_VIEW_PATH,
+    UNIVERSITY_LIST_PATH
 } from "../ViewPaths";
 
 interface navBarRouteInfo {
@@ -68,34 +72,53 @@ const managementRoutesInfo: navBarRouteInfo[] = [
     },
 ]
 
+// Admin role views
+const universityRoutesInfo: navBarRouteInfo[] = [
+    {
+        path: UNIVERSITY_LIST_PATH,
+        name: "لیست دانشگاه‌ها",
+        icon: ViewListIcon,
+        component: UniversityListView,
+    },
+]
+
 const allRoutesInfo: navBarRouteInfo[] = [
     ...dashboardRoutesInfo,
     ...problemRoutesInfo,
     ...managementRoutesInfo,
+    ...universityRoutesInfo
 ];
 
+const createListFromRoutesInfo = (routesInfo: navBarRouteInfo[], show: boolean) => {
+    return (
+        show ? (
+            <React.Fragment>
+                <List>
+                    {routesInfo.map((value, index) =>
+                        <ListItemLink
+                            key={index}
+                            dir="rtl"
+                            to={value.path}
+                            primary={value.name}
+                            icon={React.createElement(value.icon, {})}
+                        />
+                    )}
+                </List>
+                <Divider component="li"/>
+            </React.Fragment>
+        ) : undefined
+    )
+}
+
 const MainViewNavBarLinks: React.FunctionComponent = () => {
-    const createListFromRoutesInfo = (routesInfo: navBarRouteInfo[]) => {
-        return <List>
-            {routesInfo.map((value, index) =>
-                <ListItemLink
-                    key={index}
-                    dir="rtl"
-                    to={value.path}
-                    primary={value.name}
-                    icon={React.createElement(value.icon, {})}
-                />)}
-        </List>
-    }
+    const jwtPayloadRoles = AuthenticationService.getJwtPayloadRoles()!;
 
     return (
         <>
-            {createListFromRoutesInfo(dashboardRoutesInfo)}
-            <Divider component="li"/>
-            {createListFromRoutesInfo(problemRoutesInfo)}
-            <Divider component="li"/>
-            {createListFromRoutesInfo(managementRoutesInfo)}
-            <Divider component="li"/>
+            {createListFromRoutesInfo(dashboardRoutesInfo, true)}
+            {createListFromRoutesInfo(problemRoutesInfo, jwtPayloadRoles.includes(Role.STUDENT))}
+            {createListFromRoutesInfo(universityRoutesInfo, jwtPayloadRoles.includes(Role.ADMIN))}
+            {createListFromRoutesInfo(managementRoutesInfo, true)}
         </>
     );
 }

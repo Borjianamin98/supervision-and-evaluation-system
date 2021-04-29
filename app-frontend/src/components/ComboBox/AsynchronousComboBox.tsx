@@ -29,7 +29,7 @@ function AsynchronousComboBox<T>(props: AsynchronousComboBoxProps<T>) {
                         setOptions(retrievedOptions);
                     }
                 })
-                .catch(reason => setNoOptionsText("در بارگیری اطلاعات خطایی رخ داده است"));
+                .catch(reason => setNoOptionsText("در بارگیری اطلاعات خطایی رخ داده است."));
         })();
 
         return () => {

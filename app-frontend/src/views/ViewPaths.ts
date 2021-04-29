@@ -13,6 +13,9 @@ export const PROFILE_VIEW_PATH = "/profile";
 export const PROBLEM_OBSERVATION_PATH = "/problem/list";
 export const PROBLEM_CREATE_VIEW_PATH = "/problem/create";
 
+// University Views
+export const UNIVERSITY_LIST_PATH = "/university/list";
+
 // Settings Views
 export const SETTINGS_VIEW_PATH = "/settings";
 
