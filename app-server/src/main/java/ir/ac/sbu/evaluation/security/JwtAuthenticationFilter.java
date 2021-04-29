@@ -1,10 +1,13 @@
 package ir.ac.sbu.evaluation.security;
 
 import io.jsonwebtoken.Claims;
+import ir.ac.sbu.evaluation.controller.AuthController;
 import ir.ac.sbu.evaluation.exception.InvalidJwtTokenException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +16,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -22,9 +27,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String AUTHORIZATION_BEARER_PREFIX = "Bearer ";
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final List<RequestMatcher> authPathRequestMatchers = Arrays.stream(AuthController.permittedPaths())
+            .map(AntPathRequestMatcher::new).collect(Collectors.toList());
 
     public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return authPathRequestMatchers.stream().anyMatch(requestMatcher -> requestMatcher.matches(request));
     }
 
     @Override

@@ -7,7 +7,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import React from 'react';
 import ListItemLink from '../../components/List/ListItemLink';
-import DashboardView from "../DashboardView";
+import DashboardView from "../dashboard/DashboardView";
 import ProblemCreateView from "../problem/create/ProblemCreateView";
 import ProblemObservationView from "../problem/ProblemObservationView";
 import ProfileView from "../ProfileView";
@@ -23,6 +23,7 @@ import {
 interface navBarRouteInfo {
     path: string,
     name: string,
+    exact?: boolean,
     icon: React.FunctionComponent,
     component: React.FunctionComponent
 }
@@ -31,6 +32,7 @@ const dashboardRoutesInfo: navBarRouteInfo[] = [
     {
         path: DASHBOARD_VIEW_PATH,
         name: "داشبورد",
+        exact: false,
         icon: DashboardIcon,
         component: DashboardView
     },

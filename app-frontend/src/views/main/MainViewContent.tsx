@@ -8,7 +8,7 @@ const MainViewContent: React.FunctionComponent = () => {
     return (
         <Switch>
             {allRoutesInfo.map((value, id) =>
-                <PrivateRoute key={id} exact path={value.path}>
+                <PrivateRoute key={id} exact={value.exact ?? false} path={value.path}>
                     {React.createElement(value.component, {})}
                 </PrivateRoute>
             )}

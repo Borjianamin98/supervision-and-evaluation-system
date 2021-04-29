@@ -8,6 +8,7 @@ export const API_ACTUATOR_HEALTH_PATH = `${BACKEND_SERVICE_HOST}/actuator/health
 const API_AUTHENTICATION_PATH = "/auth"
 export const API_AUTHENTICATION_LOGIN_PATH = `${API_AUTHENTICATION_PATH}/login`
 export const API_AUTHENTICATION_REFRESH_PATH = `${API_AUTHENTICATION_PATH}/refresh`
+export const API_AUTHENTICATION_CHECK_PATH = `${API_AUTHENTICATION_PATH}/check`
 
 // User Paths
 export const API_USER_PATH = "/user"

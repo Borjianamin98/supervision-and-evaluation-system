@@ -4,7 +4,11 @@ import apiAxios from "../../config/axios-config";
 import browserHistory from "../../config/browserHistory";
 import {CustomJwtPayload} from "../../model/auth/jwtToken";
 import {DASHBOARD_VIEW_PATH, LOGIN_VIEW_PATH} from "../../views/ViewPaths";
-import {API_AUTHENTICATION_LOGIN_PATH, API_AUTHENTICATION_REFRESH_PATH} from "../ApiPaths";
+import {
+    API_AUTHENTICATION_CHECK_PATH,
+    API_AUTHENTICATION_LOGIN_PATH,
+    API_AUTHENTICATION_REFRESH_PATH
+} from "../ApiPaths";
 
 export interface AuthResponse {
     username: string,
@@ -61,6 +65,13 @@ class AuthenticationService {
                 validateStatus: status => status === 200
             })
         localStorage.setItem(AuthenticationService.AUTH_ACCESS_TOKEN_KEY, response.data.access_token!);
+    }
+
+    static check() {
+        return apiAxios.get<AuthResponse>(API_AUTHENTICATION_CHECK_PATH,
+            {
+                validateStatus: status => status === 200
+            })
     }
 
     static getJwtPayloadRoles() {

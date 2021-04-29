@@ -1,11 +1,11 @@
 import {makeStyles} from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import React from 'react';
-import addProblemImage from "../assets/images/problem/add-prbolem.jpg";
-import viewProblemImage from "../assets/images/problem/view-problem.jpg";
-import ButtonLink from "../components/Button/ButtonLink";
-import MediaCard from "../components/MediaCard/MediaCard";
-import {PROBLEM_CREATE_VIEW_PATH, PROBLEM_OBSERVATION_PATH} from "./ViewPaths";
+import addProblemImage from "../../assets/images/problem/add-prbolem.jpg";
+import viewProblemImage from "../../assets/images/problem/view-problem.jpg";
+import ButtonLink from "../../components/Button/ButtonLink";
+import MediaCard from "../../components/MediaCard/MediaCard";
+import {PROBLEM_CREATE_VIEW_PATH, PROBLEM_OBSERVATION_PATH} from "../ViewPaths";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DashboardView: React.FunctionComponent = () => {
+const StudentDashboardView: React.FunctionComponent = () => {
     const classes = useStyles();
 
     return (
@@ -49,4 +49,4 @@ const DashboardView: React.FunctionComponent = () => {
     );
 }
 
-export default DashboardView;
+export default StudentDashboardView;
