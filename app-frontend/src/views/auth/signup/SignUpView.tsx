@@ -14,7 +14,7 @@ import {rtlTheme} from '../../../App';
 import ButtonLink from "../../../components/Button/ButtonLink";
 import {getGeneralErrorMessage} from "../../../config/axios-config";
 import browserHistory from "../../../config/browserHistory";
-import {ENGLISH_ROLES} from "../../../model/enum/role";
+import {ENGLISH_ROLES, Role} from "../../../model/enum/role";
 import {Faculty} from "../../../model/university/faculty";
 import {MasterSpecialInfo} from "../../../model/user/master";
 import {StudentSpecialInfo} from "../../../model/user/student";
@@ -53,7 +53,7 @@ const useCommonStyles = makeStyles((theme) => ({
     }
 }));
 
-type ExtraUserInfo = MasterSpecialInfo & StudentSpecialInfo & { role: string };
+type ExtraUserInfo = MasterSpecialInfo & StudentSpecialInfo & { role: Role };
 
 export interface SignUpSectionsProps {
     commonClasses: ClassNameMap,
@@ -108,7 +108,7 @@ const SignUpView: React.FunctionComponent = (props) => {
             setErrorChecking(true);
             return;
         }
-        if (extraUserInfo.role === "STUDENT" && StudentService.isStudentNumberValid(extraUserInfo.studentNumber)) {
+        if (extraUserInfo.role === Role.STUDENT && StudentService.isStudentNumberValid(extraUserInfo.studentNumber)) {
             StudentService.registerStudent({
                 student: {
                     ...user,
@@ -116,7 +116,7 @@ const SignUpView: React.FunctionComponent = (props) => {
                 },
                 facultyId: faculty.id!
             }).then(value => handleSuccessSubmit()).catch(error => handleFailedSubmit(error))
-        } else if (extraUserInfo.role === "MASTER" && extraUserInfo.degree.length > 1) {
+        } else if (extraUserInfo.role === Role.MASTER && extraUserInfo.degree.length > 1) {
             MasterService.registerMaster({
                 master: {
                     ...user,

@@ -4,7 +4,7 @@ import AsynchronousComboBox from "../../../components/ComboBox/AsynchronousCombo
 import ComboBox from "../../../components/ComboBox/ComboBox";
 import {VirtualizedListBoxComponent, VirtualizedListBoxStyles} from "../../../components/ComboBox/VirtualizedComboBox";
 import CustomTextField from "../../../components/Text/CustomTextField";
-import {PERSIAN_ROLES, roleMapToEnglish, roleMapToPersian} from "../../../model/enum/role";
+import {Role, roleMapToEnglish, roleMapToPersian} from "../../../model/enum/role";
 import {University} from "../../../model/university/university";
 import UniversityService from "../../../services/api/university/UniversityService";
 import StudentService from "../../../services/api/user/StudentService";
@@ -74,7 +74,7 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
                 disabled={university.name.length === 0}
             />
             <ComboBox
-                options={PERSIAN_ROLES}
+                options={[Role.STUDENT, Role.MASTER].map(role => roleMapToPersian(role))}
                 value={roleMapToPersian(extraUserInfo.role)}
                 onChange={(e, newValue) =>
                     setExtraUserInfo({...extraUserInfo, role: roleMapToEnglish(newValue)})}
@@ -84,7 +84,7 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
                     error: !isNotBlank(extraUserInfo.role),
                 }}
             />
-            {extraUserInfo.role === "MASTER" ? <CustomTextField
+            {extraUserInfo.role === Role.MASTER ? <CustomTextField
                 required
                 label="مدرک"
                 value={extraUserInfo.degree}
@@ -94,7 +94,7 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
                 error={!isNotBlank(extraUserInfo.degree)}
                 maxLength={40}
             /> : undefined}
-            {extraUserInfo.role === "STUDENT" ? <CustomTextField
+            {extraUserInfo.role === Role.STUDENT ? <CustomTextField
                 required
                 label="شماره دانشجویی"
                 value={extraUserInfo.studentNumber}
