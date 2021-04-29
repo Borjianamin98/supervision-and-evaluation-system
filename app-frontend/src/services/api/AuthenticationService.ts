@@ -1,6 +1,8 @@
 import {AxiosError} from "axios";
+import jwtDecode from "jwt-decode";
 import apiAxios from "../../config/axios-config";
 import browserHistory from "../../config/browserHistory";
+import {CustomJwtPayload} from "../../model/auth/jwtToken";
 import {DASHBOARD_VIEW_PATH, LOGIN_VIEW_PATH} from "../../views/ViewPaths";
 import {API_AUTHENTICATION_LOGIN_PATH, API_AUTHENTICATION_REFRESH_PATH} from "../ApiPaths";
 
@@ -12,8 +14,8 @@ export interface AuthResponse {
 }
 
 class AuthenticationService {
-    private static readonly AUTH_ACCESS_TOKEN_KEY = "auth-access"
-    private static readonly AUTH_REFRESH_TOKEN_KEY = "auth-refresh"
+    private static readonly AUTH_ACCESS_TOKEN_KEY = "authAccess"
+    private static readonly AUTH_REFRESH_TOKEN_KEY = "authRefresh"
 
     private constructor() {
     }
@@ -59,6 +61,17 @@ class AuthenticationService {
                 validateStatus: status => status === 200
             })
         localStorage.setItem(AuthenticationService.AUTH_ACCESS_TOKEN_KEY, response.data.access_token!);
+    }
+
+    static getJwtPayloadRoles() {
+        return AuthenticationService.getJwtPayload()?.roles;
+    }
+
+    private static getJwtPayload() {
+        const accessToken = AuthenticationService.getAccessToken();
+        if (accessToken) {
+            return jwtDecode<CustomJwtPayload>(accessToken);
+        }
     }
 }
 

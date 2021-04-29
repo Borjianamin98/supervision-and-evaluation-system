@@ -54,8 +54,6 @@ const LoginView: React.FunctionComponent = (props) => {
     const [password, setPassword] = useState<string>("");
     const [errorMessage, setErrorMessage] = useState<string>("");
 
-
-
     const clearFormInputs = () => {
         setUsername("");
         setPassword("");

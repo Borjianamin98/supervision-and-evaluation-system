@@ -24,10 +24,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenProvider {
 
-    private final static String TOKEN_TYPE_CLAIM_NAME = "token-type";
-    private final static String ACCESS_TOKEN_TYPE_NAME = "access-token";
-    private final static String REFRESH_TOKEN_TYPE_NAME = "refresh-token";
-    private final static String TOKEN_USER_ID_CLAIM_NAME = "user-id";
+    private final static String TOKEN_TYPE_CLAIM_NAME = "tokenType";
+    private final static String ACCESS_TOKEN_TYPE_NAME = "accessToken";
+    private final static String REFRESH_TOKEN_TYPE_NAME = "refreshToken";
+    private final static String TOKEN_USER_ID_CLAIM_NAME = "userId";
     private final static String TOKEN_ROLES_CLAIM_NAME = "roles";
 
     @Value("${jwt.secret}")
@@ -116,10 +116,10 @@ public class JwtTokenProvider {
      * Generate a JWT token with below defined structure:
      * <ul>
      *     <li>subject: {@code username}</li>
-     *     <li>user-id: {@code userId}</li>
+     *     <li>userId: {@code userId}</li>
      *     <li>roles: roles</li>
-     *     <li>token-type: {@code tokenType}</li>
-     *     <li>issue-at: current time</li>
+     *     <li>tokenType: {@code tokenType}</li>
+     *     <li>issue at: current time</li>
      *     <li>expiration: current time + expirationOffset</li>
      * </ul>
      *
