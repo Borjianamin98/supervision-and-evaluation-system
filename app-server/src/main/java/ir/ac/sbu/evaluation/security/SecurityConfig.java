@@ -4,6 +4,7 @@ import static ir.ac.sbu.evaluation.security.SecurityRoles.MASTER_ROLE_NAME;
 import static ir.ac.sbu.evaluation.security.SecurityRoles.STUDENT_ROLE_NAME;
 
 import ir.ac.sbu.evaluation.controller.ApiPaths;
+import ir.ac.sbu.evaluation.controller.AuthController;
 import ir.ac.sbu.evaluation.service.user.UserService;
 import java.util.Collections;
 import org.springframework.context.annotation.Bean;
@@ -53,7 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers(ApiPaths.API_AUTHENTICATION_ROOT_PATH + "/**").permitAll()
+                .antMatchers(AuthController.permittedPaths()).permitAll()
                 .antMatchers(ApiPaths.API_UNIVERSITY_ROOT_PATH + "/**").permitAll()
                 .antMatchers(ApiPaths.API_STUDENT_ROOT_PATH + "/**").permitAll()
                 .antMatchers(ApiPaths.API_MASTER_ROOT_PATH + "/**").permitAll()
