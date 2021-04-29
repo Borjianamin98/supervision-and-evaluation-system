@@ -1,4 +1,4 @@
-import {ENGLISH_GENDERS} from "../../../model/enum/gender";
+import {Gender} from "../../../model/enum/gender";
 import {User} from "../../../model/user/user";
 import {validateEmail} from "../../../utility/email-utils";
 
@@ -14,7 +14,7 @@ class UserService {
             username: "",
             password: "",
             personalInfo: {
-                gender: "MALE",
+                gender: Gender.MALE,
                 telephoneNumber: "",
                 email: "",
             },
@@ -28,8 +28,7 @@ class UserService {
             user.lastName.length > 0 &&
             user.personalInfo &&
             UserService.isTelephoneNumberValid(user.personalInfo.telephoneNumber) &&
-            UserService.isEmailValid(user.personalInfo.email) &&
-            ENGLISH_GENDERS.includes(user.personalInfo.gender)
+            UserService.isEmailValid(user.personalInfo.email);
     }
 
     static isPasswordValid(password: string) {

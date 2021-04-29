@@ -1,17 +1,22 @@
+export enum Gender {
+    MALE = "MALE",
+    FEMALE = "FEMALE",
+}
+
 export const PERSIAN_GENDERS = [
     "مرد",
     "زن",
 ];
 
 export const ENGLISH_GENDERS = [
-    "MALE",
-    "FEMALE",
+    Gender.MALE,
+    Gender.FEMALE,
 ];
 
-export const genderMapToEnglish = (education: string) => {
-    return ENGLISH_GENDERS[PERSIAN_GENDERS.indexOf(education)];
+export const genderMapToEnglish = (gender: string) => {
+    return ENGLISH_GENDERS[PERSIAN_GENDERS.indexOf(gender)];
 }
 
-export const genderMapToPersian = (education: string) => {
-    return PERSIAN_GENDERS[ENGLISH_GENDERS.indexOf(education)];
+export const genderMapToPersian = (gender: Gender) => {
+    return PERSIAN_GENDERS[ENGLISH_GENDERS.indexOf(gender)];
 }

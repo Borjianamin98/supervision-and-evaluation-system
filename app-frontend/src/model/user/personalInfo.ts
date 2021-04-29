@@ -1,6 +1,8 @@
+import {Gender} from "../enum/gender";
+
 export interface PersonalInfo {
     id?: number,
-    gender: string,
+    gender: Gender,
     telephoneNumber: string,
     email: string,
 }
