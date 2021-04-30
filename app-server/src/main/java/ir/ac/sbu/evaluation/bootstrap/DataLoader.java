@@ -226,7 +226,7 @@ public class DataLoader implements CommandLineRunner {
         faculties.put(sharifUniversity.getId(), literatureFaculty);
 
         University iustUniversity = universityRepository.save(University.builder()
-                .name("دانشگاه صنعتی شریف")
+                .name("دانشگاه علم و صنعت ایران")
                 .location("تهران").webAddress("iust.ac.ir")
                 .build());
         Faculty chemistryFaculty = facultyRepository.save(Faculty.builder()

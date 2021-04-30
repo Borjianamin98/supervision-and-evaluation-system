@@ -1,7 +1,8 @@
-import {CircularProgress, Table, TableBody, TableContainer, TableHead, TableRow} from "@material-ui/core";
+import {CircularProgress, Fab, Table, TableBody, TableContainer, TableHead, TableRow} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
 import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
+import AddIcon from '@material-ui/icons/Add';
 import EditIcon from "@material-ui/icons/Edit";
 import {useSnackbar} from "notistack";
 import React from 'react';
@@ -24,6 +25,11 @@ const useStyles = makeStyles((theme) => ({
     },
     circularProgress: {
         margin: theme.spacing(2),
+    },
+    fab: {
+        position: 'absolute',
+        bottom: theme.spacing(3),
+        left: theme.spacing(3),
     },
 }));
 
@@ -91,40 +97,45 @@ const UniversityListView: React.FunctionComponent = () => {
 
     return (
         <ThemeProvider theme={rtlTheme}>
-            <div dir="rtl" className={classes.root}>
-                <TableContainer component={Paper} elevation={4} className={classes.tableContainer}>
-                    <Table size="small">
-                        <TableHead>
-                            <TableRow>
-                                {tableHeaderCells.map((cell, index) => (
-                                    <OptionalTableCell component="th" key={index} {...cell}/>
-                                ))}
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {
-                                loaded ? universityRows :
-                                    (
-                                        <FullRowCell headersCount={tableHeaderCells.length}>
-                                            <CircularProgress className={classes.circularProgress}/>
-                                        </FullRowCell>
-                                    )
-                            }
-                        </TableBody>
-                        <CustomTablePagination
-                            colSpan={tableHeaderCells.length}
-                            count={universities.length}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            onChangePage={newValue => setPage(newValue)}
-                            onChangeRowsPerPage={newValue => {
-                                setRowsPerPage(newValue);
-                                setPage(0);
-                            }}
-                        />
-                    </Table>
-                </TableContainer>
-            </div>
+            <>
+                <div dir="rtl" className={classes.root}>
+                    <TableContainer component={Paper} elevation={4} className={classes.tableContainer}>
+                        <Table size="small">
+                            <TableHead>
+                                <TableRow>
+                                    {tableHeaderCells.map((cell, index) => (
+                                        <OptionalTableCell component="th" key={index} {...cell}/>
+                                    ))}
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {
+                                    loaded ? universityRows :
+                                        (
+                                            <FullRowCell headersCount={tableHeaderCells.length}>
+                                                <CircularProgress className={classes.circularProgress}/>
+                                            </FullRowCell>
+                                        )
+                                }
+                            </TableBody>
+                            <CustomTablePagination
+                                colSpan={tableHeaderCells.length}
+                                count={universities.length}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                onChangePage={newValue => setPage(newValue)}
+                                onChangeRowsPerPage={newValue => {
+                                    setRowsPerPage(newValue);
+                                    setPage(0);
+                                }}
+                            />
+                        </Table>
+                    </TableContainer>
+                </div>
+                <Fab color="secondary" aria-label="add" className={classes.fab}>
+                    <AddIcon/>
+                </Fab>
+            </>
         </ThemeProvider>
     );
 }
