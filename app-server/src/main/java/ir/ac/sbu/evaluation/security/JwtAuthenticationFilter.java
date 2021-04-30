@@ -2,7 +2,7 @@ package ir.ac.sbu.evaluation.security;
 
 import io.jsonwebtoken.Claims;
 import ir.ac.sbu.evaluation.controller.AuthController;
-import ir.ac.sbu.evaluation.exception.InvalidJwtTokenException;
+import ir.ac.sbu.evaluation.exception.security.InvalidJwtTokenException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;

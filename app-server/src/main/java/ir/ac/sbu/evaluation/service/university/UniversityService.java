@@ -2,6 +2,7 @@ package ir.ac.sbu.evaluation.service.university;
 
 import ir.ac.sbu.evaluation.dto.university.FacultyDto;
 import ir.ac.sbu.evaluation.dto.university.UniversityDto;
+import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
 import ir.ac.sbu.evaluation.model.university.University;
 import ir.ac.sbu.evaluation.repository.university.UniversityRepository;
 import java.util.List;
@@ -32,5 +33,12 @@ public class UniversityService {
     public UniversityDto register(UniversityDto universityDto) {
         University university = universityDto.toUniversity();
         return UniversityDto.from(universityRepository.save(university));
+    }
+
+    public UniversityDto delete(long universityId) {
+        University university = universityRepository.findById(universityId)
+                .orElseThrow(() -> new ResourceNotFoundException("دانشگاه یافت نشد: شناسه = " + universityId));
+        universityRepository.delete(university);
+        return UniversityDto.from(university, false);
     }
 }

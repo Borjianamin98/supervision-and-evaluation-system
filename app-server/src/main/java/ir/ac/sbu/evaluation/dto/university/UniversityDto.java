@@ -1,11 +1,14 @@
 package ir.ac.sbu.evaluation.dto.university;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import ir.ac.sbu.evaluation.model.university.University;
 import javax.validation.constraints.NotBlank;
 import lombok.Builder;
 
+@JsonInclude(Include.NON_NULL)
 public class UniversityDto {
 
     @JsonProperty(access = Access.READ_ONLY)
@@ -21,13 +24,13 @@ public class UniversityDto {
     private String webAddress;
 
     @JsonProperty(access = Access.READ_ONLY)
-    private long facultiesCount;
+    private Long facultiesCount;
 
     public UniversityDto() {
     }
 
     @Builder
-    public UniversityDto(long id, String name, String location, String webAddress, long facultiesCount) {
+    public UniversityDto(long id, String name, String location, String webAddress, Long facultiesCount) {
         this.id = id;
         this.name = name;
         this.location = location;
@@ -35,14 +38,18 @@ public class UniversityDto {
         this.facultiesCount = facultiesCount;
     }
 
-    public static UniversityDto from(University university) {
+    public static UniversityDto from(University university, boolean hasExpansionInfo) {
         return UniversityDto.builder()
                 .id(university.getId())
                 .name(university.getName())
                 .location(university.getLocation())
                 .webAddress(university.getWebAddress())
-                .facultiesCount(university.getFaculties().size())
+                .facultiesCount(hasExpansionInfo ? (long) university.getFaculties().size() : null)
                 .build();
+    }
+
+    public static UniversityDto from(University university) {
+        return from(university, true);
     }
 
     public University toUniversity() {
@@ -84,5 +91,13 @@ public class UniversityDto {
 
     public void setWebAddress(String webAddress) {
         this.webAddress = webAddress;
+    }
+
+    public Long getFacultiesCount() {
+        return facultiesCount;
+    }
+
+    public void setFacultiesCount(Long facultiesCount) {
+        this.facultiesCount = facultiesCount;
     }
 }

@@ -6,7 +6,7 @@ import io.jsonwebtoken.Claims;
 import ir.ac.sbu.evaluation.dto.authentication.AuthLoginDto;
 import ir.ac.sbu.evaluation.dto.authentication.AuthRefreshDto;
 import ir.ac.sbu.evaluation.dto.authentication.AuthResponseDto;
-import ir.ac.sbu.evaluation.exception.InvalidJwtTokenException;
+import ir.ac.sbu.evaluation.exception.security.InvalidJwtTokenException;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.security.JwtTokenProvider;
 import ir.ac.sbu.evaluation.service.user.UserService;

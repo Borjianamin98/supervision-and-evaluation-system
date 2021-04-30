@@ -1,4 +1,4 @@
-package ir.ac.sbu.evaluation.exception;
+package ir.ac.sbu.evaluation.exception.security;
 
 import io.jsonwebtoken.JwtException;
 

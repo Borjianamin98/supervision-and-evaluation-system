@@ -10,7 +10,7 @@ import io.jsonwebtoken.MissingClaimException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
-import ir.ac.sbu.evaluation.exception.InvalidJwtTokenException;
+import ir.ac.sbu.evaluation.exception.security.InvalidJwtTokenException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Date;
