@@ -5,7 +5,7 @@ import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import {AxiosError} from "axios";
 import {useSnackbar} from "notistack";
-import React, {FormEventHandler} from 'react';
+import React from 'react';
 import {rtlTheme} from "../../App";
 import CustomTextField from "../../components/Text/CustomTextField";
 import {getGeneralErrorMessage} from "../../config/axios-config";
@@ -54,14 +54,7 @@ const UniversityListView: React.FunctionComponent = () => {
             });
     }, [enqueueSnackbar, loadingState]);
 
-    const handleSuccessSubmit = () => {
-        enqueueSnackbar("دانشگاه جدید با موفقیت اضافه شد.", {variant: "success"});
-        setErrorChecking(false);
-        setNewUniversity(UniversityService.createInitialUniversity());
-        setLoadingState(LoadingState.SHOULD_RELOAD);
-    }
-
-    const handleFailedSubmit = (error: AxiosError) => {
+    const handleFailedRequest = (error: AxiosError) => {
         const {statusCode, message} = getGeneralErrorMessage(error);
         if (statusCode) {
             enqueueSnackbar(`در ارسال درخواست از سرور خطای ${statusCode} دریافت شد.`,
@@ -71,15 +64,33 @@ const UniversityListView: React.FunctionComponent = () => {
         }
     }
 
-    const formSubmitHandler: FormEventHandler = (event) => {
+    const handleSuccessRegister = () => {
+        enqueueSnackbar("دانشگاه جدید با موفقیت اضافه شد.", {variant: "success"});
+        setErrorChecking(false);
+        setNewUniversity(UniversityService.createInitialUniversity());
+        setLoadingState(LoadingState.SHOULD_RELOAD);
+    }
+
+    const registerHandler: React.MouseEventHandler<HTMLButtonElement> = (event) => {
         event.preventDefault();
         if (!UniversityService.isUniversityValid(newUniversity)) {
             setErrorChecking(true);
             return;
         }
         UniversityService.registerUniversity(newUniversity)
-            .then(() => handleSuccessSubmit())
-            .catch(error => handleFailedSubmit(error))
+            .then(() => handleSuccessRegister())
+            .catch(error => handleFailedRequest(error))
+    }
+
+    const handleSuccessDelete = (university: University) => {
+        enqueueSnackbar(`دانشگاه ${university.name} با موفقیت حذف شد.`, {variant: "success"});
+        setLoadingState(LoadingState.SHOULD_RELOAD);
+    }
+
+    const deleteHandler = (universityId: number) => {
+        UniversityService.deleteUniversity(universityId)
+            .then(value => handleSuccessDelete(value.data))
+            .catch(error => handleFailedRequest(error))
     }
 
     const isNotBlank = (c: string) => !errorChecking || c.length > 0;
@@ -87,7 +98,12 @@ const UniversityListView: React.FunctionComponent = () => {
     return (
         <ThemeProvider theme={rtlTheme}>
             <Grid container direction="column">
-                <UniversityList loadingState={loadingState} universities={universities} rowsPerPageOptions={[5, 10]}/>
+                <UniversityList
+                    loadingState={loadingState}
+                    universities={universities}
+                    rowsPerPageOptions={[5, 10]}
+                    onDeleteRow={deleteHandler}
+                />
                 <Grid container dir="rtl"
                       component={Paper}
                       elevation={4}
@@ -131,7 +147,7 @@ const UniversityListView: React.FunctionComponent = () => {
                     <Grid container justify={"center"}>
                         <Grid item>
                             <Button
-                                onClick={formSubmitHandler}
+                                onClick={registerHandler}
                                 variant="contained"
                                 color="primary"
                             >

@@ -31,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
     },
     actionContainer: {
         whiteSpace: "nowrap",
+        overflow: "hidden",
     },
     tableContainer: {
         overflowX: "hidden",
@@ -44,11 +45,12 @@ interface UniversityListProps extends BoxProps {
     loadingState: LoadingState,
     universities: University[],
     rowsPerPageOptions: number[],
+    onDeleteRow: (universityId: number) => void,
 }
 
 const UniversityList: React.FunctionComponent<UniversityListProps> = (props) => {
     const classes = useStyles();
-    const {loadingState, universities, rowsPerPageOptions, ...rest} = props;
+    const {loadingState, universities, rowsPerPageOptions, onDeleteRow, ...rest} = props;
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(rowsPerPageOptions.length > 0 ? rowsPerPageOptions[0] : 5);
 
@@ -59,42 +61,43 @@ const UniversityList: React.FunctionComponent<UniversityListProps> = (props) => 
     }, [loadingState]);
 
     const tableHeaderCells: OptionalTableCellProps[] = [
-        {content: "نام", width: "50%"},
+        {content: "نام", width: "60%"},
         {content: "مکان", smOptional: true, width: "15%"},
-        {content: "آدرس اینترنتی", xsOptional: true, width: "15%"},
-        {content: "تعداد دانشکده", xsOptional: true, width: "15%"},
+        {content: "آدرس اینترنتی", xsOptional: true, width: "10%"},
+        {content: "تعداد دانشکده", width: "10%"},
         {content: "", width: "5%"}
     ]
 
     const tableRows = universities
         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
         .map(university => {
-            const actions = (
-                <div className={classes.actionContainer}>
-                    <Tooltip TransitionComponent={Zoom} title="ویرایش">
-                        <IconButton
-                            color="secondary"
-                            className={classes.action}
-                        >
-                            <EditIcon/>
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip TransitionComponent={Zoom} title="حذف">
+            const actions = <div className={classes.actionContainer}>
+                <Tooltip TransitionComponent={Zoom} title="ویرایش">
+                    <IconButton
+                        color="secondary"
+                        className={classes.action}
+                    >
+                        <EditIcon/>
+                    </IconButton>
+                </Tooltip>
+                <Tooltip TransitionComponent={Zoom} title="حذف">
+                    <span>
                         <IconButton
                             color="secondary"
                             disabled={university.facultiesCount! > 0}
                             className={classes.action}
+                            onClick={() => onDeleteRow(university.id!)}
                         >
                             <DeleteIcon/>
                         </IconButton>
-                    </Tooltip>
-                </div>
-            )
+                    </span>
+                </Tooltip>
+            </div>
             const cells: OptionalTableCellProps[] = [
                 {content: university.name},
                 {content: university.location, smOptional: true},
                 {content: university.webAddress, xsOptional: true, dir: "ltr"},
-                {content: university.facultiesCount, xsOptional: true},
+                {content: university.facultiesCount},
                 {content: actions},
             ];
 
