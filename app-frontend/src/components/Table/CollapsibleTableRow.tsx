@@ -26,14 +26,13 @@ const CollapsibleTableRow: React.FunctionComponent<CollapsibleTableRowProps> = (
 
     return (
         <React.Fragment>
-            <TableRow className={classes.root}>
-                <ExtendedTableRow cells={cells}/>
+            <ExtendedTableRow cells={cells} className={classes.root}>
                 <TableCell>
                     <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
                         {open ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/>}
                     </IconButton>
                 </TableCell>
-            </TableRow>
+            </ExtendedTableRow>
             <TableRow>
                 <TableCell style={{paddingBottom: 0, paddingTop: 0}} colSpan={cells.length + 1}>
                     <Collapse in={open} timeout="auto" unmountOnExit>

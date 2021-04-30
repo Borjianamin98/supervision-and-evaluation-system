@@ -1,9 +1,11 @@
 import {CircularProgress, Table, TableBody, TableContainer, TableHead, TableRow} from "@material-ui/core";
+import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
-import {makeStyles} from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
+import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
+import EditIcon from "@material-ui/icons/Edit";
 import {useSnackbar} from "notistack";
 import React from 'react';
+import {rtlTheme} from "../../App";
 import ExtendedTableRow from "../../components/Table/ExtendedTableRow";
 import FullRowCell from "../../components/Table/FullRowCell";
 import OptionalTableCell, {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
@@ -16,11 +18,19 @@ const useStyles = makeStyles((theme) => ({
         display: "flex",
         flexDirection: "column"
     },
+    rowButton: {
+        // margin: theme.spacing(1),
+    },
     tableContainer: {
         maxHeight: 400,
+        overflowX: "hidden",
     },
     circularProgress: {
         margin: theme.spacing(2),
+    },
+    header: {
+        position: 'sticky',
+        top: 0,
     },
 }));
 
@@ -49,19 +59,33 @@ const UniversityListView: React.FunctionComponent = () => {
 
     const tableHeaderCells: OptionalTableCellProps[] = [
         {content: "نام", width: "50%"},
-        {content: "مکان", optional: true, width: "25%"},
+        {content: "مکان", optional: true, width: "20%"},
         {content: "آدرس اینترنتی", width: "25%"},
+        {content: "", width: "5%"}
     ]
 
     const tableRows = universities.map(university => {
+        const editButton = (
+            <ThemeProvider theme={rtlTheme}>
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    className={classes.rowButton}
+                    endIcon={<EditIcon/>}
+                >
+                    ویرایش
+                </Button>
+            </ThemeProvider>
+        )
         const cells: OptionalTableCellProps[] = [
             {content: university.name},
             {content: university.location, optional: true},
             {content: university.webAddress, dir: "ltr"},
+            {content: editButton}
         ];
 
         return (
-            <ExtendedTableRow cells={cells}/>
+            <ExtendedTableRow key={university.id!} cells={cells}/>
         );
     });
 
@@ -71,9 +95,8 @@ const UniversityListView: React.FunctionComponent = () => {
 
     return (
         <div dir="rtl" className={classes.root}>
-            <Typography variant="h6" gutterBottom>دانشگاه‌ها</Typography>
             <TableContainer component={Paper} elevation={4} className={classes.tableContainer}>
-                <Table>
+                <Table stickyHeader>
                     <TableHead>
                         <TableRow>
                             {tableHeaderCells.map((cell, index) => (

@@ -1,25 +1,26 @@
-import {TableRow} from "@material-ui/core";
+import {TableRow, TableRowProps} from "@material-ui/core";
 import React from "react";
 import OptionalTableCell, {OptionalTableCellProps} from "./OptionalTableCell";
 
-interface CollapsibleTableRowProps {
+interface CollapsibleTableRowProps extends TableRowProps {
     cells: Array<OptionalTableCellProps>,
 }
 
 const ExtendedTableRow: React.FunctionComponent<CollapsibleTableRowProps> = (props) => {
-    const {cells} = props;
+    const {cells, ...rest} = props;
 
     return (
-        <TableRow>
+        <TableRow {...rest}>
             {cells.map((cell, index) => {
                 return <OptionalTableCell
-                    key={cell.key ?? index}
+                    key={index}
                     align="right"
                     component={index === 0 ? "th" : undefined}
                     scope={index === 0 ? "row" : undefined}
                     {...cell}
                 />
             })}
+            {props.children}
         </TableRow>
     );
 }

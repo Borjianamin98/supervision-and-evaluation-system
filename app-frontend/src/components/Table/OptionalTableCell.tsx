@@ -2,7 +2,6 @@ import {Hidden, TableCell, TableCellProps} from "@material-ui/core";
 import React from "react";
 
 export interface OptionalTableCellProps extends TableCellProps {
-    key?: number,
     content: React.ReactNode,
     optional?: boolean,
 }
