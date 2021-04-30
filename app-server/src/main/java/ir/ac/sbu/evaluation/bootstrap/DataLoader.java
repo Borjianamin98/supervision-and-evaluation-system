@@ -227,7 +227,7 @@ public class DataLoader implements CommandLineRunner {
 
         University iustUniversity = universityRepository.save(University.builder()
                 .name("دانشگاه علم و صنعت ایران")
-                .location("تهران").webAddress("iust.ac.ir")
+                .location("تهران").webAddress("http://iust.ac.ir")
                 .build());
         Faculty chemistryFaculty = facultyRepository.save(Faculty.builder()
                 .name("دانشکده‌ شیمی")
@@ -240,7 +240,7 @@ public class DataLoader implements CommandLineRunner {
 
         University atuUniversity = universityRepository.save(University.builder()
                 .name("دانشگاه علامه طباطبایی")
-                .location("تهران").webAddress("atu.ac.ir")
+                .location("تهران").webAddress("http://atu.ac.ir")
                 .build());
         chemistryFaculty = facultyRepository.save(Faculty.builder()
                 .name("دانشکده‌ شیمی")

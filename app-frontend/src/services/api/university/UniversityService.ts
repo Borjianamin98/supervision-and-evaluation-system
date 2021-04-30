@@ -23,6 +23,10 @@ class UniversityService {
         }
     }
 
+    static registerUniversity(university: University) {
+        return Promise.resolve();
+    }
+
     static retrieveUniversities() {
         return apiAxios.get<Array<University>>(API_UNIVERSITY_PATH,
             {
@@ -35,6 +39,10 @@ class UniversityService {
             {
                 validateStatus: status => status === 200
             })
+    }
+
+    static isUniversityValid(university: University) {
+        return university.name.length > 0;
     }
 }
 

@@ -4,13 +4,17 @@ import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
 import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
 import EditIcon from "@material-ui/icons/Edit";
+import {useSnackbar} from "notistack";
 import React from 'react';
 import {rtlTheme} from "../../App";
 import ExtendedTableRow from "../../components/Table/ExtendedTableRow";
 import FullRowCell from "../../components/Table/FullRowCell";
 import OptionalTableCell, {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
 import CustomTablePagination from "../../components/Table/Pagination/CustomTablePagination";
+import {getGeneralErrorMessage} from "../../config/axios-config";
 import {Faculty} from "../../model/university/faculty";
+import {University} from "../../model/university/university";
+import UniversityService from "../../services/api/university/UniversityService";
 
 const useStyles = makeStyles((theme) => ({
     tableContainer: {
@@ -21,27 +25,28 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-interface FacultyListProps extends BoxProps {
+interface UniversityListProps extends BoxProps {
     loaded: boolean,
-    faculties: Faculty[],
+    universities: University[],
     rowsPerPageOptions: number[],
 }
 
-const FacultyList: React.FunctionComponent<FacultyListProps> = (props) => {
+const UniversityList: React.FunctionComponent<UniversityListProps> = (props) => {
     const classes = useStyles();
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
-    const {loaded, faculties, rowsPerPageOptions, ...rest} = props;
+    const {loaded, universities, rowsPerPageOptions, ...rest} = props;
 
     const tableHeaderCells: OptionalTableCellProps[] = [
         {content: "نام", width: "50%"},
-        {content: "مکان", smOptional: true, width: "45%"},
+        {content: "مکان", smOptional: true, width: "20%"},
+        {content: "آدرس اینترنتی", xsOptional: true, width: "25%"},
         {content: "", width: "5%"}
     ]
 
-    const tableRows = faculties
+    const tableRows = universities
         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-        .map(faculty => {
+        .map(university => {
             const editButton = (
                 <ThemeProvider theme={rtlTheme}>
                     <Button
@@ -54,18 +59,19 @@ const FacultyList: React.FunctionComponent<FacultyListProps> = (props) => {
                 </ThemeProvider>
             )
             const cells: OptionalTableCellProps[] = [
-                {content: faculty.name},
-                {content: faculty.location, xsOptional: true},
+                {content: university.name},
+                {content: university.location, smOptional: true},
+                {content: university.webAddress, xsOptional: true, dir: "ltr"},
                 {content: editButton}
             ];
 
             return (
-                <ExtendedTableRow key={faculty.id!} cells={cells}/>
+                <ExtendedTableRow key={university.id!} cells={cells}/>
             );
         });
 
-    const facultyRows = faculties.length === 0 ? (
-        <FullRowCell headersCount={tableHeaderCells.length}>دانشکده‌ای تعریف نشده است.</FullRowCell>
+    const universityRows = universities.length === 0 ? (
+        <FullRowCell headersCount={tableHeaderCells.length}>دانشگاهی تعریف نشده است.</FullRowCell>
     ) : tableRows;
 
     return (
@@ -82,7 +88,7 @@ const FacultyList: React.FunctionComponent<FacultyListProps> = (props) => {
                         </TableHead>
                         <TableBody>
                             {
-                                loaded ? facultyRows :
+                                loaded ? universityRows :
                                     (
                                         <FullRowCell headersCount={tableHeaderCells.length}>
                                             <CircularProgress className={classes.circularProgress}/>
@@ -93,7 +99,7 @@ const FacultyList: React.FunctionComponent<FacultyListProps> = (props) => {
                         <CustomTablePagination
                             rowsPerPageOptions={rowsPerPageOptions}
                             colSpan={tableHeaderCells.length}
-                            count={faculties.length}
+                            count={universities.length}
                             rowsPerPage={rowsPerPage}
                             page={page}
                             onChangePage={newValue => setPage(newValue)}
@@ -109,4 +115,4 @@ const FacultyList: React.FunctionComponent<FacultyListProps> = (props) => {
     );
 }
 
-export default FacultyList;
+export default UniversityList;

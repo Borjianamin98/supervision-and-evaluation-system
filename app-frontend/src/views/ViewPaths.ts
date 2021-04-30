@@ -15,7 +15,6 @@ export const PROBLEM_CREATE_VIEW_PATH = "/problem/create";
 
 // University Views
 export const UNIVERSITY_LIST_PATH = "/university/list";
-export const UNIVERSITY_CREATE_PATH = "/university/create";
 
 // Settings Views
 export const SETTINGS_VIEW_PATH = "/settings";

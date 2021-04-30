@@ -14,14 +14,13 @@ import ProblemCreateView from "../problem/create/ProblemCreateView";
 import ProblemObservationView from "../problem/ProblemObservationView";
 import ProfileView from "../ProfileView";
 import SettingsView from "../SettingsView";
-import UniversityCreateView from "../university/create/UniversityCreateView";
 import UniversityListView from "../university/UniversityListView";
 import {
     DASHBOARD_VIEW_PATH,
     PROBLEM_CREATE_VIEW_PATH,
     PROBLEM_OBSERVATION_PATH,
     PROFILE_VIEW_PATH,
-    SETTINGS_VIEW_PATH, UNIVERSITY_CREATE_PATH,
+    SETTINGS_VIEW_PATH,
     UNIVERSITY_LIST_PATH
 } from "../ViewPaths";
 
@@ -80,12 +79,6 @@ const universityRoutesInfo: navBarRouteInfo[] = [
         name: "دانشگاه‌ها",
         icon: ViewListIcon,
         component: UniversityListView,
-    },
-    {
-        path: UNIVERSITY_CREATE_PATH,
-        name: "تعریف دانشگاه",
-        icon: NoteAddIcon,
-        component: UniversityCreateView,
     },
 ]
 
