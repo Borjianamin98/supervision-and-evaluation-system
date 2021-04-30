@@ -9,6 +9,7 @@ import {rtlTheme} from "../../App";
 import ExtendedTableRow from "../../components/Table/ExtendedTableRow";
 import FullRowCell from "../../components/Table/FullRowCell";
 import OptionalTableCell, {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
+import CustomTablePagination from "../../components/Table/Pagination/CustomTablePagination";
 import {getGeneralErrorMessage} from "../../config/axios-config";
 import {University} from "../../model/university/university";
 import UniversityService from "../../services/api/university/UniversityService";
@@ -18,32 +19,26 @@ const useStyles = makeStyles((theme) => ({
         display: "flex",
         flexDirection: "column"
     },
-    rowButton: {
-        // margin: theme.spacing(1),
-    },
     tableContainer: {
-        maxHeight: 400,
         overflowX: "hidden",
     },
     circularProgress: {
         margin: theme.spacing(2),
     },
-    header: {
-        position: 'sticky',
-        top: 0,
-    },
 }));
 
 const UniversityListView: React.FunctionComponent = () => {
     const classes = useStyles();
+    const {enqueueSnackbar} = useSnackbar();
     const [universities, setUniversities] = React.useState<University[]>([]);
     const [loaded, setLoaded] = React.useState<boolean>(false);
-    const {enqueueSnackbar} = useSnackbar();
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     React.useEffect(() => {
         UniversityService.retrieveUniversities()
             .then(value => {
-                setUniversities(Array.apply(null, Array(30)).map(_ => value.data[0]));
+                setUniversities(value.data);
                 setLoaded(true);
             })
             .catch(error => {
@@ -59,64 +54,78 @@ const UniversityListView: React.FunctionComponent = () => {
 
     const tableHeaderCells: OptionalTableCellProps[] = [
         {content: "نام", width: "50%"},
-        {content: "مکان", optional: true, width: "20%"},
-        {content: "آدرس اینترنتی", width: "25%"},
+        {content: "مکان", smOptional: true, width: "20%"},
+        {content: "آدرس اینترنتی", xsOptional: true, width: "25%"},
         {content: "", width: "5%"}
     ]
 
-    const tableRows = universities.map(university => {
-        const editButton = (
-            <ThemeProvider theme={rtlTheme}>
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    className={classes.rowButton}
-                    endIcon={<EditIcon/>}
-                >
-                    ویرایش
-                </Button>
-            </ThemeProvider>
-        )
-        const cells: OptionalTableCellProps[] = [
-            {content: university.name},
-            {content: university.location, optional: true},
-            {content: university.webAddress, dir: "ltr"},
-            {content: editButton}
-        ];
+    const tableRows = universities
+        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+        .map(university => {
+            const editButton = (
+                <ThemeProvider theme={rtlTheme}>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        endIcon={<EditIcon/>}
+                    >
+                        ویرایش
+                    </Button>
+                </ThemeProvider>
+            )
+            const cells: OptionalTableCellProps[] = [
+                {content: university.name},
+                {content: university.location, smOptional: true},
+                {content: university.webAddress, xsOptional: true, align: "left"},
+                {content: editButton}
+            ];
 
-        return (
-            <ExtendedTableRow key={university.id!} cells={cells}/>
-        );
-    });
+            return (
+                <ExtendedTableRow key={university.id!} cells={cells}/>
+            );
+        });
 
     const universityRows = universities.length === 0 ? (
         <FullRowCell headersCount={tableHeaderCells.length}>مسئله‌ای یافت نشد.</FullRowCell>
     ) : tableRows;
 
     return (
-        <div dir="rtl" className={classes.root}>
-            <TableContainer component={Paper} elevation={4} className={classes.tableContainer}>
-                <Table stickyHeader>
-                    <TableHead>
-                        <TableRow>
-                            {tableHeaderCells.map((cell, index) => (
-                                <OptionalTableCell key={index} align="right" {...cell}/>
-                            ))}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {
-                            loaded ? universityRows :
-                                (
-                                    <FullRowCell headersCount={tableHeaderCells.length}>
-                                        <CircularProgress className={classes.circularProgress}/>
-                                    </FullRowCell>
-                                )
-                        }
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </div>
+        <ThemeProvider theme={rtlTheme}>
+            <div dir="rtl" className={classes.root}>
+                <TableContainer component={Paper} elevation={4} className={classes.tableContainer}>
+                    <Table size="small">
+                        <TableHead>
+                            <TableRow>
+                                {tableHeaderCells.map((cell, index) => (
+                                    <OptionalTableCell component="th" key={index} {...cell}/>
+                                ))}
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {
+                                loaded ? universityRows :
+                                    (
+                                        <FullRowCell headersCount={tableHeaderCells.length}>
+                                            <CircularProgress className={classes.circularProgress}/>
+                                        </FullRowCell>
+                                    )
+                            }
+                        </TableBody>
+                        <CustomTablePagination
+                            colSpan={tableHeaderCells.length}
+                            count={universities.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onChangePage={newValue => setPage(newValue)}
+                            onChangeRowsPerPage={newValue => {
+                                setRowsPerPage(newValue);
+                                setPage(0);
+                            }}
+                        />
+                    </Table>
+                </TableContainer>
+            </div>
+        </ThemeProvider>
     );
 }
 
