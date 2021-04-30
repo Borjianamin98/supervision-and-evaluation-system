@@ -20,15 +20,19 @@ public class UniversityDto {
     @NotBlank
     private String webAddress;
 
+    @JsonProperty(access = Access.READ_ONLY)
+    private long facultiesCount;
+
     public UniversityDto() {
     }
 
     @Builder
-    public UniversityDto(long id, String name, String location, String webAddress) {
+    public UniversityDto(long id, String name, String location, String webAddress, long facultiesCount) {
         this.id = id;
         this.name = name;
         this.location = location;
         this.webAddress = webAddress;
+        this.facultiesCount = facultiesCount;
     }
 
     public static UniversityDto from(University university) {
@@ -37,6 +41,7 @@ public class UniversityDto {
                 .name(university.getName())
                 .location(university.getLocation())
                 .webAddress(university.getWebAddress())
+                .facultiesCount(university.getFaculties().size())
                 .build();
     }
 

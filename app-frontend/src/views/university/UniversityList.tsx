@@ -1,9 +1,20 @@
-import {BoxProps, CircularProgress, Table, TableBody, TableContainer, TableHead, TableRow} from "@material-ui/core";
+import {
+    BoxProps,
+    CircularProgress,
+    Table,
+    TableBody,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Zoom
+} from "@material-ui/core";
 import Box from "@material-ui/core/Box";
-import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
 import Paper from "@material-ui/core/Paper";
 import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
+import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
+import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import React from 'react';
 import {rtlTheme} from "../../App";
@@ -15,6 +26,12 @@ import {LoadingState} from "../../model/enum/loading-state";
 import {University} from "../../model/university/university";
 
 const useStyles = makeStyles((theme) => ({
+    action: {
+        margin: theme.spacing(0, 0.5),
+    },
+    actionContainer: {
+        whiteSpace: "nowrap",
+    },
     tableContainer: {
         overflowX: "hidden",
     },
@@ -43,30 +60,42 @@ const UniversityList: React.FunctionComponent<UniversityListProps> = (props) => 
 
     const tableHeaderCells: OptionalTableCellProps[] = [
         {content: "نام", width: "50%"},
-        {content: "مکان", smOptional: true, width: "20%"},
-        {content: "آدرس اینترنتی", xsOptional: true, width: "25%"},
+        {content: "مکان", smOptional: true, width: "15%"},
+        {content: "آدرس اینترنتی", xsOptional: true, width: "15%"},
+        {content: "تعداد دانشکده", xsOptional: true, width: "15%"},
         {content: "", width: "5%"}
     ]
 
     const tableRows = universities
         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
         .map(university => {
-            const editButton = (
-                <ThemeProvider theme={rtlTheme}>
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        endIcon={<EditIcon/>}
-                    >
-                        ویرایش
-                    </Button>
-                </ThemeProvider>
+            const actions = (
+                <div className={classes.actionContainer}>
+                    <Tooltip TransitionComponent={Zoom} title="ویرایش">
+                        <IconButton
+                            color="secondary"
+                            className={classes.action}
+                        >
+                            <EditIcon/>
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip TransitionComponent={Zoom} title="حذف">
+                        <IconButton
+                            color="secondary"
+                            disabled={university.facultiesCount! > 0}
+                            className={classes.action}
+                        >
+                            <DeleteIcon/>
+                        </IconButton>
+                    </Tooltip>
+                </div>
             )
             const cells: OptionalTableCellProps[] = [
                 {content: university.name},
                 {content: university.location, smOptional: true},
                 {content: university.webAddress, xsOptional: true, dir: "ltr"},
-                {content: editButton}
+                {content: university.facultiesCount, xsOptional: true},
+                {content: actions},
             ];
 
             return (

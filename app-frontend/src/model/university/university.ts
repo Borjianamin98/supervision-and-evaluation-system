@@ -3,4 +3,5 @@ export interface University {
     name: string,
     location: string,
     webAddress: string,
+    facultiesCount?: number
 }
