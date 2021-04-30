@@ -1,3 +1,4 @@
+import {TableRow} from "@material-ui/core";
 import React from "react";
 import OptionalTableCell, {OptionalTableCellProps} from "./OptionalTableCell";
 
@@ -9,7 +10,7 @@ const ExtendedTableRow: React.FunctionComponent<CollapsibleTableRowProps> = (pro
     const {cells} = props;
 
     return (
-        <React.Fragment>
+        <TableRow>
             {cells.map((cell, index) => {
                 return <OptionalTableCell
                     key={index}
@@ -19,7 +20,7 @@ const ExtendedTableRow: React.FunctionComponent<CollapsibleTableRowProps> = (pro
                     {...cell}
                 />
             })}
-        </React.Fragment>
+        </TableRow>
     );
 }
 

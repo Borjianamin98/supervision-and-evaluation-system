@@ -1,6 +1,7 @@
 import {CircularProgress, Table, TableBody, TableContainer, TableHead, TableRow} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import {makeStyles} from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
 import {useSnackbar} from "notistack";
 import React from 'react';
 import ExtendedTableRow from "../../components/Table/ExtendedTableRow";
@@ -11,6 +12,13 @@ import {University} from "../../model/university/university";
 import UniversityService from "../../services/api/university/UniversityService";
 
 const useStyles = makeStyles((theme) => ({
+    root: {
+        display: "flex",
+        flexDirection: "column"
+    },
+    tableContainer: {
+        maxHeight: 400,
+    },
     circularProgress: {
         margin: theme.spacing(2),
     },
@@ -25,7 +33,7 @@ const UniversityListView: React.FunctionComponent = () => {
     React.useEffect(() => {
         UniversityService.retrieveUniversities()
             .then(value => {
-                setUniversities(value.data);
+                setUniversities(Array.apply(null, Array(30)).map(_ => value.data[0]));
                 setLoaded(true);
             })
             .catch(error => {
@@ -40,9 +48,9 @@ const UniversityListView: React.FunctionComponent = () => {
     }, [enqueueSnackbar])
 
     const tableHeaderCells: OptionalTableCellProps[] = [
-        {content: "نام"},
-        {content: "مکان", optional: true},
-        {content: "آدرس اینترنتی"},
+        {content: "نام", width: "50%"},
+        {content: "مکان", optional: true, width: "25%"},
+        {content: "آدرس اینترنتی", width: "25%"},
     ]
 
     const tableRows = universities.map(university => {
@@ -62,27 +70,30 @@ const UniversityListView: React.FunctionComponent = () => {
     ) : tableRows;
 
     return (
-        <TableContainer dir="rtl" component={Paper} elevation={4}>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        {tableHeaderCells.map((cell, index) => (
-                            <OptionalTableCell key={index} align="right" {...cell}/>
-                        ))}
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {
-                        loaded ? universityRows :
-                            (
-                                <FullRowCell headersCount={tableHeaderCells.length}>
-                                    <CircularProgress className={classes.circularProgress}/>
-                                </FullRowCell>
-                            )
-                    }
-                </TableBody>
-            </Table>
-        </TableContainer>
+        <div dir="rtl" className={classes.root}>
+            <Typography variant="h6" gutterBottom>دانشگاه‌ها</Typography>
+            <TableContainer component={Paper} elevation={4} className={classes.tableContainer}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            {tableHeaderCells.map((cell, index) => (
+                                <OptionalTableCell key={index} align="right" {...cell}/>
+                            ))}
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {
+                            loaded ? universityRows :
+                                (
+                                    <FullRowCell headersCount={tableHeaderCells.length}>
+                                        <CircularProgress className={classes.circularProgress}/>
+                                    </FullRowCell>
+                                )
+                        }
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </div>
     );
 }
 
