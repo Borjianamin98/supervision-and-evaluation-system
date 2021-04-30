@@ -1,7 +1,7 @@
 import apiAxios from "../../../config/axios-config";
 import {Faculty} from "../../../model/university/faculty";
 import {University} from "../../../model/university/university";
-import {API_UNIVERSITY_LIST_FACULTIES_PATH, API_UNIVERSITY_PATH} from "../../ApiPaths";
+import {API_UNIVERSITY_LIST_FACULTIES_PATH, API_UNIVERSITY_PATH, API_UNIVERSITY_REGISTER_PATH} from "../../ApiPaths";
 
 class UniversityService {
 
@@ -24,7 +24,11 @@ class UniversityService {
     }
 
     static registerUniversity(university: University) {
-        return Promise.resolve();
+        return apiAxios.post<University>(API_UNIVERSITY_REGISTER_PATH,
+            university,
+            {
+                validateStatus: status => status === 200
+            })
     }
 
     static retrieveUniversities() {

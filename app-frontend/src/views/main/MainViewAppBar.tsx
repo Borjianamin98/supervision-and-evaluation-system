@@ -38,7 +38,6 @@ const MainViewAppBar: React.FunctionComponent = () => {
 
     const location = useLocation();
     React.useEffect(() => {
-        console.log(location.pathname);
         const candidateNames = allRoutesInfo
             .filter(route => location.pathname.includes(route.path))
             .map(route => route.name);

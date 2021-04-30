@@ -2,6 +2,7 @@ package ir.ac.sbu.evaluation.service.university;
 
 import ir.ac.sbu.evaluation.dto.university.FacultyDto;
 import ir.ac.sbu.evaluation.dto.university.UniversityDto;
+import ir.ac.sbu.evaluation.model.university.University;
 import ir.ac.sbu.evaluation.repository.university.UniversityRepository;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,5 +27,10 @@ public class UniversityService {
         return universityRepository.findById(universityId)
                 .orElseThrow(() -> new IllegalArgumentException("University not found: ID = " + universityId))
                 .getFaculties().stream().map(FacultyDto::from).collect(Collectors.toList());
+    }
+
+    public UniversityDto register(UniversityDto universityDto) {
+        University university = universityDto.toUniversity();
+        return UniversityDto.from(universityRepository.save(university));
     }
 }

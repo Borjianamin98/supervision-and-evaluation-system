@@ -9,6 +9,7 @@ import React, {FormEventHandler} from 'react';
 import {rtlTheme} from "../../App";
 import CustomTextField from "../../components/Text/CustomTextField";
 import {getGeneralErrorMessage} from "../../config/axios-config";
+import {LoadingState} from "../../model/enum/loading-state";
 import {University} from "../../model/university/university";
 import UniversityService from "../../services/api/university/UniversityService";
 import UniversityList from "./UniversityList";
@@ -28,16 +29,18 @@ const UniversityListView: React.FunctionComponent = () => {
     const {enqueueSnackbar} = useSnackbar();
     const [newUniversity, setNewUniversity] = React.useState<University>(UniversityService.createInitialUniversity());
     const [universities, setUniversities] = React.useState<University[]>([]);
-    const [loaded, setLoaded] = React.useState<boolean>(false);
     const [errorChecking, setErrorChecking] = React.useState(false);
-
-    const isNotBlank = (c: string) => !errorChecking || c.length > 0;
+    const [loadingState, setLoadingState] = React.useState<LoadingState>(LoadingState.LOADING);
 
     React.useEffect(() => {
+        if (loadingState === LoadingState.LOADED) {
+            return;
+        }
+
         UniversityService.retrieveUniversities()
             .then(value => {
                 setUniversities(value.data);
-                setLoaded(true);
+                setLoadingState(LoadingState.LOADED);
             })
             .catch(error => {
                 const {message, statusCode} = getGeneralErrorMessage(error);
@@ -47,11 +50,15 @@ const UniversityListView: React.FunctionComponent = () => {
                 } else {
                     enqueueSnackbar(message, {variant: "error"});
                 }
+                setLoadingState(LoadingState.FAILED);
             });
-    }, [enqueueSnackbar]);
+    }, [enqueueSnackbar, loadingState]);
 
     const handleSuccessSubmit = () => {
         enqueueSnackbar("دانشگاه جدید با موفقیت اضافه شد.", {variant: "success"});
+        setErrorChecking(false);
+        setNewUniversity(UniversityService.createInitialUniversity());
+        setLoadingState(LoadingState.SHOULD_RELOAD);
     }
 
     const handleFailedSubmit = (error: AxiosError) => {
@@ -75,10 +82,12 @@ const UniversityListView: React.FunctionComponent = () => {
             .catch(error => handleFailedSubmit(error))
     }
 
+    const isNotBlank = (c: string) => !errorChecking || c.length > 0;
+
     return (
         <ThemeProvider theme={rtlTheme}>
             <Grid container direction="column">
-                <UniversityList loaded={loaded} universities={universities} rowsPerPageOptions={[5, 10]}/>
+                <UniversityList loadingState={loadingState} universities={universities} rowsPerPageOptions={[5, 10]}/>
                 <Grid container dir="rtl"
                       component={Paper}
                       elevation={4}

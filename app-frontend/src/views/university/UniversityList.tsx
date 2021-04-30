@@ -3,18 +3,16 @@ import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
 import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
 import EditIcon from "@material-ui/icons/Edit";
-import {useSnackbar} from "notistack";
 import React from 'react';
 import {rtlTheme} from "../../App";
 import ExtendedTableRow from "../../components/Table/ExtendedTableRow";
 import FullRowCell from "../../components/Table/FullRowCell";
 import OptionalTableCell, {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
 import CustomTablePagination from "../../components/Table/Pagination/CustomTablePagination";
-import {getGeneralErrorMessage} from "../../config/axios-config";
-import {Faculty} from "../../model/university/faculty";
+import {LoadingState} from "../../model/enum/loading-state";
 import {University} from "../../model/university/university";
-import UniversityService from "../../services/api/university/UniversityService";
 
 const useStyles = makeStyles((theme) => ({
     tableContainer: {
@@ -26,16 +24,22 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface UniversityListProps extends BoxProps {
-    loaded: boolean,
+    loadingState: LoadingState,
     universities: University[],
     rowsPerPageOptions: number[],
 }
 
 const UniversityList: React.FunctionComponent<UniversityListProps> = (props) => {
     const classes = useStyles();
+    const {loadingState, universities, rowsPerPageOptions, ...rest} = props;
     const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
-    const {loaded, universities, rowsPerPageOptions, ...rest} = props;
+    const [rowsPerPage, setRowsPerPage] = React.useState(rowsPerPageOptions.length > 0 ? rowsPerPageOptions[0] : 5);
+
+    React.useEffect(() => {
+        if (loadingState !== LoadingState.SHOULD_RELOAD) {
+            setPage(0);
+        }
+    }, [loadingState]);
 
     const tableHeaderCells: OptionalTableCellProps[] = [
         {content: "نام", width: "50%"},
@@ -74,6 +78,26 @@ const UniversityList: React.FunctionComponent<UniversityListProps> = (props) => 
         <FullRowCell headersCount={tableHeaderCells.length}>دانشگاهی تعریف نشده است.</FullRowCell>
     ) : tableRows;
 
+    const tableBodyContent = (state: LoadingState) => {
+        switch (state) {
+            case LoadingState.LOADING:
+                return (
+                    <FullRowCell headersCount={tableHeaderCells.length}>
+                        <CircularProgress className={classes.circularProgress}/>
+                    </FullRowCell>
+                )
+            case LoadingState.LOADED:
+            case LoadingState.SHOULD_RELOAD:
+                return universityRows;
+            case LoadingState.FAILED:
+                return (
+                    <FullRowCell headersCount={tableHeaderCells.length}>
+                        <Typography>در دریافت اطلاعات از سرور خطایی رخ داده است.</Typography>
+                    </FullRowCell>
+                );
+        }
+    }
+
     return (
         <ThemeProvider theme={rtlTheme}>
             <Box dir="rtl" {...rest}>
@@ -86,16 +110,7 @@ const UniversityList: React.FunctionComponent<UniversityListProps> = (props) => 
                                 ))}
                             </TableRow>
                         </TableHead>
-                        <TableBody>
-                            {
-                                loaded ? universityRows :
-                                    (
-                                        <FullRowCell headersCount={tableHeaderCells.length}>
-                                            <CircularProgress className={classes.circularProgress}/>
-                                        </FullRowCell>
-                                    )
-                            }
-                        </TableBody>
+                        <TableBody>{tableBodyContent(loadingState)}</TableBody>
                         <CustomTablePagination
                             rowsPerPageOptions={rowsPerPageOptions}
                             colSpan={tableHeaderCells.length}
