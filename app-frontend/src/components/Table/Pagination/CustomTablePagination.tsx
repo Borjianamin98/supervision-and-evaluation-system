@@ -15,7 +15,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type CustomTablePaginationProps<D extends React.ElementType = React.ComponentType<TablePaginationBaseProps>,
-    P = {}> = Omit<TablePaginationProps<D, P>, "onChangePage" | "onChangeRowsPerPage" | "count"> & {
+    P = {}> =
+    Omit<TablePaginationProps<D, P>, "onChangePage" | "onChangeRowsPerPage" | "count" | "rowsPerPageOptions">
+    & {
+    rowsPerPageOptions: number[],
     count: number,
     onChangeRowsPerPage: (newValue: number) => void,
     onChangePage: (newValue: number) => void,
@@ -24,7 +27,7 @@ type CustomTablePaginationProps<D extends React.ElementType = React.ComponentTyp
 const CustomTablePagination: React.FunctionComponent<CustomTablePaginationProps> = (props) => {
     const classes = useStyles();
     const mobileMatches = useMediaQuery((theme: Theme) => theme.breakpoints.down('xs'));
-    const {count, ...rest} = props;
+    const {rowsPerPageOptions, count, ...rest} = props;
 
     const handleChangePage: TablePaginationActionsProps["onChangePage"] = (event, newPage) => {
         props.onChangePage(newPage);
@@ -38,7 +41,7 @@ const CustomTablePagination: React.FunctionComponent<CustomTablePaginationProps>
             <TableRow>
                 <TablePagination
                     {...rest}
-                    rowsPerPageOptions={mobileMatches ? [] : [5, 10]}
+                    rowsPerPageOptions={mobileMatches ? [] : rowsPerPageOptions}
                     count={count}
                     classes={{
                         input: classes.paginationInput,
