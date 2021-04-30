@@ -51,8 +51,8 @@ const CollapsibleTable: React.FunctionComponent<{ problems: Array<Problem>, load
     const tableHeaderCells: OptionalTableCellProps[] = [
         {content: "دوره تحصیلی"},
         {content: "عنوان"},
-        {content: "عنوان انگلیسی", optional: true},
-        {content: "کلیدواژه‌ها", optional: true},
+        {content: "عنوان انگلیسی", smOptional: true},
+        {content: "کلیدواژه‌ها", smOptional: true},
         {content: "استاد راهنما"},
     ]
 
@@ -61,8 +61,8 @@ const CollapsibleTable: React.FunctionComponent<{ problems: Array<Problem>, load
         const cells: OptionalTableCellProps[] = [
             {content: educationEnglishMapping(problem.education)},
             {content: problem.title},
-            {content: problem.englishTitle, optional: true},
-            {content: keywordsList, optional: true},
+            {content: problem.englishTitle, smOptional: true},
+            {content: keywordsList, smOptional: true},
             {content: `${problem.supervisor?.firstName} ${problem.supervisor?.lastName}`},
         ];
 
