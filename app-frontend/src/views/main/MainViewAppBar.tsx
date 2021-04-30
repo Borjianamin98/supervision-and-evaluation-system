@@ -6,7 +6,9 @@ import Typography from '@material-ui/core/Typography';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import PersonIcon from '@material-ui/icons/Person';
 import React from 'react';
+import {useLocation} from "react-router-dom";
 import AuthenticationService from "../../services/api/AuthenticationService";
+import {allRoutesInfo} from "./MainViewNavBarLinks";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -23,6 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const MainViewAppBar: React.FunctionComponent = () => {
     const classes = useStyles();
+    const [pageTitle, setPageTitle] = React.useState("");
 
     const [profileAnchorEl, setProfileAnchorEl] = React.useState<null | HTMLElement>(null);
     const openProfileId = Boolean(profileAnchorEl) ? 'transitions-popper' : undefined;
@@ -33,11 +36,18 @@ const MainViewAppBar: React.FunctionComponent = () => {
         setProfileAnchorEl(profileAnchorEl ? null : event.currentTarget);
     };
 
+    const location = useLocation();
+    React.useEffect(() => {
+        console.log(location.pathname);
+        const candidateNames = allRoutesInfo
+            .filter(route => location.pathname.includes(route.path))
+            .map(route => route.name);
+        setPageTitle(candidateNames.length === 0 || candidateNames.length > 1 ? "" : candidateNames[0]);
+    }, [location])
+
     return (
         <>
-            <Typography variant="h6" noWrap className={classes.title}>
-                داشبورد
-            </Typography>
+            <Typography variant="h6" noWrap className={classes.title}>{pageTitle}</Typography>
             <IconButton color="inherit">
                 <Badge badgeContent={4} color="secondary">
                     <NotificationsIcon/>

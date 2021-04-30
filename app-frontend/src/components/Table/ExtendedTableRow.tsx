@@ -13,7 +13,7 @@ const ExtendedTableRow: React.FunctionComponent<CollapsibleTableRowProps> = (pro
         <TableRow>
             {cells.map((cell, index) => {
                 return <OptionalTableCell
-                    key={index}
+                    key={cell.key ?? index}
                     align="right"
                     component={index === 0 ? "th" : undefined}
                     scope={index === 0 ? "row" : undefined}

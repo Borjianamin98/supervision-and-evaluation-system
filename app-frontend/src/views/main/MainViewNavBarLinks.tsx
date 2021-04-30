@@ -76,7 +76,7 @@ const managementRoutesInfo: navBarRouteInfo[] = [
 const universityRoutesInfo: navBarRouteInfo[] = [
     {
         path: UNIVERSITY_LIST_PATH,
-        name: "لیست دانشگاه‌ها",
+        name: "دانشگاه‌ها",
         icon: ViewListIcon,
         component: UniversityListView,
     },
