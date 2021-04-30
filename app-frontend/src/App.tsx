@@ -50,7 +50,7 @@ const App: React.FunctionComponent = () => {
                         vertical: 'bottom',
                         horizontal: 'left',
                     }}
-                    autoHideDuration={6000}
+                    autoHideDuration={5000}
                 >
                     <Router history={browserHistory}>
                         <Switch>

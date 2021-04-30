@@ -46,11 +46,12 @@ interface UniversityListProps extends BoxProps {
     universities: University[],
     rowsPerPageOptions: number[],
     onDeleteRow: (universityId: number) => void,
+    onEditRow: (universityId: number) => void,
 }
 
 const UniversityList: React.FunctionComponent<UniversityListProps> = (props) => {
     const classes = useStyles();
-    const {loadingState, universities, rowsPerPageOptions, onDeleteRow, ...rest} = props;
+    const {loadingState, universities, rowsPerPageOptions, onDeleteRow, onEditRow, ...rest} = props;
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(rowsPerPageOptions.length > 0 ? rowsPerPageOptions[0] : 5);
 
@@ -76,6 +77,7 @@ const UniversityList: React.FunctionComponent<UniversityListProps> = (props) => 
                     <IconButton
                         color="secondary"
                         className={classes.action}
+                        onClick={() => onEditRow(university.id!)}
                     >
                         <EditIcon/>
                     </IconButton>
