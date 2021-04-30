@@ -17,15 +17,22 @@ import ir.ac.sbu.evaluation.repository.user.AdminRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.PersonalInfoRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DataLoader implements CommandLineRunner {
+
+    private static List<University> universities;
+    private static Map<Long /* university ID */, Faculty> faculties;
 
     private final UniversityRepository universityRepository;
     private final FacultyRepository facultyRepository;
@@ -57,23 +64,7 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        University savedUniversity1 = universityRepository.save(University.builder()
-                .name("دانشگاه شهیدبهشتی")
-                .location("تهران").webAddress("https://www.sbu.ac.ir/")
-                .build());
-        Faculty computerEngineeringFaculty = facultyRepository.save(Faculty.builder()
-                .name("دانشکده‌ مهندسی کامپیوتر")
-                .location("بخش شمالی دانشگاه")
-                .university(savedUniversity1)
-                .build());
-        Faculty PhysicFaculty = facultyRepository.save(Faculty.builder()
-                .name("دانشکده‌ فیزیک")
-                .location("بخش شرقی دانشگاه")
-                .university(savedUniversity1)
-                .build());
-        savedUniversity1.getFaculties().add(computerEngineeringFaculty);
-        savedUniversity1.getFaculties().add(PhysicFaculty);
-        universityRepository.save(savedUniversity1);
+        prepareUniversities();
 
         Problem problem1 = Problem.builder()
                 .education(Education.BACHELOR)
@@ -115,6 +106,7 @@ public class DataLoader implements CommandLineRunner {
                 .email("admin@gmail.com")
                 .build());
 
+        Faculty computerEngineeringFaculty = faculties.get(universities.get(0).getId());
         Master master1 = Master.builder()
                 .firstName("صادق")
                 .lastName("علی اکبری")
@@ -163,5 +155,100 @@ public class DataLoader implements CommandLineRunner {
                 .personalInfo(adminPersonalInfo)
                 .build();
         Admin savedAdmin1 = adminRepository.save(admin1);
+    }
+
+    private void prepareUniversities() {
+        universities = new ArrayList<>();
+        faculties = new HashMap<>();
+
+        University shahidBeheshtiUniversity = universityRepository.save(University.builder()
+                .name("دانشگاه شهیدبهشتی")
+                .location("تهران").webAddress("https://www.sbu.ac.ir/")
+                .build());
+        Faculty computerEngineeringFaculty = facultyRepository.save(Faculty.builder()
+                .name("دانشکده‌ مهندسی کامپیوتر")
+                .university(shahidBeheshtiUniversity)
+                .build());
+        Faculty physicFaculty = facultyRepository.save(Faculty.builder()
+                .name("دانشکده‌ فیزیک")
+                .university(shahidBeheshtiUniversity)
+                .build());
+        shahidBeheshtiUniversity.getFaculties().add(computerEngineeringFaculty);
+        shahidBeheshtiUniversity.getFaculties().add(physicFaculty);
+        universityRepository.save(shahidBeheshtiUniversity);
+        universities.add(shahidBeheshtiUniversity);
+        faculties.put(shahidBeheshtiUniversity.getId(), computerEngineeringFaculty);
+        faculties.put(shahidBeheshtiUniversity.getId(), physicFaculty);
+
+        University tehranUniversity = universityRepository.save(University.builder()
+                .name("دانشگاه تهران")
+                .location("تهران").webAddress("https://ut.ac.ir/fa")
+                .build());
+        computerEngineeringFaculty = facultyRepository.save(Faculty.builder()
+                .name("دانشکده‌ مهندسی کامپیوتر")
+                .university(tehranUniversity)
+                .build());
+        Faculty mathematicsFaculty = facultyRepository.save(Faculty.builder()
+                .name("دانشکده‌ ریاضی")
+                .university(tehranUniversity)
+                .build());
+        tehranUniversity.getFaculties().add(computerEngineeringFaculty);
+        tehranUniversity.getFaculties().add(mathematicsFaculty);
+        universityRepository.save(tehranUniversity);
+        universities.add(tehranUniversity);
+        faculties.put(tehranUniversity.getId(), computerEngineeringFaculty);
+        faculties.put(tehranUniversity.getId(), mathematicsFaculty);
+
+        University amirKabirUniversity = universityRepository.save(University.builder()
+                .name("دانشگاه امیرکبیر")
+                .location("تهران").webAddress("https://aut.ac.ir/")
+                .build());
+        Faculty literatureFaculty = facultyRepository.save(Faculty.builder()
+                .name("دانشکده‌ ادبیات")
+                .university(amirKabirUniversity)
+                .build());
+        amirKabirUniversity.getFaculties().add(literatureFaculty);
+        universityRepository.save(amirKabirUniversity);
+        universities.add(amirKabirUniversity);
+        faculties.put(amirKabirUniversity.getId(), literatureFaculty);
+
+        University sharifUniversity = universityRepository.save(University.builder()
+                .name("دانشگاه صنعتی شریف")
+                .location("تهران").webAddress("http://www.sharif.ir/")
+                .build());
+        literatureFaculty = facultyRepository.save(Faculty.builder()
+                .name("دانشکده‌ ادبیات")
+                .university(sharifUniversity)
+                .build());
+        sharifUniversity.getFaculties().add(literatureFaculty);
+        universityRepository.save(sharifUniversity);
+        universities.add(sharifUniversity);
+        faculties.put(sharifUniversity.getId(), literatureFaculty);
+
+        University iustUniversity = universityRepository.save(University.builder()
+                .name("دانشگاه صنعتی شریف")
+                .location("تهران").webAddress("iust.ac.ir")
+                .build());
+        Faculty chemistryFaculty = facultyRepository.save(Faculty.builder()
+                .name("دانشکده‌ شیمی")
+                .university(iustUniversity)
+                .build());
+        iustUniversity.getFaculties().add(chemistryFaculty);
+        universityRepository.save(iustUniversity);
+        universities.add(iustUniversity);
+        faculties.put(iustUniversity.getId(), chemistryFaculty);
+
+        University atuUniversity = universityRepository.save(University.builder()
+                .name("دانشگاه علامه طباطبایی")
+                .location("تهران").webAddress("atu.ac.ir")
+                .build());
+        chemistryFaculty = facultyRepository.save(Faculty.builder()
+                .name("دانشکده‌ شیمی")
+                .university(atuUniversity)
+                .build());
+        atuUniversity.getFaculties().add(chemistryFaculty);
+        universityRepository.save(atuUniversity);
+        universities.add(atuUniversity);
+        faculties.put(atuUniversity.getId(), chemistryFaculty);
     }
 }
