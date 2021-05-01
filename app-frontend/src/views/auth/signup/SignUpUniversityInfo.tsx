@@ -15,8 +15,9 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
     const [university, setUniversity] = useState<University>(UniversityService.createInitialUniversity());
 
     function loadUniversities() {
-        return UniversityService.retrieveUniversities()
-            .then(value => value.data)
+        // TODO: We should use pagination and filter result based on search before retrieving universities.
+        return UniversityService.retrieveUniversities(Number.MAX_SAFE_INTEGER, 0)
+            .then(value => value.data.content)
     }
 
     function loadUniversityFaculties(universityId: number) {

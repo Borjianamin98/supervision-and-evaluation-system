@@ -13,6 +13,7 @@ import {rtlTheme} from "../../App";
 import CustomTextField, {CustomTextFieldProps} from "../../components/Text/CustomTextField";
 import {getGeneralErrorMessage} from "../../config/axios-config";
 import {LoadingState} from "../../model/enum/loading-state";
+import {emptyPageable, Pageable} from "../../model/pageable";
 import {University} from "../../model/university/university";
 import UniversityService from "../../services/api/university/UniversityService";
 import UniversityList from "./UniversityList";
@@ -31,7 +32,10 @@ const UniversityListView: React.FunctionComponent = () => {
     const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar();
 
-    const [universities, setUniversities] = React.useState<University[]>([]);
+    const [universities, setUniversities] = React.useState<Pageable<University>>(emptyPageable());
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
     // University used to create a new one
     const [newUniversity, setNewUniversity] = React.useState<University>(UniversityService.createInitialUniversity());
     // University used to be in dialog and modified
@@ -41,11 +45,12 @@ const UniversityListView: React.FunctionComponent = () => {
     const [loadingState, setLoadingState] = React.useState<LoadingState>(LoadingState.LOADING);
 
     React.useEffect(() => {
-        if (loadingState === LoadingState.LOADED) {
+        if (universities.number === page && universities.size === rowsPerPage &&
+            loadingState === LoadingState.LOADED) {
             return;
         }
 
-        UniversityService.retrieveUniversities()
+        UniversityService.retrieveUniversities(rowsPerPage, page)
             .then(value => {
                 setUniversities(value.data);
                 setLoadingState(LoadingState.LOADED);
@@ -60,7 +65,7 @@ const UniversityListView: React.FunctionComponent = () => {
                 }
                 setLoadingState(LoadingState.FAILED);
             });
-    }, [enqueueSnackbar, loadingState]);
+    }, [enqueueSnackbar, page, rowsPerPage, universities.number, universities.size, loadingState]);
 
     const handleFailedRequest = (error: AxiosError) => {
         const {statusCode, message} = getGeneralErrorMessage(error);
@@ -72,8 +77,8 @@ const UniversityListView: React.FunctionComponent = () => {
         }
     }
 
-    const handleSuccessRegister = () => {
-        enqueueSnackbar("دانشگاه جدید با موفقیت اضافه شد.", {variant: "success"});
+    const handleSuccessRegister = (university: University) => {
+        enqueueSnackbar(`دانشگاه ${university.name} با موفقیت اضافه شد.`, {variant: "success"});
         setErrorChecking(false);
         setNewUniversity(UniversityService.createInitialUniversity());
         setLoadingState(LoadingState.SHOULD_RELOAD);
@@ -86,7 +91,7 @@ const UniversityListView: React.FunctionComponent = () => {
             return;
         }
         UniversityService.registerUniversity(newUniversity)
-            .then(() => handleSuccessRegister())
+            .then(value => handleSuccessRegister(value.data))
             .catch(error => handleFailedRequest(error))
     }
 
@@ -108,7 +113,7 @@ const UniversityListView: React.FunctionComponent = () => {
 
     const [dialogOpen, setDialogOpen] = React.useState(false);
     const handleDialogOpen = (universityId: number) => {
-        const foundUniversities = universities.filter(university => university.id === universityId);
+        const foundUniversities = universities.content.filter(university => university.id === universityId);
         if (foundUniversities.length === 0 || foundUniversities.length > 1) {
             throw new Error(`Unexpected error because university IDs should be unique: ID = ${universityId}`);
         }
@@ -146,7 +151,10 @@ const UniversityListView: React.FunctionComponent = () => {
             <Grid container direction="column">
                 <UniversityList
                     loadingState={loadingState}
-                    universities={universities}
+                    total={universities.totalElements}
+                    pageStateHook={[page, setPage]}
+                    rowsPerPageStateHook={[rowsPerPage, setRowsPerPage]}
+                    universities={universities.content}
                     rowsPerPageOptions={[5, 10]}
                     onDeleteRow={deleteHandler}
                     onEditRow={handleDialogOpen}

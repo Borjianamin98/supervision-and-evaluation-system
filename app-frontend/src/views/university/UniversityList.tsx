@@ -42,6 +42,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface UniversityListProps extends BoxProps {
+    total: number,
+    pageStateHook: [number, React.Dispatch<React.SetStateAction<number>>],
+    rowsPerPageStateHook: [number, React.Dispatch<React.SetStateAction<number>>],
     loadingState: LoadingState,
     universities: University[],
     rowsPerPageOptions: number[],
@@ -51,15 +54,25 @@ interface UniversityListProps extends BoxProps {
 
 const UniversityList: React.FunctionComponent<UniversityListProps> = (props) => {
     const classes = useStyles();
-    const {loadingState, universities, rowsPerPageOptions, onDeleteRow, onEditRow, ...rest} = props;
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(rowsPerPageOptions.length > 0 ? rowsPerPageOptions[0] : 5);
+    const {
+        total,
+        pageStateHook,
+        rowsPerPageStateHook,
+        loadingState,
+        universities,
+        rowsPerPageOptions,
+        onDeleteRow,
+        onEditRow,
+        ...rest
+    } = props;
+    const [page, setPage] = pageStateHook;
+    const [rowsPerPage, setRowsPerPage] = rowsPerPageStateHook;
 
     React.useEffect(() => {
         if (loadingState !== LoadingState.SHOULD_RELOAD) {
             setPage(0);
         }
-    }, [loadingState]);
+    }, [loadingState, setPage]);
 
     const tableHeaderCells: OptionalTableCellProps[] = [
         {content: "نام", width: "60%"},
@@ -70,7 +83,7 @@ const UniversityList: React.FunctionComponent<UniversityListProps> = (props) => 
     ]
 
     const tableRows = universities
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+        // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
         .map(university => {
             const actions = <div className={classes.actionContainer}>
                 <Tooltip TransitionComponent={Zoom} title="ویرایش">
@@ -148,7 +161,7 @@ const UniversityList: React.FunctionComponent<UniversityListProps> = (props) => 
                         <CustomTablePagination
                             rowsPerPageOptions={rowsPerPageOptions}
                             colSpan={tableHeaderCells.length}
-                            count={universities.length}
+                            count={total}
                             rowsPerPage={rowsPerPage}
                             page={page}
                             onChangePage={newValue => setPage(newValue)}
