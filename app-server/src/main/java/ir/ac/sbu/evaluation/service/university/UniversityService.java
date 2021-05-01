@@ -27,11 +27,16 @@ public class UniversityService {
     }
 
     public UniversityDto update(long universityId, UniversityDto universityDto) {
-        universityRepository.findById(universityId)
+        University university = universityRepository.findById(universityId)
                 .orElseThrow(() -> new ResourceNotFoundException("University not found: ID = " + universityId));
 
-        University university = universityDto.toUniversity();
-        university.setId(universityId);
+        university.setName(universityDto.getName());
+        if (universityDto.getLocation() != null) {
+            university.setLocation(universityDto.getLocation());
+        }
+        if (universityDto.getWebAddress() != null) {
+            university.setWebAddress(universityDto.getWebAddress());
+        }
         return UniversityDto.from(universityRepository.save(university));
     }
 
