@@ -34,3 +34,6 @@ export const API_UNIVERSITY_REGISTER_PATH = `${API_UNIVERSITY_ROOT_PATH}/registe
 
 // Faculty Paths
 export const API_FACULTY_ROOT_PATH = "/faculty"
+export const API_FACULTY_RESOURCE_PATH = `${API_FACULTY_ROOT_PATH}/{0}`
+export const API_FACULTY_REGISTER_PATH = `${API_FACULTY_ROOT_PATH}/register`
+
