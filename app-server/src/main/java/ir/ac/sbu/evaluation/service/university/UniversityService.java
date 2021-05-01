@@ -35,9 +35,18 @@ public class UniversityService {
         return UniversityDto.from(universityRepository.save(university));
     }
 
+    public UniversityDto update(long universityId, UniversityDto universityDto) {
+        universityRepository.findById(universityId)
+                .orElseThrow(() -> new ResourceNotFoundException("University not found: ID = " + universityId));
+
+        University university = universityDto.toUniversity();
+        university.setId(universityId);
+        return UniversityDto.from(universityRepository.save(university));
+    }
+
     public UniversityDto delete(long universityId) {
         University university = universityRepository.findById(universityId)
-                .orElseThrow(() -> new ResourceNotFoundException("دانشگاه یافت نشد: شناسه = " + universityId));
+                .orElseThrow(() -> new ResourceNotFoundException("University not found: ID = " + universityId));
         universityRepository.delete(university);
         return UniversityDto.from(university, false);
     }
