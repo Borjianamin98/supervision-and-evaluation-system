@@ -2,9 +2,9 @@ import apiAxios from "../../../config/axios-config";
 import {Faculty} from "../../../model/university/faculty";
 import {University} from "../../../model/university/university";
 import {
-    API_UNIVERSITY_DELETE_PATH,
+    API_UNIVERSITY_RESOURCE_PATH,
     API_UNIVERSITY_LIST_FACULTIES_PATH,
-    API_UNIVERSITY_PATH,
+    API_UNIVERSITY_ROOT_PATH,
     API_UNIVERSITY_REGISTER_PATH
 } from "../../ApiPaths";
 
@@ -36,15 +36,23 @@ class UniversityService {
             })
     }
 
+    static updateUniversity(universityId: number, university: University) {
+        return apiAxios.put<University>(API_UNIVERSITY_RESOURCE_PATH.replace("{0}", String(universityId)),
+            university,
+            {
+                validateStatus: status => status === 200
+            })
+    }
+
     static deleteUniversity(universityId: number) {
-        return apiAxios.delete<University>(API_UNIVERSITY_DELETE_PATH.replace("{0}", String(universityId)),
+        return apiAxios.delete<University>(API_UNIVERSITY_RESOURCE_PATH.replace("{0}", String(universityId)),
             {
                 validateStatus: status => status === 200
             })
     }
 
     static retrieveUniversities() {
-        return apiAxios.get<Array<University>>(API_UNIVERSITY_PATH,
+        return apiAxios.get<Array<University>>(API_UNIVERSITY_ROOT_PATH,
             {
                 validateStatus: status => status === 200
             })
