@@ -2,10 +2,8 @@ package ir.ac.sbu.evaluation.controller.university;
 
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_UNIVERSITY_ROOT_PATH;
 
-import ir.ac.sbu.evaluation.dto.university.FacultyDto;
 import ir.ac.sbu.evaluation.dto.university.UniversityDto;
 import ir.ac.sbu.evaluation.service.university.UniversityService;
-import java.util.List;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class UniversityController {
 
     private final static String API_UNIVERSITY_REGISTER_PATH = "/register";
-    private final static String API_UNIVERSITY_DELETE_PATH = "";
 
     private final UniversityService universityService;
 
@@ -34,11 +31,6 @@ public class UniversityController {
     @GetMapping(value = {"", "/"})
     public Page<UniversityDto> list(Pageable pageable) {
         return universityService.retrieveAll(pageable);
-    }
-
-    @GetMapping(value = "/{universityId}/faculty")
-    public List<FacultyDto> listFaculties(@PathVariable long universityId) {
-        return universityService.retrieveUniversityFaculties(universityId);
     }
 
     @DeleteMapping(path = "/{universityId}")

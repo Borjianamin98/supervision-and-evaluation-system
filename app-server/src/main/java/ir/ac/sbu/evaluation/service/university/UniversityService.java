@@ -1,16 +1,12 @@
 package ir.ac.sbu.evaluation.service.university;
 
-import ir.ac.sbu.evaluation.dto.university.FacultyDto;
 import ir.ac.sbu.evaluation.dto.university.UniversityDto;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
 import ir.ac.sbu.evaluation.model.university.University;
 import ir.ac.sbu.evaluation.repository.university.UniversityRepository;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UniversityService {
@@ -23,13 +19,6 @@ public class UniversityService {
 
     public Page<UniversityDto> retrieveAll(Pageable pageable) {
         return universityRepository.findAll(pageable).map(UniversityDto::from);
-    }
-
-    @Transactional
-    public List<FacultyDto> retrieveUniversityFaculties(long universityId) {
-        return universityRepository.findById(universityId)
-                .orElseThrow(() -> new IllegalArgumentException("University not found: ID = " + universityId))
-                .getFaculties().stream().map(FacultyDto::from).collect(Collectors.toList());
     }
 
     public UniversityDto register(UniversityDto universityDto) {
