@@ -6,7 +6,7 @@ import {VirtualizedListBoxComponent, VirtualizedListBoxStyles} from "../../../co
 import CustomTextField from "../../../components/Text/CustomTextField";
 import {Role, roleMapToEnglish, roleMapToPersian} from "../../../model/enum/role";
 import {University} from "../../../model/university/university";
-import FacultyService from "../../../services/api/faculty/FacultyService";
+import FacultyService from "../../../services/api/university/faculty/FacultyService";
 import UniversityService from "../../../services/api/university/UniversityService";
 import StudentService from "../../../services/api/user/StudentService";
 import {SignUpSectionsProps} from "./SignUpView";
@@ -22,8 +22,9 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
     }
 
     function loadUniversityFaculties(universityId: number) {
-        return UniversityService.retrieveUniversityFaculties(universityId)
-            .then(value => value.data)
+        // TODO: We should use pagination and filter result based on search before retrieving all results.
+        return FacultyService.retrieveUniversityFaculties(Number.MAX_SAFE_INTEGER, 0, universityId)
+            .then(value => value.data.content)
     }
 
     const handleStudentNumberChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {

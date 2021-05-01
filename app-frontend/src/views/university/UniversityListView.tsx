@@ -10,13 +10,15 @@ import {AxiosError} from "axios";
 import {useSnackbar} from "notistack";
 import React from 'react';
 import {rtlTheme} from "../../App";
+import ExtendedTableRow from "../../components/Table/ExtendedTableRow";
+import {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
 import CustomTextField, {CustomTextFieldProps} from "../../components/Text/CustomTextField";
 import {getGeneralErrorMessage} from "../../config/axios-config";
 import {LoadingState} from "../../model/enum/loading-state";
 import {emptyPageable, Pageable} from "../../model/pageable";
 import {University} from "../../model/university/university";
 import UniversityService from "../../services/api/university/UniversityService";
-import UniversityList from "./UniversityList";
+import StatelessPaginationList from "./StatelessPaginationList";
 
 const useStyles = makeStyles((theme) => ({
     createGrid: {
@@ -45,9 +47,8 @@ const UniversityListView: React.FunctionComponent = () => {
     const [loadingState, setLoadingState] = React.useState<LoadingState>(LoadingState.LOADING);
 
     React.useEffect(() => {
-        if (universities.number === page && universities.size === rowsPerPage &&
-            loadingState === LoadingState.LOADED) {
-            return;
+        if (loadingState === LoadingState.LOADED) {
+            return; // Nothing to load
         }
 
         UniversityService.retrieveUniversities(rowsPerPage, page)
@@ -100,8 +101,8 @@ const UniversityListView: React.FunctionComponent = () => {
         setLoadingState(LoadingState.SHOULD_RELOAD);
     }
 
-    const deleteHandler = (universityId: number) => {
-        UniversityService.deleteUniversity(universityId)
+    const deleteHandler = (university: University) => {
+        UniversityService.deleteUniversity(university.id!)
             .then(value => handleSuccessDelete(value.data))
             .catch(error => handleFailedRequest(error))
     }
@@ -112,10 +113,10 @@ const UniversityListView: React.FunctionComponent = () => {
     }
 
     const [dialogOpen, setDialogOpen] = React.useState(false);
-    const handleDialogOpen = (universityId: number) => {
-        const foundUniversities = universities.content.filter(university => university.id === universityId);
+    const handleDialogOpen = (university: University) => {
+        const foundUniversities = universities.content.filter(value => value.id === university.id!);
         if (foundUniversities.length === 0 || foundUniversities.length > 1) {
-            throw new Error(`Unexpected error because university IDs should be unique: ID = ${universityId}`);
+            throw new Error(`Unexpected error because university IDs should be unique: ID = ${university.id!}`);
         }
         setModifyUniversity(foundUniversities[0]);
         setDialogOpen(true);
@@ -197,14 +198,42 @@ const UniversityListView: React.FunctionComponent = () => {
                         </Grid>
                     </Grid>
                 </Grid>
-                <UniversityList
-                    loadingState={loadingState}
+                <StatelessPaginationList
                     total={universities.totalElements}
-                    pageStateHook={[page, setPage]}
-                    rowsPerPageStateHook={[rowsPerPage, setRowsPerPage]}
-                    universities={universities.content}
+                    page={page}
+                    onPageChange={newPage => {
+                        setPage(newPage);
+                        setLoadingState(LoadingState.SHOULD_RELOAD);
+                    }}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={newRowsPerPage => {
+                        setRowsPerPage(newRowsPerPage);
+                        setPage(0);
+                        setLoadingState(LoadingState.SHOULD_RELOAD);
+                    }}
                     rowsPerPageOptions={[5, 10]}
+                    loadingState={loadingState}
+                    collectionData={universities.content}
+                    tableHeaderCells={[
+                        {content: "نام", width: "60%"},
+                        {content: "مکان", smOptional: true, width: "15%"},
+                        {content: "آدرس اینترنتی", xsOptional: true, width: "10%"},
+                        {content: "تعداد دانشکده", width: "10%"},
+                        {content: "", width: "5%"}
+                    ]}
+                    tableRow={(row: University, actions) => {
+                        const cells: OptionalTableCellProps[] = [
+                            {content: row.name},
+                            {content: row.location, smOptional: true},
+                            {content: row.webAddress, xsOptional: true, dir: "ltr"},
+                            {content: row.facultiesCount},
+                            {content: actions},
+                        ];
+                        return <ExtendedTableRow key={row.id!} cells={cells}/>;
+                    }}
+                    noDataMessage="دانشگاهی تعریف نشده است."
                     onDeleteRow={deleteHandler}
+                    isDeletable={row => row.facultiesCount! === 0}
                     onEditRow={handleDialogOpen}
                 />
                 <Dialog dir="rtl" open={dialogOpen} onClose={() => handleDialogClose(false)}>

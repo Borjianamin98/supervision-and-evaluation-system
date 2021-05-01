@@ -12,11 +12,11 @@ import ListItemLink from '../../components/List/ListItemLink';
 import {Role} from "../../model/enum/role";
 import AuthenticationService from "../../services/api/AuthenticationService";
 import DashboardView from "../dashboard/DashboardView";
-import FacultyListView from "../faculty/FacultyListView";
 import ProblemCreateView from "../problem/create/ProblemCreateView";
 import ProblemObservationView from "../problem/ProblemObservationView";
 import ProfileView from "../ProfileView";
 import SettingsView from "../SettingsView";
+import FacultyListView from "../university/faculty/FacultyListView";
 import UniversityListView from "../university/UniversityListView";
 import {
     DASHBOARD_VIEW_PATH,

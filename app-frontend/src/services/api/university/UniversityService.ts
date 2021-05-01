@@ -1,13 +1,7 @@
 import apiAxios from "../../../config/axios-config";
 import {Pageable} from "../../../model/pageable";
-import {Faculty} from "../../../model/university/faculty";
 import {University} from "../../../model/university/university";
-import {
-    API_UNIVERSITY_LIST_FACULTIES_PATH,
-    API_UNIVERSITY_REGISTER_PATH,
-    API_UNIVERSITY_RESOURCE_PATH,
-    API_UNIVERSITY_ROOT_PATH
-} from "../../ApiPaths";
+import {API_UNIVERSITY_REGISTER_PATH, API_UNIVERSITY_RESOURCE_PATH, API_UNIVERSITY_ROOT_PATH} from "../../ApiPaths";
 
 class UniversityService {
 
@@ -51,13 +45,6 @@ class UniversityService {
 
     static deleteUniversity(universityId: number) {
         return apiAxios.delete<University>(API_UNIVERSITY_RESOURCE_PATH.replace("{0}", String(universityId)),
-            {
-                validateStatus: status => status === 200
-            })
-    }
-
-    static retrieveUniversityFaculties(universityId: number) {
-        return apiAxios.get<Array<Faculty>>(API_UNIVERSITY_LIST_FACULTIES_PATH.replace("{0}", String(universityId)),
             {
                 validateStatus: status => status === 200
             })

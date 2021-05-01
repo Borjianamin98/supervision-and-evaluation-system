@@ -19,7 +19,7 @@ import {Faculty} from "../../../model/university/faculty";
 import {MasterSpecialInfo} from "../../../model/user/master";
 import {StudentSpecialInfo} from "../../../model/user/student";
 import {User} from "../../../model/user/user";
-import FacultyService from "../../../services/api/faculty/FacultyService";
+import FacultyService from "../../../services/api/university/faculty/FacultyService";
 import MasterService from "../../../services/api/user/MasterService";
 import StudentService from "../../../services/api/user/StudentService";
 import UserService from "../../../services/api/user/UserService";
