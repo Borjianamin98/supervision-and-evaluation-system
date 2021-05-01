@@ -25,6 +25,9 @@ import UniversityService from "../../../services/api/university/UniversityServic
 import StatelessPaginationList from "../StatelessPaginationList";
 
 const useStyles = makeStyles((theme) => ({
+    noWrap: {
+        wrap: "nowrap",
+    },
     createGrid: {
         margin: theme.spacing(1, 0),
         padding: theme.spacing(2),
@@ -145,8 +148,8 @@ const FacultyListView: React.FunctionComponent = () => {
     };
 
     function loadUniversities() {
-        // TODO: We should use pagination and filter result based on search before retrieving universities.
-        return UniversityService.retrieveUniversities(Number.MAX_SAFE_INTEGER, 0)
+        // TODO: We should call api with search test to retrieve only relevant results
+        return UniversityService.retrieveUniversities(10, 0)
             .then(value => value.data.content)
     }
 

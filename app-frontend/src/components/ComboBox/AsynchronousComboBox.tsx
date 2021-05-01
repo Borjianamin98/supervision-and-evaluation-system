@@ -1,26 +1,26 @@
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
+import {LoadingState} from "../../model/enum/loading-state";
 import ComboBox, {ComboBoxProps} from './ComboBox';
 
 type AsynchronousComboBoxProps<T> = Omit<ComboBoxProps<T>, "options"> & {
-    loadingFunction: () => Promise<T[]>
+    loadingFunction: () => Promise<T[]>,
 }
 
 function AsynchronousComboBox<T>(props: AsynchronousComboBoxProps<T>) {
     const [open, setOpen] = React.useState(false);
     const [options, setOptions] = React.useState<T[]>([]);
-    const [noOptionsText, setNoOptionsText] = React.useState<string>("");
-    const loading = open && options.length === 0;
+    const [loadingState, setLoadingState] = React.useState(LoadingState.LOADED);
 
     const {loadingFunction, ...rest} = props;
 
     React.useEffect(() => {
         let active = true;
 
-        if (!loading) {
+        if (loadingState === LoadingState.LOADED
+            || loadingState === LoadingState.FAILED /* Ignore failed state until reopen combo box again */) {
             return undefined;
         }
-        setNoOptionsText("در حال بارگیری ...");
 
         (async () => {
             loadingFunction()
@@ -28,20 +28,43 @@ function AsynchronousComboBox<T>(props: AsynchronousComboBoxProps<T>) {
                     if (active) {
                         setOptions(retrievedOptions);
                     }
+                    setLoadingState(LoadingState.LOADED);
                 })
-                .catch(reason => setNoOptionsText("در بارگیری اطلاعات خطایی رخ داده است."));
+                .catch(reason => {
+                    setLoadingState(LoadingState.FAILED);
+                });
         })();
 
         return () => {
             active = false;
         };
-    }, [loading, loadingFunction]);
+    }, [loadingFunction, loadingState]);
 
     React.useEffect(() => {
         if (!open) {
             setOptions([]);
+            setLoadingState(LoadingState.LOADED);
+        } else {
+            setLoadingState(LoadingState.SHOULD_RELOAD);
         }
     }, [open]);
+
+    const noOptionsTextValue = (state: LoadingState) => {
+        switch (state) {
+            case LoadingState.LOADING:
+            case LoadingState.SHOULD_RELOAD:
+                return <Typography>در حال بارگیری ...</Typography>;
+            case LoadingState.LOADED:
+                if (options.length === 0) {
+                    return <Typography>داده‌ای موجود نیست.</Typography>;
+                } else {
+                    // Happens in case of searching for a keyword.
+                    return <Typography>موردی یافت نشد.</Typography>;
+                }
+            case LoadingState.FAILED:
+                return <Typography>در بارگیری اطلاعات خطایی رخ داده است.</Typography>;
+        }
+    }
 
     return (
         <ComboBox
@@ -53,10 +76,7 @@ function AsynchronousComboBox<T>(props: AsynchronousComboBoxProps<T>) {
                 setOpen(false);
             }}
             options={options}
-            noOptionsText={
-                loading ? (<Typography dir="rtl">{noOptionsText}</Typography>) : (
-                    <Typography dir="rtl">موردی یافت نشد</Typography>)
-            }
+            noOptionsText={<div dir="rtl">{noOptionsTextValue(loadingState)}</div>}
             {...rest}
         />
     );
