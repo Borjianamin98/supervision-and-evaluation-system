@@ -149,16 +149,6 @@ const UniversityListView: React.FunctionComponent = () => {
     return (
         <ThemeProvider theme={rtlTheme}>
             <Grid container direction="column">
-                <UniversityList
-                    loadingState={loadingState}
-                    total={universities.totalElements}
-                    pageStateHook={[page, setPage]}
-                    rowsPerPageStateHook={[rowsPerPage, setRowsPerPage]}
-                    universities={universities.content}
-                    rowsPerPageOptions={[5, 10]}
-                    onDeleteRow={deleteHandler}
-                    onEditRow={handleDialogOpen}
-                />
                 <Grid container dir="rtl"
                       component={Paper}
                       elevation={4}
@@ -207,6 +197,16 @@ const UniversityListView: React.FunctionComponent = () => {
                         </Grid>
                     </Grid>
                 </Grid>
+                <UniversityList
+                    loadingState={loadingState}
+                    total={universities.totalElements}
+                    pageStateHook={[page, setPage]}
+                    rowsPerPageStateHook={[rowsPerPage, setRowsPerPage]}
+                    universities={universities.content}
+                    rowsPerPageOptions={[5, 10]}
+                    onDeleteRow={deleteHandler}
+                    onEditRow={handleDialogOpen}
+                />
                 <Dialog dir="rtl" open={dialogOpen} onClose={() => handleDialogClose(false)}>
                     <DialogTitle>ویرایش دانشگاه</DialogTitle>
                     <DialogContent>

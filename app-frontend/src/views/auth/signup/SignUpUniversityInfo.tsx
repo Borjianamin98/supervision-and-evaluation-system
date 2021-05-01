@@ -6,6 +6,7 @@ import {VirtualizedListBoxComponent, VirtualizedListBoxStyles} from "../../../co
 import CustomTextField from "../../../components/Text/CustomTextField";
 import {Role, roleMapToEnglish, roleMapToPersian} from "../../../model/enum/role";
 import {University} from "../../../model/university/university";
+import FacultyService from "../../../services/api/faculty/FacultyService";
 import UniversityService from "../../../services/api/university/UniversityService";
 import StudentService from "../../../services/api/user/StudentService";
 import {SignUpSectionsProps} from "./SignUpView";
@@ -54,7 +55,7 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
                 value={university}
                 onChange={(e, newValue) => {
                     setUniversity(newValue);
-                    setFaculty(UniversityService.createInitialFaculty());
+                    setFaculty(FacultyService.createInitialFaculty());
                 }}
             />
             <AsynchronousComboBox

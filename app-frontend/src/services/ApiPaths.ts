@@ -32,3 +32,6 @@ export const API_UNIVERSITY_ROOT_PATH = "/university"
 export const API_UNIVERSITY_RESOURCE_PATH = `${API_UNIVERSITY_ROOT_PATH}/{0}`
 export const API_UNIVERSITY_REGISTER_PATH = `${API_UNIVERSITY_ROOT_PATH}/register`
 export const API_UNIVERSITY_LIST_FACULTIES_PATH = `${API_UNIVERSITY_ROOT_PATH}/{0}/faculty`
+
+// Faculty Paths
+export const API_FACULTY_ROOT_PATH = "/faculty"

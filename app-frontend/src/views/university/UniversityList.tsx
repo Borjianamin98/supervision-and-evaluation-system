@@ -83,7 +83,6 @@ const UniversityList: React.FunctionComponent<UniversityListProps> = (props) => 
     ]
 
     const tableRows = universities
-        // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
         .map(university => {
             const actions = <div className={classes.actionContainer}>
                 <Tooltip TransitionComponent={Zoom} title="ویرایش">

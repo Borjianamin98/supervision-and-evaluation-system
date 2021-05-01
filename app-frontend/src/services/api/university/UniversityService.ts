@@ -22,13 +22,6 @@ class UniversityService {
         }
     }
 
-    static createInitialFaculty(): Faculty {
-        return {
-            name: "",
-            location: "",
-        }
-    }
-
     static retrieveUniversities(pageSize: number, page: number) {
         return apiAxios.get<Pageable<University>>(API_UNIVERSITY_ROOT_PATH,
             {

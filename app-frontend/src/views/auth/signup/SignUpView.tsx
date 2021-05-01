@@ -19,7 +19,7 @@ import {Faculty} from "../../../model/university/faculty";
 import {MasterSpecialInfo} from "../../../model/user/master";
 import {StudentSpecialInfo} from "../../../model/user/student";
 import {User} from "../../../model/user/user";
-import UniversityService from "../../../services/api/university/UniversityService";
+import FacultyService from "../../../services/api/faculty/FacultyService";
 import MasterService from "../../../services/api/user/MasterService";
 import StudentService from "../../../services/api/user/StudentService";
 import UserService from "../../../services/api/user/UserService";
@@ -70,7 +70,7 @@ const SignUpView: React.FunctionComponent = (props) => {
     const classes = useStyles();
     const commonClasses = useCommonStyles();
     const [user, setUser] = useState<User>(UserService.createInitialUser());
-    const [faculty, setFaculty] = useState<Faculty>(UniversityService.createInitialFaculty());
+    const [faculty, setFaculty] = useState<Faculty>(FacultyService.createInitialFaculty());
     const [extraUserInfo, setExtraUserInfo] = useState<ExtraUserInfo>(
         {degree: "", studentNumber: "", role: ENGLISH_ROLES[0]});
     const [errorChecking, setErrorChecking] = React.useState(false);
