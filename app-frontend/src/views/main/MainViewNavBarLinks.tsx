@@ -3,13 +3,16 @@ import List from '@material-ui/core/List';
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import PersonIcon from '@material-ui/icons/Person';
+import SchoolIcon from '@material-ui/icons/School';
 import SettingsIcon from '@material-ui/icons/Settings';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import React from 'react';
+import {UniversityIcon} from "../../assets/svg/UniversityIcon";
 import ListItemLink from '../../components/List/ListItemLink';
 import {Role} from "../../model/enum/role";
 import AuthenticationService from "../../services/api/AuthenticationService";
 import DashboardView from "../dashboard/DashboardView";
+import FacultyListView from "../faculty/FacultyListView";
 import ProblemCreateView from "../problem/create/ProblemCreateView";
 import ProblemObservationView from "../problem/ProblemObservationView";
 import ProfileView from "../ProfileView";
@@ -17,6 +20,7 @@ import SettingsView from "../SettingsView";
 import UniversityListView from "../university/UniversityListView";
 import {
     DASHBOARD_VIEW_PATH,
+    FACULTY_LIST_PATH,
     PROBLEM_CREATE_VIEW_PATH,
     PROBLEM_OBSERVATION_PATH,
     PROFILE_VIEW_PATH,
@@ -77,8 +81,14 @@ const universityRoutesInfo: navBarRouteInfo[] = [
     {
         path: UNIVERSITY_LIST_PATH,
         name: "دانشگاه‌ها",
-        icon: ViewListIcon,
+        icon: UniversityIcon,
         component: UniversityListView,
+    },
+    {
+        path: FACULTY_LIST_PATH,
+        name: "دانشکده‌ها",
+        icon: SchoolIcon,
+        component: FacultyListView,
     },
 ]
 
