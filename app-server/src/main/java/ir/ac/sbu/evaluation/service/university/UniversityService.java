@@ -7,6 +7,8 @@ import ir.ac.sbu.evaluation.model.university.University;
 import ir.ac.sbu.evaluation.repository.university.UniversityRepository;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +21,8 @@ public class UniversityService {
         this.universityRepository = universityRepository;
     }
 
-    public List<UniversityDto> retrieveAll() {
-        return universityRepository.findAll().stream().map(UniversityDto::from).collect(Collectors.toList());
+    public Page<UniversityDto> retrieveAll(Pageable pageable) {
+        return universityRepository.findAll(pageable).map(UniversityDto::from);
     }
 
     @Transactional

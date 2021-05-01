@@ -17,10 +17,8 @@ public class UniversityDto {
     @NotBlank
     private String name;
 
-    @NotBlank
     private String location;
 
-    @NotBlank
     private String webAddress;
 
     @JsonProperty(access = Access.READ_ONLY)

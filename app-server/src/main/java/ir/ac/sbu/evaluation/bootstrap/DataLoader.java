@@ -162,7 +162,7 @@ public class DataLoader implements CommandLineRunner {
         faculties = new HashMap<>();
 
         University shahidBeheshtiUniversity = universityRepository.save(University.builder()
-                .name("دانشگاه شهیدبهشتی")
+                .name("شهیدبهشتی")
                 .location("تهران").webAddress("https://www.sbu.ac.ir/")
                 .build());
         Faculty computerEngineeringFaculty = facultyRepository.save(Faculty.builder()
@@ -181,7 +181,7 @@ public class DataLoader implements CommandLineRunner {
         faculties.put(shahidBeheshtiUniversity.getId(), physicFaculty);
 
         University tehranUniversity = universityRepository.save(University.builder()
-                .name("دانشگاه تهران")
+                .name("تهران")
                 .location("تهران").webAddress("https://ut.ac.ir/fa")
                 .build());
         computerEngineeringFaculty = facultyRepository.save(Faculty.builder()
@@ -200,7 +200,7 @@ public class DataLoader implements CommandLineRunner {
         faculties.put(tehranUniversity.getId(), mathematicsFaculty);
 
         University amirKabirUniversity = universityRepository.save(University.builder()
-                .name("دانشگاه امیرکبیر")
+                .name("امیرکبیر")
                 .location("تهران").webAddress("https://aut.ac.ir/")
                 .build());
         Faculty literatureFaculty = facultyRepository.save(Faculty.builder()
@@ -213,7 +213,7 @@ public class DataLoader implements CommandLineRunner {
         faculties.put(amirKabirUniversity.getId(), literatureFaculty);
 
         University sharifUniversity = universityRepository.save(University.builder()
-                .name("دانشگاه صنعتی شریف")
+                .name("صنعتی شریف")
                 .location("تهران").webAddress("http://www.sharif.ir/")
                 .build());
         literatureFaculty = facultyRepository.save(Faculty.builder()
@@ -226,7 +226,7 @@ public class DataLoader implements CommandLineRunner {
         faculties.put(sharifUniversity.getId(), literatureFaculty);
 
         University iustUniversity = universityRepository.save(University.builder()
-                .name("دانشگاه علم و صنعت ایران")
+                .name("علم و صنعت ایران")
                 .location("تهران").webAddress("http://iust.ac.ir")
                 .build());
         Faculty chemistryFaculty = facultyRepository.save(Faculty.builder()
@@ -239,7 +239,7 @@ public class DataLoader implements CommandLineRunner {
         faculties.put(iustUniversity.getId(), chemistryFaculty);
 
         University atuUniversity = universityRepository.save(University.builder()
-                .name("دانشگاه علامه طباطبایی")
+                .name("علامه طباطبایی")
                 .location("تهران").webAddress("http://atu.ac.ir")
                 .build());
         chemistryFaculty = facultyRepository.save(Faculty.builder()

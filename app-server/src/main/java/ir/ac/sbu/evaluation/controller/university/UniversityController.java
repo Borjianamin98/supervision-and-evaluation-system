@@ -7,6 +7,8 @@ import ir.ac.sbu.evaluation.dto.university.UniversityDto;
 import ir.ac.sbu.evaluation.service.university.UniversityService;
 import java.util.List;
 import javax.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,8 +32,8 @@ public class UniversityController {
     }
 
     @GetMapping(value = {"", "/"})
-    public List<UniversityDto> list() {
-        return universityService.retrieveAll();
+    public Page<UniversityDto> list(Pageable pageable) {
+        return universityService.retrieveAll(pageable);
     }
 
     @GetMapping(value = "/{universityId}/faculty")
