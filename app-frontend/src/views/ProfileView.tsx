@@ -18,6 +18,7 @@ import {Master} from "../model/user/master";
 import {Student} from "../model/user/student";
 import {User} from "../model/user/user";
 import AuthenticationService from "../services/api/AuthenticationService";
+import AdminService from "../services/api/user/AdminService";
 import MasterService from "../services/api/user/MasterService";
 import StudentService from "../services/api/user/StudentService";
 import UserService from "../services/api/user/UserService";
@@ -66,8 +67,7 @@ const ProfileView: React.FunctionComponent = () => {
                 } else if (jwtPayloadRoles.includes(Role.MASTER)) {
                     return await MasterService.retrieveMasterInfo();
                 } else if (jwtPayloadRoles.includes(Role.ADMIN)) {
-                    // TODO: handle it correctly. Placed just to avoid error.
-                    return await StudentService.retrieveStudentInfo();
+                    return await AdminService.retrieveAdminInfo();
                 } else {
                     throw new Error("Invalid user roles: " + jwtPayloadRoles)
                 }
