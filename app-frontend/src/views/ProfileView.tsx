@@ -18,6 +18,7 @@ import {Master} from "../model/user/master";
 import {Student} from "../model/user/student";
 import {User} from "../model/user/user";
 import AuthenticationService from "../services/api/AuthenticationService";
+import MasterService from "../services/api/user/MasterService";
 import StudentService from "../services/api/user/StudentService";
 import UserService from "../services/api/user/UserService";
 import {API_USER_PROFILE_PICTURE_PATH} from "../services/ApiPaths";
@@ -61,15 +62,15 @@ const ProfileView: React.FunctionComponent = () => {
             .then(async value => {
                 const jwtPayloadRoles = AuthenticationService.getJwtPayloadRoles()!;
                 if (jwtPayloadRoles.includes(Role.STUDENT)) {
-                    // TODO: handle it.
+                    return await StudentService.retrieveStudentInfo();
                 } else if (jwtPayloadRoles.includes(Role.MASTER)) {
-                    // TODO: handle it.
+                    return await MasterService.retrieveMasterInfo();
                 } else if (jwtPayloadRoles.includes(Role.ADMIN)) {
-                    // TODO: handle it.
+                    // TODO: handle it correctly. Placed just to avoid error.
+                    return await StudentService.retrieveStudentInfo();
                 } else {
                     throw new Error("Invalid user roles: " + jwtPayloadRoles)
                 }
-                return await StudentService.retrieveStudentInfo();
             })
             .then(value => setUser(value.data))
             .catch(reason => {
@@ -129,7 +130,10 @@ const ProfileView: React.FunctionComponent = () => {
     }
 
     const getUserSubHeader = (user: User) => {
-        const userRole = user.role!;
+        if (!user.role) {
+            return ""; // Happen in first load
+        }
+        const userRole = user.role;
         if (userRole === Role.STUDENT) {
             const studentUser = user as Student;
             return `دانشجوی ${studentUser.facultyName} دانشگاه ${studentUser.universityName}`;

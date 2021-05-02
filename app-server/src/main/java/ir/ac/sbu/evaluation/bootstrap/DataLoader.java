@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 public class DataLoader implements CommandLineRunner {
 
     private static List<University> universities;
-    private static Map<Long /* university ID */, Faculty> faculties;
+    private static Map<Long /* university ID */, List<Faculty>> faculties;
 
     private final UniversityRepository universityRepository;
     private final FacultyRepository facultyRepository;
@@ -106,7 +106,7 @@ public class DataLoader implements CommandLineRunner {
                 .email("admin@gmail.com")
                 .build());
 
-        Faculty computerEngineeringFaculty = faculties.get(universities.get(0).getId());
+        Faculty computerEngineeringFaculty = faculties.get(universities.get(0).getId()).get(0);
         Master master1 = Master.builder()
                 .firstName("صادق")
                 .lastName("علی اکبری")
@@ -177,8 +177,9 @@ public class DataLoader implements CommandLineRunner {
         shahidBeheshtiUniversity.getFaculties().add(physicFaculty);
         universityRepository.save(shahidBeheshtiUniversity);
         universities.add(shahidBeheshtiUniversity);
-        faculties.put(shahidBeheshtiUniversity.getId(), computerEngineeringFaculty);
-        faculties.put(shahidBeheshtiUniversity.getId(), physicFaculty);
+        faculties.put(shahidBeheshtiUniversity.getId(), new ArrayList<>());
+        faculties.get(shahidBeheshtiUniversity.getId()).add(computerEngineeringFaculty);
+        faculties.get(shahidBeheshtiUniversity.getId()).add(physicFaculty);
 
         University tehranUniversity = universityRepository.save(University.builder()
                 .name("تهران")
@@ -196,8 +197,9 @@ public class DataLoader implements CommandLineRunner {
         tehranUniversity.getFaculties().add(mathematicsFaculty);
         universityRepository.save(tehranUniversity);
         universities.add(tehranUniversity);
-        faculties.put(tehranUniversity.getId(), computerEngineeringFaculty);
-        faculties.put(tehranUniversity.getId(), mathematicsFaculty);
+        faculties.put(tehranUniversity.getId(), new ArrayList<>());
+        faculties.get(tehranUniversity.getId()).add(computerEngineeringFaculty);
+        faculties.get(tehranUniversity.getId()).add(mathematicsFaculty);
 
         University amirKabirUniversity = universityRepository.save(University.builder()
                 .name("امیرکبیر")
@@ -210,7 +212,7 @@ public class DataLoader implements CommandLineRunner {
         amirKabirUniversity.getFaculties().add(literatureFaculty);
         universityRepository.save(amirKabirUniversity);
         universities.add(amirKabirUniversity);
-        faculties.put(amirKabirUniversity.getId(), literatureFaculty);
+        faculties.put(amirKabirUniversity.getId(), Collections.singletonList(literatureFaculty));
 
         University sharifUniversity = universityRepository.save(University.builder()
                 .name("صنعتی شریف")
@@ -223,7 +225,7 @@ public class DataLoader implements CommandLineRunner {
         sharifUniversity.getFaculties().add(literatureFaculty);
         universityRepository.save(sharifUniversity);
         universities.add(sharifUniversity);
-        faculties.put(sharifUniversity.getId(), literatureFaculty);
+        faculties.put(sharifUniversity.getId(), Collections.singletonList(literatureFaculty));
 
         University iustUniversity = universityRepository.save(University.builder()
                 .name("علم و صنعت ایران")
@@ -236,7 +238,7 @@ public class DataLoader implements CommandLineRunner {
         iustUniversity.getFaculties().add(chemistryFaculty);
         universityRepository.save(iustUniversity);
         universities.add(iustUniversity);
-        faculties.put(iustUniversity.getId(), chemistryFaculty);
+        faculties.put(iustUniversity.getId(), Collections.singletonList(chemistryFaculty));
 
         University atuUniversity = universityRepository.save(University.builder()
                 .name("علامه طباطبایی")
@@ -249,6 +251,6 @@ public class DataLoader implements CommandLineRunner {
         atuUniversity.getFaculties().add(chemistryFaculty);
         universityRepository.save(atuUniversity);
         universities.add(atuUniversity);
-        faculties.put(atuUniversity.getId(), chemistryFaculty);
+        faculties.put(atuUniversity.getId(), Collections.singletonList(chemistryFaculty));
     }
 }

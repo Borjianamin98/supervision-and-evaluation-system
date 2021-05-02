@@ -18,6 +18,7 @@ export const API_USER_CHECK_AVAILABLE_SIGN_IN_NAMES_PATH = `${API_USER_PATH}/che
 // Master Paths
 export const API_MASTER_PATH = "/master"
 export const API_MASTER_REGISTER_PATH = `${API_MASTER_PATH}/register`
+export const API_MASTER_INFO_PATH = `${API_MASTER_PATH}/info`
 
 // Student Paths
 export const API_STUDENT_PATH = "/student"

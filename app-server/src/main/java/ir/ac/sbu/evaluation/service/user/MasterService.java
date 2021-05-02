@@ -61,4 +61,9 @@ public class MasterService {
         }
         return MasterDto.from(masterRepository.save(master));
     }
+
+    public MasterDto retrieve(long userId) {
+        return MasterDto.from(masterRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Master not found: ID = " + userId)));
+    }
 }
