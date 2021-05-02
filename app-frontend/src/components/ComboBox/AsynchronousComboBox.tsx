@@ -4,12 +4,13 @@ import {LoadingState} from "../../model/enum/loading-state";
 import ComboBox, {ComboBoxProps} from './ComboBox';
 
 type AsynchronousComboBoxProps<T> = Omit<ComboBoxProps<T>, "options"> & {
-    loadingFunction: () => Promise<T[]>,
+    loadingFunction: (inputValue: string) => Promise<T[]>,
 }
 
 function AsynchronousComboBox<T>(props: AsynchronousComboBoxProps<T>) {
     const [open, setOpen] = React.useState(false);
     const [options, setOptions] = React.useState<T[]>([]);
+    const [inputValue, setInputValue] = React.useState("");
     const [loadingState, setLoadingState] = React.useState(LoadingState.LOADED);
 
     const {loadingFunction, ...rest} = props;
@@ -23,7 +24,7 @@ function AsynchronousComboBox<T>(props: AsynchronousComboBoxProps<T>) {
         }
 
         (async () => {
-            loadingFunction()
+            loadingFunction(inputValue)
                 .then(retrievedOptions => {
                     if (active) {
                         setOptions(retrievedOptions);
@@ -38,7 +39,7 @@ function AsynchronousComboBox<T>(props: AsynchronousComboBoxProps<T>) {
         return () => {
             active = false;
         };
-    }, [loadingFunction, loadingState]);
+    }, [inputValue, loadingFunction, loadingState]);
 
     React.useEffect(() => {
         if (!open) {
@@ -77,6 +78,11 @@ function AsynchronousComboBox<T>(props: AsynchronousComboBoxProps<T>) {
             }}
             options={options}
             noOptionsText={<div dir="rtl">{noOptionsTextValue(loadingState)}</div>}
+            inputValue={inputValue}
+            onInputChange={(event, value) => {
+                setInputValue(value);
+                setLoadingState(LoadingState.SHOULD_RELOAD);
+            }}
             {...rest}
         />
     );
