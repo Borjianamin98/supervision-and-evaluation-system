@@ -16,13 +16,14 @@ class UniversityService {
         }
     }
 
-    static retrieveUniversities(pageSize: number, page: number) {
+    static retrieveUniversities(pageSize: number, page: number, nameQuery?: string) {
         return apiAxios.get<Pageable<University>>(API_UNIVERSITY_ROOT_PATH,
             {
                 validateStatus: status => status === 200,
                 params: {
                     size: pageSize,
                     page: page,
+                    nameQuery: nameQuery ?? "",
                 }
             })
     }

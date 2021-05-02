@@ -67,7 +67,7 @@ const FacultyListView: React.FunctionComponent = () => {
         }
         setNoDataMessage("دانشکده‌ای تعریف نشده است.");
 
-        FacultyService.retrieveUniversityFaculties(rowsPerPage, page, selectedUniversity.id)
+        FacultyService.retrieveUniversityFaculties(selectedUniversity.id, rowsPerPage, page)
             .then(value => {
                 setFaculties(value.data);
                 setLoadingState(LoadingState.LOADED);
@@ -147,9 +147,8 @@ const FacultyListView: React.FunctionComponent = () => {
         setDialogOpen(false);
     };
 
-    function loadUniversities() {
-        // TODO: We should call api with search test to retrieve only relevant results
-        return UniversityService.retrieveUniversities(10, 0)
+    function retrieveUniversities(inputValue: string) {
+        return UniversityService.retrieveUniversities(100, 0, inputValue)
             .then(value => value.data.content)
     }
 
@@ -185,7 +184,7 @@ const FacultyListView: React.FunctionComponent = () => {
                             renderOption={(option) => <Typography noWrap>{option.name}</Typography>}
                             extraClasses={VirtualizedListBoxStyles()}
                             ListboxComponent={VirtualizedListBoxComponent as React.ComponentType<React.HTMLAttributes<HTMLElement>>}
-                            loadingFunction={loadUniversities}
+                            loadingFunction={inputValue => retrieveUniversities(inputValue)}
                             textFieldInputProps={{
                                 label: "دانشگاه",
                                 helperText: (isNotBlank(selectedUniversity.name) ? "" : "دانشگاه مربوطه باید انتخاب شود."),

@@ -15,15 +15,14 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
     const {commonClasses, extraUserInfo, setExtraUserInfo, faculty, setFaculty, errorChecking} = props;
     const [university, setUniversity] = useState<University>(UniversityService.createInitialUniversity());
 
-    function loadUniversities() {
+    function retrieveUniversities() {
         // TODO: We should use pagination and filter result based on search before retrieving universities.
         return UniversityService.retrieveUniversities(Number.MAX_SAFE_INTEGER, 0)
             .then(value => value.data.content)
     }
 
     function loadUniversityFaculties(universityId: number) {
-        // TODO: We should use pagination and filter result based on search before retrieving all results.
-        return FacultyService.retrieveUniversityFaculties(Number.MAX_SAFE_INTEGER, 0, universityId)
+        return FacultyService.retrieveUniversityFaculties(universityId, Number.MAX_SAFE_INTEGER, 0)
             .then(value => value.data.content)
     }
 
@@ -47,7 +46,7 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
                 renderOption={(option) => <Typography noWrap>{option.name}</Typography>}
                 extraClasses={VirtualizedListBoxStyles()}
                 ListboxComponent={VirtualizedListBoxComponent as React.ComponentType<React.HTMLAttributes<HTMLElement>>}
-                loadingFunction={loadUniversities}
+                loadingFunction={retrieveUniversities}
                 textFieldInputProps={{
                     label: "دانشگاه",
                     helperText: (isNotBlank(university.name) ? "" : "دانشگاه مربوطه باید انتخاب شود."),
