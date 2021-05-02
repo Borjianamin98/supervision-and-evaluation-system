@@ -1,6 +1,7 @@
 import update from "immutability-helper";
 import apiAxios from "../../../config/axios-config";
 import {Gender} from "../../../model/enum/gender";
+import {Role} from "../../../model/enum/role";
 import {User, UserCheck} from "../../../model/user/user";
 import {validateEmail} from "../../../utility/email-utils";
 import {API_USER_CHECK_AVAILABLE_SIGN_IN_NAMES_PATH} from "../../ApiPaths";
@@ -16,6 +17,7 @@ class UserService {
             lastName: "",
             username: "",
             password: "",
+            role: Role.STUDENT,
             personalInfo: {
                 gender: Gender.MALE,
                 telephoneNumber: "",

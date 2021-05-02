@@ -1,3 +1,4 @@
+import {Role} from "../enum/role";
 import {PersonalInfo} from "./personalInfo";
 
 export interface User {
@@ -6,6 +7,7 @@ export interface User {
     lastName: string,
     username: string,
     password?: string,
+    role?: Role,
     personalInfo?: PersonalInfo,
 }
 

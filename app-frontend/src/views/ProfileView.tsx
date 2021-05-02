@@ -14,6 +14,8 @@ import apiAxios, {getGeneralErrorMessage} from "../config/axios-config";
 import browserHistory from "../config/browserHistory";
 import {genderMapToPersian} from "../model/enum/gender";
 import {Role} from "../model/enum/role";
+import {Master} from "../model/user/master";
+import {Student} from "../model/user/student";
 import {User} from "../model/user/user";
 import AuthenticationService from "../services/api/AuthenticationService";
 import StudentService from "../services/api/user/StudentService";
@@ -126,6 +128,21 @@ const ProfileView: React.FunctionComponent = () => {
             .then(resizedImageBlob => setAvatar(window.URL.createObjectURL(resizedImageBlob)));
     }
 
+    const getUserSubHeader = (user: User) => {
+        const userRole = user.role!;
+        if (userRole === Role.STUDENT) {
+            const studentUser = user as Student;
+            return `دانشجوی ${studentUser.facultyName} دانشگاه ${studentUser.universityName}`;
+        } else if (userRole === Role.MASTER) {
+            const masterUser = user as Master;
+            return `استاد ${masterUser.facultyName} دانشگاه ${masterUser.universityName}`;
+        } else if (userRole === Role.ADMIN) {
+            return "مدیر";
+        } else {
+            throw new Error("Invalid user roles: " + userRole)
+        }
+    }
+
     const commonTextFieldProps: CustomTextFieldProps = {
         extraInputProps: {
             disableUnderline: true,
@@ -165,7 +182,7 @@ const ProfileView: React.FunctionComponent = () => {
                                 {`${user.firstName} ${user.lastName}`}
                             </Typography>
                             <Typography variant="h6" className={classes.typography}>
-                                {`دانشجوی مهندسی کامپیوتر`}
+                                {getUserSubHeader(user)}
                             </Typography>
                         </Grid>
                         <Grid container spacing={2} className={classes.gridItem}>
