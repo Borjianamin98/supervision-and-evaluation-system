@@ -1,9 +1,10 @@
 import {Avatar, Badge, Grid, Paper} from "@material-ui/core";
-import Box from "@material-ui/core/Box";
+import Button from "@material-ui/core/Button";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import {createStyles, makeStyles, Theme, ThemeProvider} from '@material-ui/core/styles';
 import Typography from "@material-ui/core/Typography";
 import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
+import classNames from "classnames";
 import {useSnackbar} from "notistack";
 import React, {useState} from 'react';
 import {rtlTheme} from "../App";
@@ -136,8 +137,9 @@ const ProfileView: React.FunctionComponent = () => {
         <ThemeProvider theme={rtlTheme}>
             <Grid dir="rtl" container spacing={2} direction="row-reverse">
                 <Grid item xs={12} sm={12} md={12} lg={4} xl={4} justify="center">
-                    <Paper className={classes.gridItem}>
-                        <div className={classes.imageIcon}>
+                    <Grid container direction="column" alignItems="center" component={Paper}
+                          className={classes.gridItem}>
+                        <Grid item>
                             <Badge
                                 badgeContent={
                                     <InputFileIconButton
@@ -157,16 +159,36 @@ const ProfileView: React.FunctionComponent = () => {
                             >
                                 <Avatar src={avatar} className={classes.avatar}/>
                             </Badge>
-                        </div>
-                        <Box marginTop={2} className={classes.centerAlign}>
+                        </Grid>
+                        <Grid item className={classNames(classes.gridItem, classes.centerAlign)}>
                             <Typography variant="h5" className={classes.typography}>
                                 {`${user.firstName} ${user.lastName}`}
                             </Typography>
                             <Typography variant="h6" className={classes.typography}>
                                 {`دانشجوی مهندسی کامپیوتر`}
                             </Typography>
-                        </Box>
-                    </Paper>
+                        </Grid>
+                        <Grid container spacing={2} className={classes.gridItem}>
+                            <Grid item xs={6}>
+                                <Button
+                                    variant="contained"
+                                    fullWidth
+                                    color="secondary"
+                                >
+                                    تغییر رمز عبور
+                                </Button>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Button
+                                    variant="contained"
+                                    fullWidth
+                                    color="secondary"
+                                >
+                                    ویرایش اطلاعات
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Grid>
                 </Grid>
                 <Grid item xs={12} sm={12} md={12} lg={8} xl={8}>
                     <Paper className={classes.gridItem}>
