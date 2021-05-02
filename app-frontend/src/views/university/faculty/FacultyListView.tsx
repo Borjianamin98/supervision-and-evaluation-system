@@ -10,6 +10,7 @@ import {AxiosError} from "axios";
 import {useSnackbar} from "notistack";
 import React, {useState} from 'react';
 import {rtlTheme} from "../../../App";
+import CustomAlert from "../../../components/Alert/CustomAlert";
 import AsynchronousComboBox from "../../../components/ComboBox/AsynchronousComboBox";
 import {VirtualizedListBoxComponent, VirtualizedListBoxStyles} from "../../../components/ComboBox/VirtualizedComboBox";
 import ExtendedTableRow from "../../../components/Table/ExtendedTableRow";
@@ -176,7 +177,7 @@ const FacultyListView: React.FunctionComponent = () => {
                             اطلاعات دانشکده
                         </Typography>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={6} lg={12} xl={12} className={classes.gridItem}>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.gridItem}>
                         <AsynchronousComboBox
                             disableListWrap
                             getOptionSelected={(option, value) => option.name === value.name}
@@ -197,6 +198,12 @@ const FacultyListView: React.FunctionComponent = () => {
                                 setLoadingState(LoadingState.SHOULD_RELOAD);
                             }}
                         />
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.gridItem}>
+                        <CustomAlert severity="info">
+                            در صورت وجود تعداد زیادی نتیجه، تنها بخشی از آن نمایش داده می‌شود. برای یافتن سریع‌تر،
+                            جستجوی خود را دقیق‌تر نمایید.
+                        </CustomAlert>
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={6} xl={6} className={classes.gridItem}>
                         <CustomTextField
