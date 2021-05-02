@@ -5,6 +5,7 @@ import browserHistory from "../../config/browserHistory";
 import {Role} from "../../model/enum/role";
 import AuthenticationService from "../../services/api/AuthenticationService";
 import {LOGIN_VIEW_PATH} from "../ViewPaths";
+import AdminDashboardView from "./AdminDashboardView";
 import StudentDashboardView from "./StudentDashboardView";
 
 const DashboardView: React.FunctionComponent = () => {
@@ -38,6 +39,7 @@ const DashboardView: React.FunctionComponent = () => {
     return (
         <Switch>
             <PrivateRoute path={adminDashboardPath}>
+                <AdminDashboardView/>
             </PrivateRoute>
             <PrivateRoute path={masterDashboardPath}>
             </PrivateRoute>

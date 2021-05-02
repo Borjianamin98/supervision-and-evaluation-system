@@ -8,9 +8,6 @@ import MediaCard from "../../components/MediaCard/MediaCard";
 import {PROBLEM_CREATE_VIEW_PATH, PROBLEM_OBSERVATION_PATH} from "../ViewPaths";
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        // maxWidth: 345,
-    },
     mediaCard: {
         margin: theme.spacing(1)
     },
