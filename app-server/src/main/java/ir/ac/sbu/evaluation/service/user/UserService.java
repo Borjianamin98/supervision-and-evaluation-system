@@ -1,7 +1,7 @@
 package ir.ac.sbu.evaluation.service.user;
 
+import ir.ac.sbu.evaluation.dto.user.UserCheckDto;
 import ir.ac.sbu.evaluation.dto.user.UserDto;
-import ir.ac.sbu.evaluation.model.user.PersonalInfo;
 import ir.ac.sbu.evaluation.model.user.User;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.PersonalInfoRepository;
@@ -10,9 +10,7 @@ import ir.ac.sbu.evaluation.repository.user.UserRepository;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.utility.ByteUtility;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -52,20 +50,10 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found: " + username));
     }
 
-    public List<UserDto> getAllMasters() {
-        return masterRepository.findAll().stream().map(UserDto::from).collect(Collectors.toList());
-    }
-
-    @Transactional
-    public UserDto save(UserDto userDto) {
-        User user = userDto.toUser();
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        if (user.getPersonalInfo() != null) {
-            PersonalInfo savedInfo = personalInfoRepository.save(user.getPersonalInfo());
-            user.setPersonalInfo(savedInfo);
-        }
-        return UserDto.from(userRepository.save(user));
+    public UserCheckDto isSignInNameAvailable(String username) {
+        return UserCheckDto.builder()
+                .username(username)
+                .isAvailable(!userRepository.findByUsername(username).isPresent()).build();
     }
 
     @Transactional

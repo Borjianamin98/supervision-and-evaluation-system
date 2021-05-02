@@ -8,6 +8,7 @@ import ir.ac.sbu.evaluation.model.user.Student;
 import ir.ac.sbu.evaluation.repository.university.FacultyRepository;
 import ir.ac.sbu.evaluation.repository.user.PersonalInfoRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
+import ir.ac.sbu.evaluation.repository.user.UserRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,15 +20,18 @@ public class StudentService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final UserRepository userRepository;
     private final PersonalInfoRepository personalInfoRepository;
     private final StudentRepository studentRepository;
     private final FacultyRepository facultyRepository;
 
     public StudentService(PasswordEncoder passwordEncoder,
+            UserRepository userRepository,
             PersonalInfoRepository personalInfoRepository,
             StudentRepository studentRepository,
             FacultyRepository facultyRepository) {
         this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
         this.personalInfoRepository = personalInfoRepository;
         this.studentRepository = studentRepository;
         this.facultyRepository = facultyRepository;
@@ -41,6 +45,9 @@ public class StudentService {
 
     @Transactional
     public StudentDto save(StudentDto studentDto, long facultyId) {
+        if (userRepository.findByUsername(studentDto.getUsername()).isPresent()) {
+            throw new IllegalArgumentException("Username exists: ID = " + studentDto.getUsername());
+        }
         Faculty faculty = facultyRepository.findById(facultyId)
                 .orElseThrow(() -> new IllegalArgumentException("Faculty not found: ID = " + facultyId));
 

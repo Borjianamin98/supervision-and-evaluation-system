@@ -7,6 +7,7 @@ import ir.ac.sbu.evaluation.controller.ApiPaths;
 import ir.ac.sbu.evaluation.controller.AuthController;
 import ir.ac.sbu.evaluation.controller.university.FacultyController;
 import ir.ac.sbu.evaluation.controller.university.UniversityController;
+import ir.ac.sbu.evaluation.controller.user.UserController;
 import ir.ac.sbu.evaluation.service.user.UserService;
 import java.util.Collections;
 import org.springframework.context.annotation.Bean;
@@ -59,6 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(AuthController.permittedPaths()).permitAll()
                 .antMatchers(UniversityController.permittedPaths()).permitAll()
                 .antMatchers(FacultyController.permittedPaths()).permitAll()
+                .antMatchers(UserController.permittedPaths()).permitAll()
                 .antMatchers(ApiPaths.API_STUDENT_ROOT_PATH + "/**").permitAll()
                 .antMatchers(ApiPaths.API_MASTER_ROOT_PATH + "/**").permitAll()
                 .antMatchers("/favicon.ico").permitAll()

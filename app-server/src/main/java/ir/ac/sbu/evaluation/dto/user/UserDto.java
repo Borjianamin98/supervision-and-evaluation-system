@@ -49,14 +49,13 @@ public class UserDto {
         this.personalInfo = personalInfo;
     }
 
-    public static UserDto from(User user, boolean hasPersonalInfo) {
+    public static UserDto from(User user, boolean hasExpansionInfo) {
         return userBuilder()
                 .id(user.getId())
                 .username(user.getUsername()).password(user.getPassword())
                 .firstName(user.getFirstName()).lastName(user.getLastName())
-                .personalInfo(
-                        hasPersonalInfo && user.getPersonalInfo() != null ? PersonalInfoDto.from(user.getPersonalInfo())
-                                : null)
+                .personalInfo(hasExpansionInfo && user.getPersonalInfo() != null ? PersonalInfoDto
+                                .from(user.getPersonalInfo()) : null)
                 .build();
     }
 
