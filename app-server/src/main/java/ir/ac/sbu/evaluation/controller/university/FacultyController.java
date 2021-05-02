@@ -30,8 +30,11 @@ public class FacultyController {
     }
 
     @GetMapping(value = {"", "/"})
-    public Page<FacultyDto> listFaculties(@RequestParam(name = "universityId") long universityId, Pageable pageable) {
-        return facultyService.retrieveUniversityFaculties(universityId, pageable);
+    public Page<FacultyDto> listFaculties(
+            @RequestParam(name = "universityId") long universityId,
+            @RequestParam(name = "nameQuery", required = false, defaultValue = "") String nameQuery,
+            Pageable pageable) {
+        return facultyService.retrieveUniversityFaculties(universityId, nameQuery, pageable);
     }
 
     @DeleteMapping(path = "/{facultyId}")

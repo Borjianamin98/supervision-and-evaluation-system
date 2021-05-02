@@ -22,8 +22,9 @@ public class FacultyService {
         this.facultyRepository = facultyRepository;
     }
 
-    public Page<FacultyDto> retrieveUniversityFaculties(long universityId, Pageable pageable) {
-        return facultyRepository.findByUniversityId(universityId, pageable).map(FacultyDto::from);
+    public Page<FacultyDto> retrieveUniversityFaculties(long universityId, String nameQuery, Pageable pageable) {
+        return facultyRepository.findByUniversityIdAndNameContains(universityId, nameQuery, pageable)
+                .map(FacultyDto::from);
     }
 
     public FacultyDto register(long universityId, FacultyDto facultyDto) {

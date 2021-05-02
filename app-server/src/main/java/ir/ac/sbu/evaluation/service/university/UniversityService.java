@@ -17,8 +17,8 @@ public class UniversityService {
         this.universityRepository = universityRepository;
     }
 
-    public Page<UniversityDto> retrieveAll(Pageable pageable) {
-        return universityRepository.findAll(pageable).map(UniversityDto::from);
+    public Page<UniversityDto> retrieveUniversities(String nameQuery, Pageable pageable) {
+        return universityRepository.findByNameContains(nameQuery, pageable).map(UniversityDto::from);
     }
 
     public UniversityDto register(UniversityDto universityDto) {

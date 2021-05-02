@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -29,8 +30,9 @@ public class UniversityController {
     }
 
     @GetMapping(value = {"", "/"})
-    public Page<UniversityDto> list(Pageable pageable) {
-        return universityService.retrieveAll(pageable);
+    public Page<UniversityDto> list(@RequestParam(name = "nameQuery", required = false, defaultValue = "") String nameQuery,
+            Pageable pageable) {
+        return universityService.retrieveUniversities(nameQuery, pageable);
     }
 
     @DeleteMapping(path = "/{universityId}")

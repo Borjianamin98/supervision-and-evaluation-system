@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FacultyRepository extends JpaRepository<Faculty, Long> {
 
-    Page<Faculty> findByUniversityId(Long universityId, Pageable pageable);
+    Page<Faculty> findByUniversityIdAndNameContains(Long universityId, String nameQuery, Pageable pageable);
 }
