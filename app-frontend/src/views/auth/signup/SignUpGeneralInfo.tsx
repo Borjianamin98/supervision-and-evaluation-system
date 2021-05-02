@@ -51,6 +51,9 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
     }
 
     const isUsernameValid = () => {
+        if (isUsernameBlank()) {
+            return;
+        }
         UserService.checkAvailableSignInNames(user.username)
             .then(value => {
                 if (!value.data.available) {
@@ -131,7 +134,7 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
             </Typography>
             <CustomTextField
                 required
-                dir="rtl"
+                textDir="ltr"
                 label="نام کاربری"
                 autoComplete="username"
                 value={user.username}
@@ -142,7 +145,9 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
                 onBlur={() => isUsernameValid()}
             />
             <PasswordTextField
-                dir="rtl"
+                inputProps={{
+                    dir: "ltr"
+                }}
                 variant="outlined"
                 margin="normal"
                 required

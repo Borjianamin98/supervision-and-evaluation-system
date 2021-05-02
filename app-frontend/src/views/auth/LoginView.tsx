@@ -85,14 +85,16 @@ const LoginView: React.FunctionComponent = (props) => {
                         <form dir="rtl" onSubmit={formSubmitHandler} className={classes.form} noValidate>
                             <CustomTextField
                                 required
-                                dir="rtl"
+                                textDir="ltr"
                                 label="نام کاربری"
                                 value={username}
                                 onChange={(event) => setUsername(event.target.value)}
                                 autoComplete="username"
                             />
                             <PasswordTextField
-                                dir="rtl"
+                                inputProps={{
+                                    dir: "ltr"
+                                }}
                                 variant="outlined"
                                 margin="normal"
                                 required
