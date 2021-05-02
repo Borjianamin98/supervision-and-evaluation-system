@@ -1,28 +1,42 @@
-import {Avatar, Badge, Card, Grid} from "@material-ui/core";
-import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
+import {Avatar, Badge, Grid, Paper} from "@material-ui/core";
+import Box from "@material-ui/core/Box";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import {createStyles, makeStyles, Theme, ThemeProvider} from '@material-ui/core/styles';
+import Typography from "@material-ui/core/Typography";
 import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
 import {useSnackbar} from "notistack";
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
+import {rtlTheme} from "../App";
 import InputFileIconButton from "../components/Input/InputFileIconButton";
+import CustomTextField, {CustomTextFieldProps} from "../components/Text/CustomTextField";
 import apiAxios, {getGeneralErrorMessage} from "../config/axios-config";
 import browserHistory from "../config/browserHistory";
+import {genderMapToPersian} from "../model/enum/gender";
+import {Role} from "../model/enum/role";
+import {User} from "../model/user/user";
+import AuthenticationService from "../services/api/AuthenticationService";
+import StudentService from "../services/api/user/StudentService";
+import UserService from "../services/api/user/UserService";
 import {API_USER_PROFILE_PICTURE_PATH} from "../services/ApiPaths";
 import {resizeImage} from "../utility/image-resize";
-import {ERROR_VIEW_PATH} from "./ViewPaths";
+import {ERROR_VIEW_PATH, LOGIN_VIEW_PATH} from "./ViewPaths";
 
 const PROFILE_PICTURE_MIME_TYPES = ["image/png", "image/jpeg"];
 const PROFILE_PICTURE_MAX_SIZE = 500;
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
-        card: {
-            padding: theme.spacing(1, 0),
+        typography: {
+            padding: theme.spacing(1),
+        },
+        gridItem: {
+            padding: theme.spacing(2),
         },
         avatar: {
             width: 140,
             height: 140,
         },
-        center: {
+        centerAlign: {
             textAlign: "center"
         },
         imageIcon: {
@@ -35,9 +49,34 @@ const useStyles = makeStyles((theme: Theme) =>
 const ProfileView: React.FunctionComponent = () => {
     const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar();
-    const [avatar, setAvatar] = useState<string>("");
 
-    useEffect(() => {
+    const [avatar, setAvatar] = useState<string>("");
+    const [user, setUser] = useState<User>(UserService.createInitialUser());
+
+    React.useEffect(() => {
+        AuthenticationService.check()
+            .then(async value => {
+                const jwtPayloadRoles = AuthenticationService.getJwtPayloadRoles()!;
+                if (jwtPayloadRoles.includes(Role.STUDENT)) {
+                    // TODO: handle it.
+                } else if (jwtPayloadRoles.includes(Role.MASTER)) {
+                    // TODO: handle it.
+                } else if (jwtPayloadRoles.includes(Role.ADMIN)) {
+                    // TODO: handle it.
+                } else {
+                    throw new Error("Invalid user roles: " + jwtPayloadRoles)
+                }
+                return await StudentService.retrieveStudentInfo();
+            })
+            .then(value => setUser(value.data))
+            .catch(reason => {
+                // Invalid JWT token provided for authentication
+                AuthenticationService.logout();
+                browserHistory.push(LOGIN_VIEW_PATH);
+            })
+    }, []);
+
+    React.useEffect(() => {
         apiAxios.get<Blob>(API_USER_PROFILE_PICTURE_PATH, {
             responseType: 'blob',
             validateStatus: status => status === 200
@@ -86,11 +125,18 @@ const ProfileView: React.FunctionComponent = () => {
             .then(resizedImageBlob => setAvatar(window.URL.createObjectURL(resizedImageBlob)));
     }
 
+    const commonTextFieldProps: CustomTextFieldProps = {
+        extraInputProps: {
+            disableUnderline: true,
+            readOnly: true,
+        }
+    }
+
     return (
-        <div>
-            <Grid container spacing={2} justify="center">
-                <Grid item xs={12}>
-                    <Card className={classes.card}>
+        <ThemeProvider theme={rtlTheme}>
+            <Grid dir="rtl" container spacing={2} direction="row-reverse">
+                <Grid item xs={12} sm={12} md={12} lg={4} xl={4} justify="center">
+                    <Paper className={classes.gridItem}>
                         <div className={classes.imageIcon}>
                             <Badge
                                 badgeContent={
@@ -105,23 +151,72 @@ const ProfileView: React.FunctionComponent = () => {
                                 }
                                 anchorOrigin={{
                                     vertical: 'bottom',
-                                    horizontal: 'right',
+                                    horizontal: 'left',
                                 }}
                                 overlap="circle"
                             >
                                 <Avatar src={avatar} className={classes.avatar}/>
                             </Badge>
                         </div>
-                        <div className={classes.center}>
-                            <h4>نام و نام خانوادگی</h4>
-                            <h5>
-                                دانشجوی مهندسی کامپیوتر
-                            </h5>
-                        </div>
-                    </Card>
+                        <Box marginTop={2} className={classes.centerAlign}>
+                            <Typography variant="h5" className={classes.typography}>
+                                {`${user.firstName} ${user.lastName}`}
+                            </Typography>
+                            <Typography variant="h6" className={classes.typography}>
+                                {`دانشجوی مهندسی کامپیوتر`}
+                            </Typography>
+                        </Box>
+                    </Paper>
+                </Grid>
+                <Grid item xs={12} sm={12} md={12} lg={8} xl={8}>
+                    <Paper className={classes.gridItem}>
+                        <CustomTextField
+                            variant="standard"
+                            label="نام"
+                            value={user.firstName}
+                            {...commonTextFieldProps}
+                        />
+                        <CustomTextField
+                            variant="standard"
+                            label="نام خانوادگی"
+                            value={user.lastName}
+                            {...commonTextFieldProps}
+                        />
+                        <CustomTextField
+                            variant="standard"
+                            label="جنسیت"
+                            value={genderMapToPersian(user.personalInfo!.gender)}
+                            {...commonTextFieldProps}
+                        />
+                        <CustomTextField
+                            variant="standard"
+                            textDir="ltr"
+                            label="شماره تلفن"
+                            value={UserService.getPhoneNumberRepresentation(user.personalInfo!.telephoneNumber)}
+                            InputProps={{
+                                endAdornment: <InputAdornment position="end">98+</InputAdornment>,
+                            }}
+                            {...commonTextFieldProps}
+                        />
+                        <CustomTextField
+                            variant="standard"
+                            textDir="ltr"
+                            label="آدرس ایمیل"
+                            value={user.personalInfo!.email}
+                            {...commonTextFieldProps}
+                        />
+                        <CustomTextField
+                            variant="standard"
+                            textDir="ltr"
+                            label="نام کاربری"
+                            autoComplete="username"
+                            value={user.username}
+                            {...commonTextFieldProps}
+                        />
+                    </Paper>
                 </Grid>
             </Grid>
-        </div>
+        </ThemeProvider>
     );
 }
 
