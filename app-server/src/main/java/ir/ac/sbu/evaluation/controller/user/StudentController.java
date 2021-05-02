@@ -41,7 +41,7 @@ public class StudentController {
     }
 
     @GetMapping(path = API_STUDENT_INFO_PATH)
-    public StudentDto check(@ModelAttribute AuthUserDetail authUserDetail) {
+    public StudentDto retrieveInfo(@ModelAttribute AuthUserDetail authUserDetail) {
         return studentService.retrieve(authUserDetail.getUserId());
     }
 

@@ -36,7 +36,7 @@ public class MasterController {
     }
 
     @GetMapping(path = API_MASTER_INFO_PATH)
-    public MasterDto check(@ModelAttribute AuthUserDetail authUserDetail) {
+    public MasterDto retrieveInfo(@ModelAttribute AuthUserDetail authUserDetail) {
         return masterService.retrieve(authUserDetail.getUserId());
     }
 
