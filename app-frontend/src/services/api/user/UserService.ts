@@ -1,3 +1,4 @@
+import update from "immutability-helper";
 import apiAxios from "../../../config/axios-config";
 import {Gender} from "../../../model/enum/gender";
 import {User, UserCheck} from "../../../model/user/user";
@@ -49,6 +50,23 @@ class UserService {
 
     static isTelephoneNumberValid(telephoneNumber: string) {
         return telephoneNumber.length === 10;
+    }
+
+    static getPhoneNumberRepresentation = (phoneNumber: string) => {
+        if (phoneNumber.length < 10) {
+            return phoneNumber;
+        } else if (phoneNumber.length === 10) {
+            return phoneNumber.replace(
+                /(\d{3})(\d{3})(\d{4})/,
+                '$1 $2 $3'
+            );
+        } else {
+            throw new Error(`Unexpected phone number: ${phoneNumber}`);
+        }
+    }
+
+    static updatePhoneNumber(user: User, telephoneNumber: string) {
+        return update(user, {personalInfo: {telephoneNumber: () => telephoneNumber}})
     }
 
     static isEmailValid(email: string) {

@@ -22,6 +22,7 @@ export const API_MASTER_REGISTER_PATH = `${API_MASTER_PATH}/register`
 // Student Paths
 export const API_STUDENT_PATH = "/student"
 export const API_STUDENT_REGISTER_PATH = `${API_STUDENT_PATH}/register`
+export const API_STUDENT_INFO_PATH = `${API_STUDENT_PATH}/info`
 
 // Problem Paths
 const API_PROBLEM_PATH = "/problem"

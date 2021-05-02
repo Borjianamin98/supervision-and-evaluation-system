@@ -20,25 +20,10 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
         !errorChecking || UserService.isTelephoneNumberValid(telephoneNumber);
     const isNotBlank = (c: string) => !errorChecking || c.length > 0;
 
-    const setPhoneNumber = (telephoneNumber: string) => {
-        setUser(update(user, {personalInfo: {telephoneNumber: () => telephoneNumber}}))
-    }
-
     const handlePhoneNumberChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
         const onlyNumbers = event.target.value.replace(/[^0-9]/g, '');
         if (onlyNumbers.length <= 10) {
-            setPhoneNumber(onlyNumbers);
-        }
-    }
-
-    const phoneNumberRepresentation = (phoneNumber: string) => {
-        if (phoneNumber.length < 10) {
-            return phoneNumber;
-        } else if (phoneNumber.length === 10) {
-            return phoneNumber.replace(
-                /(\d{3})(\d{3})(\d{4})/,
-                '$1 $2 $3'
-            );
+            setUser(UserService.updatePhoneNumber(user, onlyNumbers));
         }
     }
 
@@ -106,7 +91,7 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
                 textDir="ltr"
                 required
                 label="شماره تلفن"
-                value={phoneNumberRepresentation(user.personalInfo!.telephoneNumber)}
+                value={UserService.getPhoneNumberRepresentation(user.personalInfo!.telephoneNumber)}
                 onChange={(e) => handlePhoneNumberChange(e)}
                 InputProps={{
                     endAdornment: <InputAdornment position="end">98+</InputAdornment>,
