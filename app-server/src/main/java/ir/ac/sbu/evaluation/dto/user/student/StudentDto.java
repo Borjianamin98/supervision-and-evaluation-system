@@ -2,6 +2,8 @@ package ir.ac.sbu.evaluation.dto.user.student;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import ir.ac.sbu.evaluation.dto.user.PersonalInfoDto;
 import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.model.user.Student;
@@ -16,14 +18,22 @@ public class StudentDto extends UserDto {
     @Pattern(regexp = "[0-9]+")
     private String studentNumber;
 
+    @JsonProperty(access = Access.READ_ONLY)
+    private String universityName;
+
+    @JsonProperty(access = Access.READ_ONLY)
+    private String facultyName;
+
     public StudentDto() {
     }
 
     @Builder
-    public StudentDto(long id, String firstName, String lastName, String username, String password,
-            PersonalInfoDto personalInfo, String studentNumber) {
-        super(id, firstName, lastName, username, password, personalInfo);
+    public StudentDto(long id, String firstName, String lastName, String username, String password, String role,
+            PersonalInfoDto personalInfo, String studentNumber, String universityName, String facultyName) {
+        super(id, firstName, lastName, username, password, role, personalInfo);
         this.studentNumber = studentNumber;
+        this.universityName = universityName;
+        this.facultyName = facultyName;
     }
 
     public static StudentDto from(Student student) {
@@ -31,9 +41,12 @@ public class StudentDto extends UserDto {
                 .id(student.getId())
                 .username(student.getUsername()).password(student.getPassword())
                 .firstName(student.getFirstName()).lastName(student.getLastName())
+                .role(student.getRole())
                 .personalInfo(
                         student.getPersonalInfo() != null ? PersonalInfoDto.from(student.getPersonalInfo()) : null)
                 .studentNumber(student.getStudentNumber())
+                .universityName(student.getFaculty().getUniversity().getName())
+                .facultyName(student.getFaculty().getName())
                 .build();
     }
 
@@ -52,5 +65,21 @@ public class StudentDto extends UserDto {
 
     public void setStudentNumber(String studentNumber) {
         this.studentNumber = studentNumber;
+    }
+
+    public String getUniversityName() {
+        return universityName;
+    }
+
+    public void setUniversityName(String universityName) {
+        this.universityName = universityName;
+    }
+
+    public String getFacultyName() {
+        return facultyName;
+    }
+
+    public void setFacultyName(String facultyName) {
+        this.facultyName = facultyName;
     }
 }

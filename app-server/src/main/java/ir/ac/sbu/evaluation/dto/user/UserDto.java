@@ -31,6 +31,9 @@ public class UserDto {
     @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
 
+    @JsonProperty(access = Access.READ_ONLY)
+    private String role;
+
     @NotNull
     @Valid
     private PersonalInfoDto personalInfo;
@@ -40,12 +43,13 @@ public class UserDto {
 
     @Builder(builderMethodName = "userBuilder")
     public UserDto(long id, String firstName, String lastName, String username, String password,
-            PersonalInfoDto personalInfo) {
+            String role, PersonalInfoDto personalInfo) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
         this.password = password;
+        this.role = role;
         this.personalInfo = personalInfo;
     }
 
@@ -54,8 +58,9 @@ public class UserDto {
                 .id(user.getId())
                 .username(user.getUsername()).password(user.getPassword())
                 .firstName(user.getFirstName()).lastName(user.getLastName())
+                .role(user.getRole())
                 .personalInfo(hasExpansionInfo && user.getPersonalInfo() != null ? PersonalInfoDto
-                                .from(user.getPersonalInfo()) : null)
+                        .from(user.getPersonalInfo()) : null)
                 .build();
     }
 
@@ -67,6 +72,7 @@ public class UserDto {
         return User.userBuilder()
                 .firstName(firstName).lastName(lastName)
                 .username(username).password(password)
+                .role(role)
                 .personalInfo(personalInfo != null ? personalInfo.toPersonalInfo() : null)
                 .build();
     }
