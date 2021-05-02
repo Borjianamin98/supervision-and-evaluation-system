@@ -58,10 +58,6 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
                     setFaculty(FacultyService.createInitialFaculty());
                 }}
             />
-            <CustomAlert severity="info">
-                در صورت وجود تعداد زیادی نتیجه، تنها بخشی از آن نمایش داده می‌شود. برای یافتن سریع‌تر، جستجوی خود را
-                دقیق‌تر نمایید.
-            </CustomAlert>
             <AsynchronousComboBox
                 disableListWrap
                 getOptionSelected={(option, value) => option.name === value.name}
@@ -79,6 +75,10 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
                 onChange={(e, newValue) => setFaculty(newValue)}
                 disabled={university.name.length === 0}
             />
+            <CustomAlert severity="info">
+                در صورت وجود تعداد زیادی نتیجه، تنها بخشی از آن نمایش داده می‌شود. برای یافتن سریع‌تر، جستجوی خود را
+                دقیق‌تر نمایید.
+            </CustomAlert>
             <ComboBox
                 options={[Role.STUDENT, Role.MASTER].map(role => roleMapToPersian(role))}
                 value={roleMapToPersian(extraUserInfo.role)}

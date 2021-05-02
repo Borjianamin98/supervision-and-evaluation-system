@@ -1,6 +1,8 @@
+import apiAxios from "../../../config/axios-config";
 import {Gender} from "../../../model/enum/gender";
-import {User} from "../../../model/user/user";
+import {User, UserCheck} from "../../../model/user/user";
 import {validateEmail} from "../../../utility/email-utils";
+import {API_USER_CHECK_AVAILABLE_SIGN_IN_NAMES_PATH} from "../../ApiPaths";
 
 class UserService {
 
@@ -19,6 +21,16 @@ class UserService {
                 email: "",
             },
         }
+    }
+
+    static checkAvailableSignInNames(username: string) {
+        return apiAxios.get<UserCheck>(API_USER_CHECK_AVAILABLE_SIGN_IN_NAMES_PATH,
+            {
+                validateStatus: status => status === 200,
+                params: {
+                    username: username,
+                }
+            })
     }
 
     static isUserValid(user: User) {

@@ -19,8 +19,8 @@ const useStyles = makeStyles((theme: Theme) =>
             padding: theme.spacing(1, 0),
         },
         avatar: {
-            width: theme.spacing(15),
-            height: theme.spacing(15),
+            width: 140,
+            height: 140,
         },
         center: {
             textAlign: "center"
@@ -88,9 +88,7 @@ const ProfileView: React.FunctionComponent = () => {
 
     return (
         <div>
-            <Grid container
-                  spacing={2}
-                  justify="center">
+            <Grid container spacing={2} justify="center">
                 <Grid item xs={12}>
                     <Card className={classes.card}>
                         <div className={classes.imageIcon}>

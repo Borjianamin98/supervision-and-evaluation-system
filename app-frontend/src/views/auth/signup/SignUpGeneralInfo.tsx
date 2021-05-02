@@ -12,6 +12,8 @@ import {SignUpSectionsProps} from "./SignUpView";
 const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) => {
     const {commonClasses, user, setUser, errorChecking} = props;
 
+    const [usernameError, setUsernameError] = React.useState("");
+
     const isPasswordValid = (password: string) => !errorChecking || UserService.isPasswordValid(password);
     const isEmailValid = (email: string) => !errorChecking || UserService.isEmailValid(email);
     const isTelephoneNumberValid = (telephoneNumber: string) =>
@@ -38,6 +40,26 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
                 '$1 $2 $3'
             );
         }
+    }
+
+    const isUsernameBlank = () => {
+        if (user.username.length === 0) {
+            setUsernameError("نام کاربری نمی‌تواند خالی باشد.");
+            return true;
+        }
+        return false;
+    }
+
+    const isUsernameValid = () => {
+        UserService.checkAvailableSignInNames(user.username)
+            .then(value => {
+                if (!value.data.available) {
+                    setUsernameError("نام کاربری توسط کاربر دیگری انتخاب شده است.");
+                } else {
+                    setUsernameError("");
+                }
+            })
+            .catch(reason => setUsernameError("ارتباط با سرور برای بررسی حساب کاربری برقرار نمی‌باشد."))
     }
 
     return (
@@ -109,13 +131,15 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
             </Typography>
             <CustomTextField
                 required
+                dir="rtl"
                 label="نام کاربری"
                 autoComplete="username"
                 value={user.username}
                 onChange={(e) =>
                     setUser({...user, username: e.target.value})}
-                helperText={!isNotBlank(user.username) ? "نام کاربری معتبر نمی‌باشد." : ""}
-                error={!isNotBlank(user.username)}
+                helperText={errorChecking ? usernameError : ""}
+                error={errorChecking && (usernameError.length > 0 || isUsernameBlank())}
+                onBlur={() => isUsernameValid()}
             />
             <PasswordTextField
                 dir="rtl"

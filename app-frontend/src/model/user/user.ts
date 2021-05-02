@@ -8,3 +8,9 @@ export interface User {
     password?: string,
     personalInfo?: PersonalInfo,
 }
+
+
+export interface UserCheck {
+    username: string,
+    available?: boolean,
+}
