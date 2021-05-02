@@ -29,6 +29,10 @@ public class FacultyController {
         this.facultyService = facultyService;
     }
 
+    public static String[] permittedPaths() {
+        return new String[]{API_FACULTY_ROOT_PATH};
+    }
+
     @GetMapping(value = {"", "/"})
     public Page<FacultyDto> listFaculties(
             @RequestParam(name = "universityId") long universityId,

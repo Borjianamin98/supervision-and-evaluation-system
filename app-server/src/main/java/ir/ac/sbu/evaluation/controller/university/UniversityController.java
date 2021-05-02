@@ -1,5 +1,6 @@
 package ir.ac.sbu.evaluation.controller.university;
 
+import static ir.ac.sbu.evaluation.controller.ApiPaths.API_AUTHENTICATION_ROOT_PATH;
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_UNIVERSITY_ROOT_PATH;
 
 import ir.ac.sbu.evaluation.dto.university.UniversityDto;
@@ -29,8 +30,13 @@ public class UniversityController {
         this.universityService = universityService;
     }
 
+    public static String[] permittedPaths() {
+        return new String[]{API_UNIVERSITY_ROOT_PATH};
+    }
+
     @GetMapping(value = {"", "/"})
-    public Page<UniversityDto> list(@RequestParam(name = "nameQuery", required = false, defaultValue = "") String nameQuery,
+    public Page<UniversityDto> list(
+            @RequestParam(name = "nameQuery", required = false, defaultValue = "") String nameQuery,
             Pageable pageable) {
         return universityService.retrieveUniversities(nameQuery, pageable);
     }

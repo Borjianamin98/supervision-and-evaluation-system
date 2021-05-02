@@ -1,5 +1,6 @@
 import Typography from '@material-ui/core/Typography';
 import React, {useState} from 'react';
+import CustomAlert from "../../../components/Alert/CustomAlert";
 import AsynchronousComboBox from "../../../components/ComboBox/AsynchronousComboBox";
 import ComboBox from "../../../components/ComboBox/ComboBox";
 import {VirtualizedListBoxComponent, VirtualizedListBoxStyles} from "../../../components/ComboBox/VirtualizedComboBox";
@@ -15,14 +16,13 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
     const {commonClasses, extraUserInfo, setExtraUserInfo, faculty, setFaculty, errorChecking} = props;
     const [university, setUniversity] = useState<University>(UniversityService.createInitialUniversity());
 
-    function retrieveUniversities() {
-        // TODO: We should use pagination and filter result based on search before retrieving universities.
-        return UniversityService.retrieveUniversities(Number.MAX_SAFE_INTEGER, 0)
+    function retrieveUniversities(inputValue: string) {
+        return UniversityService.retrieveUniversities(100, 0, inputValue)
             .then(value => value.data.content)
     }
 
-    function loadUniversityFaculties(universityId: number) {
-        return FacultyService.retrieveUniversityFaculties(universityId, Number.MAX_SAFE_INTEGER, 0)
+    function retrieveUniversityFaculties(inputValue: string) {
+        return FacultyService.retrieveUniversityFaculties(university.id!, 100, 0, inputValue)
             .then(value => value.data.content)
     }
 
@@ -58,6 +58,10 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
                     setFaculty(FacultyService.createInitialFaculty());
                 }}
             />
+            <CustomAlert severity="info">
+                در صورت وجود تعداد زیادی نتیجه، تنها بخشی از آن نمایش داده می‌شود. برای یافتن سریع‌تر، جستجوی خود را
+                دقیق‌تر نمایید.
+            </CustomAlert>
             <AsynchronousComboBox
                 disableListWrap
                 getOptionSelected={(option, value) => option.name === value.name}
@@ -65,7 +69,7 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
                 renderOption={(option) => <Typography noWrap>{option.name}</Typography>}
                 extraClasses={VirtualizedListBoxStyles()}
                 ListboxComponent={VirtualizedListBoxComponent as React.ComponentType<React.HTMLAttributes<HTMLElement>>}
-                loadingFunction={() => loadUniversityFaculties(university.id!)}
+                loadingFunction={retrieveUniversityFaculties}
                 textFieldInputProps={{
                     label: "دانشکده",
                     helperText: (isNotBlank(faculty.name) ? "" : "دانشکده مربوطه باید انتخاب شود."),
