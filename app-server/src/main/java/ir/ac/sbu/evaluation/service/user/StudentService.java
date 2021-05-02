@@ -1,5 +1,6 @@
 package ir.ac.sbu.evaluation.service.user;
 
+import ir.ac.sbu.evaluation.dto.authentication.AuthResponseDto;
 import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.dto.user.student.StudentDto;
 import ir.ac.sbu.evaluation.model.university.Faculty;
@@ -11,6 +12,7 @@ import ir.ac.sbu.evaluation.repository.user.StudentRepository;
 import ir.ac.sbu.evaluation.repository.user.UserRepository;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,5 +62,10 @@ public class StudentService {
             student.setPersonalInfo(savedInfo);
         }
         return StudentDto.from(studentRepository.save(student));
+    }
+
+    public StudentDto retrieve(long userId) {
+        return StudentDto.from(studentRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Student not found: ID = " + userId)));
     }
 }

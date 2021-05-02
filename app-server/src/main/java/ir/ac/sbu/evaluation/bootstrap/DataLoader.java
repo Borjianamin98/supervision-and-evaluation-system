@@ -92,17 +92,17 @@ public class DataLoader implements CommandLineRunner {
 
         PersonalInfo masterPersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
                 .gender(Gender.MALE)
-                .telephoneNumber("09131234567")
+                .telephoneNumber("9131234567")
                 .email("sadeg.aliakbari@gmail.com")
                 .build());
         PersonalInfo studentPersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
                 .gender(Gender.MALE)
-                .telephoneNumber("09137654321")
+                .telephoneNumber("9137654321")
                 .email("student@gmail.com")
                 .build());
         PersonalInfo adminPersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
                 .gender(Gender.MALE)
-                .telephoneNumber("09137654321")
+                .telephoneNumber("9137654321")
                 .email("admin@gmail.com")
                 .build());
 
