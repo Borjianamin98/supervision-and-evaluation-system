@@ -6,8 +6,9 @@ import Typography from '@material-ui/core/Typography';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import PersonIcon from '@material-ui/icons/Person';
 import React from 'react';
-import {useLocation} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import AuthenticationService from "../../services/api/AuthenticationService";
+import {PROFILE_VIEW_PATH, SETTINGS_VIEW_PATH} from "../ViewPaths";
 import {allRoutesInfo} from "./MainViewNavBarLinks";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -18,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
         dropdownItem: {
             display: "block",
             whiteSpace: "nowrap",
-            textAlign: "right",
+            textAlign: "center",
         }
     }),
 );
@@ -71,15 +72,20 @@ const MainViewAppBar: React.FunctionComponent = () => {
                         <Fade {...TransitionProps} timeout={350}>
                             <Paper>
                                 <ClickAwayListener onClickAway={handleCloseProfile}>
-                                    <MenuList dir="rtl">
+                                    <MenuList>
                                         <MenuItem
+                                            component={Link}
+                                            to={PROFILE_VIEW_PATH}
                                             className={classes.dropdownItem}
+                                            onClick={handleCloseProfile}
                                         >
                                             حساب کاربری
                                         </MenuItem>
                                         <MenuItem
-                                            onClick={handleCloseProfile}
+                                            component={Link}
+                                            to={SETTINGS_VIEW_PATH}
                                             className={classes.dropdownItem}
+                                            onClick={handleCloseProfile}
                                         >
                                             تنظیمات
                                         </MenuItem>
