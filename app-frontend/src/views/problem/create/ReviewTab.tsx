@@ -74,7 +74,9 @@ const ReviewTab: React.FunctionComponent<ProblemTabProps> = (props) => {
                             <Typography variant="h6">کلیدواژه‌ها:</Typography>
                         </Grid>
                         <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
-                            <KeywordsList keywords={problem.keywords}>کلیدواژه‌ای ارائه نشده است.</KeywordsList>
+                            <KeywordsList keywords={problem.keywords} marginDir="left">
+                                کلیدواژه‌ای ارائه نشده است.
+                            </KeywordsList>
                         </Grid>
                         <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
                             <Typography variant="h6">استاد راهنما:</Typography>
