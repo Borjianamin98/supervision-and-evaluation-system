@@ -11,7 +11,6 @@ import ComboBox from "../../components/ComboBox/ComboBox";
 import CollapsibleTableRow from "../../components/Table/CollapsibleTableRow";
 import {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
 import StatelessPaginationTable from "../../components/Table/StatelessPaginationTable";
-import {getGeneralErrorMessage} from "../../config/axios-config";
 import {educationMapToPersian} from "../../model/enum/education";
 import {LoadingState} from "../../model/enum/loading-state";
 import {
@@ -64,16 +63,7 @@ const ProblemListView: React.FunctionComponent = () => {
                 setProblems(value.data);
                 setLoadingState(LoadingState.LOADED);
             })
-            .catch(error => {
-                const {message, statusCode} = getGeneralErrorMessage(error);
-                if (statusCode) {
-                    enqueueSnackbar(`در دریافت اطلاعات از سرور خطای ${statusCode} دریافت شد. دوباره تلاش نمایید.`,
-                        {variant: "error"});
-                } else {
-                    enqueueSnackbar(message, {variant: "error"});
-                }
-                setLoadingState(LoadingState.FAILED);
-            });
+            .catch(error => setLoadingState(LoadingState.FAILED));
     }, [enqueueSnackbar, loadingState, selectedProblemState]);
 
     return (
@@ -177,6 +167,7 @@ const ProblemListView: React.FunctionComponent = () => {
                     onDeleteRow={row => undefined}
                     isEditable={row => false}
                     onEditRow={row => undefined}
+                    onRetryClick={() => setLoadingState(LoadingState.LOADING)}
                 />
             </Grid>
         </ThemeProvider>

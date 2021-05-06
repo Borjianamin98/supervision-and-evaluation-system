@@ -56,16 +56,7 @@ const UniversityListView: React.FunctionComponent = () => {
                 setUniversities(value.data);
                 setLoadingState(LoadingState.LOADED);
             })
-            .catch(error => {
-                const {message, statusCode} = getGeneralErrorMessage(error);
-                if (statusCode) {
-                    enqueueSnackbar(`در دریافت اطلاعات از سرور خطای ${statusCode} دریافت شد. دوباره تلاش نمایید.`,
-                        {variant: "error"});
-                } else {
-                    enqueueSnackbar(message, {variant: "error"});
-                }
-                setLoadingState(LoadingState.FAILED);
-            });
+            .catch(error => setLoadingState(LoadingState.FAILED));
     }, [enqueueSnackbar, page, rowsPerPage, universities.number, universities.size, loadingState]);
 
     const handleFailedRequest = (error: AxiosError) => {
@@ -236,6 +227,7 @@ const UniversityListView: React.FunctionComponent = () => {
                     isDeletable={row => row.facultiesCount! === 0}
                     onEditRow={handleDialogOpen}
                     isEditable={row => true}
+                    onRetryClick={() => setLoadingState(LoadingState.LOADING)}
                 />
                 <Dialog dir="rtl" open={dialogOpen} onClose={() => handleDialogClose(false)}>
                     <DialogTitle>ویرایش دانشگاه</DialogTitle>

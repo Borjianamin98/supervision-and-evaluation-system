@@ -9,6 +9,8 @@ import {
     Zoom
 } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
+import Button from "@material-ui/core/Button";
+import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
 import Paper from "@material-ui/core/Paper";
 import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
@@ -37,6 +39,9 @@ const useStyles = makeStyles((theme) => ({
     circularProgress: {
         margin: theme.spacing(2),
     },
+    cellInfo: {
+        padding: theme.spacing(2, 0),
+    }
 }));
 
 interface StatelessPaginationListProps<T> extends BoxProps {
@@ -60,6 +65,8 @@ interface StatelessPaginationListProps<T> extends BoxProps {
 
     onEditRow: (row: T) => void,
     isEditable: (row: T) => boolean,
+
+    onRetryClick: () => void,
 }
 
 function StatelessPaginationTable<T>(props: StatelessPaginationListProps<T>) {
@@ -85,6 +92,9 @@ function StatelessPaginationTable<T>(props: StatelessPaginationListProps<T>) {
 
         onEditRow,
         isEditable,
+
+        onRetryClick,
+
         ...rest
     } = props;
 
@@ -127,14 +137,27 @@ function StatelessPaginationTable<T>(props: StatelessPaginationListProps<T>) {
             case LoadingState.LOADED:
             case LoadingState.SHOULD_RELOAD:
                 if (collectionData.length === 0) {
-                    return <FullRowCell headersCount={tableHeaderCells.length}>{noDataMessage}</FullRowCell>;
+                    return <FullRowCell
+                        className={classes.cellInfo}
+                        headersCount={tableHeaderCells.length}>
+                        {noDataMessage}
+                    </FullRowCell>;
                 } else {
                     return tableGeneratedRows;
                 }
             case LoadingState.FAILED:
                 return (
-                    <FullRowCell headersCount={tableHeaderCells.length}>
-                        <Typography>در دریافت اطلاعات از سرور خطایی رخ داده است.</Typography>
+                    <FullRowCell headersCount={tableHeaderCells.length} className={classes.cellInfo}>
+                        <Typography paragraph>در دریافت اطلاعات از سرور خطایی رخ داده است.</Typography>
+                        <Grid container justify={"center"}>
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => onRetryClick()}
+                            >
+                                تلاش دوباره
+                            </Button>
+                        </Grid>
                     </FullRowCell>
                 );
         }
