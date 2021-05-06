@@ -35,11 +35,11 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.primary.light,
         textAlign: "center",
     },
-    tableContentHeader: {
-        margin: theme.spacing(2, 0),
-    },
     circularProgress: {
         margin: theme.spacing(2),
+    },
+    tableContentHeader: {
+        margin: theme.spacing(2, 0),
     },
     text: {
         textAlign: "justify",
@@ -59,7 +59,7 @@ const CollapsibleTable: React.FunctionComponent<{ problems: Array<Problem>, load
     ]
 
     const tableRows = problems.map(problem => {
-        const keywordsList = <KeywordsList keywords={problem.keywords}/>;
+        const keywordsList = <KeywordsList keywords={problem.keywords} marginDir="left"/>;
         const cells: OptionalTableCellProps[] = [
             {content: educationMapToPersian(problem.education)},
             {content: problem.title},
