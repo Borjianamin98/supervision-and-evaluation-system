@@ -23,7 +23,7 @@ import {Faculty} from "../../../model/university/faculty";
 import {University} from "../../../model/university/university";
 import FacultyService from "../../../services/api/university/faculty/FacultyService";
 import UniversityService from "../../../services/api/university/UniversityService";
-import StatelessPaginationList from "../StatelessPaginationList";
+import StatelessPaginationTable from "../../../components/Table/StatelessPaginationTable";
 
 const useStyles = makeStyles((theme) => ({
     noWrap: {
@@ -236,7 +236,7 @@ const FacultyListView: React.FunctionComponent = () => {
                         </Grid>
                     </Grid>
                 </Grid>
-                <StatelessPaginationList
+                <StatelessPaginationTable
                     total={faculties.totalElements}
                     page={page}
                     onPageChange={newPage => {

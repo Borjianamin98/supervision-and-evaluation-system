@@ -18,7 +18,7 @@ import {LoadingState} from "../../model/enum/loading-state";
 import {emptyPageable, Pageable} from "../../model/pageable";
 import {University} from "../../model/university/university";
 import UniversityService from "../../services/api/university/UniversityService";
-import StatelessPaginationList from "./StatelessPaginationList";
+import StatelessPaginationTable from "../../components/Table/StatelessPaginationTable";
 
 const useStyles = makeStyles((theme) => ({
     createGrid: {
@@ -198,7 +198,7 @@ const UniversityListView: React.FunctionComponent = () => {
                         </Grid>
                     </Grid>
                 </Grid>
-                <StatelessPaginationList
+                <StatelessPaginationTable
                     total={universities.totalElements}
                     page={page}
                     onPageChange={newPage => {
