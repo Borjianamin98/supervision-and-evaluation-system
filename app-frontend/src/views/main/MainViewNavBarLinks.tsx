@@ -13,6 +13,7 @@ import {Role} from "../../model/enum/role";
 import AuthenticationService from "../../services/api/AuthenticationService";
 import DashboardView from "../dashboard/DashboardView";
 import ProblemCreateView from "../problem/create/ProblemCreateView";
+import ProblemListView from "../problem/PorblemListView";
 import ProblemObservationView from "../problem/ProblemObservationView";
 import ProfileView from "../ProfileView";
 import SettingsView from "../SettingsView";
@@ -49,13 +50,19 @@ const dashboardRoutesInfo: navBarRouteInfo[] = [
 const problemRoutesInfo: navBarRouteInfo[] = [
     {
         path: PROBLEM_OBSERVATION_PATH,
-        name: "مسئله‌ها",
+        name: "پایان‌نامه‌ها (پروژه‌ها)",
         icon: ViewListIcon,
         component: ProblemObservationView,
     },
     {
+        path: "/problem/newList",
+        name: "پایان‌نامه‌ها جدید",
+        icon: ViewListIcon,
+        component: ProblemListView,
+    },
+    {
         path: PROBLEM_CREATE_VIEW_PATH,
-        name: "ایجاد مسئله",
+        name: "ایجاد پایان‌نامه‌ (پروژه)",
         icon: NoteAddIcon,
         component: ProblemCreateView,
     },

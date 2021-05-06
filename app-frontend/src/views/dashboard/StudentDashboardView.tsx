@@ -22,8 +22,8 @@ const StudentDashboardView: React.FunctionComponent = () => {
                 <MediaCard
                     className={classes.mediaCard}
                     media={addProblemImage}
-                    title="افزودن مسئله"
-                    subTitle="مسئله دوره تحصیلی خود را برای ارائه نمودن اضافه نمایید."
+                    title="افزودن پایان‌نامه (پروژه)"
+                    subTitle="پایان‌نامه یا پروژه‌ی دوره تحصیلی خود را برای ارائه نمودن اضافه نمایید."
                 >
                     <ButtonLink to={PROBLEM_CREATE_VIEW_PATH} color="primary">
                         ایجاد
@@ -34,8 +34,8 @@ const StudentDashboardView: React.FunctionComponent = () => {
                 <MediaCard
                     className={classes.mediaCard}
                     media={viewProblemImage}
-                    title="مشاهده مسائل"
-                    subTitle="مسئله‌های افزوده‌شده و در حال پیگیری را مشاهده نمایید."
+                    title="مشاهده پایان‌نامه‌ها (پروژه‌ها)"
+                    subTitle="پایان‌نامه‌ها (پروژه‌ها) افزوده‌شده و در حال پیگیری را مشاهده نمایید."
                 >
                     <ButtonLink to={PROBLEM_OBSERVATION_PATH} color="primary">
                         مشاهده

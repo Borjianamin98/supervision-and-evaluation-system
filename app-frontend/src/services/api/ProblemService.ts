@@ -1,5 +1,7 @@
 import apiAxios from "../../config/axios-config";
-import {educationPersianMapping, PERSIAN_EDUCATIONS, Problem, ProblemState} from "../../model/problem";
+import {Education, ENGLISH_EDUCATIONS} from "../../model/enum/education";
+import {ProblemState} from "../../model/enum/problem/problem-state";
+import {Problem} from "../../model/problem";
 import {API_PROBLEM_CREATE_PATH, API_PROBLEM_RETRIEVE_OWNER_PROBLEMS_PATH} from "../ApiPaths";
 
 class ProblemService {
@@ -10,7 +12,7 @@ class ProblemService {
 
     static createInitialProblem(): Problem {
         return {
-            education: PERSIAN_EDUCATIONS[0],
+            education: Education.BACHELOR,
             title: "",
             englishTitle: "",
             keywords: [],
@@ -23,10 +25,7 @@ class ProblemService {
 
     static sendCreateProblem(problem: Problem) {
         return apiAxios.post(API_PROBLEM_CREATE_PATH,
-            {
-                ...problem,
-                education: educationPersianMapping(problem.education),
-            },
+            problem,
             {
                 validateStatus: status => status === 201
             })
@@ -40,7 +39,7 @@ class ProblemService {
     }
 
     static validateInitialProblem(problem: Problem) {
-        return PERSIAN_EDUCATIONS.includes(problem.education) &&
+        return ENGLISH_EDUCATIONS.includes(problem.education) &&
             problem.title.length > 0 && problem.title.length <= 70 &&
             problem.englishTitle.length > 0 && problem.englishTitle.length <= 70 &&
             ProblemService.isKeywordsValid(problem.keywords) &&

@@ -9,7 +9,7 @@ import {rtlTheme} from "../../../App";
 import ComboBox from "../../../components/ComboBox/ComboBox";
 import CustomTextField from "../../../components/Text/CustomTextField";
 import {getGeneralErrorMessage} from "../../../config/axios-config";
-import {PERSIAN_EDUCATIONS} from "../../../model/problem";
+import {educationMapToEnglish, educationMapToPersian, PERSIAN_EDUCATIONS} from "../../../model/enum/education";
 import {User} from "../../../model/user/user";
 import ProblemService from "../../../services/api/ProblemService";
 import MasterService from "../../../services/api/user/MasterService";
@@ -54,9 +54,10 @@ const GeneralInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
                         </Typography>
                         <ComboBox
                             options={PERSIAN_EDUCATIONS}
-                            value={problem.education}
-                            onChange={(event, value) =>
-                                setProblem({...problem, education: value})}
+                            value={educationMapToPersian(problem.education)}
+                            onChange={(e, newValue) =>
+                                setProblem({...problem, education: educationMapToEnglish(newValue)})
+                            }
                         />
                         <Typography className={commonClasses.title} variant="h5">
                             مسئله

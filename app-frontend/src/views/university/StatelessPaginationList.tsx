@@ -59,6 +59,7 @@ interface StatelessPaginationListProps<T> extends BoxProps {
     isDeletable: (row: T) => boolean,
 
     onEditRow: (row: T) => void,
+    isEditable: (row: T) => boolean,
 }
 
 function StatelessPaginationList<T>(props: StatelessPaginationListProps<T>) {
@@ -83,6 +84,7 @@ function StatelessPaginationList<T>(props: StatelessPaginationListProps<T>) {
         isDeletable,
 
         onEditRow,
+        isEditable,
         ...rest
     } = props;
 
@@ -92,6 +94,7 @@ function StatelessPaginationList<T>(props: StatelessPaginationListProps<T>) {
                 <IconButton
                     color="secondary"
                     className={classes.action}
+                    disabled={!isEditable(value)}
                     onClick={() => onEditRow(value)}
                 >
                     <EditIcon/>

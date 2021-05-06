@@ -235,6 +235,7 @@ const UniversityListView: React.FunctionComponent = () => {
                     onDeleteRow={deleteHandler}
                     isDeletable={row => row.facultiesCount! === 0}
                     onEditRow={handleDialogOpen}
+                    isEditable={row => true}
                 />
                 <Dialog dir="rtl" open={dialogOpen} onClose={() => handleDialogClose(false)}>
                     <DialogTitle>ویرایش دانشگاه</DialogTitle>
