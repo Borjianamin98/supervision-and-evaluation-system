@@ -14,7 +14,6 @@ import AuthenticationService from "../../services/api/AuthenticationService";
 import DashboardView from "../dashboard/DashboardView";
 import ProblemCreateView from "../problem/create/ProblemCreateView";
 import ProblemListView from "../problem/PorblemListView";
-import ProblemObservationView from "../problem/ProblemObservationView";
 import ProfileView from "../ProfileView";
 import SettingsView from "../SettingsView";
 import FacultyListView from "../university/faculty/FacultyListView";
@@ -51,12 +50,6 @@ const problemRoutesInfo: navBarRouteInfo[] = [
     {
         path: PROBLEM_OBSERVATION_PATH,
         name: "پایان‌نامه‌ها (پروژه‌ها)",
-        icon: ViewListIcon,
-        component: ProblemObservationView,
-    },
-    {
-        path: "/problem/newList",
-        name: "پایان‌نامه‌ها جدید",
         icon: ViewListIcon,
         component: ProblemListView,
     },
