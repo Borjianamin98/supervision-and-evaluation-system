@@ -6,10 +6,10 @@ export enum ProblemState {
 }
 
 export const PERSIAN_PROBLEM_STATES = [
-    "ایجاد‌شده",
-    "لغو‌شده",
+    "ایجاد شده",
+    "لغو شده",
     "در حال پیگیری",
-    "اتمام‌یافته"
+    "اتمام یافته"
 ];
 
 export const ENGLISH_PROBLEM_STATES = [

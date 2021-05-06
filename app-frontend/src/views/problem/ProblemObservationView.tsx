@@ -20,7 +20,9 @@ import CollapsibleTableRow from "../../components/Table/CollapsibleTableRow";
 import FullRowCell from "../../components/Table/FullRowCell";
 import OptionalTableCell, {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
 import {getGeneralErrorMessage} from "../../config/axios-config";
-import {educationEnglishMapping, Problem, ProblemState} from "../../model/problem";
+import {educationMapToPersian} from "../../model/enum/education";
+import {ProblemState} from "../../model/enum/problem/problem-state";
+import {Problem} from "../../model/problem";
 import ProblemService from "../../services/api/ProblemService";
 
 const useStyles = makeStyles((theme) => ({
@@ -59,7 +61,7 @@ const CollapsibleTable: React.FunctionComponent<{ problems: Array<Problem>, load
     const tableRows = problems.map(problem => {
         const keywordsList = <KeywordsList keywords={problem.keywords}/>;
         const cells: OptionalTableCellProps[] = [
-            {content: educationEnglishMapping(problem.education)},
+            {content: educationMapToPersian(problem.education)},
             {content: problem.title},
             {content: problem.englishTitle, smOptional: true},
             {content: keywordsList, smOptional: true},
