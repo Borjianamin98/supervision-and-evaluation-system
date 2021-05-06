@@ -1,9 +1,11 @@
+import {Education} from "./enum/education";
+import {ProblemState} from "./enum/problem/problem-state";
 import {User} from "./user/user";
 
 export interface Problem {
     id?: number,
 
-    education: string,
+    education: Education,
 
     title: string,
     englishTitle: string,
@@ -16,31 +18,4 @@ export interface Problem {
     state: ProblemState,
 
     supervisor?: User,
-}
-
-export enum ProblemState {
-    CREATED = "CREATED",
-    ABANDONED = "ABANDONED",
-    IN_PROGRESS = "IN_PROGRESS",
-    COMPLETED = "COMPLETED"
-}
-
-export const PERSIAN_EDUCATIONS = [
-    "کارشناسی",
-    "کارشناسی ارشد",
-    "دکتری"
-];
-
-export const ENGLISH_EDUCATIONS = [
-    "BACHELOR",
-    "MASTER",
-    "DOCTORATE"
-];
-
-export const educationPersianMapping = (education: string) => {
-    return ENGLISH_EDUCATIONS[PERSIAN_EDUCATIONS.indexOf(education)];
-}
-
-export const educationEnglishMapping = (education: string) => {
-    return PERSIAN_EDUCATIONS[ENGLISH_EDUCATIONS.indexOf(education)];
 }
