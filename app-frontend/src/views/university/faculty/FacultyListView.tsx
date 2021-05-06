@@ -160,7 +160,8 @@ const FacultyListView: React.FunctionComponent = () => {
         maxLength: 40,
     }
     const FacultyLocationTextFieldProps: CustomTextFieldProps = {
-        label: "مکان",
+        label: "آدرس اینترنتی",
+        textDir: "ltr",
         maxLength: 40,
     }
 
@@ -218,9 +219,9 @@ const FacultyListView: React.FunctionComponent = () => {
                     <Grid item xs={12} sm={12} md={6} lg={6} xl={6} className={classes.gridItem}>
                         <CustomTextField
                             {...FacultyLocationTextFieldProps}
-                            value={newFaculty.location}
+                            value={newFaculty.webAddress}
                             onChange={(e) =>
-                                setNewFaculty({...newFaculty, location: e.target.value})}
+                                setNewFaculty({...newFaculty, webAddress: e.target.value})}
                         />
                     </Grid>
                     <Grid container justify={"center"}>
@@ -230,7 +231,7 @@ const FacultyListView: React.FunctionComponent = () => {
                                 variant="contained"
                                 color="primary"
                             >
-                                افزودن دانشگاه
+                                افزودن دانشکده
                             </Button>
                         </Grid>
                     </Grid>
@@ -253,7 +254,7 @@ const FacultyListView: React.FunctionComponent = () => {
                     collectionData={faculties.content}
                     tableHeaderCells={[
                         {content: "نام", width: "60%"},
-                        {content: "مکان", smOptional: true, width: "25%"},
+                        {content: "آدرس اینترنتی", smOptional: true, width: "25%"},
                         {content: "تعداد دانشجوها", xsOptional: true, width: "5%"},
                         {content: "تعداد اساتید", xsOptional: true, width: "5%"},
                         {content: "", width: "5%"}
@@ -261,7 +262,7 @@ const FacultyListView: React.FunctionComponent = () => {
                     tableRow={(row: Faculty, actions) => {
                         const cells: OptionalTableCellProps[] = [
                             {content: row.name},
-                            {content: row.location, smOptional: true},
+                            {content: row.webAddress, smOptional: true, dir: "ltr"},
                             {content: row.studentsCount!, xsOptional: true},
                             {content: row.mastersCount!, xsOptional: true},
                             {content: actions},
@@ -290,9 +291,9 @@ const FacultyListView: React.FunctionComponent = () => {
                         />
                         <CustomTextField
                             {...FacultyLocationTextFieldProps}
-                            value={modifyFaculty.location}
+                            value={modifyFaculty.webAddress}
                             onChange={(e) =>
-                                setModifyFaculty({...modifyFaculty, location: e.target.value})}
+                                setModifyFaculty({...modifyFaculty, webAddress: e.target.value})}
                         />
                     </DialogContent>
                     <DialogActions>

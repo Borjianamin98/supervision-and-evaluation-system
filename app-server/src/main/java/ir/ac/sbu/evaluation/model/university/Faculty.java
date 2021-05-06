@@ -20,8 +20,8 @@ public class Faculty extends BaseEntity {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "location")
-    private String location;
+    @Column(name = "web_address")
+    private String webAddress;
 
     @ManyToOne
     @JoinColumn(name = "university_id")
@@ -37,11 +37,11 @@ public class Faculty extends BaseEntity {
     }
 
     @Builder
-    public Faculty(Long id, String name, String location, University university,
+    public Faculty(Long id, String name, String webAddress, University university,
             Set<Student> students, Set<Master> masters) {
         super(id);
         this.name = name;
-        this.location = location;
+        this.webAddress = webAddress;
         this.university = university;
         this.students = students != null ? students : new HashSet<>();
         this.masters = masters != null ? masters : new HashSet<>();;
@@ -55,12 +55,12 @@ public class Faculty extends BaseEntity {
         this.name = name;
     }
 
-    public String getLocation() {
-        return location;
+    public String getWebAddress() {
+        return webAddress;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setWebAddress(String webAddress) {
+        this.webAddress = webAddress;
     }
 
     public University getUniversity() {

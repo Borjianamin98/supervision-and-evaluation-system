@@ -11,7 +11,7 @@ class UniversityService {
     static createInitialFaculty(): Faculty {
         return {
             name: "",
-            location: "",
+            webAddress: "",
         }
     }
 

@@ -138,13 +138,13 @@ const UniversityListView: React.FunctionComponent = () => {
         maxLength: 40,
     }
     const UniversityLocationTextFieldProps: CustomTextFieldProps = {
-        label: "مکان",
+        label: "آدرس",
         maxLength: 40,
     }
     const UniversityAddressTextFieldProps: CustomTextFieldProps = {
         label: "آدرس اینترنتی",
         textDir: "ltr",
-        maxLength: 100,
+        maxLength: 60,
     }
 
     return (
@@ -216,8 +216,8 @@ const UniversityListView: React.FunctionComponent = () => {
                     collectionData={universities.content}
                     tableHeaderCells={[
                         {content: "نام", width: "60%"},
-                        {content: "مکان", smOptional: true, width: "15%"},
-                        {content: "آدرس اینترنتی", xsOptional: true, width: "10%"},
+                        {content: "آدرس", xsOptional: true, width: "15%"},
+                        {content: "آدرس اینترنتی", smOptional: true, width: "10%"},
                         {content: "تعداد دانشکده", width: "10%"},
                         {content: "", width: "5%"}
                     ]}

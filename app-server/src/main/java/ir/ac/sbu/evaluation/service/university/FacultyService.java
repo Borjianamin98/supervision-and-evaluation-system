@@ -41,8 +41,8 @@ public class FacultyService {
                 .orElseThrow(() -> new ResourceNotFoundException("Faculty not found: ID = " + facultyId));
 
         faculty.setName(facultyDto.getName());
-        if (facultyDto.getLocation() != null) {
-            faculty.setLocation(facultyDto.getLocation());
+        if (facultyDto.getWebAddress() != null) {
+            faculty.setWebAddress(facultyDto.getWebAddress());
         }
         return FacultyDto.from(facultyRepository.save(faculty));
     }

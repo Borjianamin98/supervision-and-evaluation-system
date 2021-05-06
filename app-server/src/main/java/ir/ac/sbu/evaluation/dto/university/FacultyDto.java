@@ -17,7 +17,7 @@ public class FacultyDto {
     @NotBlank
     private String name;
 
-    private String location;
+    private String webAddress;
 
     @JsonProperty(access = Access.READ_ONLY)
     private Long studentsCount;
@@ -29,10 +29,10 @@ public class FacultyDto {
     }
 
     @Builder
-    public FacultyDto(long id, String name, String location, Long studentsCount, Long mastersCount) {
+    public FacultyDto(long id, String name, String webAddress, Long studentsCount, Long mastersCount) {
         this.id = id;
         this.name = name;
-        this.location = location;
+        this.webAddress = webAddress;
         this.studentsCount = studentsCount;
         this.mastersCount = mastersCount;
     }
@@ -41,7 +41,7 @@ public class FacultyDto {
         return FacultyDto.builder()
                 .id(faculty.getId())
                 .name(faculty.getName())
-                .location(faculty.getLocation())
+                .webAddress(faculty.getWebAddress())
                 .studentsCount(hasExpansionInfo ? (long) faculty.getStudents().size() : null)
                 .mastersCount(hasExpansionInfo ? (long) faculty.getMasters().size() : null)
                 .build();
@@ -55,7 +55,7 @@ public class FacultyDto {
         return Faculty.builder()
                 .id(id)
                 .name(name)
-                .location(location)
+                .webAddress(webAddress)
                 .build();
     }
 
@@ -75,12 +75,12 @@ public class FacultyDto {
         this.name = name;
     }
 
-    public String getLocation() {
-        return location;
+    public String getWebAddress() {
+        return webAddress;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setWebAddress(String webAddress) {
+        this.webAddress = webAddress;
     }
 
     public Long getStudentsCount() {

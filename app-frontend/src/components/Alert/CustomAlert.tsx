@@ -7,6 +7,11 @@ const useStyles = makeStyles((theme) => ({
     justify: {
         textAlign: "justify",
     },
+    icon: {
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center"
+    }
 }));
 
 const CustomAlert: React.FunctionComponent<AlertProps> = (props) => {
@@ -14,7 +19,13 @@ const CustomAlert: React.FunctionComponent<AlertProps> = (props) => {
     const {className, ...rest} = props;
 
     return (
-        <Alert className={classNames(classes.justify, className)} {...rest}>
+        <Alert
+            className={classNames(classes.justify, className)}
+            classes={{
+                icon: classes.icon,
+            }}
+            {...rest}
+        >
             {props.children}
         </Alert>
     )
