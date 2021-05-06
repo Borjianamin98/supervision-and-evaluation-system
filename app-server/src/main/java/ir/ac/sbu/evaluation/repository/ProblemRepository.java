@@ -1,12 +1,14 @@
 package ir.ac.sbu.evaluation.repository;
 
+import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.model.Problem;
-import java.util.List;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ProblemRepository extends JpaRepository<Problem, Long> {
+public interface ProblemRepository extends PagingAndSortingRepository<Problem, Long> {
 
-    List<Problem> findAllByStudentId(long studentId);
+    Page<Problem> findAllByStudentIdAndState(long studentId, ProblemState state, Pageable pageable);
 }

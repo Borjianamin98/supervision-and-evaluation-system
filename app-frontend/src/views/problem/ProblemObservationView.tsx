@@ -134,9 +134,9 @@ const ProblemObservationView: React.FunctionComponent = () => {
     const {enqueueSnackbar} = useSnackbar();
 
     React.useEffect(() => {
-        ProblemService.retrieveOwnerProblem()
+        ProblemService.retrieveAuthenticatedOwnerProblems(ProblemState.CREATED)
             .then(value => {
-                setOwnerProblems(value.data);
+                setOwnerProblems(value.data.content);
                 setLoaded(true);
             })
             .catch(error => {

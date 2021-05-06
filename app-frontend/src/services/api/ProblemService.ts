@@ -1,8 +1,9 @@
 import apiAxios from "../../config/axios-config";
 import {Education, ENGLISH_EDUCATIONS} from "../../model/enum/education";
 import {ProblemState} from "../../model/enum/problem/problem-state";
+import {Pageable} from "../../model/pageable";
 import {Problem} from "../../model/problem";
-import {API_PROBLEM_CREATE_PATH, API_PROBLEM_RETRIEVE_OWNER_PROBLEMS_PATH} from "../ApiPaths";
+import {API_PROBLEM_AUTHENTICATED_OWNER_PROBLEMS_PATH, API_PROBLEM_CREATE_PATH} from "../ApiPaths";
 
 class ProblemService {
     public static readonly MAX_LONG_STRING_LENGTH = 1000;
@@ -31,10 +32,13 @@ class ProblemService {
             })
     }
 
-    static retrieveOwnerProblem() {
-        return apiAxios.get<Array<Problem>>(API_PROBLEM_RETRIEVE_OWNER_PROBLEMS_PATH,
+    static retrieveAuthenticatedOwnerProblems(problemState: ProblemState) {
+        return apiAxios.get<Pageable<Problem>>(API_PROBLEM_AUTHENTICATED_OWNER_PROBLEMS_PATH,
             {
-                validateStatus: status => status === 200
+                validateStatus: status => status === 200,
+                params: {
+                    problemState: problemState,
+                }
             })
     }
 

@@ -5,11 +5,11 @@ import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.model.Problem;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.Student;
-import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.ProblemRepository;
+import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,9 +42,8 @@ public class ProblemService {
         return ProblemDto.from(problemRepository.save(problem));
     }
 
-    public List<ProblemDto> retrieveProblems(long studentUserId) {
-        return problemRepository.findAllByStudentId(studentUserId)
-                .stream().map(ProblemDto::from)
-                .collect(Collectors.toList());
+    public Page<ProblemDto> retrieveProblems(long studentUserId, ProblemState problemState, Pageable pageable) {
+        return problemRepository.findAllByStudentIdAndState(studentUserId, problemState, pageable)
+                .map(ProblemDto::from);
     }
 }
