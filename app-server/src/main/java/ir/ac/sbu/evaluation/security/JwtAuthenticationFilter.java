@@ -64,6 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             jwtTokenProvider.ensureIsAccessToken(tokenClaims);
             setSpringSecurityAuthentication(request,
                     jwtTokenProvider.getUserId(tokenClaims),
+                    jwtTokenProvider.getFullName(tokenClaims),
                     jwtTokenProvider.getUsername(tokenClaims),
                     jwtTokenProvider.getRoles(tokenClaims));
         } catch (InvalidJwtTokenException e) {
@@ -71,10 +72,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private void setSpringSecurityAuthentication(HttpServletRequest request, long userId, String username,
+    private void setSpringSecurityAuthentication(HttpServletRequest request, long userId,
+            String fullName,
+            String username,
             List<String> roles) {
         AuthUserDetail authUserDetail = AuthUserDetail.builder()
                 .userId(userId)
+                .fullName(fullName)
                 .username(username)
                 .roles(roles)
                 .build();

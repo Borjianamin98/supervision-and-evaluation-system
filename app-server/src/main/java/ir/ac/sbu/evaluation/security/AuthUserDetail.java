@@ -10,13 +10,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class AuthUserDetail implements UserDetails {
 
     private final long userId;
+    private final String fullName;
     private final String username;
     private final String password;
     private final Collection<String> roles;
 
     @Builder
-    public AuthUserDetail(long userId, String username, String password, Collection<String> roles) {
+    public AuthUserDetail(long userId, String fullName, String username, String password,
+            Collection<String> roles) {
         this.userId = userId;
+        this.fullName = fullName;
         this.username = username;
         this.password = password;
         this.roles = roles;
@@ -24,6 +27,10 @@ public class AuthUserDetail implements UserDetails {
 
     public long getUserId() {
         return userId;
+    }
+
+    public String getFullName() {
+        return fullName;
     }
 
     public Collection<String> getRoles() {

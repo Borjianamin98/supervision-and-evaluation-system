@@ -28,6 +28,7 @@ public class JwtTokenProvider {
     private final static String ACCESS_TOKEN_TYPE_NAME = "accessToken";
     private final static String REFRESH_TOKEN_TYPE_NAME = "refreshToken";
     private final static String TOKEN_USER_ID_CLAIM_NAME = "userId";
+    private final static String TOKEN_FULL_NAME_CLAIM_NAME = "fullName";
     private final static String TOKEN_ROLES_CLAIM_NAME = "roles";
 
     @Value("${jwt.secret}")
@@ -77,6 +78,10 @@ public class JwtTokenProvider {
         return tokenClaims.get(TOKEN_USER_ID_CLAIM_NAME, Long.class);
     }
 
+    public String getFullName(Claims tokenClaims) {
+        return tokenClaims.get(TOKEN_FULL_NAME_CLAIM_NAME, String.class);
+    }
+
     public List<String> getRoles(Claims tokenClaims) {
         try {
             @SuppressWarnings("unchecked")
@@ -117,6 +122,7 @@ public class JwtTokenProvider {
      * <ul>
      *     <li>subject: {@code username}</li>
      *     <li>userId: {@code userId}</li>
+     *     <li>fullName: user full name</li>
      *     <li>roles: roles</li>
      *     <li>tokenType: {@code tokenType}</li>
      *     <li>issue at: current time</li>
@@ -131,6 +137,7 @@ public class JwtTokenProvider {
         customClaims.put(TOKEN_ROLES_CLAIM_NAME,
                 authUserDetail.getAuthorities().stream().map(Object::toString).collect(Collectors.toList()));
         customClaims.put(TOKEN_USER_ID_CLAIM_NAME, authUserDetail.getUserId());
+        customClaims.put(TOKEN_FULL_NAME_CLAIM_NAME, authUserDetail.getFullName());
 
         long currentTime = System.currentTimeMillis();
         long expirationOffset = tokenType.equals(ACCESS_TOKEN_TYPE_NAME) ?

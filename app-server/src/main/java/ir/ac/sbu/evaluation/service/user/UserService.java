@@ -43,6 +43,7 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username)
                 .map(user -> AuthUserDetail.builder()
                         .userId(user.getId())
+                        .fullName(user.getFirstName() + " " + user.getLastName())
                         .username(user.getUsername())
                         .password(user.getPassword())
                         .roles(Collections.singletonList(user.getRole()))

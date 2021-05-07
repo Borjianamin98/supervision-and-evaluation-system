@@ -36,14 +36,12 @@ public class ProblemController {
         this.problemService = problemService;
     }
 
+    @PreAuthorize("hasAuthority(@SecurityRoles.STUDENT_ROLE_NAME)")
     @GetMapping(path = API_PROBLEM_AUTHENTICATED_OWNER_PROBLEMS_PATH)
     public Page<ProblemDto> retrieveProblems(
             @ModelAttribute AuthUserDetail authUserDetail,
             @RequestParam(name = "problemState") ProblemState problemState,
             Pageable pageable) {
-        if (!authUserDetail.getRoles().contains(SecurityRoles.STUDENT_ROLE_NAME)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
         return problemService.retrieveProblems(authUserDetail.getUserId(), problemState, pageable);
     }
 
