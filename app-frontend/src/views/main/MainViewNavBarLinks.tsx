@@ -113,8 +113,8 @@ const createListFromRoutesInfo = (routesInfo: navBarRouteInfo[], show: boolean) 
                             icon={React.createElement(value.icon, {})}
                         />
                     )}
+                    <Divider component="li"/>
                 </List>
-                <Divider component="li"/>
             </React.Fragment>
         ) : undefined
     )
