@@ -1,6 +1,5 @@
 import apiAxios from "../../../config/axios-config";
 import {Master, MasterRegister} from "../../../model/user/master";
-import {User} from "../../../model/user/user";
 import {API_MASTER_INFO_PATH, API_MASTER_PATH, API_MASTER_REGISTER_PATH} from "../../ApiPaths";
 
 class MasterService {
@@ -16,7 +15,7 @@ class MasterService {
     }
 
     static retrieveMasterUsers() {
-        return apiAxios.get<Array<User>>(API_MASTER_PATH,
+        return apiAxios.get<Array<Master>>(API_MASTER_PATH,
             {
                 validateStatus: status => status === 200
             })

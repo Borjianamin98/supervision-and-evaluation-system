@@ -32,7 +32,7 @@ const ReviewTab: React.FunctionComponent<ProblemTabProps> = (props) => {
 
     const submitProblemCreation = () => {
         setErrorChecking(true);
-        if (ProblemService.validateInitialProblem(problem)) {
+        if (ProblemService.isValidProblem(problem)) {
             ProblemService.sendCreateProblem(problem)
                 .then(() => browserHistory.push(PROBLEM_OBSERVATION_PATH))
                 .catch(() => enqueueSnackbar("ایجاد مسئله ناموفق بود. بعد از بررسی اطلاعات، دوباره تلاش نمایید.",
@@ -118,7 +118,6 @@ const ReviewTab: React.FunctionComponent<ProblemTabProps> = (props) => {
                         تایید و ارسال
                     </Button>
                 </div>
-
             </Grid>
         </Grid>
     );

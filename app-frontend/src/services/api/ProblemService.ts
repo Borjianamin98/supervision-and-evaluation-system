@@ -42,7 +42,7 @@ class ProblemService {
             })
     }
 
-    static validateInitialProblem(problem: Problem) {
+    static isValidProblem(problem: Problem) {
         return ENGLISH_EDUCATIONS.includes(problem.education) &&
             problem.title.length > 0 && problem.title.length <= 70 &&
             problem.englishTitle.length > 0 && problem.englishTitle.length <= 70 &&

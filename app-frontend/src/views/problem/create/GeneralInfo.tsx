@@ -10,7 +10,7 @@ import ComboBox from "../../../components/ComboBox/ComboBox";
 import CustomTextField from "../../../components/Text/CustomTextField";
 import {getGeneralErrorMessage} from "../../../config/axios-config";
 import {educationMapToEnglish, educationMapToPersian, PERSIAN_EDUCATIONS} from "../../../model/enum/education";
-import {User} from "../../../model/user/user";
+import {Master} from "../../../model/user/master";
 import ProblemService from "../../../services/api/ProblemService";
 import MasterService from "../../../services/api/user/MasterService";
 import {ProblemTabProps} from "./ProblemCreateView";
@@ -19,7 +19,7 @@ const GeneralInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
     const {commonClasses, problem, setProblem, errorChecking} = props;
     const {enqueueSnackbar} = useSnackbar();
 
-    const [masterUsers, setMasterUsers] = React.useState<User[]>([]);
+    const [masterUsers, setMasterUsers] = React.useState<Master[]>([]);
     React.useEffect(() => {
         MasterService.retrieveMasterUsers()
             .then(value => setMasterUsers(value.data))

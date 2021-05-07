@@ -1,6 +1,6 @@
 import {Education} from "./enum/education";
 import {ProblemState} from "./enum/problem/problem-state";
-import {User} from "./user/user";
+import {Master} from "./user/master";
 
 export interface Problem {
     id?: number,
@@ -17,5 +17,5 @@ export interface Problem {
 
     state: ProblemState,
 
-    supervisor?: User,
+    supervisor?: Master,
 }
