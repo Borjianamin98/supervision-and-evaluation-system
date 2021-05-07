@@ -1,6 +1,7 @@
 import {Education} from "../enum/education";
-import {ProblemState} from "./problemState";
 import {Master} from "../user/master";
+import {ProblemEvent} from "./problemEvent";
+import {ProblemState} from "./problemState";
 
 export interface Problem {
     id?: number,
@@ -16,6 +17,7 @@ export interface Problem {
     considerations: string,
 
     state: ProblemState,
+    events?: ProblemEvent[],
 
     supervisor?: Master,
 }

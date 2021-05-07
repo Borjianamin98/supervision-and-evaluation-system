@@ -6,6 +6,8 @@ import Typography from "@material-ui/core/Typography";
 import {useSnackbar} from "notistack";
 import React, {useState} from 'react';
 import {rtlTheme} from "../../App";
+import HistoryIcon from '@material-ui/icons/History';
+import CustomAlert from "../../components/Alert/CustomAlert";
 import KeywordsList from "../../components/Chip/KeywordsList";
 import ComboBox from "../../components/ComboBox/ComboBox";
 import CollapsibleTableRow from "../../components/Table/CollapsibleTableRow";
@@ -14,14 +16,14 @@ import StatelessPaginationTable from "../../components/Table/StatelessPagination
 import browserHistory from "../../config/browserHistory";
 import {educationMapToPersian} from "../../model/enum/education";
 import {LoadingState} from "../../model/enum/loadingState";
+import {emptyPageable, Pageable} from "../../model/pageable";
+import {Problem} from "../../model/problem/problem";
 import {
     PERSIAN_PROBLEM_STATES,
     ProblemState,
     problemStateMapToEnglish,
     problemStateMapToPersian
 } from "../../model/problem/problemState";
-import {emptyPageable, Pageable} from "../../model/pageable";
-import {Problem} from "../../model/problem/problem";
 import ProblemService from "../../services/api/ProblemService";
 import {PROBLEM_EDIT_VIEW_PATH} from "../ViewPaths";
 
@@ -42,6 +44,9 @@ const useStyles = makeStyles((theme) => ({
     text: {
         textAlign: "justify",
     },
+    event: {
+        margin: theme.spacing(1, 0),
+    }
 }));
 
 const ProblemListView: React.FunctionComponent = () => {
@@ -168,7 +173,18 @@ const ProblemListView: React.FunctionComponent = () => {
                                         <Typography variant="h6" className={classes.tableContentHeader}>
                                             نظرات:
                                         </Typography>
-
+                                        {
+                                            row.events?.map(event =>
+                                                <CustomAlert
+                                                    icon={<HistoryIcon/>}
+                                                    severity="info"
+                                                    variant="outlined"
+                                                    className={classes.event}
+                                                >
+                                                    {event.message}
+                                                </CustomAlert>
+                                            )
+                                        }
                                     </Grid>
                                 </Grid>
                             </CollapsibleTableRow>
