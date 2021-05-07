@@ -3,11 +3,11 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
+import HistoryIcon from '@material-ui/icons/History';
 import moment from "jalali-moment";
 import {useSnackbar} from "notistack";
 import React, {useState} from 'react';
 import {rtlTheme} from "../../App";
-import HistoryIcon from '@material-ui/icons/History';
 import CustomAlert from "../../components/Alert/CustomAlert";
 import KeywordsList from "../../components/Chip/KeywordsList";
 import ComboBox from "../../components/ComboBox/ComboBox";
@@ -172,21 +172,25 @@ const ProblemListView: React.FunctionComponent = () => {
                                     <Grid item xs={false} sm={false} md={1} lg={1} xl={1}/>
                                     <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                                         <Typography variant="h6" className={classes.tableContentHeader}>
-                                            نظرات:
+                                            تغییرات:
                                         </Typography>
                                         {
-                                            row.events?.map(event =>
-                                                <CustomAlert
-                                                    icon={<HistoryIcon/>}
-                                                    severity="info"
-                                                    variant="outlined"
-                                                    className={classes.event}
-                                                >
-                                                    {moment(event.createdDate).locale('fa').format('ddd، D MMMM YYYY (h a)')}
-                                                    {": "}
-                                                    {event.message}
-                                                </CustomAlert>
-                                            )
+                                            row.events
+                                                ?.sort((a, b) =>
+                                                    new Date(a.createdDate).valueOf() - new Date(b.createdDate).valueOf())
+                                                .reverse()
+                                                .map(event =>
+                                                    <CustomAlert
+                                                        icon={<HistoryIcon/>}
+                                                        severity="info"
+                                                        variant="outlined"
+                                                        className={classes.event}
+                                                    >
+                                                        {moment(event.createdDate).locale('fa').format('ddd، D MMMM YYYY (h a)')}
+                                                        {": "}
+                                                        {event.message}
+                                                    </CustomAlert>
+                                                )
                                         }
                                     </Grid>
                                 </Grid>

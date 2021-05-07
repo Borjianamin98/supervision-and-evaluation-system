@@ -12,7 +12,7 @@ declare module 'axios' {
     }
 }
 
-let apiAxios = axios.create({
+const apiAxios = axios.create({
     baseURL: API_ROOT_PATH,
     timeout: 2000
 });
