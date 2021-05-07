@@ -3,7 +3,12 @@ import {Education, ENGLISH_EDUCATIONS} from "../../model/enum/education";
 import {ProblemState} from "../../model/enum/problem/problem-state";
 import {Pageable} from "../../model/pageable";
 import {Problem} from "../../model/problem";
-import {API_PROBLEM_AUTHENTICATED_OWNER_PROBLEMS_PATH, API_PROBLEM_ROOT_PATH} from "../ApiPaths";
+import {University} from "../../model/university/university";
+import {
+    API_PROBLEM_AUTHENTICATED_OWNER_PROBLEMS_PATH,
+    API_PROBLEM_RESOURCE_PATH,
+    API_PROBLEM_ROOT_PATH
+} from "../ApiPaths";
 
 class ProblemService {
     public static readonly MAX_LONG_STRING_LENGTH = 1000;
@@ -41,6 +46,14 @@ class ProblemService {
                     page: page,
                     problemState: problemState,
                 }
+            })
+    }
+
+    static updateProblem(problemId: number, problem: Problem) {
+        return apiAxios.put<University>(API_PROBLEM_RESOURCE_PATH.replace("{0}", String(problemId)),
+            problem,
+            {
+                validateStatus: status => status === 200
             })
     }
 

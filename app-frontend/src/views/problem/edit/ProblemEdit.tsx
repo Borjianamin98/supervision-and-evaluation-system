@@ -142,8 +142,19 @@ const ProblemEdit: React.FunctionComponent = () => {
     }
 
 
-    const handleSuccessSubmit = () => {
-        enqueueSnackbar("پایان‌نامه (پروژه) با موفقیت ایجاد شد.", {variant: "success"});
+    const handleSuccessSubmit = (editState: EditState) => {
+        let message: string;
+        switch (editState) {
+            case EditState.ADD:
+                message = "پایان‌نامه (پروژه) با موفقیت ایجاد شد.";
+                break;
+            case EditState.EDIT:
+                message = "پایان‌نامه (پروژه) با موفقیت ویرایش شد.";
+                break;
+            default:
+                throw new Error("Unexpected call for this state: " + editState)
+        }
+        enqueueSnackbar(message, {variant: "success"});
         browserHistory.push(PROBLEM_LIST_VIEW_PATH)
     }
 
@@ -169,9 +180,15 @@ const ProblemEdit: React.FunctionComponent = () => {
                 setEditState(EditState.REVIEW)
                 break;
             case EditState.REVIEW:
-                ProblemService.sendCreateProblem(problem)
-                    .then(() => handleSuccessSubmit())
-                    .catch((error) => handleFailedSubmit(error));
+                if (oldEditState === EditState.ADD) {
+                    ProblemService.sendCreateProblem(problem)
+                        .then(() => handleSuccessSubmit(oldEditState))
+                        .catch((error) => handleFailedSubmit(error));
+                } else if (oldEditState === EditState.EDIT) {
+                    ProblemService.updateProblem(problem.id!, problem)
+                        .then(() => handleSuccessSubmit(oldEditState))
+                        .catch((error) => handleFailedSubmit(error));
+                }
                 break;
         }
     }

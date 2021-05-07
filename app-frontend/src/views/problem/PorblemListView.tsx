@@ -120,13 +120,13 @@ const ProblemListView: React.FunctionComponent = () => {
                     loadingState={loadingState}
                     collectionData={problems.content}
                     tableHeaderCells={[
-                        {content: "دوره تحصیلی", xsOptional: true, width: "5%"},
+                        {content: "دوره تحصیلی", xsOptional: true, width: "10%"},
                         {content: "عنوان", width: "25%"},
                         {content: "عنوان انگلیسی", smOptional: true, width: "25%"},
                         {content: "کلیدواژه‌ها", smOptional: true, width: "25%"},
                         {content: "استاد راهنما", xsOptional: true, width: "10%"},
-                        {content: "", width: "5%"},
-                        {content: "", width: "5%"}
+                        {content: "", width: "2.5%"},
+                        {content: "", width: "2.5%"}
                     ]}
                     tableRow={(row: Problem, actions) => {
                         const keywordsList = <KeywordsList keywords={row.keywords} marginDir="left"/>;

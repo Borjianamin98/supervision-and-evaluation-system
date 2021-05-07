@@ -54,7 +54,6 @@ public class ProblemService {
         problem.setDefinition(problemDto.getDefinition());
         problem.setHistory(problemDto.getHistory());
         problem.setConsiderations(problemDto.getConsiderations());
-        problem.setState(problemDto.getState());
         return ProblemDto.from(problemRepository.save(problem));
     }
 
