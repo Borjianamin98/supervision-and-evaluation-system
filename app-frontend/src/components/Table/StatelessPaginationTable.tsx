@@ -9,7 +9,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import React from 'react';
 import {rtlTheme} from "../../App";
-import {LoadingState} from "../../model/enum/loading-state";
+import {LoadingState} from "../../model/enum/loadingState";
 import TooltipIconButton from "../Button/TooltipIconButton";
 import FullRowCell from "./FullRowCell";
 import OptionalTableCell, {OptionalTableCellProps} from "./OptionalTableCell";

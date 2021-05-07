@@ -13,15 +13,15 @@ import {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
 import StatelessPaginationTable from "../../components/Table/StatelessPaginationTable";
 import browserHistory from "../../config/browserHistory";
 import {educationMapToPersian} from "../../model/enum/education";
-import {LoadingState} from "../../model/enum/loading-state";
+import {LoadingState} from "../../model/enum/loadingState";
 import {
     PERSIAN_PROBLEM_STATES,
     ProblemState,
     problemStateMapToEnglish,
     problemStateMapToPersian
-} from "../../model/enum/problem/problem-state";
+} from "../../model/problem/problemState";
 import {emptyPageable, Pageable} from "../../model/pageable";
-import {Problem} from "../../model/problem";
+import {Problem} from "../../model/problem/problem";
 import ProblemService from "../../services/api/ProblemService";
 import {PROBLEM_EDIT_VIEW_PATH} from "../ViewPaths";
 
@@ -165,12 +165,10 @@ const ProblemListView: React.FunctionComponent = () => {
                                     </Grid>
                                     <Grid item xs={false} sm={false} md={1} lg={1} xl={1}/>
                                     <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                                        <Typography
-                                            variant="h6"
-                                            className={classes.tableContentHeader}
-                                        >
+                                        <Typography variant="h6" className={classes.tableContentHeader}>
                                             نظرات:
                                         </Typography>
+
                                     </Grid>
                                 </Grid>
                             </CollapsibleTableRow>

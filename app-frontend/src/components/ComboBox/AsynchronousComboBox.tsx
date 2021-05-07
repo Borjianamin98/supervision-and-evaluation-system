@@ -1,6 +1,6 @@
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
-import {LoadingState} from "../../model/enum/loading-state";
+import {LoadingState} from "../../model/enum/loadingState";
 import ComboBox, {ComboBoxProps} from './ComboBox';
 
 type AsynchronousComboBoxProps<T> = Omit<ComboBoxProps<T>, "options"> & {

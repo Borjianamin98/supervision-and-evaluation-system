@@ -14,7 +14,7 @@ import ExtendedTableRow from "../../components/Table/ExtendedTableRow";
 import {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
 import CustomTextField, {CustomTextFieldProps} from "../../components/Text/CustomTextField";
 import {getGeneralErrorMessage} from "../../config/axios-config";
-import {LoadingState} from "../../model/enum/loading-state";
+import {LoadingState} from "../../model/enum/loadingState";
 import {emptyPageable, Pageable} from "../../model/pageable";
 import {University} from "../../model/university/university";
 import UniversityService from "../../services/api/university/UniversityService";

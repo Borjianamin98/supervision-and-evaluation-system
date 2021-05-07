@@ -1,8 +1,8 @@
 import apiAxios from "../../config/axios-config";
 import {Education, ENGLISH_EDUCATIONS} from "../../model/enum/education";
-import {ProblemState} from "../../model/enum/problem/problem-state";
+import {ProblemState} from "../../model/problem/problemState";
 import {Pageable} from "../../model/pageable";
-import {Problem} from "../../model/problem";
+import {Problem} from "../../model/problem/problem";
 import {University} from "../../model/university/university";
 import {
     API_PROBLEM_AUTHENTICATED_OWNER_PROBLEMS_PATH,

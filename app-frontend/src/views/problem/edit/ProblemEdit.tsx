@@ -16,7 +16,7 @@ import {useLocation} from "react-router-dom";
 import {rtlTheme} from '../../../App';
 import {getGeneralErrorMessage} from "../../../config/axios-config";
 import browserHistory from "../../../config/browserHistory";
-import {Problem} from "../../../model/problem";
+import {Problem} from "../../../model/problem/problem";
 import ProblemService from "../../../services/api/ProblemService";
 import {PROBLEM_LIST_VIEW_PATH} from "../../ViewPaths";
 import ProblemEditExtraInfo from "./ProblemEditExtraInfo";
