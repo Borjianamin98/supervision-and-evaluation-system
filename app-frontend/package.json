@@ -20,6 +20,7 @@
     "axios": "^0.21.1",
     "classnames": "^2.3.1",
     "immutability-helper": "^3.1.1",
+    "jalali-moment": "^3.3.10",
     "jss-rtl": "^0.3.0",
     "jwt-decode": "^3.1.2",
     "notistack": "^1.0.6",

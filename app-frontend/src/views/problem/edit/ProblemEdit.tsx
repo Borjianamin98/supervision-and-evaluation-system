@@ -224,6 +224,8 @@ const ProblemEdit: React.FunctionComponent = () => {
                         {pageContent(editState)}
                     </Grid>
                     <Grid container justify={"center"} spacing={2}>
+                        {editState === EditState.EDIT ?
+                            formButton("انصراف", () => browserHistory.goBack()) : undefined}
                         {editState === EditState.REVIEW ?
                             formButton("ویرایش اطلاعات", () => setEditState(oldEditState)) : undefined}
                         {formButton(submitContent(editState), submitHandler)}

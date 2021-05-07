@@ -3,6 +3,7 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
+import moment from "jalali-moment";
 import {useSnackbar} from "notistack";
 import React, {useState} from 'react';
 import {rtlTheme} from "../../App";
@@ -181,6 +182,8 @@ const ProblemListView: React.FunctionComponent = () => {
                                                     variant="outlined"
                                                     className={classes.event}
                                                 >
+                                                    {moment(event.createdDate).locale('fa').format('ddd، D MMMM YYYY (h a)')}
+                                                    {": "}
                                                     {event.message}
                                                 </CustomAlert>
                                             )
