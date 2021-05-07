@@ -11,9 +11,12 @@ import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,7 +28,6 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping(API_PROBLEM_ROOT_PATH)
 public class ProblemController {
 
-    public final static String API_PROBLEM_CREATE_PATH = "/create";
     public final static String API_PROBLEM_AUTHENTICATED_OWNER_PROBLEMS_PATH = "/authenticatedOwner";
 
     private final ProblemService problemService;
@@ -45,13 +47,21 @@ public class ProblemController {
         return problemService.retrieveProblems(authUserDetail.getUserId(), problemState, pageable);
     }
 
-    @PostMapping(path = API_PROBLEM_CREATE_PATH)
+    @PreAuthorize("hasAuthority(@SecurityRoles.STUDENT_ROLE_NAME)")
+    @PostMapping(path = {"", "/"})
     @ResponseStatus(HttpStatus.CREATED)
-    public ProblemDto createProblem(@Valid @RequestBody ProblemDto problemDto,
+    public ProblemDto createProblem(
+            @Valid @RequestBody ProblemDto problemDto,
             @ModelAttribute AuthUserDetail authUserDetail) {
-        if (!authUserDetail.getRoles().contains(SecurityRoles.STUDENT_ROLE_NAME)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
         return problemService.addProblem(authUserDetail.getUserId(), problemDto);
+    }
+
+    @PreAuthorize("hasAuthority(@SecurityRoles.STUDENT_ROLE_NAME)")
+    @PutMapping(path = "/{problemId}")
+    public ProblemDto update(
+            @PathVariable long problemId,
+            @Valid @RequestBody ProblemDto problemDto,
+            @ModelAttribute AuthUserDetail authUserDetail) {
+        return problemService.update(problemId, problemDto);
     }
 }

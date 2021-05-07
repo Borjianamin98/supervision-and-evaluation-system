@@ -70,7 +70,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/favicon.ico").permitAll()
                 .antMatchers("/actuator/**").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
-                .antMatchers(ApiPaths.API_PROBLEM_ROOT_PATH).hasAnyAuthority(STUDENT_ROLE_NAME, MASTER_ROLE_NAME)
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()

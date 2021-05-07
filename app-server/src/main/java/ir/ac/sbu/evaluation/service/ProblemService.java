@@ -2,6 +2,7 @@ package ir.ac.sbu.evaluation.service;
 
 import ir.ac.sbu.evaluation.dto.ProblemDto;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
+import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
 import ir.ac.sbu.evaluation.model.Problem;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.Student;
@@ -33,12 +34,27 @@ public class ProblemService {
                 .orElseThrow(() -> new IllegalArgumentException("Student with given ID not found: " + studentUserId));
         Master supervisor = masterRepository.findByUsername(problemDto.getSupervisor().getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Master with given username not found: "
-                        + problemDto.getSupervisor()));
+                        + problemDto.getSupervisor().getUsername()));
 
         Problem problem = problemDto.toProblem();
         problem.setStudent(student);
         problem.setSupervisor(supervisor);
         problem.setState(ProblemState.CREATED);
+        return ProblemDto.from(problemRepository.save(problem));
+    }
+
+    public ProblemDto update(long problemId, ProblemDto problemDto) {
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(() -> new ResourceNotFoundException("Problem not found: ID = " + problemId));
+
+        problem.setEducation(problemDto.getEducation());
+        problem.setTitle(problemDto.getTitle());
+        problem.setEnglishTitle(problemDto.getEnglishTitle());
+        problem.setKeywords(problemDto.getKeywords());
+        problem.setDefinition(problemDto.getDefinition());
+        problem.setHistory(problemDto.getHistory());
+        problem.setConsiderations(problemDto.getConsiderations());
+        problem.setState(problemDto.getState());
         return ProblemDto.from(problemRepository.save(problem));
     }
 

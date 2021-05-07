@@ -1,5 +1,8 @@
 package ir.ac.sbu.evaluation.security;
 
+import org.springframework.stereotype.Component;
+
+@Component("SecurityRoles")
 public class SecurityRoles {
 
     public static final String STUDENT_ROLE_NAME = "ROLE_STUDENT";
