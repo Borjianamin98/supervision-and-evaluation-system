@@ -24,7 +24,7 @@ public class Auditable extends BaseEntity {
 
     @CreatedDate
     @Column(name = "created_date", nullable = false, updatable = false)
-    private Instant createdDate;
+    private Instant createdDate; // ISO-8601 representation
 
     public Auditable() {
     }
