@@ -1,26 +1,16 @@
-import {
-    BoxProps,
-    CircularProgress,
-    Table,
-    TableBody,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Zoom
-} from "@material-ui/core";
+import {BoxProps, CircularProgress, Table, TableBody, TableContainer, TableHead, TableRow} from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
-import IconButton from "@material-ui/core/IconButton";
 import Paper from "@material-ui/core/Paper";
 import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
-import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import React from 'react';
 import {rtlTheme} from "../../App";
 import {LoadingState} from "../../model/enum/loading-state";
+import TooltipIconButton from "../Button/TooltipIconButton";
 import FullRowCell from "./FullRowCell";
 import OptionalTableCell, {OptionalTableCellProps} from "./OptionalTableCell";
 import CustomTablePagination from "./Pagination/CustomTablePagination";
@@ -62,9 +52,11 @@ interface StatelessPaginationListProps<T> extends BoxProps {
 
     onDeleteRow: (row: T) => void,
     isDeletable: (row: T) => boolean,
+    hasDelete: (row: T) => boolean,
 
     onEditRow: (row: T) => void,
     isEditable: (row: T) => boolean,
+    hasEdit: (row: T) => boolean,
 
     onRetryClick: () => void,
 }
@@ -89,41 +81,42 @@ function StatelessPaginationTable<T>(props: StatelessPaginationListProps<T>) {
 
         onDeleteRow,
         isDeletable,
+        hasDelete,
 
         onEditRow,
         isEditable,
+        hasEdit,
 
         onRetryClick,
 
         ...rest
     } = props;
 
-    const tableGeneratedRows = collectionData.map(value => {
-        const actions = <div className={classes.actionContainer}>
-            <Tooltip TransitionComponent={Zoom} title="ویرایش">
-                <IconButton
-                    color="secondary"
-                    className={classes.action}
-                    disabled={!isEditable(value)}
-                    onClick={() => onEditRow(value)}
-                >
-                    <EditIcon/>
-                </IconButton>
-            </Tooltip>
-            <Tooltip TransitionComponent={Zoom} title="حذف">
-                    <span>
-                        <IconButton
-                            color="secondary"
-                            disabled={!isDeletable(value)}
-                            className={classes.action}
-                            onClick={() => onDeleteRow(value)}
-                        >
-                            <DeleteIcon/>
-                        </IconButton>
-                    </span>
-            </Tooltip>
-        </div>
-        return tableRow(value, actions);
+    const tableGeneratedRows = collectionData.map(row => {
+        const editAction = <TooltipIconButton
+            tooltipTitle="ویرایش"
+            color="secondary"
+            className={classes.action}
+            disabled={!isEditable(row)}
+            onClick={() => onEditRow(row)}>
+            <EditIcon/>
+        </TooltipIconButton>;
+        const deleteAction = <TooltipIconButton
+            tooltipTitle="حذف"
+            color="secondary"
+            className={classes.action}
+            disabled={!isDeletable(row)}
+            onClick={() => onDeleteRow(row)}>
+            <DeleteIcon/>
+        </TooltipIconButton>
+
+        const actions = (
+            <div className={classes.actionContainer}>
+                {hasEdit(row) ? editAction : null}
+                {hasDelete(row) ? deleteAction : null}
+            </div>
+        )
+        return tableRow(row, actions);
     });
 
     const tableBodyContent = (state: LoadingState) => {

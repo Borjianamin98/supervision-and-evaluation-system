@@ -223,10 +223,12 @@ const UniversityListView: React.FunctionComponent = () => {
                         return <ExtendedTableRow key={row.id!} cells={cells}/>;
                     }}
                     noDataMessage="دانشگاهی تعریف نشده است."
-                    onDeleteRow={deleteHandler}
+                    hasDelete={row => true}
                     isDeletable={row => row.facultiesCount! === 0}
-                    onEditRow={handleDialogOpen}
+                    onDeleteRow={deleteHandler}
+                    hasEdit={row => true}
                     isEditable={row => true}
+                    onEditRow={handleDialogOpen}
                     onRetryClick={() => setLoadingState(LoadingState.LOADING)}
                 />
                 <Dialog dir="rtl" open={dialogOpen} onClose={() => handleDialogClose(false)}>

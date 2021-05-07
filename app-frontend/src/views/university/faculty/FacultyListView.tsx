@@ -261,10 +261,12 @@ const FacultyListView: React.FunctionComponent = () => {
                         return <ExtendedTableRow key={row.id!} cells={cells}/>;
                     }}
                     noDataMessage={noDataMessage}
+                    hasDelete={row => true}
                     onDeleteRow={deleteHandler}
                     isDeletable={row => row.mastersCount! === 0 && row.studentsCount! === 0}
-                    onEditRow={handleDialogOpen}
+                    hasEdit={row => true}
                     isEditable={row => true}
+                    onEditRow={handleDialogOpen}
                     onRetryClick={() => setLoadingState(LoadingState.LOADING)}
                 />
                 <Dialog dir="rtl" open={dialogOpen} onClose={() => handleDialogClose(false)}>

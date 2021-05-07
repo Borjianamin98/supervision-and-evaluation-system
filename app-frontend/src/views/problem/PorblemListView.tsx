@@ -111,21 +111,23 @@ const ProblemListView: React.FunctionComponent = () => {
                     loadingState={loadingState}
                     collectionData={problems.content}
                     tableHeaderCells={[
-                        {content: "دوره تحصیلی", width: "5%"},
+                        {content: "دوره تحصیلی", xsOptional: true, width: "5%"},
                         {content: "عنوان", width: "25%"},
                         {content: "عنوان انگلیسی", smOptional: true, width: "25%"},
-                        {content: "کلیدواژه‌ها", xsOptional: true, width: "30%"},
+                        {content: "کلیدواژه‌ها", smOptional: true, width: "25%"},
                         {content: "استاد راهنما", xsOptional: true, width: "10%"},
+                        {content: "", width: "5%"},
                         {content: "", width: "5%"}
                     ]}
                     tableRow={(row: Problem, actions) => {
                         const keywordsList = <KeywordsList keywords={row.keywords} marginDir="left"/>;
                         const cells: OptionalTableCellProps[] = [
-                            {content: educationMapToPersian(row.education)},
+                            {content: educationMapToPersian(row.education), xsOptional: true},
                             {content: row.title},
                             {content: row.englishTitle, smOptional: true},
-                            {content: keywordsList, xsOptional: true},
-                            {content: `${row.supervisor!.firstName} ${row.supervisor!.lastName}`, xsOptional: true}
+                            {content: keywordsList, smOptional: true},
+                            {content: `${row.supervisor!.firstName} ${row.supervisor!.lastName}`, xsOptional: true},
+                            {content: actions}
                         ];
                         return (
                             <CollapsibleTableRow
@@ -137,9 +139,12 @@ const ProblemListView: React.FunctionComponent = () => {
                                         <Typography variant="h6" className={classes.tableContentHeader}>
                                             اطلاعات کلی:
                                         </Typography>
+                                        <Typography paragraph>
+                                            {`دوره تحصیلی: ${educationMapToPersian(row.education)}`}
+                                        </Typography>
                                         <Typography paragraph>{`عنوان: ${row.title}`}</Typography>
                                         <Typography paragraph>{`عنوان انگلیسی: ${row.englishTitle}`}</Typography>
-                                        <Hidden smUp>
+                                        <Hidden mdUp>
                                             <Typography paragraph component="span">کلیدواژه‌ها: </Typography>
                                             <Box marginBottom={2}>
                                                 {keywordsList}
@@ -163,9 +168,11 @@ const ProblemListView: React.FunctionComponent = () => {
                         )
                     }}
                     noDataMessage={"پایان‌نامه یا پروژه‌ای تعریف نشده است."}
+                    hasDelete={row => false}
                     isDeletable={row => false}
                     onDeleteRow={row => undefined}
-                    isEditable={row => false}
+                    hasEdit={row => true}
+                    isEditable={row => true}
                     onEditRow={row => undefined}
                     onRetryClick={() => setLoadingState(LoadingState.LOADING)}
                 />
