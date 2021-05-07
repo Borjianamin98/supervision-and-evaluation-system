@@ -5,13 +5,18 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.enumeration.Education;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
-import ir.ac.sbu.evaluation.model.Problem;
+import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
+import ir.ac.sbu.evaluation.model.problem.Problem;
 import java.util.Set;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class ProblemDto {
 
     @JsonProperty(access = Access.READ_ONLY)
@@ -45,6 +50,9 @@ public class ProblemDto {
     private String considerations;
 
     @JsonProperty(access = Access.READ_ONLY)
+    private Set<ProblemEvent> events;
+
+    @JsonProperty(access = Access.READ_ONLY)
     private ProblemState state;
 
     @NotNull
@@ -56,7 +64,7 @@ public class ProblemDto {
     @Builder
     public ProblemDto(long id, Education education, String title, String englishTitle, Set<String> keywords,
             String definition, String history, String considerations, ProblemState state,
-            UserDto supervisor) {
+            UserDto supervisor, Set<ProblemEvent> events) {
         this.id = id;
         this.education = education;
         this.title = title;
@@ -67,6 +75,7 @@ public class ProblemDto {
         this.considerations = considerations;
         this.state = state;
         this.supervisor = supervisor;
+        this.events = events;
     }
 
     public static ProblemDto from(Problem problem) {
@@ -79,6 +88,7 @@ public class ProblemDto {
                 .considerations(problem.getConsiderations())
                 .state(problem.getState())
                 .supervisor(UserDto.from(problem.getSupervisor()))
+                .events(problem.getEvents())
                 .build();
     }
 
@@ -94,85 +104,5 @@ public class ProblemDto {
                 .state(state)
                 .considerations(considerations)
                 .build();
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public Education getEducation() {
-        return education;
-    }
-
-    public void setEducation(Education education) {
-        this.education = education;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getEnglishTitle() {
-        return englishTitle;
-    }
-
-    public void setEnglishTitle(String englishTitle) {
-        this.englishTitle = englishTitle;
-    }
-
-    public Set<String> getKeywords() {
-        return keywords;
-    }
-
-    public void setKeywords(Set<String> keywords) {
-        this.keywords = keywords;
-    }
-
-    public String getDefinition() {
-        return definition;
-    }
-
-    public void setDefinition(String definition) {
-        this.definition = definition;
-    }
-
-    public String getHistory() {
-        return history;
-    }
-
-    public void setHistory(String history) {
-        this.history = history;
-    }
-
-    public String getConsiderations() {
-        return considerations;
-    }
-
-    public void setConsiderations(String considerations) {
-        this.considerations = considerations;
-    }
-
-    public ProblemState getState() {
-        return state;
-    }
-
-    public void setState(ProblemState state) {
-        this.state = state;
-    }
-
-    public UserDto getSupervisor() {
-        return supervisor;
-    }
-
-    public void setSupervisor(UserDto supervisor) {
-        this.supervisor = supervisor;
     }
 }

@@ -1,7 +1,7 @@
-package ir.ac.sbu.evaluation.repository;
+package ir.ac.sbu.evaluation.repository.problem;
 
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
-import ir.ac.sbu.evaluation.model.Problem;
+import ir.ac.sbu.evaluation.model.problem.Problem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;

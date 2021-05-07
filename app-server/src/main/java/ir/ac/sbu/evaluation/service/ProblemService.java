@@ -3,10 +3,12 @@ package ir.ac.sbu.evaluation.service;
 import ir.ac.sbu.evaluation.dto.ProblemDto;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
-import ir.ac.sbu.evaluation.model.Problem;
+import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
+import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.Student;
-import ir.ac.sbu.evaluation.repository.ProblemRepository;
+import ir.ac.sbu.evaluation.repository.problem.EventRepository;
+import ir.ac.sbu.evaluation.repository.problem.ProblemRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
 import org.springframework.data.domain.Page;
@@ -17,12 +19,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ProblemService {
 
+    private final EventRepository eventRepository;
+
     private final StudentRepository studentRepository;
     private final MasterRepository masterRepository;
     private final ProblemRepository problemRepository;
 
-    public ProblemService(StudentRepository studentRepository,
+    public ProblemService(EventRepository eventRepository,
+            StudentRepository studentRepository,
             MasterRepository masterRepository, ProblemRepository problemRepository) {
+        this.eventRepository = eventRepository;
         this.studentRepository = studentRepository;
         this.masterRepository = masterRepository;
         this.problemRepository = problemRepository;
@@ -54,6 +60,8 @@ public class ProblemService {
         problem.setDefinition(problemDto.getDefinition());
         problem.setHistory(problemDto.getHistory());
         problem.setConsiderations(problemDto.getConsiderations());
+        problem.getEvents().add(eventRepository.save(
+                ProblemEvent.builder().message("اطلاعات مربوط به مسئله ویرایش شد.").build()));
         return ProblemDto.from(problemRepository.save(problem));
     }
 

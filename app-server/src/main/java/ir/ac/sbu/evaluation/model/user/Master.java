@@ -1,6 +1,6 @@
 package ir.ac.sbu.evaluation.model.user;
 
-import ir.ac.sbu.evaluation.model.Problem;
+import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.university.Faculty;
 import ir.ac.sbu.evaluation.security.SecurityRoles;
 import java.util.Set;
@@ -77,6 +77,4 @@ public class Master extends User {
     public void setFaculty(Faculty faculty) {
         this.faculty = faculty;
     }
-
-
 }
