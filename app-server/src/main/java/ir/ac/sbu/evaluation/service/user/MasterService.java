@@ -1,5 +1,7 @@
 package ir.ac.sbu.evaluation.service.user;
 
+import ir.ac.sbu.evaluation.dto.ProblemDto;
+import ir.ac.sbu.evaluation.dto.university.UniversityDto;
 import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
 import ir.ac.sbu.evaluation.model.university.Faculty;
@@ -11,6 +13,8 @@ import ir.ac.sbu.evaluation.repository.user.PersonalInfoRepository;
 import ir.ac.sbu.evaluation.repository.user.UserRepository;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +45,11 @@ public class MasterService {
         return masterRepository.findAll().stream()
                 .map(master -> UserDto.from(master, false))
                 .collect(Collectors.toList());
+    }
+
+    public Page<MasterDto> retrieveMasters(String nameQuery, Pageable pageable) {
+        return masterRepository.findByFirstNameContainsOrLastNameContains(nameQuery, nameQuery, pageable)
+                .map(MasterDto::from);
     }
 
     @Transactional
