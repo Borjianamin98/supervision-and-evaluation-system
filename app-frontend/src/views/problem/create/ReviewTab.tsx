@@ -8,7 +8,7 @@ import React from 'react';
 import KeywordsList from "../../../components/Chip/KeywordsList";
 import browserHistory from "../../../config/browserHistory";
 import ProblemService from "../../../services/api/ProblemService";
-import {PROBLEM_OBSERVATION_PATH} from "../../ViewPaths";
+import {PROBLEM_LIST_VIEW_PATH} from "../../ViewPaths";
 import {ProblemTabProps} from "./ProblemCreateView";
 
 const useStyles = makeStyles((theme) => ({
@@ -34,7 +34,7 @@ const ReviewTab: React.FunctionComponent<ProblemTabProps> = (props) => {
         setErrorChecking(true);
         if (ProblemService.isValidProblem(problem)) {
             ProblemService.sendCreateProblem(problem)
-                .then(() => browserHistory.push(PROBLEM_OBSERVATION_PATH))
+                .then(() => browserHistory.push(PROBLEM_LIST_VIEW_PATH))
                 .catch(() => enqueueSnackbar("ایجاد مسئله ناموفق بود. بعد از بررسی اطلاعات، دوباره تلاش نمایید.",
                     {variant: "error"}))
         } else {

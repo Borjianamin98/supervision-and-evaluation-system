@@ -21,7 +21,7 @@ const ProblemEditExtraInfo: React.FunctionComponent<ProblemEditSectionsProps> = 
                 label="تعریف مسئله و نیازمندی"
                 maxLength={ProblemService.MAX_LONG_STRING_LENGTH}
                 multiline={true}
-                rowsMax={4}
+                rows={4}
                 value={problem.definition}
                 onChange={event => updateProblem({...problem, definition: event.target.value})}
                 helperText={isDefinitionValid(problem.definition) ? "" : "تعریف مسئله در حداقل 15 کلمه توضیح داده شود."}
@@ -30,7 +30,7 @@ const ProblemEditExtraInfo: React.FunctionComponent<ProblemEditSectionsProps> = 
             <CustomTextField
                 label="پیشینه مسئله"
                 multiline={true}
-                rowsMax={4}
+                rows={4}
                 value={problem.history}
                 onChange={event => updateProblem({...problem, history: event.target.value})}
                 maxLength={ProblemService.MAX_LONG_STRING_LENGTH}
@@ -40,7 +40,7 @@ const ProblemEditExtraInfo: React.FunctionComponent<ProblemEditSectionsProps> = 
                 label="ملاحظات"
                 maxLength={ProblemService.MAX_LONG_STRING_LENGTH}
                 multiline={true}
-                rowsMax={4}
+                rows={4}
                 value={problem.considerations}
                 onChange={event => updateProblem({...problem, considerations: event.target.value})}
                 helperText={isBlank(problem.considerations) ? "ملاحضات مسئله باید ذکر شود." : ""}

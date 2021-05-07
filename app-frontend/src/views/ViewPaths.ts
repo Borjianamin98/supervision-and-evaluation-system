@@ -10,14 +10,14 @@ export const DASHBOARD_VIEW_PATH = "/dashboard";
 export const PROFILE_VIEW_PATH = "/profile";
 
 // Problem Views
-export const PROBLEM_OBSERVATION_PATH = "/problem/list";
+export const PROBLEM_LIST_VIEW_PATH = "/problem/list";
 export const PROBLEM_CREATE_VIEW_PATH = "/problem/create";
 
 // University Views
-export const UNIVERSITY_LIST_PATH = "/university/list";
+export const UNIVERSITY_LIST_VIEW_PATH = "/university/list";
 
 // Faculty Views
-export const FACULTY_LIST_PATH = "/faculty/list";
+export const FACULTY_LIST_VIEW_PATH = "/faculty/list";
 
 // Settings Views
 export const SETTINGS_VIEW_PATH = "/settings";

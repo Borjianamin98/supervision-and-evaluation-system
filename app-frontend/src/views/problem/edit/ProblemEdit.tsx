@@ -7,15 +7,17 @@ import {makeStyles, ThemeProvider} from '@material-ui/core/styles';
 import {ClassNameMap} from "@material-ui/core/styles/withStyles";
 import Typography from '@material-ui/core/Typography';
 import AddOutlinedIcon from '@material-ui/icons/AddOutlined';
+import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
+import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import {AxiosError} from "axios";
 import {useSnackbar} from "notistack";
-import React, {FormEventHandler, useState} from 'react';
+import React, {useState} from 'react';
 import {rtlTheme} from '../../../App';
 import {getGeneralErrorMessage} from "../../../config/axios-config";
 import browserHistory from "../../../config/browserHistory";
 import {Problem} from "../../../model/problem";
 import ProblemService from "../../../services/api/ProblemService";
-import {LOGIN_VIEW_PATH, PROBLEM_OBSERVATION_PATH} from "../../ViewPaths";
+import {PROBLEM_LIST_VIEW_PATH} from "../../ViewPaths";
 import ProblemEditExtraInfo from "./ProblemEditExtraInfo";
 import ProblemEditGeneralInfo from "./ProblemEditGeneralInfo";
 import ProblemEditReview from "./ProblemEditReview";
@@ -52,12 +54,21 @@ export interface ProblemEditSectionsProps {
     errorChecking: boolean,
 }
 
+enum EditState {
+    ADD,
+    EDIT,
+    REVIEW
+}
+
 const ProblemEdit: React.FunctionComponent = () => {
     const classes = useStyles();
     const commonClasses = useCommonStyles();
     const [problem, setProblem] = useState<Problem>(ProblemService.createInitialProblem());
     const [errorChecking, setErrorChecking] = React.useState(false);
     const {enqueueSnackbar} = useSnackbar();
+
+    const [editState, setEditState] = useState<EditState>(EditState.ADD);
+    const [oldEditState, setOldEditState] = useState<EditState>(EditState.ADD);
 
     const sectionProps: ProblemEditSectionsProps = {
         commonClasses,
@@ -66,9 +77,66 @@ const ProblemEdit: React.FunctionComponent = () => {
         updateProblem: newProblem => setProblem(newProblem),
     }
 
+    const avatarIcon = (editState: EditState) => {
+        switch (editState) {
+            case EditState.ADD:
+                return <AddOutlinedIcon/>;
+            case EditState.EDIT:
+                return <EditOutlinedIcon/>;
+            case EditState.REVIEW:
+                return <VisibilityOutlinedIcon/>;
+        }
+    }
+
+    const avatarTitle = (editState: EditState) => {
+        switch (editState) {
+            case EditState.ADD:
+                return "تعریف پایان‌نامه (پروژه)";
+            case EditState.EDIT:
+                return "ویرایش پایان‌نامه (پروژه)";
+            case EditState.REVIEW:
+                return "بازبینی";
+        }
+    }
+
+    const pageContent = (editState: EditState) => {
+        switch (editState) {
+            case EditState.ADD:
+                return (
+                    <>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <ProblemEditGeneralInfo {...sectionProps}/>
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <ProblemEditExtraInfo {...sectionProps}/>
+                        </Grid>
+                    </>
+                )
+            case EditState.EDIT:
+                return "ویرایش پایان‌نامه (پروژه)";
+            case EditState.REVIEW:
+                return (
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <ProblemEditReview {...sectionProps}/>
+                    </Grid>
+                );
+        }
+    }
+
+    const submitContent = (editState: EditState) => {
+        switch (editState) {
+            case EditState.ADD:
+            case EditState.EDIT:
+                return "تایید اطلاعات"
+            case EditState.REVIEW:
+                return "ارسال اطلاعات";
+        }
+    }
+
+
     const handleSuccessSubmit = () => {
         enqueueSnackbar("حساب کاربری با موفقیت ایجاد شد.", {variant: "success"});
-        browserHistory.push(LOGIN_VIEW_PATH);
+        browserHistory.push(PROBLEM_LIST_VIEW_PATH)
     }
 
     const handleFailedSubmit = (error: AxiosError) => {
@@ -81,16 +149,40 @@ const ProblemEdit: React.FunctionComponent = () => {
         }
     }
 
-    const formSubmitHandler: FormEventHandler = (event) => {
-        event.preventDefault();
-        if (!ProblemService.isValidProblem(problem)) {
-            setErrorChecking(true);
-            return;
+    const submitHandler = () => {
+        switch (editState) {
+            case EditState.ADD:
+            case EditState.EDIT:
+                if (!ProblemService.isValidProblem(problem)) {
+                    setErrorChecking(true);
+                    return;
+                }
+                setOldEditState(editState)
+                setEditState(EditState.REVIEW)
+                break;
+            case EditState.REVIEW:
+                ProblemService.sendCreateProblem(problem)
+                    .then(() => handleSuccessSubmit())
+                    .catch((error) => handleFailedSubmit(error));
+                break;
         }
-        ProblemService.sendCreateProblem(problem)
-            .then(() => browserHistory.push(PROBLEM_OBSERVATION_PATH))
-            .catch(() => enqueueSnackbar("ایجاد مسئله ناموفق بود. بعد از بررسی اطلاعات، دوباره تلاش نمایید.",
-                {variant: "error"}));
+    }
+
+    const formButton = (content: string, onClick: () => void) => {
+        return (
+            <Grid item>
+                <Button
+                    onClick={event => {
+                        event.preventDefault();
+                        onClick();
+                    }}
+                    variant="contained"
+                    color="primary"
+                >
+                    {content}
+                </Button>
+            </Grid>
+        )
     }
 
     return (
@@ -98,32 +190,18 @@ const ProblemEdit: React.FunctionComponent = () => {
             <ThemeProvider theme={rtlTheme}>
                 <Paper className={classes.root} elevation={6}>
                     <Avatar className={classes.avatar}>
-                        <AddOutlinedIcon/>
+                        {avatarIcon(editState)}
                     </Avatar>
                     <Typography className={classes.buttonMargin} variant="h5">
-                        تعریف پایان‌نامه (پروژه)
+                        {avatarTitle(editState)}
                     </Typography>
                     <Grid container spacing={3} className={classes.buttonMargin}>
-                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                            <ProblemEditGeneralInfo {...sectionProps}/>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                            <ProblemEditExtraInfo {...sectionProps}/>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <ProblemEditReview {...sectionProps}/>
-                        </Grid>
+                        {pageContent(editState)}
                     </Grid>
                     <Grid container justify={"center"} spacing={2}>
-                        <Grid item>
-                            <Button
-                                onClick={formSubmitHandler}
-                                variant="contained"
-                                color="primary"
-                            >
-                                تایید اطلاعات
-                            </Button>
-                        </Grid>
+                        {editState === EditState.REVIEW ?
+                            formButton("ویرایش اطلاعات", () => setEditState(oldEditState)) : undefined}
+                        {formButton(submitContent(editState), submitHandler)}
                     </Grid>
                 </Paper>
             </ThemeProvider>

@@ -21,12 +21,12 @@ import FacultyListView from "../university/faculty/FacultyListView";
 import UniversityListView from "../university/UniversityListView";
 import {
     DASHBOARD_VIEW_PATH,
-    FACULTY_LIST_PATH,
+    FACULTY_LIST_VIEW_PATH,
     PROBLEM_CREATE_VIEW_PATH,
-    PROBLEM_OBSERVATION_PATH,
+    PROBLEM_LIST_VIEW_PATH,
     PROFILE_VIEW_PATH,
     SETTINGS_VIEW_PATH,
-    UNIVERSITY_LIST_PATH
+    UNIVERSITY_LIST_VIEW_PATH
 } from "../ViewPaths";
 
 interface navBarRouteInfo {
@@ -49,7 +49,7 @@ const dashboardRoutesInfo: navBarRouteInfo[] = [
 
 const problemRoutesInfo: navBarRouteInfo[] = [
     {
-        path: PROBLEM_OBSERVATION_PATH,
+        path: PROBLEM_LIST_VIEW_PATH,
         name: "پایان‌نامه‌ها (پروژه‌ها)",
         icon: ViewListIcon,
         component: ProblemListView,
@@ -86,13 +86,13 @@ const managementRoutesInfo: navBarRouteInfo[] = [
 // Admin role views
 const universityRoutesInfo: navBarRouteInfo[] = [
     {
-        path: UNIVERSITY_LIST_PATH,
+        path: UNIVERSITY_LIST_VIEW_PATH,
         name: "دانشگاه‌ها",
         icon: UniversityIcon,
         component: UniversityListView,
     },
     {
-        path: FACULTY_LIST_PATH,
+        path: FACULTY_LIST_VIEW_PATH,
         name: "دانشکده‌ها",
         icon: SchoolIcon,
         component: FacultyListView,

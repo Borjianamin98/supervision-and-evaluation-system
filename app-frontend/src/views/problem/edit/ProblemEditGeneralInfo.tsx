@@ -104,7 +104,7 @@ const ProblemEditGeneralInfo: React.FunctionComponent<ProblemEditSectionsProps> 
                 textFieldInputProps={{
                     label: "استاد راهنما",
                     required: true,
-                    helperText: (isNull(problem.supervisor) ? "دانشگاه مربوطه باید انتخاب شود." : ""),
+                    helperText: (isNull(problem.supervisor) ? "استاد راهنمای مربوطه باید انتخاب شود." : ""),
                     error: isNull(problem.supervisor),
                 }}
                 value={problem.supervisor}
