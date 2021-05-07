@@ -12,6 +12,7 @@ import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import {AxiosError} from "axios";
 import {useSnackbar} from "notistack";
 import React, {useState} from 'react';
+import {useLocation} from "react-router-dom";
 import {rtlTheme} from '../../../App';
 import {getGeneralErrorMessage} from "../../../config/axios-config";
 import browserHistory from "../../../config/browserHistory";
@@ -63,12 +64,20 @@ enum EditState {
 const ProblemEdit: React.FunctionComponent = () => {
     const classes = useStyles();
     const commonClasses = useCommonStyles();
-    const [problem, setProblem] = useState<Problem>(ProblemService.createInitialProblem());
+    const location = useLocation();
+
     const [errorChecking, setErrorChecking] = React.useState(false);
     const {enqueueSnackbar} = useSnackbar();
 
-    const [editState, setEditState] = useState<EditState>(EditState.ADD);
-    const [oldEditState, setOldEditState] = useState<EditState>(EditState.ADD);
+    let initialProblem = ProblemService.createInitialProblem();
+    let initialEditState = EditState.ADD;
+    if (location.state) {
+        initialProblem = location.state as Problem;
+        initialEditState = EditState.EDIT;
+    }
+    const [problem, setProblem] = useState<Problem>(initialProblem);
+    const [editState, setEditState] = useState<EditState>(initialEditState);
+    const [oldEditState, setOldEditState] = useState<EditState>(initialEditState);
 
     const sectionProps: ProblemEditSectionsProps = {
         commonClasses,
@@ -102,6 +111,7 @@ const ProblemEdit: React.FunctionComponent = () => {
     const pageContent = (editState: EditState) => {
         switch (editState) {
             case EditState.ADD:
+            case EditState.EDIT:
                 return (
                     <>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
@@ -112,8 +122,6 @@ const ProblemEdit: React.FunctionComponent = () => {
                         </Grid>
                     </>
                 )
-            case EditState.EDIT:
-                return "ویرایش پایان‌نامه (پروژه)";
             case EditState.REVIEW:
                 return (
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>

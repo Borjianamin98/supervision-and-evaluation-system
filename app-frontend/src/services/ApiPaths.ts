@@ -30,9 +30,8 @@ export const API_ADMIN_PATH = "/admin"
 export const API_ADMIN_INFO_PATH = `${API_ADMIN_PATH}/info`
 
 // Problem Paths
-const API_PROBLEM_PATH = "/problem"
-export const API_PROBLEM_CREATE_PATH = `${API_PROBLEM_PATH}/create`
-export const API_PROBLEM_AUTHENTICATED_OWNER_PROBLEMS_PATH = `${API_PROBLEM_PATH}/authenticatedOwner`
+export const API_PROBLEM_ROOT_PATH = "/problem"
+export const API_PROBLEM_AUTHENTICATED_OWNER_PROBLEMS_PATH = `${API_PROBLEM_ROOT_PATH}/authenticatedOwner`
 
 // University Paths
 export const API_UNIVERSITY_ROOT_PATH = "/university"

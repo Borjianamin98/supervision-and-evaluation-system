@@ -11,6 +11,7 @@ import ComboBox from "../../components/ComboBox/ComboBox";
 import CollapsibleTableRow from "../../components/Table/CollapsibleTableRow";
 import {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
 import StatelessPaginationTable from "../../components/Table/StatelessPaginationTable";
+import browserHistory from "../../config/browserHistory";
 import {educationMapToPersian} from "../../model/enum/education";
 import {LoadingState} from "../../model/enum/loading-state";
 import {
@@ -22,6 +23,7 @@ import {
 import {emptyPageable, Pageable} from "../../model/pageable";
 import {Problem} from "../../model/problem";
 import ProblemService from "../../services/api/ProblemService";
+import {PROBLEM_EDIT_VIEW_PATH} from "../ViewPaths";
 
 const useStyles = makeStyles((theme) => ({
     noWrap: {
@@ -65,6 +67,13 @@ const ProblemListView: React.FunctionComponent = () => {
             })
             .catch(error => setLoadingState(LoadingState.FAILED));
     }, [enqueueSnackbar, loadingState, page, rowsPerPage, selectedProblemState]);
+
+    const onEditClick = (problem: Problem) => {
+        browserHistory.push({
+            pathname: PROBLEM_EDIT_VIEW_PATH,
+            state: problem
+        })
+    }
 
     return (
         <ThemeProvider theme={rtlTheme}>
@@ -173,7 +182,7 @@ const ProblemListView: React.FunctionComponent = () => {
                     onDeleteRow={row => undefined}
                     hasEdit={row => true}
                     isEditable={row => true}
-                    onEditRow={row => undefined}
+                    onEditRow={row => onEditClick(row)}
                     onRetryClick={() => setLoadingState(LoadingState.LOADING)}
                 />
             </Grid>

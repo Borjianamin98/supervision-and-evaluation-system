@@ -157,7 +157,7 @@ const ProfileView: React.FunctionComponent = () => {
     return (
         <ThemeProvider theme={rtlTheme}>
             <Grid dir="rtl" container spacing={2} direction="row-reverse">
-                <Grid item xs={12} sm={12} md={12} lg={4} xl={4} justify="center">
+                <Grid item xs={12} sm={12} md={12} lg={4} xl={4}>
                     <Grid container direction="column" alignItems="center" component={Paper}
                           className={classes.gridItem}>
                         <Grid item>

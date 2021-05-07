@@ -11,7 +11,7 @@ export const PROFILE_VIEW_PATH = "/profile";
 
 // Problem Views
 export const PROBLEM_LIST_VIEW_PATH = "/problem/list";
-export const PROBLEM_CREATE_VIEW_PATH = "/problem/create";
+export const PROBLEM_EDIT_VIEW_PATH = "/problem/edit";
 
 // University Views
 export const UNIVERSITY_LIST_VIEW_PATH = "/university/list";

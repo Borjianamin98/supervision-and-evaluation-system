@@ -5,7 +5,7 @@ import addProblemImage from "../../assets/images/problem/add-prbolem.jpg";
 import viewProblemImage from "../../assets/images/problem/view-problem.jpg";
 import ButtonLink from "../../components/Button/ButtonLink";
 import MediaCard from "../../components/MediaCard/MediaCard";
-import {PROBLEM_CREATE_VIEW_PATH, PROBLEM_LIST_VIEW_PATH} from "../ViewPaths";
+import {PROBLEM_EDIT_VIEW_PATH, PROBLEM_LIST_VIEW_PATH} from "../ViewPaths";
 
 const useStyles = makeStyles((theme) => ({
     mediaCard: {
@@ -25,7 +25,7 @@ const StudentDashboardView: React.FunctionComponent = () => {
                     title="افزودن پایان‌نامه (پروژه)"
                     subTitle="پایان‌نامه یا پروژه‌ی دوره تحصیلی خود را برای ارائه نمودن اضافه نمایید."
                 >
-                    <ButtonLink to={PROBLEM_CREATE_VIEW_PATH} color="primary">
+                    <ButtonLink to={PROBLEM_EDIT_VIEW_PATH} color="primary">
                         ایجاد
                     </ButtonLink>
                 </MediaCard>

@@ -3,7 +3,7 @@ import {Education, ENGLISH_EDUCATIONS} from "../../model/enum/education";
 import {ProblemState} from "../../model/enum/problem/problem-state";
 import {Pageable} from "../../model/pageable";
 import {Problem} from "../../model/problem";
-import {API_PROBLEM_AUTHENTICATED_OWNER_PROBLEMS_PATH, API_PROBLEM_CREATE_PATH} from "../ApiPaths";
+import {API_PROBLEM_AUTHENTICATED_OWNER_PROBLEMS_PATH, API_PROBLEM_ROOT_PATH} from "../ApiPaths";
 
 class ProblemService {
     public static readonly MAX_LONG_STRING_LENGTH = 1000;
@@ -25,7 +25,7 @@ class ProblemService {
     }
 
     static sendCreateProblem(problem: Problem) {
-        return apiAxios.post(API_PROBLEM_CREATE_PATH,
+        return apiAxios.post(API_PROBLEM_ROOT_PATH,
             problem,
             {
                 validateStatus: status => status === 201

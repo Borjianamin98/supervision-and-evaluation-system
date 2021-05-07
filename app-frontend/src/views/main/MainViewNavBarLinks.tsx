@@ -21,7 +21,7 @@ import UniversityListView from "../university/UniversityListView";
 import {
     DASHBOARD_VIEW_PATH,
     FACULTY_LIST_VIEW_PATH,
-    PROBLEM_CREATE_VIEW_PATH,
+    PROBLEM_EDIT_VIEW_PATH,
     PROBLEM_LIST_VIEW_PATH,
     PROFILE_VIEW_PATH,
     SETTINGS_VIEW_PATH,
@@ -54,7 +54,7 @@ const problemRoutesInfo: navBarRouteInfo[] = [
         component: ProblemListView,
     },
     {
-        path: PROBLEM_CREATE_VIEW_PATH,
+        path: PROBLEM_EDIT_VIEW_PATH,
         name: "ایجاد پایان‌نامه‌ (پروژه)",
         icon: NoteAddIcon,
         component: ProblemEdit,
