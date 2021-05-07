@@ -32,11 +32,13 @@ class ProblemService {
             })
     }
 
-    static retrieveAuthenticatedOwnerProblems(problemState: ProblemState) {
+    static retrieveAuthenticatedOwnerProblems(pageSize: number, page: number, problemState: ProblemState) {
         return apiAxios.get<Pageable<Problem>>(API_PROBLEM_AUTHENTICATED_OWNER_PROBLEMS_PATH,
             {
                 validateStatus: status => status === 200,
                 params: {
+                    size: pageSize,
+                    page: page,
                     problemState: problemState,
                 }
             })

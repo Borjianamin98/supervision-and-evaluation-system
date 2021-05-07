@@ -58,13 +58,13 @@ const ProblemListView: React.FunctionComponent = () => {
             return; // Nothing to load
         }
 
-        ProblemService.retrieveAuthenticatedOwnerProblems(selectedProblemState)
+        ProblemService.retrieveAuthenticatedOwnerProblems(rowsPerPage, page, selectedProblemState)
             .then(value => {
                 setProblems(value.data);
                 setLoadingState(LoadingState.LOADED);
             })
             .catch(error => setLoadingState(LoadingState.FAILED));
-    }, [enqueueSnackbar, loadingState, selectedProblemState]);
+    }, [enqueueSnackbar, loadingState, page, rowsPerPage, selectedProblemState]);
 
     return (
         <ThemeProvider theme={rtlTheme}>

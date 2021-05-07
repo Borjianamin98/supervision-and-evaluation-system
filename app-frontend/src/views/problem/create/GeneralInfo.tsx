@@ -21,8 +21,8 @@ const GeneralInfo: React.FunctionComponent<ProblemTabProps> = (props) => {
 
     const [masterUsers, setMasterUsers] = React.useState<Master[]>([]);
     React.useEffect(() => {
-        MasterService.retrieveMasterUsers()
-            .then(value => setMasterUsers(value.data))
+        MasterService.retrieveMasters(100, 0)
+            .then(value => setMasterUsers(value.data.content))
             .catch(error => {
                 const {message, statusCode} = getGeneralErrorMessage(error);
                 if (statusCode) {
