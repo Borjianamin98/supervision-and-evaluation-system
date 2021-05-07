@@ -12,7 +12,6 @@ import ListItemLink from '../../components/List/ListItemLink';
 import {Role} from "../../model/enum/role";
 import AuthenticationService from "../../services/api/AuthenticationService";
 import DashboardView from "../dashboard/DashboardView";
-import ProblemCreateView from "../problem/create/ProblemCreateView";
 import ProblemEdit from "../problem/edit/ProblemEdit";
 import ProblemListView from "../problem/PorblemListView";
 import ProfileView from "../ProfileView";
@@ -57,12 +56,6 @@ const problemRoutesInfo: navBarRouteInfo[] = [
     {
         path: PROBLEM_CREATE_VIEW_PATH,
         name: "ایجاد پایان‌نامه‌ (پروژه)",
-        icon: NoteAddIcon,
-        component: ProblemCreateView,
-    },
-    {
-        path: "/problem/newCreate",
-        name: "ایجاد پایان‌نامه‌ جدید",
         icon: NoteAddIcon,
         component: ProblemEdit,
     },

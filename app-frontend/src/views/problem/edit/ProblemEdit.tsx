@@ -135,7 +135,7 @@ const ProblemEdit: React.FunctionComponent = () => {
 
 
     const handleSuccessSubmit = () => {
-        enqueueSnackbar("حساب کاربری با موفقیت ایجاد شد.", {variant: "success"});
+        enqueueSnackbar("پایان‌نامه (پروژه) با موفقیت ایجاد شد.", {variant: "success"});
         browserHistory.push(PROBLEM_LIST_VIEW_PATH)
     }
 

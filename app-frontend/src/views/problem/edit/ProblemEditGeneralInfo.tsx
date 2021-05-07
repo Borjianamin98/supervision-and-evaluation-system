@@ -10,6 +10,7 @@ import CustomTextField from "../../../components/Text/CustomTextField";
 import {educationMapToEnglish, educationMapToPersian, PERSIAN_EDUCATIONS} from "../../../model/enum/education";
 import {Master} from "../../../model/user/master";
 import ProblemService from "../../../services/api/ProblemService";
+import MasterService from "../../../services/api/user/MasterService";
 import {ProblemEditSectionsProps} from "./ProblemEdit";
 
 const ProblemEditGeneralInfo: React.FunctionComponent<ProblemEditSectionsProps> = (props) => {
@@ -21,9 +22,8 @@ const ProblemEditGeneralInfo: React.FunctionComponent<ProblemEditSectionsProps> 
     const isNull = <T extends {}>(c?: T) => errorChecking && !c;
 
     function retrieveMasters(inputValue: string): Promise<Master[]> {
-        // return UniversityService.retrieveUniversities(100, 0, inputValue)
-        //     .then(value => value.data.content)
-        return Promise.resolve([]);
+        return MasterService.retrieveMasters(100, 0, inputValue)
+            .then(value => value.data.content)
     }
 
     return (
