@@ -4,6 +4,7 @@ import Paper from "@material-ui/core/Paper";
 import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import HistoryIcon from '@material-ui/icons/History';
+import {AxiosResponse} from "axios";
 import moment from "jalali-moment";
 import {useSnackbar} from "notistack";
 import React, {useState} from 'react';
@@ -17,6 +18,7 @@ import StatelessPaginationTable from "../../components/Table/StatelessPagination
 import browserHistory from "../../config/browserHistory";
 import {educationMapToPersian} from "../../model/enum/education";
 import {LoadingState} from "../../model/enum/loadingState";
+import {Role} from "../../model/enum/role";
 import {emptyPageable, Pageable} from "../../model/pageable";
 import {Problem} from "../../model/problem/problem";
 import {ProblemEvent} from "../../model/problem/problemEvent";
@@ -26,6 +28,8 @@ import {
     problemStateMapToEnglish,
     problemStateMapToPersian
 } from "../../model/problem/problemState";
+import AuthenticationService from "../../services/api/AuthenticationService";
+import ProblemMasterService from "../../services/api/problem/ProblemMasterService";
 import ProblemStudentService from "../../services/api/problem/ProblemStudentService";
 import {PROBLEM_EDIT_VIEW_PATH} from "../ViewPaths";
 
@@ -67,7 +71,16 @@ const ProblemListView: React.FunctionComponent = () => {
             return; // Nothing to load
         }
 
-        ProblemStudentService.retrieveProblemsOfStudent(rowsPerPage, page, selectedProblemState)
+        const jwtPayloadRoles = AuthenticationService.getJwtPayloadRoles();
+        let request: Promise<AxiosResponse<Pageable<Problem>>>;
+        if (jwtPayloadRoles?.includes(Role.STUDENT)) {
+            request = ProblemStudentService.retrieveProblemsOfStudent(rowsPerPage, page, selectedProblemState);
+        } else if (jwtPayloadRoles?.includes(Role.MASTER)) {
+            request = ProblemMasterService.retrieveAssignedProblems(rowsPerPage, page, selectedProblemState);
+        } else {
+            throw new Error("Unexpected view for current authenticated user: " + jwtPayloadRoles);
+        }
+        request
             .then(value => {
                 setProblems(value.data);
                 setLoadingState(LoadingState.LOADED);

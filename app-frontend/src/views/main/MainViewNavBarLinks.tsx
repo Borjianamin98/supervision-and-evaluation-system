@@ -31,7 +31,8 @@ import {
 interface navBarRouteInfo {
     path: string,
     name: string,
-    exact?: boolean,
+    exact?: boolean, // Default is true
+    roles?: Role[], // Default is anyone
     icon: React.FunctionComponent,
     component: React.FunctionComponent
 }
@@ -50,12 +51,14 @@ const problemRoutesInfo: navBarRouteInfo[] = [
     {
         path: PROBLEM_LIST_VIEW_PATH,
         name: "پایان‌نامه‌ها (پروژه‌ها)",
+        roles: [Role.STUDENT, Role.MASTER],
         icon: ViewListIcon,
         component: ProblemListView,
     },
     {
         path: PROBLEM_EDIT_VIEW_PATH,
         name: "ایجاد پایان‌نامه‌ (پروژه)",
+        roles: [Role.STUDENT],
         icon: NoteAddIcon,
         component: ProblemEdit,
     },
@@ -81,12 +84,14 @@ const universityRoutesInfo: navBarRouteInfo[] = [
     {
         path: UNIVERSITY_LIST_VIEW_PATH,
         name: "دانشگاه‌ها",
+        roles: [Role.ADMIN],
         icon: UniversityIcon,
         component: UniversityListView,
     },
     {
         path: FACULTY_LIST_VIEW_PATH,
         name: "دانشکده‌ها",
+        roles: [Role.ADMIN],
         icon: SchoolIcon,
         component: FacultyListView,
     },
@@ -99,12 +104,14 @@ const allRoutesInfo: navBarRouteInfo[] = [
     ...universityRoutesInfo
 ];
 
-const createListFromRoutesInfo = (routesInfo: navBarRouteInfo[], show: boolean) => {
+const createListFromRoutesInfo = (routesInfo: navBarRouteInfo[], authenticatedUserRoles: Role[]) => {
+    const candidateRoutes = routesInfo.filter(value => !value.roles ||
+        value.roles.some(role => authenticatedUserRoles.includes(role)));
     return (
-        show ? (
+        candidateRoutes.length !== 0 ? (
             <React.Fragment>
                 <List>
-                    {routesInfo.map((value, index) =>
+                    {candidateRoutes.map((value, index) =>
                         <ListItemLink
                             key={index}
                             dir="rtl"
@@ -113,8 +120,8 @@ const createListFromRoutesInfo = (routesInfo: navBarRouteInfo[], show: boolean) 
                             icon={React.createElement(value.icon, {})}
                         />
                     )}
-                    <Divider component="li"/>
                 </List>
+                <Divider/>
             </React.Fragment>
         ) : undefined
     )
@@ -125,10 +132,10 @@ const MainViewNavBarLinks: React.FunctionComponent = () => {
 
     return (
         <>
-            {createListFromRoutesInfo(dashboardRoutesInfo, true)}
-            {createListFromRoutesInfo(problemRoutesInfo, jwtPayloadRoles.includes(Role.STUDENT))}
-            {createListFromRoutesInfo(universityRoutesInfo, jwtPayloadRoles.includes(Role.ADMIN))}
-            {createListFromRoutesInfo(managementRoutesInfo, true)}
+            {createListFromRoutesInfo(dashboardRoutesInfo, jwtPayloadRoles)}
+            {createListFromRoutesInfo(problemRoutesInfo, jwtPayloadRoles)}
+            {createListFromRoutesInfo(universityRoutesInfo, jwtPayloadRoles)}
+            {createListFromRoutesInfo(managementRoutesInfo, jwtPayloadRoles)}
         </>
     );
 }
