@@ -1,14 +1,14 @@
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import CustomTextField from "../../../components/Text/CustomTextField";
-import ProblemService from "../../../services/api/ProblemService";
+import ProblemStudentService from "../../../services/api/problem/ProblemStudentService";
 import {ProblemEditSectionsProps} from "./ProblemEdit";
 
 const ProblemEditExtraInfo: React.FunctionComponent<ProblemEditSectionsProps> = (props) => {
     const {commonClasses, problem, updateProblem, errorChecking} = props;
 
     const isDefinitionValid = (definition: string) =>
-        !errorChecking || ProblemService.isDefinitionValid(definition);
+        !errorChecking || ProblemStudentService.isDefinitionValid(definition);
     const isBlank = (c?: string) => errorChecking && (!c || c.length === 0);
 
     return (
@@ -19,7 +19,7 @@ const ProblemEditExtraInfo: React.FunctionComponent<ProblemEditSectionsProps> = 
             <CustomTextField
                 required
                 label="تعریف مسئله و نیازمندی"
-                maxLength={ProblemService.MAX_LONG_STRING_LENGTH}
+                maxLength={ProblemStudentService.MAX_LONG_STRING_LENGTH}
                 multiline={true}
                 rows={4}
                 value={problem.definition}
@@ -33,12 +33,12 @@ const ProblemEditExtraInfo: React.FunctionComponent<ProblemEditSectionsProps> = 
                 rows={4}
                 value={problem.history}
                 onChange={event => updateProblem({...problem, history: event.target.value})}
-                maxLength={ProblemService.MAX_LONG_STRING_LENGTH}
+                maxLength={ProblemStudentService.MAX_LONG_STRING_LENGTH}
             />
             <CustomTextField
                 required
                 label="ملاحظات"
-                maxLength={ProblemService.MAX_LONG_STRING_LENGTH}
+                maxLength={ProblemStudentService.MAX_LONG_STRING_LENGTH}
                 multiline={true}
                 rows={4}
                 value={problem.considerations}

@@ -19,13 +19,14 @@ import {educationMapToPersian} from "../../model/enum/education";
 import {LoadingState} from "../../model/enum/loadingState";
 import {emptyPageable, Pageable} from "../../model/pageable";
 import {Problem} from "../../model/problem/problem";
+import {ProblemEvent} from "../../model/problem/problemEvent";
 import {
     PERSIAN_PROBLEM_STATES,
     ProblemState,
     problemStateMapToEnglish,
     problemStateMapToPersian
 } from "../../model/problem/problemState";
-import ProblemService from "../../services/api/ProblemService";
+import ProblemStudentService from "../../services/api/problem/ProblemStudentService";
 import {PROBLEM_EDIT_VIEW_PATH} from "../ViewPaths";
 
 const useStyles = makeStyles((theme) => ({
@@ -66,7 +67,7 @@ const ProblemListView: React.FunctionComponent = () => {
             return; // Nothing to load
         }
 
-        ProblemService.retrieveAuthenticatedOwnerProblems(rowsPerPage, page, selectedProblemState)
+        ProblemStudentService.retrieveProblemsOfStudent(rowsPerPage, page, selectedProblemState)
             .then(value => {
                 setProblems(value.data);
                 setLoadingState(LoadingState.LOADED);
@@ -179,8 +180,9 @@ const ProblemListView: React.FunctionComponent = () => {
                                                 ?.sort((a, b) =>
                                                     new Date(a.createdDate).valueOf() - new Date(b.createdDate).valueOf())
                                                 .reverse()
-                                                .map(event =>
+                                                .map((event: ProblemEvent) =>
                                                     <CustomAlert
+                                                        key={event.id!}
                                                         icon={<HistoryIcon/>}
                                                         severity="info"
                                                         variant="outlined"

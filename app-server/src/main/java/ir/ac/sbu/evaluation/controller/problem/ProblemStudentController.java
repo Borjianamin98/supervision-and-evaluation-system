@@ -1,11 +1,10 @@
-package ir.ac.sbu.evaluation.controller;
+package ir.ac.sbu.evaluation.controller.problem;
 
-import static ir.ac.sbu.evaluation.controller.ApiPaths.API_PROBLEM_ROOT_PATH;
+import static ir.ac.sbu.evaluation.controller.ApiPaths.API_PROBLEM_STUDENT_ROOT_PATH;
 
 import ir.ac.sbu.evaluation.dto.ProblemDto;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
-import ir.ac.sbu.evaluation.security.SecurityRoles;
 import ir.ac.sbu.evaluation.service.ProblemService;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -22,44 +21,39 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping(API_PROBLEM_ROOT_PATH)
-public class ProblemController {
-
-    public final static String API_PROBLEM_AUTHENTICATED_OWNER_PROBLEMS_PATH = "/authenticatedOwner";
+@RequestMapping(API_PROBLEM_STUDENT_ROOT_PATH)
+@PreAuthorize("hasAuthority(@SecurityRoles.STUDENT_ROLE_NAME)")
+public class ProblemStudentController {
 
     private final ProblemService problemService;
 
-    public ProblemController(ProblemService problemService) {
+    public ProblemStudentController(ProblemService problemService) {
         this.problemService = problemService;
     }
 
-    @PreAuthorize("hasAuthority(@SecurityRoles.STUDENT_ROLE_NAME)")
-    @GetMapping(path = API_PROBLEM_AUTHENTICATED_OWNER_PROBLEMS_PATH)
+    @GetMapping(path = {"", "/"})
     public Page<ProblemDto> retrieveProblems(
             @ModelAttribute AuthUserDetail authUserDetail,
             @RequestParam(name = "problemState") ProblemState problemState,
             Pageable pageable) {
-        return problemService.retrieveProblems(authUserDetail.getUserId(), problemState, pageable);
+        return problemService.retrieveProblemsOfStudents(authUserDetail.getUserId(), problemState, pageable);
     }
 
-    @PreAuthorize("hasAuthority(@SecurityRoles.STUDENT_ROLE_NAME)")
     @PostMapping(path = {"", "/"})
     @ResponseStatus(HttpStatus.CREATED)
     public ProblemDto createProblem(
-            @Valid @RequestBody ProblemDto problemDto,
-            @ModelAttribute AuthUserDetail authUserDetail) {
+            @ModelAttribute AuthUserDetail authUserDetail,
+            @Valid @RequestBody ProblemDto problemDto) {
         return problemService.addProblem(authUserDetail.getUserId(), problemDto);
     }
 
-    @PreAuthorize("hasAuthority(@SecurityRoles.STUDENT_ROLE_NAME)")
     @PutMapping(path = "/{problemId}")
     public ProblemDto update(
+            @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long problemId,
-            @Valid @RequestBody ProblemDto problemDto,
-            @ModelAttribute AuthUserDetail authUserDetail) {
+            @Valid @RequestBody ProblemDto problemDto) {
         return problemService.update(problemId, problemDto);
     }
 }

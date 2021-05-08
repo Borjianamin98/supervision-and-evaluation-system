@@ -6,6 +6,8 @@ public class ApiPaths {
     public final static String API_AUTHENTICATION_ROOT_PATH = API_ROOT_PATH + "/auth";
 
     public final static String API_PROBLEM_ROOT_PATH = API_ROOT_PATH + "/problem";
+    public final static String API_PROBLEM_STUDENT_ROOT_PATH = API_PROBLEM_ROOT_PATH + "/authenticatedStudent";
+    public final static String API_PROBLEM_MASTER_ROOT_PATH = API_PROBLEM_ROOT_PATH + "/authenticatedMaster";
 
     public final static String API_UNIVERSITY_ROOT_PATH = API_ROOT_PATH + "/university";
     public final static String API_FACULTY_ROOT_PATH = API_ROOT_PATH + "/faculty";

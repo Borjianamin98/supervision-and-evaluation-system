@@ -17,7 +17,7 @@ import {rtlTheme} from '../../../App';
 import {getGeneralErrorMessage} from "../../../config/axios-config";
 import browserHistory from "../../../config/browserHistory";
 import {Problem} from "../../../model/problem/problem";
-import ProblemService from "../../../services/api/ProblemService";
+import ProblemStudentService from "../../../services/api/problem/ProblemStudentService";
 import {PROBLEM_LIST_VIEW_PATH} from "../../ViewPaths";
 import ProblemEditExtraInfo from "./ProblemEditExtraInfo";
 import ProblemEditGeneralInfo from "./ProblemEditGeneralInfo";
@@ -69,7 +69,7 @@ const ProblemEdit: React.FunctionComponent = () => {
     const [errorChecking, setErrorChecking] = React.useState(false);
     const {enqueueSnackbar} = useSnackbar();
 
-    let initialProblem = ProblemService.createInitialProblem();
+    let initialProblem = ProblemStudentService.createInitialProblem();
     let initialEditState = EditState.ADD;
     if (location.state) {
         initialProblem = location.state as Problem;
@@ -172,7 +172,7 @@ const ProblemEdit: React.FunctionComponent = () => {
         switch (editState) {
             case EditState.ADD:
             case EditState.EDIT:
-                if (!ProblemService.isValidProblem(problem)) {
+                if (!ProblemStudentService.isValidProblem(problem)) {
                     setErrorChecking(true);
                     return;
                 }
@@ -181,11 +181,11 @@ const ProblemEdit: React.FunctionComponent = () => {
                 break;
             case EditState.REVIEW:
                 if (oldEditState === EditState.ADD) {
-                    ProblemService.sendCreateProblem(problem)
+                    ProblemStudentService.createProblem(problem)
                         .then(() => handleSuccessSubmit(oldEditState))
                         .catch((error) => handleFailedSubmit(error));
                 } else if (oldEditState === EditState.EDIT) {
-                    ProblemService.updateProblem(problem.id!, problem)
+                    ProblemStudentService.updateProblem(problem.id!, problem)
                         .then(() => handleSuccessSubmit(oldEditState))
                         .catch((error) => handleFailedSubmit(error));
                 }

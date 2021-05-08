@@ -65,7 +65,8 @@ public class ProblemService {
         return ProblemDto.from(problemRepository.save(problem));
     }
 
-    public Page<ProblemDto> retrieveProblems(long studentUserId, ProblemState problemState, Pageable pageable) {
+    public Page<ProblemDto> retrieveProblemsOfStudents(long studentUserId, ProblemState problemState,
+            Pageable pageable) {
         return problemRepository.findAllByStudentIdAndState(studentUserId, problemState, pageable)
                 .map(ProblemDto::from);
     }

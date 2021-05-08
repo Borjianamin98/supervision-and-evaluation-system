@@ -1,16 +1,13 @@
-import apiAxios from "../../config/axios-config";
-import {Education, ENGLISH_EDUCATIONS} from "../../model/enum/education";
-import {ProblemState} from "../../model/problem/problemState";
-import {Pageable} from "../../model/pageable";
-import {Problem} from "../../model/problem/problem";
-import {University} from "../../model/university/university";
-import {
-    API_PROBLEM_AUTHENTICATED_OWNER_PROBLEMS_PATH,
-    API_PROBLEM_RESOURCE_PATH,
-    API_PROBLEM_ROOT_PATH
-} from "../ApiPaths";
+import apiAxios from "../../../config/axios-config";
+import {Education, ENGLISH_EDUCATIONS} from "../../../model/enum/education";
+import {Pageable} from "../../../model/pageable";
+import {Problem} from "../../../model/problem/problem";
+import {ProblemState} from "../../../model/problem/problemState";
+import {University} from "../../../model/university/university";
+import {API_PROBLEM_ROOT_PATH, API_PROBLEM_STUDENT_RESOURCE_PATH, API_PROBLEM_STUDENT_ROOT_PATH} from "../../ApiPaths";
 
-class ProblemService {
+class ProblemStudentService {
+
     public static readonly MAX_LONG_STRING_LENGTH = 1000;
 
     private constructor() {
@@ -29,7 +26,7 @@ class ProblemService {
         }
     }
 
-    static sendCreateProblem(problem: Problem) {
+    static createProblem(problem: Problem) {
         return apiAxios.post(API_PROBLEM_ROOT_PATH,
             problem,
             {
@@ -37,8 +34,8 @@ class ProblemService {
             })
     }
 
-    static retrieveAuthenticatedOwnerProblems(pageSize: number, page: number, problemState: ProblemState) {
-        return apiAxios.get<Pageable<Problem>>(API_PROBLEM_AUTHENTICATED_OWNER_PROBLEMS_PATH,
+    static retrieveProblemsOfStudent(pageSize: number, page: number, problemState: ProblemState) {
+        return apiAxios.get<Pageable<Problem>>(API_PROBLEM_STUDENT_ROOT_PATH,
             {
                 validateStatus: status => status === 200,
                 params: {
@@ -50,7 +47,7 @@ class ProblemService {
     }
 
     static updateProblem(problemId: number, problem: Problem) {
-        return apiAxios.put<University>(API_PROBLEM_RESOURCE_PATH.replace("{0}", String(problemId)),
+        return apiAxios.put<University>(API_PROBLEM_STUDENT_RESOURCE_PATH.replace("{0}", String(problemId)),
             problem,
             {
                 validateStatus: status => status === 200
@@ -61,15 +58,15 @@ class ProblemService {
         return ENGLISH_EDUCATIONS.includes(problem.education) &&
             problem.title.length > 0 && problem.title.length <= 70 &&
             problem.englishTitle.length > 0 && problem.englishTitle.length <= 70 &&
-            ProblemService.isKeywordsValid(problem.keywords) &&
-            ProblemService.isDefinitionValid(problem.definition) &&
-            problem.considerations.length > 0 && problem.considerations.length <= ProblemService.MAX_LONG_STRING_LENGTH &&
-            problem.history.length <= ProblemService.MAX_LONG_STRING_LENGTH &&
+            ProblemStudentService.isKeywordsValid(problem.keywords) &&
+            ProblemStudentService.isDefinitionValid(problem.definition) &&
+            problem.considerations.length > 0 && problem.considerations.length <= ProblemStudentService.MAX_LONG_STRING_LENGTH &&
+            problem.history.length <= ProblemStudentService.MAX_LONG_STRING_LENGTH &&
             problem.supervisor
     }
 
     static isDefinitionValid(definition: string) {
-        return definition.split(/[ ]+/).length >= 10 && definition.length <= ProblemService.MAX_LONG_STRING_LENGTH;
+        return definition.split(/[ ]+/).length >= 10 && definition.length <= ProblemStudentService.MAX_LONG_STRING_LENGTH;
     }
 
     static isKeywordsValid(keywords: string[]) {
@@ -77,4 +74,4 @@ class ProblemService {
     }
 }
 
-export default ProblemService;
+export default ProblemStudentService;

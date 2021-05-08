@@ -9,7 +9,7 @@ import {VirtualizedListBoxComponent, VirtualizedListBoxStyles} from "../../../co
 import CustomTextField from "../../../components/Text/CustomTextField";
 import {educationMapToEnglish, educationMapToPersian, PERSIAN_EDUCATIONS} from "../../../model/enum/education";
 import {Master} from "../../../model/user/master";
-import ProblemService from "../../../services/api/ProblemService";
+import ProblemStudentService from "../../../services/api/problem/ProblemStudentService";
 import MasterService from "../../../services/api/user/MasterService";
 import {ProblemEditSectionsProps} from "./ProblemEdit";
 
@@ -17,7 +17,7 @@ const ProblemEditGeneralInfo: React.FunctionComponent<ProblemEditSectionsProps> 
     const {commonClasses, problem, updateProblem, errorChecking} = props;
 
     const isKeywordsValid = (definition: string[]) =>
-        !errorChecking || ProblemService.isKeywordsValid(definition);
+        !errorChecking || ProblemStudentService.isKeywordsValid(definition);
     const isBlank = (c?: string) => errorChecking && (!c || c.length === 0);
     const isNull = <T extends {}>(c?: T) => errorChecking && !c;
 
