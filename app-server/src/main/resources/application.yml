@@ -19,5 +19,6 @@ spring:
 # JWT configurations
 jwt:
   secret: SecretJwtString
-  access-token-expiration-seconds: 900 # 15 minutes
+  # TODO: Decrease it to 900 (15 minutes) after ready for deployment
+  access-token-expiration-seconds: 3600 # 15 minutes
   refresh-token-expiration-seconds: 604800 # 1 week

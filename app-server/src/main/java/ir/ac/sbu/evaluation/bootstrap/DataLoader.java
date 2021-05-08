@@ -66,7 +66,7 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) {
         prepareUniversities();
 
-        Problem problem1 = Problem.builder()
+        Problem problem1 = problemRepository.save(Problem.builder()
                 .education(Education.BACHELOR)
                 .title("سامانه ارزیابی و نظارت یکپارچه")
                 .englishTitle("Integrated supervision and evaluation system")
@@ -76,24 +76,38 @@ public class DataLoader implements CommandLineRunner {
                 .history("بیشینه مسئله")
                 .considerations("برای پیاده‌سازی در محیط عملیاتی، نیازمند سرور و تجهیزات شبکه‌ای مربوطه می‌باشد.")
                 .state(ProblemState.CREATED)
-                .build();
-        Problem problem2 = Problem.builder()
+                .build());
+        Problem problem2 = problemRepository.save(Problem.builder()
                 .education(Education.BACHELOR)
                 .title("سامانه مدیریت خرید و فروش رستوران")
                 .englishTitle("Restaurant sales management system")
                 .keywords(new HashSet<>(Arrays.asList("رستوران", "فروش", "خرید", "سامانه")))
-                .definition("سامانه‌ جامع و کامل که به منظورت مدیریت خرید و فروش رستوران‌های کل شهرهای کشور استفاده می‌شود.")
+                .definition(
+                        "سامانه‌ جامع و کامل که به منظورت مدیریت خرید و فروش رستوران‌های کل شهرهای کشور استفاده می‌شود.")
                 .history("بیشینه مسئله")
                 .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
                 .state(ProblemState.CREATED)
-                .build();
-        Problem savedProblem1 = problemRepository.save(problem1);
-        Problem savedProblem2 = problemRepository.save(problem2);
+                .build());
+        Problem problem3 = problemRepository.save(Problem.builder()
+                .education(Education.BACHELOR)
+                .title("نقشه تعاملی سامانه‌های نرم‌افزاری یک شرکت")
+                .englishTitle("Interactive map of a company's software systems ")
+                .keywords(new HashSet<>(Arrays.asList("شرکت", "تعاملی", "سامانه")))
+                .definition("سامانه‌ به منظور نقشه تعاملی سامانه‌های نرم‌افزاری یک شرکت استفاده می‌شود.")
+                .history("بیشینه مسئله")
+                .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
+                .state(ProblemState.IN_PROGRESS)
+                .build());
 
         PersonalInfo masterPersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
                 .gender(Gender.MALE)
                 .telephoneNumber("9131234567")
-                .email("sadeg.aliakbari@gmail.com")
+                .email("sadegh.aliakbari@gmail.com")
+                .build());
+        PersonalInfo mojtabaPersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
+                .gender(Gender.MALE)
+                .telephoneNumber("9137654321")
+                .email("mojtaba.vahidi@sbu.ac.ir")
                 .build());
         PersonalInfo studentPersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
                 .gender(Gender.MALE)
@@ -107,7 +121,7 @@ public class DataLoader implements CommandLineRunner {
                 .build());
 
         Faculty computerEngineeringFaculty = faculties.get(universities.get(0).getId()).get(0);
-        Master master1 = Master.builder()
+        Master master1 = masterRepository.save(Master.builder()
                 .firstName("صادق")
                 .lastName("علی اکبری")
                 .degree("استاد")
@@ -115,15 +129,38 @@ public class DataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("pass"))
                 .personalInfo(masterPersonalInfo)
                 .faculty(computerEngineeringFaculty)
-                .build();
-        master1.setProblemsSupervisor(Collections.singleton(savedProblem1));
-        master1.setProblemsSupervisor(Collections.singleton(savedProblem2));
-        Master savedMaster1 = masterRepository.save(master1);
+                .problemsSupervisor(new HashSet<>(Arrays.asList(problem1, problem2)))
+                .problemsReferee(Collections.singleton(problem3))
+                .build());
 
         computerEngineeringFaculty.getMasters().add(master1);
         facultyRepository.save(computerEngineeringFaculty);
 
-        Student student1 = Student.builder()
+        problem1.setSupervisor(master1);
+        problem1 = problemRepository.save(problem1);
+        problem2.setSupervisor(master1);
+        problem2 = problemRepository.save(problem2);
+        problem3.setReferees(Collections.singleton(master1));
+        problem3 = problemRepository.save(problem3);
+
+        Master master2 = masterRepository.save(Master.builder()
+                .firstName("مجتبی")
+                .lastName("وحیدی")
+                .degree("استاد")
+                .username("mojtaba")
+                .password(passwordEncoder.encode("pass"))
+                .personalInfo(mojtabaPersonalInfo)
+                .faculty(computerEngineeringFaculty)
+                .problemsSupervisor(Collections.singleton(problem3))
+                .build());
+
+        computerEngineeringFaculty.getMasters().add(master2);
+        facultyRepository.save(computerEngineeringFaculty);
+
+        problem3.setSupervisor(master2);
+        problem3 = problemRepository.save(problem3);
+
+        Student student1 = studentRepository.save(Student.builder()
                 .firstName("امین")
                 .lastName("برجیان")
                 .studentNumber("96243012")
@@ -131,30 +168,26 @@ public class DataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("pass"))
                 .personalInfo(studentPersonalInfo)
                 .faculty(computerEngineeringFaculty)
-                .build();
-        student1.setProblems(Collections.singleton(savedProblem1));
-        student1.setProblems(Collections.singleton(savedProblem2));
-        Student savedStudent1 = studentRepository.save(student1);
+                .problems(new HashSet<>(Arrays.asList(problem1, problem2, problem3)))
+                .build());
 
         computerEngineeringFaculty.getStudents().add(student1);
         facultyRepository.save(computerEngineeringFaculty);
 
-        savedProblem1.setSupervisor(savedMaster1);
-        savedProblem1.setStudent(savedStudent1);
-        problemRepository.save(savedProblem1);
+        problem1.setStudent(student1);
+        problemRepository.save(problem1);
+        problem2.setStudent(student1);
+        problemRepository.save(problem2);
+        problem3.setStudent(student1);
+        problemRepository.save(problem3);
 
-        savedProblem2.setSupervisor(savedMaster1);
-        savedProblem2.setStudent(savedStudent1);
-        problemRepository.save(savedProblem2);
-
-        Admin admin1 = Admin.builder()
+        Admin admin1 = adminRepository.save(Admin.builder()
                 .firstName("مدیر")
                 .lastName("سامانه")
                 .username("admin")
                 .password(passwordEncoder.encode("pass"))
                 .personalInfo(adminPersonalInfo)
-                .build();
-        Admin savedAdmin1 = adminRepository.save(admin1);
+                .build());
     }
 
     private void prepareUniversities() {

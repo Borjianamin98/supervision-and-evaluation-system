@@ -3,8 +3,8 @@ package ir.ac.sbu.evaluation.service;
 import ir.ac.sbu.evaluation.dto.ProblemDto;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
-import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
 import ir.ac.sbu.evaluation.model.problem.Problem;
+import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.Student;
 import ir.ac.sbu.evaluation.repository.problem.EventRepository;
@@ -68,6 +68,13 @@ public class ProblemService {
     public Page<ProblemDto> retrieveProblemsOfStudents(long studentUserId, ProblemState problemState,
             Pageable pageable) {
         return problemRepository.findAllByStudentIdAndState(studentUserId, problemState, pageable)
+                .map(ProblemDto::from);
+    }
+
+    public Page<ProblemDto> retrieveMasterAssignedProblems(long masterUserId, ProblemState problemState,
+            Pageable pageable) {
+        return problemRepository
+                .findAllAssignedForMasterAndState(masterUserId, problemState, pageable)
                 .map(ProblemDto::from);
     }
 }
