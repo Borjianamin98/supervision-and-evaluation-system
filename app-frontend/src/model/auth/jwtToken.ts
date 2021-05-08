@@ -7,10 +7,11 @@ export interface CustomJwtPayload {
     exp: number,
     tokenType: TokenType,
     userId: number,
+    fullName: string,
     roles: Role[],
 }
 
-enum TokenType {
+export enum TokenType {
     ACCESS = "accessToken",
     REFRESH = "refreshToken"
 }

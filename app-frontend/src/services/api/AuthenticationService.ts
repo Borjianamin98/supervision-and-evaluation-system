@@ -2,7 +2,7 @@ import {AxiosError} from "axios";
 import jwtDecode from "jwt-decode";
 import apiAxios from "../../config/axios-config";
 import browserHistory from "../../config/browserHistory";
-import {CustomJwtPayload} from "../../model/auth/jwtToken";
+import {CustomJwtPayload, TokenType} from "../../model/auth/jwtToken";
 import {DASHBOARD_VIEW_PATH, LOGIN_VIEW_PATH} from "../../views/ViewPaths";
 import {
     API_AUTHENTICATION_CHECK_PATH,
@@ -18,28 +18,26 @@ export interface AuthResponse {
 }
 
 class AuthenticationService {
-    private static readonly AUTH_ACCESS_TOKEN_KEY = "authAccess"
-    private static readonly AUTH_REFRESH_TOKEN_KEY = "authRefresh"
 
     private constructor() {
     }
 
     static isAuthenticated() {
-        return localStorage.getItem(AuthenticationService.AUTH_ACCESS_TOKEN_KEY) != null;
+        return localStorage.getItem(TokenType.ACCESS) != null;
     }
 
     static logout() {
-        localStorage.removeItem(AuthenticationService.AUTH_ACCESS_TOKEN_KEY);
-        localStorage.removeItem(AuthenticationService.AUTH_REFRESH_TOKEN_KEY);
+        localStorage.removeItem(TokenType.ACCESS);
+        localStorage.removeItem(TokenType.REFRESH);
         browserHistory.push(LOGIN_VIEW_PATH);
     }
 
     static getAccessToken() {
-        return localStorage.getItem(AuthenticationService.AUTH_ACCESS_TOKEN_KEY);
+        return localStorage.getItem(TokenType.ACCESS);
     }
 
     static getRefreshToken() {
-        return localStorage.getItem(AuthenticationService.AUTH_REFRESH_TOKEN_KEY);
+        return localStorage.getItem(TokenType.REFRESH);
     }
 
     static async login(username: string, password: string): Promise<AxiosError | void> {
@@ -51,8 +49,8 @@ class AuthenticationService {
             {
                 validateStatus: status => status === 200
             })
-        localStorage.setItem(AuthenticationService.AUTH_ACCESS_TOKEN_KEY, response.data.access_token!);
-        localStorage.setItem(AuthenticationService.AUTH_REFRESH_TOKEN_KEY, response.data.refresh_token!);
+        localStorage.setItem(TokenType.ACCESS, response.data.access_token!);
+        localStorage.setItem(TokenType.REFRESH, response.data.refresh_token!);
         browserHistory.push(DASHBOARD_VIEW_PATH);
     }
 
@@ -64,7 +62,7 @@ class AuthenticationService {
             {
                 validateStatus: status => status === 200
             })
-        localStorage.setItem(AuthenticationService.AUTH_ACCESS_TOKEN_KEY, response.data.access_token!);
+        localStorage.setItem(TokenType.ACCESS, response.data.access_token!);
     }
 
     static check() {
