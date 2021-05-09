@@ -10,7 +10,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import React from 'react';
 import {rtlTheme} from "../../App";
 import {LoadingState} from "../../model/enum/loadingState";
-import TooltipIconButton from "../Button/TooltipIconButton";
+import TooltipIconButton, {TooltipIconButtonProps} from "../Button/TooltipIconButton";
 import FullRowCell from "./FullRowCell";
 import OptionalTableCell, {OptionalTableCellProps} from "./OptionalTableCell";
 import CustomTablePagination from "./Pagination/CustomTablePagination";
@@ -33,6 +33,11 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2, 0),
     }
 }));
+
+interface StatelessPaginationListAction<T> extends Omit<TooltipIconButtonProps, "onClick"> {
+    onClickAction: (row: T) => void,
+    icon: React.ReactNode,
+}
 
 interface StatelessPaginationListProps<T> extends BoxProps {
     total: number,
@@ -57,6 +62,8 @@ interface StatelessPaginationListProps<T> extends BoxProps {
     onEditRow: (row: T) => void,
     isEditable: (row: T) => boolean,
     hasEdit: (row: T) => boolean,
+
+    extraActions?: StatelessPaginationListAction<T>[],
 
     onRetryClick: () => void,
 }
@@ -87,6 +94,8 @@ function StatelessPaginationTable<T>(props: StatelessPaginationListProps<T>) {
         isEditable,
         hasEdit,
 
+        extraActions,
+
         onRetryClick,
 
         ...rest
@@ -109,11 +118,23 @@ function StatelessPaginationTable<T>(props: StatelessPaginationListProps<T>) {
             onClick={() => onDeleteRow(row)}>
             <DeleteIcon/>
         </TooltipIconButton>
+        const customActions = extraActions?.map((actionProps) => {
+            const {onClickAction, icon, ...rest} = actionProps;
+            return <TooltipIconButton
+                color="secondary"
+                className={classes.action}
+                onClick={() => onClickAction(row)}
+                {...rest}
+            >
+                {icon}
+            </TooltipIconButton>;
+        });
 
         const actions = (
             <div className={classes.actionContainer}>
                 {hasEdit(row) ? editAction : null}
                 {hasDelete(row) ? deleteAction : null}
+                {customActions}
             </div>
         )
         return tableRow(row, actions);

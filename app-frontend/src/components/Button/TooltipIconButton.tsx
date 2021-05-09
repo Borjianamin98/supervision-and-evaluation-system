@@ -3,7 +3,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import React from "react";
 
-interface TooltipIconButtonProps extends IconButtonProps {
+export interface TooltipIconButtonProps extends IconButtonProps {
     tooltipTitle: string,
     tooltipTransitionComponent?: TooltipProps["TransitionComponent"],
     extraTooltipProps?: Omit<TooltipProps, "TransitionComponent" | "children" | "title">,
