@@ -18,15 +18,19 @@ const DashboardView: React.FunctionComponent = () => {
     React.useEffect(() => {
         AuthenticationService.check()
             .then(value => {
-                const jwtPayloadRoles = AuthenticationService.getJwtPayloadRoles()!;
-                if (jwtPayloadRoles.includes(Role.STUDENT)) {
-                    setRedirectPath(studentDashboardPath);
-                } else if (jwtPayloadRoles.includes(Role.MASTER)) {
-                    setRedirectPath(masterDashboardPath);
-                } else if (jwtPayloadRoles.includes(Role.ADMIN)) {
-                    setRedirectPath(adminDashboardPath);
-                } else {
-                    throw new Error("Invalid user roles: " + jwtPayloadRoles)
+                const jwtPayloadRole = AuthenticationService.getJwtPayloadRole()!;
+                switch (jwtPayloadRole) {
+                    case Role.STUDENT:
+                        setRedirectPath(studentDashboardPath);
+                        break;
+                    case Role.MASTER:
+                        setRedirectPath(masterDashboardPath);
+                        break;
+                    case Role.ADMIN:
+                        setRedirectPath(adminDashboardPath);
+                        break;
+                    default:
+                        throw new Error("Invalid user role: " + jwtPayloadRole)
                 }
             })
             .catch(reason => {

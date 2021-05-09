@@ -104,9 +104,9 @@ const allRoutesInfo: navBarRouteInfo[] = [
     ...universityRoutesInfo
 ];
 
-const createListFromRoutesInfo = (routesInfo: navBarRouteInfo[], authenticatedUserRoles: Role[]) => {
+const createListFromRoutesInfo = (routesInfo: navBarRouteInfo[], authenticatedUserRole: Role) => {
     const candidateRoutes = routesInfo.filter(value => !value.roles ||
-        value.roles.some(role => authenticatedUserRoles.includes(role)));
+        value.roles.includes(authenticatedUserRole));
     return (
         candidateRoutes.length !== 0 ? (
             <React.Fragment>
@@ -128,14 +128,14 @@ const createListFromRoutesInfo = (routesInfo: navBarRouteInfo[], authenticatedUs
 }
 
 const MainViewNavBarLinks: React.FunctionComponent = () => {
-    const jwtPayloadRoles = AuthenticationService.getJwtPayloadRoles()!;
+    const jwtPayloadRole = AuthenticationService.getJwtPayloadRole()!;
 
     return (
         <>
-            {createListFromRoutesInfo(dashboardRoutesInfo, jwtPayloadRoles)}
-            {createListFromRoutesInfo(problemRoutesInfo, jwtPayloadRoles)}
-            {createListFromRoutesInfo(universityRoutesInfo, jwtPayloadRoles)}
-            {createListFromRoutesInfo(managementRoutesInfo, jwtPayloadRoles)}
+            {createListFromRoutesInfo(dashboardRoutesInfo, jwtPayloadRole)}
+            {createListFromRoutesInfo(problemRoutesInfo, jwtPayloadRole)}
+            {createListFromRoutesInfo(universityRoutesInfo, jwtPayloadRole)}
+            {createListFromRoutesInfo(managementRoutesInfo, jwtPayloadRole)}
         </>
     );
 }

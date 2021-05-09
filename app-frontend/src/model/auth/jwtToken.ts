@@ -8,7 +8,7 @@ export interface CustomJwtPayload {
     tokenType: TokenType,
     userId: number,
     fullName: string,
-    roles: Role[],
+    role: Role,
 }
 
 export enum TokenType {

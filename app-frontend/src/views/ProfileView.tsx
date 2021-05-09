@@ -61,15 +61,15 @@ const ProfileView: React.FunctionComponent = () => {
     React.useEffect(() => {
         AuthenticationService.check()
             .then(async value => {
-                const jwtPayloadRoles = AuthenticationService.getJwtPayloadRoles()!;
-                if (jwtPayloadRoles.includes(Role.STUDENT)) {
+                const jwtPayloadRole = AuthenticationService.getJwtPayloadRole()!;
+                if (jwtPayloadRole === Role.STUDENT) {
                     return await StudentService.retrieveStudentInfo();
-                } else if (jwtPayloadRoles.includes(Role.MASTER)) {
+                } else if (jwtPayloadRole === Role.MASTER) {
                     return await MasterService.retrieveMasterInfo();
-                } else if (jwtPayloadRoles.includes(Role.ADMIN)) {
+                } else if (jwtPayloadRole === Role.ADMIN) {
                     return await AdminService.retrieveAdminInfo();
                 } else {
-                    throw new Error("Invalid user roles: " + jwtPayloadRoles)
+                    throw new Error("Unexpected user role: " + jwtPayloadRole)
                 }
             })
             .then(value => setUser(value.data))

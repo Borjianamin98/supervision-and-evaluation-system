@@ -66,21 +66,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     jwtTokenProvider.getUserId(tokenClaims),
                     jwtTokenProvider.getFullName(tokenClaims),
                     jwtTokenProvider.getUsername(tokenClaims),
-                    jwtTokenProvider.getRoles(tokenClaims));
+                    jwtTokenProvider.getRole(tokenClaims));
         } catch (InvalidJwtTokenException e) {
             logger.warn(e.getMessage());
         }
     }
 
     private void setSpringSecurityAuthentication(HttpServletRequest request, long userId,
-            String fullName,
-            String username,
-            List<String> roles) {
+            String fullName, String username, String role) {
         AuthUserDetail authUserDetail = AuthUserDetail.builder()
                 .userId(userId)
                 .fullName(fullName)
                 .username(username)
-                .roles(roles)
+                .role(role)
                 .build();
         // Manually provided authentication for Spring Security.
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =

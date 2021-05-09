@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +28,7 @@ public class JwtTokenProvider {
     private final static String REFRESH_TOKEN_TYPE_NAME = "refreshToken";
     private final static String TOKEN_USER_ID_CLAIM_NAME = "userId";
     private final static String TOKEN_FULL_NAME_CLAIM_NAME = "fullName";
-    private final static String TOKEN_ROLES_CLAIM_NAME = "roles";
+    private final static String TOKEN_ROLE_CLAIM_NAME = "role";
 
     @Value("${jwt.secret}")
     private String jwtSecret;
@@ -61,7 +60,10 @@ public class JwtTokenProvider {
     }
 
     private void ensureCustomClaims(Jws<Claims> jws) throws InvalidJwtTokenException {
-        List<String> customDefinedClaims = Arrays.asList(TOKEN_ROLES_CLAIM_NAME, TOKEN_ROLES_CLAIM_NAME);
+        List<String> customDefinedClaims = Arrays.asList(TOKEN_TYPE_CLAIM_NAME,
+                TOKEN_USER_ID_CLAIM_NAME,
+                TOKEN_FULL_NAME_CLAIM_NAME,
+                TOKEN_ROLE_CLAIM_NAME);
         for (String customDefinedClaim : customDefinedClaims) {
             if (!jws.getBody().containsKey(customDefinedClaim)) {
                 throw new InvalidJwtTokenException(new MissingClaimException(jws.getHeader(), jws.getBody(),
@@ -82,14 +84,8 @@ public class JwtTokenProvider {
         return tokenClaims.get(TOKEN_FULL_NAME_CLAIM_NAME, String.class);
     }
 
-    public List<String> getRoles(Claims tokenClaims) {
-        try {
-            @SuppressWarnings("unchecked")
-            List<String> result = tokenClaims.get(TOKEN_ROLES_CLAIM_NAME, List.class);
-            return result;
-        } catch (ClassCastException e) {
-            throw new AssertionError("Unexpected exception while extracting roles from a validated token", e);
-        }
+    public String getRole(Claims tokenClaims) {
+        return tokenClaims.get(TOKEN_ROLE_CLAIM_NAME, String.class);
     }
 
     public String generateRefreshToken(AuthUserDetail authUserDetail) {
@@ -123,7 +119,7 @@ public class JwtTokenProvider {
      *     <li>subject: {@code username}</li>
      *     <li>userId: {@code userId}</li>
      *     <li>fullName: user full name</li>
-     *     <li>roles: roles</li>
+     *     <li>role: role</li>
      *     <li>tokenType: {@code tokenType}</li>
      *     <li>issue at: current time</li>
      *     <li>expiration: current time + expirationOffset</li>
@@ -134,8 +130,7 @@ public class JwtTokenProvider {
     private String generateToken(AuthUserDetail authUserDetail, String tokenType) {
         Map<String, Object> customClaims = new HashMap<>();
         customClaims.put(TOKEN_TYPE_CLAIM_NAME, tokenType);
-        customClaims.put(TOKEN_ROLES_CLAIM_NAME,
-                authUserDetail.getAuthorities().stream().map(Object::toString).collect(Collectors.toList()));
+        customClaims.put(TOKEN_ROLE_CLAIM_NAME, authUserDetail.getRole());
         customClaims.put(TOKEN_USER_ID_CLAIM_NAME, authUserDetail.getUserId());
         customClaims.put(TOKEN_FULL_NAME_CLAIM_NAME, authUserDetail.getFullName());
 

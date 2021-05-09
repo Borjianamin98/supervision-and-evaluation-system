@@ -1,6 +1,5 @@
 package ir.ac.sbu.evaluation.controller.university;
 
-import static ir.ac.sbu.evaluation.controller.ApiPaths.API_AUTHENTICATION_ROOT_PATH;
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_UNIVERSITY_ROOT_PATH;
 
 import ir.ac.sbu.evaluation.dto.university.UniversityDto;

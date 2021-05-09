@@ -9,7 +9,6 @@ import ir.ac.sbu.evaluation.repository.user.StudentRepository;
 import ir.ac.sbu.evaluation.repository.user.UserRepository;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.utility.ByteUtility;
-import java.util.Collections;
 import java.util.Optional;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -46,7 +45,7 @@ public class UserService implements UserDetailsService {
                         .fullName(user.getFirstName() + " " + user.getLastName())
                         .username(user.getUsername())
                         .password(user.getPassword())
-                        .roles(Collections.singletonList(user.getRole()))
+                        .role(user.getRole())
                         .build())
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found: " + username));
     }

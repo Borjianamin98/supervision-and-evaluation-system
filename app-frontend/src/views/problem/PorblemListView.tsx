@@ -68,21 +68,21 @@ const ProblemListView: React.FunctionComponent = () => {
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [loadingState, setLoadingState] = React.useState<LoadingState>(LoadingState.LOADING);
 
-    const jwtPayloadRoles = AuthenticationService.getJwtPayloadRoles()!;
+    const jwtPayloadRole = AuthenticationService.getJwtPayloadRole()!;
 
     React.useEffect(() => {
         if (loadingState === LoadingState.LOADED) {
             return; // Nothing to load
         }
 
-        const jwtPayloadRoles = AuthenticationService.getJwtPayloadRoles();
+        const jwtPayloadRole = AuthenticationService.getJwtPayloadRole()!;
         let request: Promise<AxiosResponse<Pageable<Problem>>>;
-        if (jwtPayloadRoles?.includes(Role.STUDENT)) {
+        if (jwtPayloadRole === Role.STUDENT) {
             request = ProblemStudentService.retrieveProblemsOfStudent(rowsPerPage, page, selectedProblemState);
-        } else if (jwtPayloadRoles?.includes(Role.MASTER)) {
+        } else if (jwtPayloadRole === Role.MASTER) {
             request = ProblemMasterService.retrieveAssignedProblems(rowsPerPage, page, selectedProblemState);
         } else {
-            throw new Error("Unexpected view for current authenticated user: " + jwtPayloadRoles);
+            throw new Error("Unexpected view for current authenticated user: " + jwtPayloadRole);
         }
         request
             .then(value => {
@@ -100,23 +100,38 @@ const ProblemListView: React.FunctionComponent = () => {
     }
 
     function getExtraActions<T>(): StatelessPaginationListAction<T>[] {
-        if (jwtPayloadRoles.includes(Role.MASTER)) {
-            switch (selectedProblemState) {
-                case ProblemState.CREATED:
-                    return [
-                        {tooltipTitle: "ثبت نظر", icon: <AddCommentIcon/>, onClickAction: row => undefined},
-                        {tooltipTitle: "تایید اولیه", icon: <DoneIcon/>, onClickAction: row => undefined},
-                    ];
-                case ProblemState.IN_PROGRESS:
-                    return [
-                        {tooltipTitle: "مشاهده", icon: <VisibilityIcon/>, onClickAction: row => undefined},
-                    ];
-                case ProblemState.COMPLETED:
-                case ProblemState.ABANDONED:
-                    return [];
-            }
+        switch (selectedProblemState) {
+            case ProblemState.CREATED:
+                switch (jwtPayloadRole) {
+                    case Role.STUDENT:
+                        return [];
+                    case Role.MASTER:
+                        return [
+                            {tooltipTitle: "ثبت نظر", icon: <AddCommentIcon/>, onClickAction: row => undefined},
+                            {tooltipTitle: "تایید اولیه", icon: <DoneIcon/>, onClickAction: row => undefined},
+                        ];
+                    case Role.ADMIN:
+                        return [];
+                    default:
+                        throw new Error("Unexpected role: " + jwtPayloadRole);
+                }
+            case ProblemState.IN_PROGRESS:
+                switch (jwtPayloadRole) {
+                    case Role.STUDENT:
+                        return [];
+                    case Role.MASTER:
+                        return [
+                            {tooltipTitle: "مشاهده", icon: <VisibilityIcon/>, onClickAction: row => undefined},
+                        ];
+                    case Role.ADMIN:
+                        return [];
+                    default:
+                        throw new Error("Unexpected role: " + jwtPayloadRole);
+                }
+            case ProblemState.COMPLETED:
+            case ProblemState.ABANDONED:
+                return [];
         }
-        return [];
     }
 
     return (
@@ -258,7 +273,7 @@ const ProblemListView: React.FunctionComponent = () => {
                     hasDelete={row => false}
                     isDeletable={row => false}
                     onDeleteRow={row => undefined}
-                    hasEdit={row => jwtPayloadRoles.includes(Role.STUDENT)}
+                    hasEdit={row => jwtPayloadRole === Role.STUDENT && selectedProblemState === ProblemState.CREATED}
                     isEditable={row => true}
                     onEditRow={row => onEditClick(row)}
                     extraActions={getExtraActions()}

@@ -72,8 +72,8 @@ class AuthenticationService {
             })
     }
 
-    static getJwtPayloadRoles() {
-        return AuthenticationService.getJwtPayload()?.roles;
+    static getJwtPayloadRole() {
+        return AuthenticationService.getJwtPayload()?.role;
     }
 
     private static getJwtPayload() {

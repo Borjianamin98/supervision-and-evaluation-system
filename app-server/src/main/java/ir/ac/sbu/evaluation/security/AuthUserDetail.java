@@ -1,7 +1,7 @@
 package ir.ac.sbu.evaluation.security;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.Collections;
 import lombok.Builder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,16 +13,15 @@ public class AuthUserDetail implements UserDetails {
     private final String fullName;
     private final String username;
     private final String password;
-    private final Collection<String> roles;
+    private final String role;
 
     @Builder
-    public AuthUserDetail(long userId, String fullName, String username, String password,
-            Collection<String> roles) {
+    public AuthUserDetail(long userId, String fullName, String username, String password, String role) {
         this.userId = userId;
         this.fullName = fullName;
         this.username = username;
         this.password = password;
-        this.roles = roles;
+        this.role = role;
     }
 
     public long getUserId() {
@@ -33,13 +32,13 @@ public class AuthUserDetail implements UserDetails {
         return fullName;
     }
 
-    public Collection<String> getRoles() {
-        return roles;
+    public String getRole() {
+        return role;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        return Collections.singleton(new SimpleGrantedAuthority(role));
     }
 
     @Override
@@ -78,7 +77,7 @@ public class AuthUserDetail implements UserDetails {
                 "userId=" + userId +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", roles=" + roles +
+                ", role=" + role +
                 '}';
     }
 }
