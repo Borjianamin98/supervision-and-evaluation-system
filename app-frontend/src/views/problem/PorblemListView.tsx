@@ -232,7 +232,7 @@ const ProblemListView: React.FunctionComponent = () => {
                             {content: actions}
                         ];
                         const events = row.events.sort((a, b) =>
-                            new Date(a.createdDate).valueOf() - new Date(b.createdDate).valueOf())
+                            new Date(a.createdDate!).valueOf() - new Date(b.createdDate!).valueOf())
                             .reverse()
                             .slice(0, 10)
                             .map((event: ProblemEvent) =>
@@ -240,7 +240,7 @@ const ProblemListView: React.FunctionComponent = () => {
                                     key={event.id!}
                                     className={classes.event}
                                 >
-                                    {moment(event.createdDate).locale('fa').format('ddd، D MMMM YYYY (h a)')}
+                                    {moment(event.createdDate!).locale('fa').format('ddd، D MMMM YYYY (h a)')}
                                     {": "}
                                     {event.message}
                                 </HistoryInfoAlert>
