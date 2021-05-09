@@ -20,4 +20,5 @@ export interface Problem {
     events?: ProblemEvent[],
 
     supervisor?: Master,
+    referees: Master[],
 }

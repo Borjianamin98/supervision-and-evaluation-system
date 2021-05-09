@@ -1,22 +1,22 @@
 export enum ProblemState {
     CREATED = "CREATED",
-    ABANDONED = "ABANDONED",
     IN_PROGRESS = "IN_PROGRESS",
-    COMPLETED = "COMPLETED"
+    COMPLETED = "COMPLETED",
+    ABANDONED = "ABANDONED"
 }
 
 export const PERSIAN_PROBLEM_STATES = [
     "ایجاد شده",
-    "لغو شده",
     "در حال پیگیری",
-    "اتمام یافته"
+    "اتمام یافته",
+    "لغو شده"
 ];
 
 export const ENGLISH_PROBLEM_STATES = [
     ProblemState.CREATED,
-    ProblemState.ABANDONED,
     ProblemState.IN_PROGRESS,
-    ProblemState.COMPLETED
+    ProblemState.COMPLETED,
+    ProblemState.ABANDONED
 ];
 
 export const problemStateMapToEnglish = (problemState: string) => {
