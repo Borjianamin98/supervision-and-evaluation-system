@@ -141,10 +141,14 @@ const ProblemListView: React.FunctionComponent = () => {
                     collectionData={problems.content}
                     tableHeaderCells={[
                         {content: "دوره تحصیلی", xsOptional: true, width: "10%"},
-                        {content: "عنوان", width: "25%"},
-                        {content: "عنوان انگلیسی", smOptional: true, width: "25%"},
+                        {content: "عنوان", width: "30%"},
                         {content: "کلیدواژه‌ها", smOptional: true, width: "25%"},
-                        {content: "استاد راهنما", xsOptional: true, width: "10%"},
+                        {content: "استاد راهنما", xsOptional: true, width: "15%"},
+                        ...(problems.content.some(p => p.referees.length !== 0) ?
+                            [{
+                                content: "استادهای داور", xsOptional: true,
+                                width: "15%"
+                            }] : []),
                         {content: "", width: "2.5%"},
                         {content: "", width: "2.5%"}
                     ]}
@@ -153,9 +157,14 @@ const ProblemListView: React.FunctionComponent = () => {
                         const cells: OptionalTableCellProps[] = [
                             {content: educationMapToPersian(row.education), xsOptional: true},
                             {content: row.title},
-                            {content: row.englishTitle, smOptional: true},
                             {content: keywordsList, smOptional: true},
-                            {content: `${row.supervisor!.firstName} ${row.supervisor!.lastName}`, xsOptional: true},
+                            {content: row.supervisor!.fullName, xsOptional: true},
+                            ...(problems.content.some(p => p.referees.length !== 0) ?
+                                [{
+                                    content: row.referees.map(r => r.fullName!).join("، "),
+                                    xsOptional: true,
+                                    width: "10%"
+                                }] : []),
                             {content: actions}
                         ];
                         return (
@@ -182,11 +191,19 @@ const ProblemListView: React.FunctionComponent = () => {
                                         <Typography paragraph>{`تعریف: ${row.definition}`}</Typography>
                                         <Typography paragraph>{`بیشینه: ${row.history}`}</Typography>
                                         <Typography paragraph>{`ملاحظات: ${row.considerations}`}</Typography>
+                                        <Typography paragraph>
+                                            {"استاد راهنما: "}
+                                            {row.supervisor?.fullName ?? ""}
+                                        </Typography>
+                                        <Typography paragraph>
+                                            {"استادهای داور: "}
+                                            {row.referees.length !== 0 ? row.referees.map(r => r.fullName!).join("، ") : "داوری تعیین نشده است."}
+                                        </Typography>
                                     </Grid>
                                     <Grid item xs={false} sm={false} md={1} lg={1} xl={1}/>
                                     <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                                         <Typography variant="h6" className={classes.tableContentHeader}>
-                                            تغییرات:
+                                            رخدادها:
                                         </Typography>
                                         {
                                             row.events

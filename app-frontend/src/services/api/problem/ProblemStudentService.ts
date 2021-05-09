@@ -23,6 +23,7 @@ class ProblemStudentService {
             history: "",
             considerations: "",
             state: ProblemState.CREATED,
+            referees: [],
         }
     }
 
