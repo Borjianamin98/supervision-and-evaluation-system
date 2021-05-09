@@ -15,6 +15,7 @@ import AsynchronousComboBox from "../../../components/ComboBox/AsynchronousCombo
 import {VirtualizedListBoxComponent, VirtualizedListBoxStyles} from "../../../components/ComboBox/VirtualizedComboBox";
 import ExtendedTableRow from "../../../components/Table/ExtendedTableRow";
 import {OptionalTableCellProps} from "../../../components/Table/OptionalTableCell";
+import StatelessPaginationTable from "../../../components/Table/StatelessPaginationTable";
 import CustomTextField, {CustomTextFieldProps} from "../../../components/Text/CustomTextField";
 import {getGeneralErrorMessage} from "../../../config/axios-config";
 import {LoadingState} from "../../../model/enum/loadingState";
@@ -23,7 +24,6 @@ import {Faculty} from "../../../model/university/faculty";
 import {University} from "../../../model/university/university";
 import FacultyService from "../../../services/api/university/faculty/FacultyService";
 import UniversityService from "../../../services/api/university/UniversityService";
-import StatelessPaginationTable from "../../../components/Table/StatelessPaginationTable";
 
 const useStyles = makeStyles((theme) => ({
     noWrap: {
@@ -129,7 +129,6 @@ const FacultyListView: React.FunctionComponent = () => {
         setModifyFaculty(foundUniversities[0]);
         setDialogOpen(true);
     };
-
     const handleDialogClose = (shouldUpdate: boolean) => {
         if (shouldUpdate) {
             FacultyService.updateFaculty(modifyFaculty.id!, modifyFaculty)
@@ -144,7 +143,7 @@ const FacultyListView: React.FunctionComponent = () => {
             .then(value => value.data.content)
     }
 
-    const isNotBlank = (c: string) => !errorChecking || c.length > 0;
+    const isBlank = (c: string) => errorChecking && c.length === 0;
     const FacultyNameTextFieldProps: CustomTextFieldProps = {
         required: true,
         label: "نام دانشکده",
@@ -180,8 +179,8 @@ const FacultyListView: React.FunctionComponent = () => {
                             loadingFunction={inputValue => retrieveUniversities(inputValue)}
                             textFieldInputProps={{
                                 label: "دانشگاه",
-                                helperText: (isNotBlank(selectedUniversity.name) ? "" : "دانشگاه مربوطه باید انتخاب شود."),
-                                error: !isNotBlank(selectedUniversity.name),
+                                helperText: (isBlank(selectedUniversity.name) ? "دانشگاه مربوطه باید انتخاب شود." : ""),
+                                error: isBlank(selectedUniversity.name),
                             }}
                             value={selectedUniversity}
                             onChange={(e, newValue) => {
@@ -203,8 +202,8 @@ const FacultyListView: React.FunctionComponent = () => {
                             value={newFaculty.name}
                             onChange={(e) =>
                                 setNewFaculty({...newFaculty, name: e.target.value})}
-                            helperText={isNotBlank(newFaculty.name) ? "" : "نام دانشگاه باید مشخص شود."}
-                            error={!isNotBlank(newFaculty.name)}
+                            helperText={isBlank(newFaculty.name) ? "نام دانشگاه باید مشخص شود." : ""}
+                            error={isBlank(newFaculty.name)}
                         />
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={6} xl={6} className={classes.gridItem}>
@@ -281,8 +280,8 @@ const FacultyListView: React.FunctionComponent = () => {
                             value={modifyFaculty.name}
                             onChange={(e) =>
                                 setModifyFaculty({...modifyFaculty, name: e.target.value})}
-                            helperText={isNotBlank(modifyFaculty.name) ? "" : "نام دانشگاه باید مشخص شود."}
-                            error={!isNotBlank(modifyFaculty.name)}
+                            helperText={isBlank(modifyFaculty.name) ? "نام دانشگاه باید مشخص شود." : ""}
+                            error={isBlank(modifyFaculty.name)}
                         />
                         <CustomTextField
                             {...FacultyLocationTextFieldProps}

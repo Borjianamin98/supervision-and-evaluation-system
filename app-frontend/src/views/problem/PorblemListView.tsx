@@ -1,4 +1,7 @@
-import {Box, Hidden} from "@material-ui/core";
+import {Box, DialogActions, DialogContent, DialogTitle, Hidden} from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import DialogContentText from "@material-ui/core/DialogContentText";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
@@ -19,6 +22,7 @@ import ComboBox from "../../components/ComboBox/ComboBox";
 import CollapsibleTableRow from "../../components/Table/CollapsibleTableRow";
 import {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
 import StatelessPaginationTable, {StatelessPaginationListAction} from "../../components/Table/StatelessPaginationTable";
+import CustomTextField from "../../components/Text/CustomTextField";
 import browserHistory from "../../config/browserHistory";
 import {educationMapToPersian} from "../../model/enum/education";
 import {LoadingState} from "../../model/enum/loadingState";
@@ -100,7 +104,7 @@ const ProblemListView: React.FunctionComponent = () => {
         })
     }
 
-    function getExtraActions<T>(): StatelessPaginationListAction<T>[] {
+    const getExtraActions = (): StatelessPaginationListAction<Problem>[] => {
         switch (selectedProblemState) {
             case ProblemState.CREATED:
                 switch (jwtPayloadRole) {
@@ -110,7 +114,7 @@ const ProblemListView: React.FunctionComponent = () => {
                         ];
                     case Role.MASTER:
                         return [
-                            {tooltipTitle: "ثبت نظر", icon: <AddCommentIcon/>, onClickAction: row => undefined},
+                            {tooltipTitle: "ثبت نظر", icon: <AddCommentIcon/>, onClickAction: onCommentDialogOpen},
                             {tooltipTitle: "تایید اولیه", icon: <DoneIcon/>, onClickAction: row => undefined},
                         ];
                     default:
@@ -131,6 +135,29 @@ const ProblemListView: React.FunctionComponent = () => {
                 return [];
         }
     }
+
+    const [errorChecking, setErrorChecking] = React.useState(false);
+    const isBlank = (c: string) => errorChecking && c.length === 0;
+
+    const [commentProblem, setCommentProblem] = useState<Problem>(ProblemStudentService.createInitialProblem());
+    const [comment, setComment] = useState<string>("");
+    const [dialogOpen, setDialogOpen] = React.useState(false);
+    const onCommentDialogOpen = (problem: Problem) => {
+        setComment("");
+        setCommentProblem(problem);
+        setErrorChecking(false);
+        setDialogOpen(true);
+    };
+    const onCommentDialogClose = (shouldUpdate: boolean) => {
+        if (shouldUpdate) {
+            if (comment.length === 0) {
+                setErrorChecking(true);
+                return;
+            }
+            // TODO: send request for adding event of comment
+        }
+        setDialogOpen(false);
+    };
 
     return (
         <ThemeProvider theme={rtlTheme}>
@@ -277,6 +304,32 @@ const ProblemListView: React.FunctionComponent = () => {
                     extraActions={getExtraActions()}
                     onRetryClick={() => setLoadingState(LoadingState.LOADING)}
                 />
+                <Dialog dir="rtl" open={dialogOpen} onClose={() => onCommentDialogClose(false)}>
+                    <DialogTitle>ثبت نظر</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText style={{textAlign: "justify"}}>
+                            نظرات، بازخوردها یا پیشنهادات خود را برای تایید مسئله وارد نمایید.
+                        </DialogContentText>
+                        <Typography paragraph>{`عنوان مسئله: ${commentProblem.title}`}</Typography>
+                        <CustomTextField
+                            label="نظرات"
+                            multiline={true}
+                            rows={6}
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                            helperText={isBlank(comment) ? "ثبت نظر خالی امکان‌پذیر نمی‌باشد.": ""}
+                            error={isBlank(comment)}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => onCommentDialogClose(false)} color="primary">
+                            انصراف
+                        </Button>
+                        <Button onClick={() => onCommentDialogClose(true)} color="primary">
+                            ثبت نظر
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </Grid>
         </ThemeProvider>
     );
