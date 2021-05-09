@@ -91,23 +91,38 @@ public class DataLoader implements CommandLineRunner {
         Problem problem3 = problemRepository.save(Problem.builder()
                 .education(Education.BACHELOR)
                 .title("نقشه تعاملی سامانه‌های نرم‌افزاری یک شرکت")
-                .englishTitle("Interactive map of a company's software systems ")
+                .englishTitle("Interactive map of a company's software systems")
                 .keywords(new HashSet<>(Arrays.asList("شرکت", "تعاملی", "سامانه")))
                 .definition("سامانه‌ به منظور نقشه تعاملی سامانه‌های نرم‌افزاری یک شرکت استفاده می‌شود.")
                 .history("بیشینه مسئله")
                 .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
                 .state(ProblemState.IN_PROGRESS)
                 .build());
+        Problem problem4 = problemRepository.save(Problem.builder()
+                .education(Education.BACHELOR)
+                .title("طراحی و پیاده سازی بستر ارسال پیامک انبوه")
+                .englishTitle("Design and implementation of bulk SMS platform")
+                .keywords(new HashSet<>(Arrays.asList("انبوه", "پیامک کوتاه", "سامانه")))
+                .definition("سامانه‌ به منظور این که بتوان در حجم انبوه و زیاد، پیامک‌های موردنیاز را ارسال نمود.")
+                .history("بیشینه مسئله")
+                .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
+                .state(ProblemState.IN_PROGRESS)
+                .build());
 
-        PersonalInfo masterPersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
+        PersonalInfo master1PersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
                 .gender(Gender.MALE)
                 .telephoneNumber("9131234567")
                 .email("sadegh.aliakbari@gmail.com")
                 .build());
-        PersonalInfo mojtabaPersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
+        PersonalInfo master2PersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
                 .gender(Gender.MALE)
                 .telephoneNumber("9137654321")
                 .email("mojtaba.vahidi@sbu.ac.ir")
+                .build());
+        PersonalInfo master3PersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
+                .gender(Gender.MALE)
+                .telephoneNumber("9137654123")
+                .email("master3@sbu.ac.ir")
                 .build());
         PersonalInfo studentPersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
                 .gender(Gender.MALE)
@@ -127,7 +142,7 @@ public class DataLoader implements CommandLineRunner {
                 .degree("استاد")
                 .username("master")
                 .password(passwordEncoder.encode("pass"))
-                .personalInfo(masterPersonalInfo)
+                .personalInfo(master1PersonalInfo)
                 .faculty(computerEngineeringFaculty)
                 .problemsSupervisor(new HashSet<>(Arrays.asList(problem1, problem2)))
                 .problemsReferee(Collections.singleton(problem3))
@@ -140,7 +155,7 @@ public class DataLoader implements CommandLineRunner {
         problem1 = problemRepository.save(problem1);
         problem2.setSupervisor(master1);
         problem2 = problemRepository.save(problem2);
-        problem3.setReferees(Collections.singleton(master1));
+        problem3.getReferees().add(master1);
         problem3 = problemRepository.save(problem3);
 
         Master master2 = masterRepository.save(Master.builder()
@@ -149,9 +164,9 @@ public class DataLoader implements CommandLineRunner {
                 .degree("استاد")
                 .username("mojtaba")
                 .password(passwordEncoder.encode("pass"))
-                .personalInfo(mojtabaPersonalInfo)
+                .personalInfo(master2PersonalInfo)
                 .faculty(computerEngineeringFaculty)
-                .problemsSupervisor(Collections.singleton(problem3))
+                .problemsSupervisor(new HashSet<>(Arrays.asList(problem3, problem4)))
                 .build());
 
         computerEngineeringFaculty.getMasters().add(master2);
@@ -159,6 +174,27 @@ public class DataLoader implements CommandLineRunner {
 
         problem3.setSupervisor(master2);
         problem3 = problemRepository.save(problem3);
+        problem4.setSupervisor(master2);
+        problem4 = problemRepository.save(problem4);
+
+        Master master3 = masterRepository.save(Master.builder()
+                .firstName("محمود")
+                .lastName("نشاطی")
+                .degree("استاد")
+                .username("master3")
+                .password(passwordEncoder.encode("pass"))
+                .personalInfo(master3PersonalInfo)
+                .faculty(computerEngineeringFaculty)
+                .problemsReferee(new HashSet<>(Arrays.asList(problem3, problem4)))
+                .build());
+
+        computerEngineeringFaculty.getMasters().add(master3);
+        facultyRepository.save(computerEngineeringFaculty);
+
+        problem3.getReferees().add(master3);
+        problem3 = problemRepository.save(problem3);
+        problem4.getReferees().add(master3);
+        problem4 = problemRepository.save(problem4);
 
         Student student1 = studentRepository.save(Student.builder()
                 .firstName("امین")
@@ -168,18 +204,20 @@ public class DataLoader implements CommandLineRunner {
                 .password(passwordEncoder.encode("pass"))
                 .personalInfo(studentPersonalInfo)
                 .faculty(computerEngineeringFaculty)
-                .problems(new HashSet<>(Arrays.asList(problem1, problem2, problem3)))
+                .problems(new HashSet<>(Arrays.asList(problem1, problem2, problem3, problem4)))
                 .build());
 
         computerEngineeringFaculty.getStudents().add(student1);
         facultyRepository.save(computerEngineeringFaculty);
 
         problem1.setStudent(student1);
-        problemRepository.save(problem1);
+        problem1 = problemRepository.save(problem1);
         problem2.setStudent(student1);
-        problemRepository.save(problem2);
+        problem2 = problemRepository.save(problem2);
         problem3.setStudent(student1);
-        problemRepository.save(problem3);
+        problem3 = problemRepository.save(problem3);
+        problem4.setStudent(student1);
+        problem4 = problemRepository.save(problem4);
 
         Admin admin1 = adminRepository.save(Admin.builder()
                 .firstName("مدیر")

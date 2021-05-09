@@ -94,7 +94,7 @@ public class Problem extends BaseEntity {
         this.state = state;
         this.student = student;
         this.supervisor = supervisor;
-        this.referees = referees;
+        this.referees = referees == null ? new HashSet<>() : referees;
         this.events = events == null ? new HashSet<>() : events;
     }
 }

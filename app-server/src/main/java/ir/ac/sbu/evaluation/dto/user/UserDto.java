@@ -10,7 +10,11 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @JsonInclude(Include.NON_NULL)
 public class UserDto {
 
@@ -22,6 +26,9 @@ public class UserDto {
 
     @NotBlank
     private String lastName;
+
+    @JsonProperty(access = Access.READ_ONLY)
+    private String fullName;
 
     @NotBlank
     private String username;
@@ -42,11 +49,14 @@ public class UserDto {
     }
 
     @Builder(builderMethodName = "userBuilder")
-    public UserDto(long id, String firstName, String lastName, String username, String password,
+    public UserDto(long id,
+            String firstName, String lastName, String fullName,
+            String username, String password,
             String role, PersonalInfoDto personalInfo) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.fullName = fullName;
         this.username = username;
         this.password = password;
         this.role = role;
@@ -58,6 +68,7 @@ public class UserDto {
                 .id(user.getId())
                 .username(user.getUsername()).password(user.getPassword())
                 .firstName(user.getFirstName()).lastName(user.getLastName())
+                .fullName(user.getFirstName() + " " + user.getLastName())
                 .role(user.getRole())
                 .personalInfo(hasExpansionInfo && user.getPersonalInfo() != null ? PersonalInfoDto
                         .from(user.getPersonalInfo()) : null)
@@ -75,53 +86,5 @@ public class UserDto {
                 .role(role)
                 .personalInfo(personalInfo != null ? personalInfo.toPersonalInfo() : null)
                 .build();
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public PersonalInfoDto getPersonalInfo() {
-        return personalInfo;
-    }
-
-    public void setPersonalInfo(PersonalInfoDto personalInfo) {
-        this.personalInfo = personalInfo;
     }
 }

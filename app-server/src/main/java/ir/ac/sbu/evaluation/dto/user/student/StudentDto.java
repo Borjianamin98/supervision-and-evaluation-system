@@ -28,9 +28,11 @@ public class StudentDto extends UserDto {
     }
 
     @Builder
-    public StudentDto(long id, String firstName, String lastName, String username, String password, String role,
+    public StudentDto(long id,
+            String firstName, String lastName, String fullName,
+            String username, String password, String role,
             PersonalInfoDto personalInfo, String studentNumber, String universityName, String facultyName) {
-        super(id, firstName, lastName, username, password, role, personalInfo);
+        super(id, firstName, lastName, fullName, username, password, role, personalInfo);
         this.studentNumber = studentNumber;
         this.universityName = universityName;
         this.facultyName = facultyName;
@@ -41,6 +43,7 @@ public class StudentDto extends UserDto {
                 .id(student.getId())
                 .username(student.getUsername()).password(student.getPassword())
                 .firstName(student.getFirstName()).lastName(student.getLastName())
+                .fullName(student.getFirstName() + " " + student.getLastName())
                 .role(student.getRole())
                 .personalInfo(
                         student.getPersonalInfo() != null ? PersonalInfoDto.from(student.getPersonalInfo()) : null)

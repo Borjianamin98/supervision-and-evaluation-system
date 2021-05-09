@@ -3,11 +3,13 @@ package ir.ac.sbu.evaluation.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import ir.ac.sbu.evaluation.dto.user.UserDto;
+import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
 import ir.ac.sbu.evaluation.enumeration.Education;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
 import ir.ac.sbu.evaluation.model.problem.Problem;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -56,15 +58,21 @@ public class ProblemDto {
     private ProblemState state;
 
     @NotNull
-    private UserDto supervisor;
+    private MasterDto supervisor;
+
+    @NotNull
+    private Set<MasterDto> referees;
 
     public ProblemDto() {
     }
 
     @Builder
-    public ProblemDto(long id, Education education, String title, String englishTitle, Set<String> keywords,
-            String definition, String history, String considerations, ProblemState state,
-            UserDto supervisor, Set<ProblemEvent> events) {
+    public ProblemDto(long id,
+            Education education,
+            String title, String englishTitle, Set<String> keywords,
+            String definition, String history, String considerations,
+            ProblemState state, Set<ProblemEvent> events,
+            MasterDto supervisor, Set<MasterDto> referees) {
         this.id = id;
         this.education = education;
         this.title = title;
@@ -74,8 +82,9 @@ public class ProblemDto {
         this.history = history;
         this.considerations = considerations;
         this.state = state;
-        this.supervisor = supervisor;
         this.events = events;
+        this.supervisor = supervisor;
+        this.referees = referees;
     }
 
     public static ProblemDto from(Problem problem) {
@@ -87,14 +96,13 @@ public class ProblemDto {
                 .definition(problem.getDefinition()).history(problem.getHistory())
                 .considerations(problem.getConsiderations())
                 .state(problem.getState())
-                .supervisor(UserDto.from(problem.getSupervisor()))
                 .events(problem.getEvents())
+                .supervisor(MasterDto.from(problem.getSupervisor()))
+                .referees(problem.getReferees().stream().map(MasterDto::from).collect(Collectors.toSet()))
                 .build();
     }
 
     public Problem toProblem() {
-        // Ignore below fields (they should injected separately):
-        //   + supervisor
         return Problem.builder()
                 .id(id)
                 .education(education)

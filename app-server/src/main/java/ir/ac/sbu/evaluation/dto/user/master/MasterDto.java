@@ -26,9 +26,11 @@ public class MasterDto extends UserDto {
     }
 
     @Builder
-    public MasterDto(long id, String firstName, String lastName, String username, String password, String role,
+    public MasterDto(long id,
+            String firstName, String lastName, String fullName,
+            String username, String password, String role,
             PersonalInfoDto personalInfo, String degree, String universityName, String facultyName) {
-        super(id, firstName, lastName, username, password, role, personalInfo);
+        super(id, firstName, lastName, fullName, username, password, role, personalInfo);
         this.degree = degree;
         this.universityName = universityName;
         this.facultyName = facultyName;
@@ -39,6 +41,7 @@ public class MasterDto extends UserDto {
                 .id(master.getId())
                 .username(master.getUsername()).password(master.getPassword())
                 .firstName(master.getFirstName()).lastName(master.getLastName())
+                .fullName(master.getFirstName() + " " + master.getLastName())
                 .role(master.getRole())
                 .personalInfo(master.getPersonalInfo() != null ? PersonalInfoDto.from(master.getPersonalInfo()) : null)
                 .degree(master.getDegree())
