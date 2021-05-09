@@ -17,7 +17,7 @@ export interface Problem {
     considerations: string,
 
     state: ProblemState,
-    events?: ProblemEvent[],
+    events: ProblemEvent[],
 
     supervisor?: Master,
     referees: Master[],

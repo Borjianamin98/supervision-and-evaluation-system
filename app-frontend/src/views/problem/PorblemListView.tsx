@@ -3,18 +3,21 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import HistoryIcon from '@material-ui/icons/History';
+import AddCommentIcon from '@material-ui/icons/AddComment';
+import DoneIcon from '@material-ui/icons/Done';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 import {AxiosResponse} from "axios";
 import moment from "jalali-moment";
 import {useSnackbar} from "notistack";
 import React, {useState} from 'react';
 import {rtlTheme} from "../../App";
 import CustomAlert from "../../components/Alert/CustomAlert";
+import HistoryInfoAlert from "../../components/Alert/HistoryInfoAlert";
 import KeywordsList from "../../components/Chip/KeywordsList";
 import ComboBox from "../../components/ComboBox/ComboBox";
 import CollapsibleTableRow from "../../components/Table/CollapsibleTableRow";
 import {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
-import StatelessPaginationTable from "../../components/Table/StatelessPaginationTable";
+import StatelessPaginationTable, {StatelessPaginationListAction} from "../../components/Table/StatelessPaginationTable";
 import browserHistory from "../../config/browserHistory";
 import {educationMapToPersian} from "../../model/enum/education";
 import {LoadingState} from "../../model/enum/loadingState";
@@ -52,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     },
     event: {
         margin: theme.spacing(1, 0),
-    }
+    },
 }));
 
 const ProblemListView: React.FunctionComponent = () => {
@@ -63,8 +66,9 @@ const ProblemListView: React.FunctionComponent = () => {
     const [problems, setProblems] = React.useState<Pageable<Problem>>(emptyPageable());
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
     const [loadingState, setLoadingState] = React.useState<LoadingState>(LoadingState.LOADING);
+
+    const jwtPayloadRoles = AuthenticationService.getJwtPayloadRoles()!;
 
     React.useEffect(() => {
         if (loadingState === LoadingState.LOADED) {
@@ -93,6 +97,26 @@ const ProblemListView: React.FunctionComponent = () => {
             pathname: PROBLEM_EDIT_VIEW_PATH,
             state: problem
         })
+    }
+
+    function getExtraActions<T>(): StatelessPaginationListAction<T>[] {
+        if (jwtPayloadRoles.includes(Role.MASTER)) {
+            switch (selectedProblemState) {
+                case ProblemState.CREATED:
+                    return [
+                        {tooltipTitle: "ثبت نظر", icon: <AddCommentIcon/>, onClickAction: row => undefined},
+                        {tooltipTitle: "تایید اولیه", icon: <DoneIcon/>, onClickAction: row => undefined},
+                    ];
+                case ProblemState.IN_PROGRESS:
+                    return [
+                        {tooltipTitle: "مشاهده", icon: <VisibilityIcon/>, onClickAction: row => undefined},
+                    ];
+                case ProblemState.COMPLETED:
+                case ProblemState.ABANDONED:
+                    return [];
+            }
+        }
+        return [];
     }
 
     return (
@@ -167,6 +191,21 @@ const ProblemListView: React.FunctionComponent = () => {
                                 }] : []),
                             {content: actions}
                         ];
+                        const events = row.events.sort((a, b) =>
+                            new Date(a.createdDate).valueOf() - new Date(b.createdDate).valueOf())
+                            .reverse()
+                            .slice(0, 10)
+                            .map((event: ProblemEvent) =>
+                                <HistoryInfoAlert
+                                    key={event.id!}
+                                    className={classes.event}
+                                >
+                                    {moment(event.createdDate).locale('fa').format('ddd، D MMMM YYYY (h a)')}
+                                    {": "}
+                                    {event.message}
+                                </HistoryInfoAlert>
+                            )
+
                         return (
                             <CollapsibleTableRow
                                 key={row.id!}
@@ -175,7 +214,7 @@ const ProblemListView: React.FunctionComponent = () => {
                                 <Grid container className={classes.text}>
                                     <Grid container item direction="column" xs={12} sm={12} md={5} lg={5} xl={5}>
                                         <Typography variant="h6" className={classes.tableContentHeader}>
-                                            اطلاعات کلی:
+                                            اطلاعات کلی
                                         </Typography>
                                         <Typography paragraph>
                                             {`دوره تحصیلی: ${educationMapToPersian(row.education)}`}
@@ -201,29 +240,15 @@ const ProblemListView: React.FunctionComponent = () => {
                                         </Typography>
                                     </Grid>
                                     <Grid item xs={false} sm={false} md={1} lg={1} xl={1}/>
-                                    <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                                    <Grid container item direction="column" xs={12} sm={12} md={6} lg={6} xl={6}>
                                         <Typography variant="h6" className={classes.tableContentHeader}>
-                                            رخدادها:
+                                            رخدادهای اخیر
                                         </Typography>
-                                        {
-                                            row.events
-                                                ?.sort((a, b) =>
-                                                    new Date(a.createdDate).valueOf() - new Date(b.createdDate).valueOf())
-                                                .reverse()
-                                                .map((event: ProblemEvent) =>
-                                                    <CustomAlert
-                                                        key={event.id!}
-                                                        icon={<HistoryIcon/>}
-                                                        severity="info"
-                                                        variant="outlined"
-                                                        className={classes.event}
-                                                    >
-                                                        {moment(event.createdDate).locale('fa').format('ddd، D MMMM YYYY (h a)')}
-                                                        {": "}
-                                                        {event.message}
-                                                    </CustomAlert>
-                                                )
-                                        }
+                                        {events.length !== 0 ? events :
+                                            <CustomAlert variant="outlined" severity="info"
+                                                         className={classes.event}>
+                                                هیچ رخدادی وجود ندارد.
+                                            </CustomAlert>}
                                     </Grid>
                                 </Grid>
                             </CollapsibleTableRow>
@@ -233,9 +258,10 @@ const ProblemListView: React.FunctionComponent = () => {
                     hasDelete={row => false}
                     isDeletable={row => false}
                     onDeleteRow={row => undefined}
-                    hasEdit={row => true}
+                    hasEdit={row => jwtPayloadRoles.includes(Role.STUDENT)}
                     isEditable={row => true}
                     onEditRow={row => onEditClick(row)}
+                    extraActions={getExtraActions()}
                     onRetryClick={() => setLoadingState(LoadingState.LOADING)}
                 />
             </Grid>

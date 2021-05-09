@@ -34,9 +34,10 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-interface StatelessPaginationListAction<T> extends Omit<TooltipIconButtonProps, "onClick"> {
+export interface StatelessPaginationListAction<T> extends Omit<TooltipIconButtonProps, "onClick" | "hidden"> {
     onClickAction: (row: T) => void,
     icon: React.ReactNode,
+    hidden?: boolean,
 }
 
 interface StatelessPaginationListProps<T> extends BoxProps {
@@ -119,15 +120,17 @@ function StatelessPaginationTable<T>(props: StatelessPaginationListProps<T>) {
             <DeleteIcon/>
         </TooltipIconButton>
         const customActions = extraActions?.map((actionProps) => {
-            const {onClickAction, icon, ...rest} = actionProps;
-            return <TooltipIconButton
-                color="secondary"
-                className={classes.action}
-                onClick={() => onClickAction(row)}
-                {...rest}
-            >
-                {icon}
-            </TooltipIconButton>;
+            const {onClickAction, icon, hidden, ...rest} = actionProps;
+            return (hidden ?? false) ? null : (
+                <TooltipIconButton
+                    color="secondary"
+                    className={classes.action}
+                    onClick={() => onClickAction(row)}
+                    {...rest}
+                >
+                    {icon}
+                </TooltipIconButton>
+            );
         });
 
         const actions = (
