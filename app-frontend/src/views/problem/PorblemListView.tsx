@@ -4,6 +4,7 @@ import Paper from "@material-ui/core/Paper";
 import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import AddCommentIcon from '@material-ui/icons/AddComment';
+import CancelIcon from '@material-ui/icons/Cancel';
 import DoneIcon from '@material-ui/icons/Done';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import {AxiosResponse} from "axios";
@@ -104,27 +105,24 @@ const ProblemListView: React.FunctionComponent = () => {
             case ProblemState.CREATED:
                 switch (jwtPayloadRole) {
                     case Role.STUDENT:
-                        return [];
+                        return [
+                            {tooltipTitle: "لغو مسئله", icon: <CancelIcon/>, onClickAction: row => undefined},
+                        ];
                     case Role.MASTER:
                         return [
                             {tooltipTitle: "ثبت نظر", icon: <AddCommentIcon/>, onClickAction: row => undefined},
                             {tooltipTitle: "تایید اولیه", icon: <DoneIcon/>, onClickAction: row => undefined},
                         ];
-                    case Role.ADMIN:
-                        return [];
                     default:
                         throw new Error("Unexpected role: " + jwtPayloadRole);
                 }
             case ProblemState.IN_PROGRESS:
                 switch (jwtPayloadRole) {
                     case Role.STUDENT:
-                        return [];
                     case Role.MASTER:
                         return [
                             {tooltipTitle: "مشاهده", icon: <VisibilityIcon/>, onClickAction: row => undefined},
                         ];
-                    case Role.ADMIN:
-                        return [];
                     default:
                         throw new Error("Unexpected role: " + jwtPayloadRole);
                 }
