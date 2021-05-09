@@ -1,6 +1,7 @@
 package ir.ac.sbu.evaluation.model.problem;
 
 import ir.ac.sbu.evaluation.model.Auditable;
+import java.time.Instant;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -21,8 +22,8 @@ public class ProblemEvent extends Auditable {
     }
 
     @Builder
-    public ProblemEvent(Long id, String message) {
-        super(id);
+    public ProblemEvent(Long id, String createdBy, Instant createdDate, String message) {
+        super(id, createdBy, createdDate);
         this.message = message;
     }
 }

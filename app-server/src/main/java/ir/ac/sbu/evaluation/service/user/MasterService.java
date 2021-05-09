@@ -1,7 +1,5 @@
 package ir.ac.sbu.evaluation.service.user;
 
-import ir.ac.sbu.evaluation.dto.ProblemDto;
-import ir.ac.sbu.evaluation.dto.university.UniversityDto;
 import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
 import ir.ac.sbu.evaluation.model.university.Faculty;

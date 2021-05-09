@@ -4,6 +4,7 @@ import java.time.Instant;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
@@ -27,7 +28,10 @@ public class Auditable extends BaseEntity {
     public Auditable() {
     }
 
-    public Auditable(Long id) {
+    @Builder(builderMethodName = "auditableBuilder")
+    public Auditable(Long id, String createdBy, Instant createdDate) {
         super(id);
+        this.createdBy = createdBy;
+        this.createdDate = createdDate;
     }
 }

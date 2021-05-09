@@ -2,7 +2,7 @@ package ir.ac.sbu.evaluation.controller.problem;
 
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_PROBLEM_STUDENT_ROOT_PATH;
 
-import ir.ac.sbu.evaluation.dto.ProblemDto;
+import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.service.ProblemService;
@@ -54,6 +54,6 @@ public class ProblemStudentController {
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long problemId,
             @Valid @RequestBody ProblemDto problemDto) {
-        return problemService.update(problemId, problemDto);
+        return problemService.updateProblem(problemId, problemDto);
     }
 }

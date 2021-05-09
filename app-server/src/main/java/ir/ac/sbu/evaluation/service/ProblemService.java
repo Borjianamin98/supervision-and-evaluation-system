@@ -1,6 +1,7 @@
 package ir.ac.sbu.evaluation.service;
 
-import ir.ac.sbu.evaluation.dto.ProblemDto;
+import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
+import ir.ac.sbu.evaluation.dto.problem.ProblemEventDto;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
 import ir.ac.sbu.evaluation.model.problem.Problem;
@@ -49,7 +50,7 @@ public class ProblemService {
         return ProblemDto.from(problemRepository.save(problem));
     }
 
-    public ProblemDto update(long problemId, ProblemDto problemDto) {
+    public ProblemDto updateProblem(long problemId, ProblemDto problemDto) {
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new ResourceNotFoundException("Problem not found: ID = " + problemId));
 
@@ -76,5 +77,17 @@ public class ProblemService {
         return problemRepository
                 .findAllAssignedForMasterAndState(masterUserId, problemState, pageable)
                 .map(ProblemDto::from);
+    }
+
+    @Transactional
+    public ProblemEventDto placeCommentOnProblem(long problemId, ProblemEventDto comment) {
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(() -> new ResourceNotFoundException("Problem not found: ID = " + problemId));
+
+        ProblemEvent savedEvent = eventRepository.save(comment.toProblemEvent());
+        problem.getEvents().add(savedEvent);
+        problemRepository.save(problem);
+
+        return ProblemEventDto.from(savedEvent);
     }
 }
