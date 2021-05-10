@@ -7,7 +7,7 @@ import Paper from "@material-ui/core/Paper";
 import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import AddCommentIcon from '@material-ui/icons/AddComment';
-import CancelIcon from '@material-ui/icons/Cancel';
+import CloseIcon from '@material-ui/icons/Close';
 import DoneIcon from '@material-ui/icons/Done';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import {AxiosError, AxiosResponse} from "axios";
@@ -19,6 +19,7 @@ import CustomAlert from "../../components/Alert/CustomAlert";
 import HistoryInfoAlert from "../../components/Alert/HistoryInfoAlert";
 import KeywordsList from "../../components/Chip/KeywordsList";
 import ComboBox from "../../components/ComboBox/ComboBox";
+import ConfirmDialog from "../../components/Dialog/ConfirmDialog";
 import CollapsibleTableRow from "../../components/Table/CollapsibleTableRow";
 import {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
 import StatelessPaginationTable, {StatelessPaginationListAction} from "../../components/Table/StatelessPaginationTable";
@@ -38,6 +39,7 @@ import {
     problemStateMapToPersian
 } from "../../model/problem/problemState";
 import AuthenticationService from "../../services/api/AuthenticationService";
+import ProblemAuthenticatedService from "../../services/api/problem/ProblemAuthenticatedService";
 import ProblemMasterService from "../../services/api/problem/ProblemMasterService";
 import ProblemStudentService from "../../services/api/problem/ProblemStudentService";
 import {PROBLEM_EDIT_VIEW_PATH} from "../ViewPaths";
@@ -111,12 +113,17 @@ const ProblemListView: React.FunctionComponent = () => {
                 switch (jwtPayloadRole) {
                     case Role.STUDENT:
                         return [
-                            {tooltipTitle: "لغو مسئله", icon: <CancelIcon/>, onClickAction: row => undefined},
+                            {
+                                tooltipTitle: "لغو مسئله",
+                                icon: <CloseIcon/>,
+                                onClickAction: onAbandonedDialogOpen
+                            },
                         ];
                     case Role.MASTER:
                         return [
                             {tooltipTitle: "ثبت نظر", icon: <AddCommentIcon/>, onClickAction: onCommentDialogOpen},
                             {tooltipTitle: "تایید اولیه", icon: <DoneIcon/>, onClickAction: row => undefined},
+                            {tooltipTitle: "رد مسئله", icon: <CloseIcon/>, onClickAction: onAbandonedDialogOpen},
                         ];
                     default:
                         throw new Error("Unexpected role: " + jwtPayloadRole);
@@ -142,7 +149,7 @@ const ProblemListView: React.FunctionComponent = () => {
 
     const [commentProblem, setCommentProblem] = useState<Problem>(ProblemStudentService.createInitialProblem());
     const [comment, setComment] = useState<string>("");
-    const [dialogOpen, setDialogOpen] = React.useState(false);
+    const [commentDialogOpen, setCommentDialogOpen] = React.useState(false);
 
     const handleFailedRequest = (error: AxiosError) => {
         const {statusCode, message} = getGeneralErrorMessage(error);
@@ -163,7 +170,7 @@ const ProblemListView: React.FunctionComponent = () => {
         setComment("");
         setCommentProblem(problem);
         setErrorChecking(false);
-        setDialogOpen(true);
+        setCommentDialogOpen(true);
     };
 
     const onCommentDialogClose = (shouldUpdate: boolean) => {
@@ -178,7 +185,29 @@ const ProblemListView: React.FunctionComponent = () => {
                 .then(value => handleSuccessComment(value.data))
                 .catch(error => handleFailedRequest(error))
         }
-        setDialogOpen(false);
+        setCommentDialogOpen(false);
+    };
+
+    const [abandonDialogOpen, setAbandonDialogOpen] = React.useState(false);
+    const [abandonProblem, setAbandonProblem] = useState<Problem>(ProblemStudentService.createInitialProblem());
+
+    const handleSuccessAbandon = (problem: Problem) => {
+        enqueueSnackbar(`پایان‌نامه (پروژه) ${problem.title} به وضعیت لغو شده منتقل شد.`, {variant: "success"});
+        setLoadingState(LoadingState.SHOULD_RELOAD);
+    }
+
+    const onAbandonedDialogOpen = (problem: Problem) => {
+        setAbandonProblem(problem);
+        setAbandonDialogOpen(true);
+    };
+
+    const onAbandonedDialogEvent = (confirmed: boolean) => {
+        if (confirmed) {
+            ProblemAuthenticatedService.abandonProblem(abandonProblem.id!)
+                .then(value => handleSuccessAbandon(value.data))
+                .catch(error => handleFailedRequest(error))
+        }
+        setAbandonDialogOpen(false);
     };
 
     return (
@@ -262,6 +291,8 @@ const ProblemListView: React.FunctionComponent = () => {
                                     key={event.id!}
                                     className={classes.event}
                                 >
+                                    {event.createdBy}
+                                    {"، "}
                                     {moment(event.createdDate!).locale('fa').format('ddd، D MMMM YYYY (h:mm a)')}
                                     {": "}
                                     {event.message}
@@ -326,34 +357,41 @@ const ProblemListView: React.FunctionComponent = () => {
                     extraActions={getExtraActions()}
                     onRetryClick={() => setLoadingState(LoadingState.LOADING)}
                 />
-                <Dialog dir="rtl" open={dialogOpen} onClose={() => onCommentDialogClose(false)}>
-                    <DialogTitle>ثبت نظر</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText style={{textAlign: "justify"}}>
-                            نظرات، بازخوردها یا پیشنهادات خود را برای تایید مسئله وارد نمایید.
-                        </DialogContentText>
-                        <Typography paragraph>{`عنوان مسئله: ${commentProblem.title}`}</Typography>
-                        <CustomTextField
-                            autoFocus
-                            label="نظرات"
-                            multiline={true}
-                            rows={6}
-                            maxLength={1000}
-                            value={comment}
-                            onChange={(e) => setComment(e.target.value)}
-                            helperText={isBlank(comment) ? "ثبت نظر خالی امکان‌پذیر نمی‌باشد." : ""}
-                            error={isBlank(comment)}
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => onCommentDialogClose(false)} color="primary">
-                            انصراف
-                        </Button>
-                        <Button onClick={() => onCommentDialogClose(true)} color="primary">
-                            ثبت نظر
-                        </Button>
-                    </DialogActions>
-                </Dialog>
+                <div aria-label={"dialogs"}>
+                    <Dialog dir="rtl" open={commentDialogOpen} onClose={() => onCommentDialogClose(false)}>
+                        <DialogTitle>ثبت نظر</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText style={{textAlign: "justify"}}>
+                                نظرات، بازخوردها یا پیشنهادات خود را برای تایید مسئله وارد نمایید.
+                            </DialogContentText>
+                            <Typography paragraph>{`عنوان مسئله: ${commentProblem.title}`}</Typography>
+                            <CustomTextField
+                                autoFocus
+                                label="نظرات"
+                                multiline={true}
+                                rows={6}
+                                maxLength={1000}
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                                helperText={isBlank(comment) ? "ثبت نظر خالی امکان‌پذیر نمی‌باشد." : ""}
+                                error={isBlank(comment)}
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => onCommentDialogClose(false)} color="primary">
+                                انصراف
+                            </Button>
+                            <Button onClick={() => onCommentDialogClose(true)} color="primary">
+                                ثبت نظر
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+                    <ConfirmDialog open={abandonDialogOpen}
+                                   onDialogOpenClose={onAbandonedDialogEvent}
+                                   title={"لغو پایان‌نامه (پروژه)"}
+                                   description={"در صورتی که تمایل به لغو مسئله ایجاد شده دارید، تایید نمایید. دقت کنید که این عمل برگشت‌پذیر نمی‌باشد."}
+                    />
+                </div>
             </Grid>
         </ThemeProvider>
     );

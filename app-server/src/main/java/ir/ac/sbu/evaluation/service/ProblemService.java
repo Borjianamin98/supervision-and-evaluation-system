@@ -52,9 +52,13 @@ public class ProblemService {
         return ProblemDto.from(problemRepository.save(problem));
     }
 
-    public ProblemDto updateProblem(long problemId, ProblemDto problemDto) {
+    public ProblemDto updateStudentProblem(long studentId, long problemId, ProblemDto problemDto)
+            throws IllegalAccessException {
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new ResourceNotFoundException("Problem not found: ID = " + problemId));
+        if (problem.getStudent().getId() != studentId) {
+            throw new IllegalAccessException("Problem is not belong to student: " + studentId);
+        }
 
         problem.setEducation(problemDto.getEducation());
         problem.setTitle(problemDto.getTitle());
@@ -65,6 +69,21 @@ public class ProblemService {
         problem.setConsiderations(problemDto.getConsiderations());
         problem.getEvents().add(eventRepository.save(
                 ProblemEvent.builder().message("اطلاعات مربوط به مسئله ویرایش شد.").build()));
+        return ProblemDto.from(problemRepository.save(problem));
+    }
+
+    public ProblemDto abandonProblem(long userId, long problemId)
+            throws IllegalAccessException {
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(() -> new ResourceNotFoundException("Problem not found: ID = " + problemId));
+        if (problem.getStudent().getId() != userId && problem.getSupervisor().getId() != userId) {
+            throw new IllegalAccessException(
+                    "Problem is not belong to student or supervisor: ID = " + userId + " Problem ID = " + problemId);
+        }
+
+        problem.setState(ProblemState.ABANDONED);
+        problem.getEvents().add(eventRepository.save(
+                ProblemEvent.builder().message("مسئله به وضعیت لغو شده تغییر کرد.").build()));
         return ProblemDto.from(problemRepository.save(problem));
     }
 

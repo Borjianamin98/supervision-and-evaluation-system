@@ -32,7 +32,7 @@ const ConfirmDialog: React.FunctionComponent<ConfirmDialogProps> = (props) => {
                     انصراف
                 </Button>
                 <Button onClick={event => onDialogOpenClose(true)} color="primary" autoFocus>
-                    ثبت نظر
+                    تایید
                 </Button>
             </DialogActions>
         </Dialog>

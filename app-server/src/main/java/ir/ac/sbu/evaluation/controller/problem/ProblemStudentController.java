@@ -53,7 +53,7 @@ public class ProblemStudentController {
     public ProblemDto update(
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long problemId,
-            @Valid @RequestBody ProblemDto problemDto) {
-        return problemService.updateProblem(problemId, problemDto);
+            @Valid @RequestBody ProblemDto problemDto) throws IllegalAccessException {
+        return problemService.updateStudentProblem(authUserDetail.getUserId(), problemId, problemDto);
     }
 }
