@@ -9,7 +9,7 @@ const MainViewContent: React.FunctionComponent = () => {
         <Switch>
             {allRoutesInfo
                 .map((value, id) =>
-                    <PrivateRoute key={id} exact={value.exact ?? false} path={value.path}>
+                    <PrivateRoute key={id} exact={value.exact ?? false} path={value.path} accessRoles={value.roles}>
                         {React.createElement(value.component, {})}
                     </PrivateRoute>
                 )}

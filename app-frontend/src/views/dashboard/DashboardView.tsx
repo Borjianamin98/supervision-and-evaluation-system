@@ -6,6 +6,7 @@ import {Role} from "../../model/enum/role";
 import AuthenticationService from "../../services/api/AuthenticationService";
 import {LOGIN_VIEW_PATH} from "../ViewPaths";
 import AdminDashboardView from "./AdminDashboardView";
+import MasterDashboardView from "./MasterDashboardView";
 import StudentDashboardView from "./StudentDashboardView";
 
 const DashboardView: React.FunctionComponent = () => {
@@ -46,6 +47,7 @@ const DashboardView: React.FunctionComponent = () => {
                 <AdminDashboardView/>
             </PrivateRoute>
             <PrivateRoute path={masterDashboardPath}>
+                <MasterDashboardView/>
             </PrivateRoute>
             <PrivateRoute path={studentDashboardPath}>
                 <StudentDashboardView/>
