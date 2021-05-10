@@ -7,11 +7,12 @@ import {allRoutesInfo} from './MainViewNavBarLinks';
 const MainViewContent: React.FunctionComponent = () => {
     return (
         <Switch>
-            {allRoutesInfo.map((value, id) =>
-                <PrivateRoute key={id} exact={value.exact ?? false} path={value.path}>
-                    {React.createElement(value.component, {})}
-                </PrivateRoute>
-            )}
+            {allRoutesInfo
+                .map((value, id) =>
+                    <PrivateRoute key={id} exact={value.exact ?? false} path={value.path}>
+                        {React.createElement(value.component, {})}
+                    </PrivateRoute>
+                )}
             <Redirect to={DASHBOARD_VIEW_PATH}/>
         </Switch>
     );

@@ -12,6 +12,7 @@ export const PROFILE_VIEW_PATH = "/profile";
 // Problem Views
 export const PROBLEM_LIST_VIEW_PATH = "/problem/list";
 export const PROBLEM_EDIT_VIEW_PATH = "/problem/edit";
+export const PROBLEM_MANAGEMENT_VIEW_PATH = "/problem/management";
 
 // University Views
 export const UNIVERSITY_LIST_VIEW_PATH = "/university/list";

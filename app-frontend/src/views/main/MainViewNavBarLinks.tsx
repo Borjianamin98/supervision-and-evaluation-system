@@ -14,6 +14,7 @@ import AuthenticationService from "../../services/api/AuthenticationService";
 import DashboardView from "../dashboard/DashboardView";
 import ProblemEdit from "../problem/edit/ProblemEdit";
 import ProblemListView from "../problem/PorblemListView";
+import ProblemManagementView from "../problem/ProblemManagementView";
 import ProfileView from "../ProfileView";
 import SettingsView from "../SettingsView";
 import FacultyListView from "../university/faculty/FacultyListView";
@@ -23,6 +24,7 @@ import {
     FACULTY_LIST_VIEW_PATH,
     PROBLEM_EDIT_VIEW_PATH,
     PROBLEM_LIST_VIEW_PATH,
+    PROBLEM_MANAGEMENT_VIEW_PATH,
     PROFILE_VIEW_PATH,
     SETTINGS_VIEW_PATH,
     UNIVERSITY_LIST_VIEW_PATH
@@ -31,10 +33,10 @@ import {
 interface navBarRouteInfo {
     path: string,
     name: string,
-    exact?: boolean, // Default is true
-    roles?: Role[], // Default is anyone
-    icon: React.FunctionComponent,
-    component: React.FunctionComponent
+    exact?: boolean,        // (Default: true)
+    roles?: Role[],         // (Default: anyone)
+    component: React.FunctionComponent,
+    icon?: React.FunctionComponent,
 }
 
 const dashboardRoutesInfo: navBarRouteInfo[] = [
@@ -42,8 +44,8 @@ const dashboardRoutesInfo: navBarRouteInfo[] = [
         path: DASHBOARD_VIEW_PATH,
         name: "داشبورد",
         exact: false,
-        icon: DashboardIcon,
-        component: DashboardView
+        component: DashboardView,
+        icon: DashboardIcon
     },
 ]
 
@@ -52,15 +54,21 @@ const problemRoutesInfo: navBarRouteInfo[] = [
         path: PROBLEM_LIST_VIEW_PATH,
         name: "پایان‌نامه‌ها (پروژه‌ها)",
         roles: [Role.STUDENT, Role.MASTER],
-        icon: ViewListIcon,
         component: ProblemListView,
+        icon: ViewListIcon,
     },
     {
         path: PROBLEM_EDIT_VIEW_PATH,
         name: "ایجاد پایان‌نامه‌ (پروژه)",
         roles: [Role.STUDENT],
-        icon: NoteAddIcon,
         component: ProblemEdit,
+        icon: NoteAddIcon,
+    },
+    {
+        path: PROBLEM_MANAGEMENT_VIEW_PATH,
+        name: "مدیریت پایان‌نامه‌ (پروژه)",
+        roles: [Role.STUDENT, Role.MASTER],
+        component: ProblemManagementView,
     },
 ]
 
@@ -68,14 +76,14 @@ const managementRoutesInfo: navBarRouteInfo[] = [
     {
         path: PROFILE_VIEW_PATH,
         name: "حساب کاربری",
-        icon: PersonIcon,
         component: ProfileView,
+        icon: PersonIcon,
     },
     {
         path: SETTINGS_VIEW_PATH,
         name: "تنظیمات",
-        icon: SettingsIcon,
         component: SettingsView,
+        icon: SettingsIcon,
     },
 ]
 
@@ -85,15 +93,15 @@ const universityRoutesInfo: navBarRouteInfo[] = [
         path: UNIVERSITY_LIST_VIEW_PATH,
         name: "دانشگاه‌ها",
         roles: [Role.ADMIN],
-        icon: UniversityIcon,
         component: UniversityListView,
+        icon: UniversityIcon,
     },
     {
         path: FACULTY_LIST_VIEW_PATH,
         name: "دانشکده‌ها",
         roles: [Role.ADMIN],
-        icon: SchoolIcon,
         component: FacultyListView,
+        icon: SchoolIcon,
     },
 ]
 
@@ -111,15 +119,17 @@ const createListFromRoutesInfo = (routesInfo: navBarRouteInfo[], authenticatedUs
         candidateRoutes.length !== 0 ? (
             <React.Fragment>
                 <List>
-                    {candidateRoutes.map((value, index) =>
-                        <ListItemLink
-                            key={index}
-                            dir="rtl"
-                            to={value.path}
-                            primary={value.name}
-                            icon={React.createElement(value.icon, {})}
-                        />
-                    )}
+                    {candidateRoutes
+                        .filter(value => value.icon !== undefined)
+                        .map((value, index) =>
+                            <ListItemLink
+                                key={index}
+                                dir="rtl"
+                                to={value.path}
+                                primary={value.name}
+                                icon={React.createElement(value.icon!, {})}
+                            />
+                        )}
                 </List>
                 <Divider/>
             </React.Fragment>

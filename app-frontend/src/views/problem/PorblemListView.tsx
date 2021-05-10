@@ -42,7 +42,7 @@ import AuthenticationService from "../../services/api/AuthenticationService";
 import ProblemAuthenticatedService from "../../services/api/problem/ProblemAuthenticatedService";
 import ProblemMasterService from "../../services/api/problem/ProblemMasterService";
 import ProblemStudentService from "../../services/api/problem/ProblemStudentService";
-import {PROBLEM_EDIT_VIEW_PATH} from "../ViewPaths";
+import {PROBLEM_EDIT_VIEW_PATH, PROBLEM_MANAGEMENT_VIEW_PATH} from "../ViewPaths";
 
 const useStyles = makeStyles((theme) => ({
     noWrap: {
@@ -107,6 +107,10 @@ const ProblemListView: React.FunctionComponent = () => {
         })
     }
 
+    const onManageProblem = (problem: Problem) => {
+        browserHistory.push(PROBLEM_MANAGEMENT_VIEW_PATH);
+    }
+
     const getExtraActions = (): StatelessPaginationListAction<Problem>[] => {
         switch (selectedProblemState) {
             case ProblemState.CREATED:
@@ -133,7 +137,7 @@ const ProblemListView: React.FunctionComponent = () => {
                     case Role.STUDENT:
                     case Role.MASTER:
                         return [
-                            {tooltipTitle: "مشاهده", icon: <VisibilityIcon/>, onClickAction: row => undefined},
+                            {tooltipTitle: "مشاهده", icon: <VisibilityIcon/>, onClickAction: onManageProblem},
                         ];
                     default:
                         throw new Error("Unexpected role: " + jwtPayloadRole);
