@@ -33,7 +33,10 @@ export const API_ADMIN_INFO_PATH = `${API_ADMIN_PATH}/info`
 export const API_PROBLEM_ROOT_PATH = "/problem"
 export const API_PROBLEM_STUDENT_ROOT_PATH = `${API_PROBLEM_ROOT_PATH}/authenticatedStudent`
 export const API_PROBLEM_MASTER_ROOT_PATH = `${API_PROBLEM_ROOT_PATH}/authenticatedMaster`
+// Student Problem Paths
 export const API_PROBLEM_STUDENT_RESOURCE_PATH = `${API_PROBLEM_STUDENT_ROOT_PATH}/{0}`
+// Master Problem Paths
+export const API_PROBLEM_MASTER_COMMENT_ON_PROBLEM_PATH = `${API_PROBLEM_MASTER_ROOT_PATH}/{0}/comment`
 
 // University Paths
 export const API_UNIVERSITY_ROOT_PATH = "/university"

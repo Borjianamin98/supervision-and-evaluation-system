@@ -9,6 +9,7 @@ const HistoryInfoAlert: React.FunctionComponent<Omit<AlertProps, "icon" | "sever
             icon={<HistoryIcon/>}
             severity="info"
             variant="outlined"
+            {...props}
         >
             {props.children}
         </CustomAlert>

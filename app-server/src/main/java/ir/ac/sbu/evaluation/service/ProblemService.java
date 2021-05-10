@@ -47,6 +47,8 @@ public class ProblemService {
         problem.setStudent(student);
         problem.setSupervisor(supervisor);
         problem.setState(ProblemState.CREATED);
+        problem.getEvents().add(eventRepository.save(
+                ProblemEvent.builder().message("پایان‌نامه (پروژه) تعریف شد.").build()));
         return ProblemDto.from(problemRepository.save(problem));
     }
 

@@ -119,10 +119,11 @@ function StatelessPaginationTable<T>(props: StatelessPaginationListProps<T>) {
             onClick={() => onDeleteRow(row)}>
             <DeleteIcon/>
         </TooltipIconButton>
-        const customActions = extraActions?.map((actionProps) => {
+        const customActions = extraActions?.map((actionProps, index) => {
             const {onClickAction, icon, hidden, ...rest} = actionProps;
             return (hidden ?? false) ? null : (
                 <TooltipIconButton
+                    key={index}
                     color="secondary"
                     className={classes.action}
                     onClick={() => onClickAction(row)}

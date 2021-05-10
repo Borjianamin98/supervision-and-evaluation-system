@@ -10,7 +10,7 @@ import AddCommentIcon from '@material-ui/icons/AddComment';
 import CancelIcon from '@material-ui/icons/Cancel';
 import DoneIcon from '@material-ui/icons/Done';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import {AxiosResponse} from "axios";
+import {AxiosError, AxiosResponse} from "axios";
 import moment from "jalali-moment";
 import {useSnackbar} from "notistack";
 import React, {useState} from 'react';
@@ -23,6 +23,7 @@ import CollapsibleTableRow from "../../components/Table/CollapsibleTableRow";
 import {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
 import StatelessPaginationTable, {StatelessPaginationListAction} from "../../components/Table/StatelessPaginationTable";
 import CustomTextField from "../../components/Text/CustomTextField";
+import {getGeneralErrorMessage} from "../../config/axios-config";
 import browserHistory from "../../config/browserHistory";
 import {educationMapToPersian} from "../../model/enum/education";
 import {LoadingState} from "../../model/enum/loadingState";
@@ -142,19 +143,40 @@ const ProblemListView: React.FunctionComponent = () => {
     const [commentProblem, setCommentProblem] = useState<Problem>(ProblemStudentService.createInitialProblem());
     const [comment, setComment] = useState<string>("");
     const [dialogOpen, setDialogOpen] = React.useState(false);
+
+    const handleFailedRequest = (error: AxiosError) => {
+        const {statusCode, message} = getGeneralErrorMessage(error);
+        if (statusCode) {
+            enqueueSnackbar(`در ارسال درخواست از سرور خطای ${statusCode} دریافت شد.`,
+                {variant: "error"});
+        } else if (!statusCode) {
+            enqueueSnackbar(message, {variant: "error"});
+        }
+    }
+
+    const handleSuccessComment = (problemEvent: ProblemEvent) => {
+        enqueueSnackbar(`نظر با موفقیت ثبت شد.`, {variant: "success"});
+        setLoadingState(LoadingState.SHOULD_RELOAD);
+    }
+
     const onCommentDialogOpen = (problem: Problem) => {
         setComment("");
         setCommentProblem(problem);
         setErrorChecking(false);
         setDialogOpen(true);
     };
+
     const onCommentDialogClose = (shouldUpdate: boolean) => {
         if (shouldUpdate) {
             if (comment.length === 0) {
                 setErrorChecking(true);
                 return;
             }
-            // TODO: send request for adding event of comment
+            ProblemMasterService.placeCommentOnProblem(commentProblem.id!, {
+                message: comment
+            })
+                .then(value => handleSuccessComment(value.data))
+                .catch(error => handleFailedRequest(error))
         }
         setDialogOpen(false);
     };
@@ -240,7 +262,7 @@ const ProblemListView: React.FunctionComponent = () => {
                                     key={event.id!}
                                     className={classes.event}
                                 >
-                                    {moment(event.createdDate!).locale('fa').format('ddd، D MMMM YYYY (h a)')}
+                                    {moment(event.createdDate!).locale('fa').format('ddd، D MMMM YYYY (h:mm a)')}
                                     {": "}
                                     {event.message}
                                 </HistoryInfoAlert>
@@ -312,12 +334,14 @@ const ProblemListView: React.FunctionComponent = () => {
                         </DialogContentText>
                         <Typography paragraph>{`عنوان مسئله: ${commentProblem.title}`}</Typography>
                         <CustomTextField
+                            autoFocus
                             label="نظرات"
                             multiline={true}
                             rows={6}
+                            maxLength={1000}
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
-                            helperText={isBlank(comment) ? "ثبت نظر خالی امکان‌پذیر نمی‌باشد.": ""}
+                            helperText={isBlank(comment) ? "ثبت نظر خالی امکان‌پذیر نمی‌باشد." : ""}
                             error={isBlank(comment)}
                         />
                     </DialogContent>

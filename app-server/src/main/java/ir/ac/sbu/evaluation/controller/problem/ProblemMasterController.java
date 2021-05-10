@@ -41,7 +41,7 @@ public class ProblemMasterController {
         return problemService.retrieveMasterAssignedProblems(authUserDetail.getUserId(), problemState, pageable);
     }
 
-    @PostMapping(path = API_PROBLEM_MASTER_COMMENT_ON_PROBLEM_PATH + "/{problemId}")
+    @PostMapping(path = "/{problemId}" + API_PROBLEM_MASTER_COMMENT_ON_PROBLEM_PATH)
     public ProblemEventDto placeCommentOnProblem(
             @PathVariable long problemId,
             @Valid @RequestBody ProblemEventDto problemEventDto) {

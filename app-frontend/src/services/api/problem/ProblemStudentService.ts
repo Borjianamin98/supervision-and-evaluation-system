@@ -4,7 +4,7 @@ import {Pageable} from "../../../model/pageable";
 import {Problem} from "../../../model/problem/problem";
 import {ProblemState} from "../../../model/problem/problemState";
 import {University} from "../../../model/university/university";
-import {API_PROBLEM_ROOT_PATH, API_PROBLEM_STUDENT_RESOURCE_PATH, API_PROBLEM_STUDENT_ROOT_PATH} from "../../ApiPaths";
+import {API_PROBLEM_STUDENT_RESOURCE_PATH, API_PROBLEM_STUDENT_ROOT_PATH} from "../../ApiPaths";
 
 class ProblemStudentService {
 
@@ -29,7 +29,7 @@ class ProblemStudentService {
     }
 
     static createProblem(problem: Problem) {
-        return apiAxios.post(API_PROBLEM_ROOT_PATH,
+        return apiAxios.post(API_PROBLEM_STUDENT_ROOT_PATH,
             problem,
             {
                 validateStatus: status => status === 201
