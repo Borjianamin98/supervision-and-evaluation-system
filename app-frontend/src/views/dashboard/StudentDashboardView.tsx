@@ -23,7 +23,7 @@ const StudentDashboardView: React.FunctionComponent = () => {
                     className={classes.mediaCard}
                     media={addProblemImage}
                     title="افزودن پایان‌نامه (پروژه)"
-                    subTitle="پایان‌نامه یا پروژه‌ی دوره تحصیلی خود را برای ارائه نمودن اضافه نمایید."
+                    subTitle={["پایان‌نامه یا پروژه‌ی دوره تحصیلی خود را برای ارائه نمودن اضافه نمایید."]}
                 >
                     <ButtonLink to={PROBLEM_EDIT_VIEW_PATH} color="primary">
                         ایجاد
@@ -35,7 +35,7 @@ const StudentDashboardView: React.FunctionComponent = () => {
                     className={classes.mediaCard}
                     media={viewProblemImage}
                     title="مشاهده پایان‌نامه‌ها (پروژه‌ها)"
-                    subTitle="پایان‌نامه‌ها (پروژه‌ها) افزوده‌شده و در حال پیگیری را مشاهده نمایید."
+                    subTitle={["پایان‌نامه‌ها (پروژه‌ها) افزوده‌شده و در حال پیگیری را مشاهده نمایید."]}
                 >
                     <ButtonLink to={PROBLEM_LIST_VIEW_PATH} color="primary">
                         مشاهده

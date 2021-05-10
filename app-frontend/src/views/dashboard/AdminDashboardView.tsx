@@ -23,7 +23,7 @@ const AdminDashboardView: React.FunctionComponent = () => {
                     className={classes.mediaCard}
                     media={universityViewImage}
                     title="دانشگاه‌ها"
-                    subTitle="دانشگاه‌ها و اطلاعات مربوط به آن‌ها را مشاهده و مدیریت کنید."
+                    subTitle={["دانشگاه‌ها و اطلاعات مربوط به آن‌ها را مشاهده و مدیریت کنید."]}
                 >
                     <ButtonLink to={UNIVERSITY_LIST_VIEW_PATH} color="primary">
                         مشاهده
@@ -35,7 +35,7 @@ const AdminDashboardView: React.FunctionComponent = () => {
                     className={classes.mediaCard}
                     media={facultyViewImage}
                     title="دانشکده‌ها"
-                    subTitle="دانشکده‌ها و اطلاعات مربوط به آن‌ها را مشاهده و مدیریت کنید."
+                    subTitle={["دانشکده‌ها و اطلاعات مربوط به آن‌ها را مشاهده و مدیریت کنید."]}
                 >
                     <ButtonLink to={FACULTY_LIST_VIEW_PATH} color="primary">
                         مشاهده
