@@ -26,7 +26,7 @@ public class ProblemAuthenticatedController {
     @GetMapping(path = "/{problemId}/abandon")
     public ProblemDto abandonProblem(
             @ModelAttribute AuthUserDetail authUserDetail,
-            @PathVariable long problemId) throws IllegalAccessException {
+            @PathVariable long problemId) {
         return problemService.abandonProblem(authUserDetail.getUserId(), problemId);
     }
 }

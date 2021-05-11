@@ -3,7 +3,11 @@ import {Pageable} from "../../../model/pageable";
 import {Problem} from "../../../model/problem/problem";
 import {ProblemEvent} from "../../../model/problem/problemEvent";
 import {ProblemState} from "../../../model/problem/problemState";
-import {API_PROBLEM_MASTER_COMMENT_ON_PROBLEM_PATH, API_PROBLEM_MASTER_ROOT_PATH} from "../../ApiPaths";
+import {
+    API_PROBLEM_MASTER_COMMENT_ON_PROBLEM_PATH,
+    API_PROBLEM_MASTER_INITIAL_APPROVE_OF_PROBLEM_PATH,
+    API_PROBLEM_MASTER_ROOT_PATH
+} from "../../ApiPaths";
 
 class ProblemMasterService {
 
@@ -28,6 +32,13 @@ class ProblemMasterService {
             {
                 validateStatus: status => status === 200,
             });
+    }
+
+    static initialApprovalOfProblem(problemId: number) {
+        return apiAxios.get<Problem>(API_PROBLEM_MASTER_INITIAL_APPROVE_OF_PROBLEM_PATH.replace("{0}", String(problemId)),
+            {
+                validateStatus: status => status === 200
+            })
     }
 }
 

@@ -120,14 +120,14 @@ const ProblemListView: React.FunctionComponent = () => {
                             {
                                 tooltipTitle: "لغو مسئله",
                                 icon: <CloseIcon/>,
-                                onClickAction: onAbandonedDialogOpen
+                                onClickAction: onAbandonDialogOpen
                             },
                         ];
                     case Role.MASTER:
                         return [
                             {tooltipTitle: "ثبت نظر", icon: <AddCommentIcon/>, onClickAction: onCommentDialogOpen},
-                            {tooltipTitle: "تایید اولیه", icon: <DoneIcon/>, onClickAction: row => undefined},
-                            {tooltipTitle: "رد مسئله", icon: <CloseIcon/>, onClickAction: onAbandonedDialogOpen},
+                            {tooltipTitle: "تایید اولیه", icon: <DoneIcon/>, onClickAction: onApprovalDialogOpen},
+                            {tooltipTitle: "رد مسئله", icon: <CloseIcon/>, onClickAction: onAbandonDialogOpen},
                         ];
                     default:
                         throw new Error("Unexpected role: " + jwtPayloadRole);
@@ -200,18 +200,40 @@ const ProblemListView: React.FunctionComponent = () => {
         setLoadingState(LoadingState.SHOULD_RELOAD);
     }
 
-    const onAbandonedDialogOpen = (problem: Problem) => {
+    const onAbandonDialogOpen = (problem: Problem) => {
         setAbandonProblem(problem);
         setAbandonDialogOpen(true);
     };
 
-    const onAbandonedDialogEvent = (confirmed: boolean) => {
+    const onAbandonDialogEvent = (confirmed: boolean) => {
         if (confirmed) {
             ProblemAuthenticatedService.abandonProblem(abandonProblem.id!)
                 .then(value => handleSuccessAbandon(value.data))
                 .catch(error => handleFailedRequest(error))
         }
         setAbandonDialogOpen(false);
+    };
+
+    const [approvalDialogOpen, setApprovalDialogOpen] = React.useState(false);
+    const [approvalProblem, setApprovalProblem] = useState<Problem>(ProblemStudentService.createInitialProblem());
+
+    const handleSuccessApproval = (problem: Problem) => {
+        enqueueSnackbar(`پایان‌نامه (پروژه) ${problem.title} مورد تایید اولیه قرار گرفت.`, {variant: "success"});
+        setLoadingState(LoadingState.SHOULD_RELOAD);
+    }
+
+    const onApprovalDialogOpen = (problem: Problem) => {
+        setApprovalProblem(problem);
+        setApprovalDialogOpen(true);
+    };
+
+    const onApprovalDialogEvent = (confirmed: boolean) => {
+        if (confirmed) {
+            ProblemMasterService.initialApprovalOfProblem(approvalProblem.id!)
+                .then(value => handleSuccessApproval(value.data))
+                .catch(error => handleFailedRequest(error))
+        }
+        setApprovalDialogOpen(false);
     };
 
     return (
@@ -390,10 +412,17 @@ const ProblemListView: React.FunctionComponent = () => {
                             </Button>
                         </DialogActions>
                     </Dialog>
-                    <ConfirmDialog open={abandonDialogOpen}
-                                   onDialogOpenClose={onAbandonedDialogEvent}
-                                   title={"لغو پایان‌نامه (پروژه)"}
-                                   description={"در صورتی که تمایل به لغو مسئله ایجاد شده دارید، تایید نمایید. دقت کنید که این عمل برگشت‌پذیر نمی‌باشد."}
+                    <ConfirmDialog
+                        open={abandonDialogOpen}
+                        onDialogOpenClose={onAbandonDialogEvent}
+                        title={"لغو پایان‌نامه (پروژه)"}
+                        description={"در صورتی که تمایل به لغو مسئله ایجاد شده دارید، تایید نمایید. دقت کنید که این عمل برگشت‌پذیر نمی‌باشد."}
+                    />
+                    <ConfirmDialog
+                        open={approvalDialogOpen}
+                        onDialogOpenClose={onApprovalDialogEvent}
+                        title={"تایید اولیه پایان‌نامه (پروژه)"}
+                        description={"با تایید اولیه مسئله، کلیت مسئله و توضیحات آن مورد تایید قرار می‌گیرد و ادامه‌ی روند مسئله در بخش مسائل در حال پیگیری دنبال می‌شود."}
                     />
                 </div>
             </Grid>

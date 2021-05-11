@@ -3,6 +3,7 @@ package ir.ac.sbu.evaluation.service;
 import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
 import ir.ac.sbu.evaluation.dto.problem.ProblemEventDto;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
+import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
 import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
@@ -52,12 +53,11 @@ public class ProblemService {
         return ProblemDto.from(problemRepository.save(problem));
     }
 
-    public ProblemDto updateStudentProblem(long studentId, long problemId, ProblemDto problemDto)
-            throws IllegalAccessException {
+    public ProblemDto updateStudentProblem(long studentId, long problemId, ProblemDto problemDto) {
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new ResourceNotFoundException("Problem not found: ID = " + problemId));
         if (problem.getStudent().getId() != studentId) {
-            throw new IllegalAccessException("Problem is not belong to student: " + studentId);
+            throw new IllegalResourceAccessException("Problem is not belong to student: " + studentId);
         }
 
         problem.setEducation(problemDto.getEducation());
@@ -72,18 +72,31 @@ public class ProblemService {
         return ProblemDto.from(problemRepository.save(problem));
     }
 
-    public ProblemDto abandonProblem(long userId, long problemId)
-            throws IllegalAccessException {
+    public ProblemDto abandonProblem(long userId, long problemId) {
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new ResourceNotFoundException("Problem not found: ID = " + problemId));
         if (problem.getStudent().getId() != userId && problem.getSupervisor().getId() != userId) {
-            throw new IllegalAccessException(
+            throw new IllegalResourceAccessException(
                     "Problem is not belong to student or supervisor: ID = " + userId + " Problem ID = " + problemId);
         }
 
         problem.setState(ProblemState.ABANDONED);
         problem.getEvents().add(eventRepository.save(
                 ProblemEvent.builder().message("مسئله به وضعیت لغو شده تغییر کرد.").build()));
+        return ProblemDto.from(problemRepository.save(problem));
+    }
+
+    public ProblemDto initialApprovalOfProblem(long userId, long problemId) {
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(() -> new ResourceNotFoundException("Problem not found: ID = " + problemId));
+        if (problem.getStudent().getId() != userId && problem.getSupervisor().getId() != userId) {
+            throw new IllegalResourceAccessException(
+                    "Problem is not controlled by master user: ID = " + userId + " Problem ID = " + problemId);
+        }
+
+        problem.setState(ProblemState.IN_PROGRESS);
+        problem.getEvents().add(eventRepository.save(
+                ProblemEvent.builder().message("مسئله تایید اولیه شد.").build()));
         return ProblemDto.from(problemRepository.save(problem));
     }
 

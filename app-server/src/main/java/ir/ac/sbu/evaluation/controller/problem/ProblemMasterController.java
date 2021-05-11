@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProblemMasterController {
 
     private static final String API_PROBLEM_MASTER_COMMENT_ON_PROBLEM_PATH = "/comment";
+    private static final String API_PROBLEM_MASTER_INITIAL_APPROVE_OF_PROBLEM_PATH = "/initialApprove";
 
     private final ProblemService problemService;
 
@@ -46,5 +47,12 @@ public class ProblemMasterController {
             @PathVariable long problemId,
             @Valid @RequestBody ProblemEventDto problemEventDto) {
         return problemService.placeCommentOnProblem(problemId, problemEventDto);
+    }
+
+    @GetMapping(path = "/{problemId}" + API_PROBLEM_MASTER_INITIAL_APPROVE_OF_PROBLEM_PATH)
+    public ProblemDto initialApprovalOfProblem(
+            @ModelAttribute AuthUserDetail authUserDetail,
+            @PathVariable long problemId) {
+        return problemService.initialApprovalOfProblem(authUserDetail.getUserId(), problemId);
     }
 }
