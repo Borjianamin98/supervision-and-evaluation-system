@@ -50,12 +50,13 @@ const useCommonStyles = makeStyles((theme) => ({
 
 export interface ProblemEditSectionsProps {
     commonClasses: ClassNameMap,
+    editState: EditState,
     problem: Problem,
     updateProblem: (problem: Problem) => void
     errorChecking: boolean,
 }
 
-enum EditState {
+export enum EditState {
     ADD,
     EDIT,
     REVIEW
@@ -81,6 +82,7 @@ const ProblemEdit: React.FunctionComponent = () => {
 
     const sectionProps: ProblemEditSectionsProps = {
         commonClasses,
+        editState,
         errorChecking,
         problem,
         updateProblem: newProblem => setProblem(newProblem),

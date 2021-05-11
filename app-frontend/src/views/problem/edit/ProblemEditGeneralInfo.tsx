@@ -11,10 +11,10 @@ import {educationMapToEnglish, educationMapToPersian, PERSIAN_EDUCATIONS} from "
 import {Master} from "../../../model/user/master";
 import ProblemStudentService from "../../../services/api/problem/ProblemStudentService";
 import MasterService from "../../../services/api/user/MasterService";
-import {ProblemEditSectionsProps} from "./ProblemEdit";
+import {EditState, ProblemEditSectionsProps} from "./ProblemEdit";
 
 const ProblemEditGeneralInfo: React.FunctionComponent<ProblemEditSectionsProps> = (props) => {
-    const {commonClasses, problem, updateProblem, errorChecking} = props;
+    const {commonClasses, editState, problem, updateProblem, errorChecking} = props;
 
     const isKeywordsValid = (definition: string[]) =>
         !errorChecking || ProblemStudentService.isKeywordsValid(definition);
@@ -111,6 +111,7 @@ const ProblemEditGeneralInfo: React.FunctionComponent<ProblemEditSectionsProps> 
                 onChange={(e, newValue) => {
                     updateProblem({...problem, supervisor: newValue});
                 }}
+                disabled={editState === EditState.EDIT}
             />
             <CustomAlert severity="info">
                 در صورت وجود تعداد زیادی نتیجه، تنها بخشی از آن نمایش داده می‌شود. برای یافتن سریع‌تر، جستجوی خود را
