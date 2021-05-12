@@ -1,13 +1,10 @@
 import {Avatar, Box, Grid, Paper} from "@material-ui/core";
 import {createStyles, makeStyles, Theme, ThemeProvider} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import moment from "jalali-moment";
 import {useSnackbar} from "notistack";
 import React from 'react';
 import {useParams} from "react-router-dom";
 import {rtlTheme} from "../../App";
-import CustomAlert from "../../components/Alert/CustomAlert";
-import HistoryInfoAlert from "../../components/Alert/HistoryInfoAlert";
 import KeywordsList from "../../components/Chip/KeywordsList";
 import browserHistory from "../../config/browserHistory";
 import {educationMapToPersian} from "../../model/enum/education";
@@ -16,6 +13,7 @@ import {ProblemEvent} from "../../model/problem/problemEvent";
 import {ProblemState} from "../../model/problem/problemState";
 import ProblemAuthenticatedService from "../../services/api/problem/ProblemAuthenticatedService";
 import ProblemStudentService from "../../services/api/problem/ProblemStudentService";
+import EventInfoCard from "../../services/api/university/EventInfoCard";
 import {DASHBOARD_VIEW_PATH} from "../ViewPaths";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -78,7 +76,7 @@ const ProblemManagementView: React.FunctionComponent = () => {
                     if (error.response.status === 403) {
                         illegalAccessHandler();
                     } else if (error.response.status === 404) {
-                        // Not found
+                        illegalAccessHandler("مسئله مربوطه یافت نشد.")
                     } else {
                         setLoadingState(LoadingState.FAILED);
                     }
@@ -93,15 +91,9 @@ const ProblemManagementView: React.FunctionComponent = () => {
         .reverse()
         .slice(0, 10)
         .map((event: ProblemEvent) =>
-            <HistoryInfoAlert
-                key={event.id!}
-            >
-                {event.createdBy}
-                {"، "}
-                {moment(event.createdDate!).locale('fa').format('ddd، D MMMM YYYY (h:mm a)')}
-                {": "}
-                {event.message}
-            </HistoryInfoAlert>
+            <Box my={1}>
+                <EventInfoCard header={event.createdBy!} body={event.message} date={event.createdDate!}/>
+            </Box>
         )
 
     return (
@@ -118,7 +110,7 @@ const ProblemManagementView: React.FunctionComponent = () => {
                         <Typography paragraph className={classes.justifyAlign}>{`عنوان: ${problem.title}`}</Typography>
                         <Typography paragraph
                                     className={classes.justifyAlign}>{`عنوان انگلیسی: ${problem.englishTitle}`}</Typography>
-                        <Typography paragraph component="span">کلیدواژه‌ها: </Typography>
+                        <Typography paragraph>کلیدواژه‌ها: </Typography>
                         <Box marginBottom={2}>
                             <KeywordsList keywords={problem.keywords} marginDir="left"/>
                         </Box>
@@ -155,9 +147,7 @@ const ProblemManagementView: React.FunctionComponent = () => {
                                 رخدادهای اخیر
                             </Typography>
                             {events.length !== 0 ? events :
-                                <CustomAlert variant="outlined" severity="info">
-                                    هیچ رخدادی وجود ندارد.
-                                </CustomAlert>}
+                                <EventInfoCard header={"سامانه"} body={"رخدادی وجود ندارد."}/>}
                         </Paper>
                     </Grid>
                 </Grid>
