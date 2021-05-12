@@ -83,7 +83,6 @@ const ProblemListView: React.FunctionComponent = () => {
             return; // Nothing to load
         }
 
-        const jwtPayloadRole = AuthenticationService.getJwtPayloadRole()!;
         let request: Promise<AxiosResponse<Pageable<Problem>>>;
         if (jwtPayloadRole === Role.STUDENT) {
             request = ProblemStudentService.retrieveProblemsOfStudent(rowsPerPage, page, selectedProblemState);
@@ -98,7 +97,7 @@ const ProblemListView: React.FunctionComponent = () => {
                 setLoadingState(LoadingState.LOADED);
             })
             .catch(error => setLoadingState(LoadingState.FAILED));
-    }, [enqueueSnackbar, loadingState, page, rowsPerPage, selectedProblemState]);
+    }, [jwtPayloadRole, loadingState, page, rowsPerPage, selectedProblemState]);
 
     const onEditClick = (problem: Problem) => {
         browserHistory.push({
@@ -108,7 +107,7 @@ const ProblemListView: React.FunctionComponent = () => {
     }
 
     const onManageProblem = (problem: Problem) => {
-        browserHistory.push(PROBLEM_MANAGEMENT_VIEW_PATH);
+        browserHistory.push(`${PROBLEM_MANAGEMENT_VIEW_PATH}/${problem.id!}`);
     }
 
     const getExtraActions = (): StatelessPaginationListAction<Problem>[] => {

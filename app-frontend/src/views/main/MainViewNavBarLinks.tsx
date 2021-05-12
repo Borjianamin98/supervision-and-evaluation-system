@@ -65,7 +65,7 @@ const problemRoutesInfo: navBarRouteInfo[] = [
         icon: NoteAddIcon,
     },
     {
-        path: PROBLEM_MANAGEMENT_VIEW_PATH,
+        path: PROBLEM_MANAGEMENT_VIEW_PATH + "/:problemId",
         name: "مدیریت پایان‌نامه‌ (پروژه)",
         roles: [Role.STUDENT, Role.MASTER],
         component: ProblemManagementView,

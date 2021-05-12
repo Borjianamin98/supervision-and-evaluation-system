@@ -2,14 +2,20 @@ import {Box, Grid, Paper} from "@material-ui/core";
 import {createStyles, makeStyles, Theme, ThemeProvider} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import moment from "jalali-moment";
+import {useSnackbar} from "notistack";
 import React from 'react';
+import {useParams} from "react-router-dom";
 import {rtlTheme} from "../../App";
 import CustomAlert from "../../components/Alert/CustomAlert";
 import HistoryInfoAlert from "../../components/Alert/HistoryInfoAlert";
 import KeywordsList from "../../components/Chip/KeywordsList";
+import {getGeneralErrorMessage} from "../../config/axios-config";
+import browserHistory from "../../config/browserHistory";
 import {educationMapToPersian} from "../../model/enum/education";
+import {LoadingState} from "../../model/enum/loadingState";
 import {ProblemEvent} from "../../model/problem/problemEvent";
 import ProblemStudentService from "../../services/api/problem/ProblemStudentService";
+import {DASHBOARD_VIEW_PATH} from "../ViewPaths";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -34,7 +40,33 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const ProblemManagementView: React.FunctionComponent = () => {
     const classes = useStyles();
+    const {enqueueSnackbar} = useSnackbar();
+
+    const {problemId} = useParams<{ problemId: string }>();
     const [problem, setProblem] = React.useState(ProblemStudentService.createInitialProblem());
+    const [loadingState, setLoadingState] = React.useState<LoadingState>(LoadingState.LOADING);
+
+    React.useEffect(() => {
+        if (loadingState === LoadingState.LOADED) {
+            return; // Nothing to load
+        }
+
+        Promise.resolve(ProblemStudentService.createInitialProblem())
+            .then(value => {
+                setProblem(value);
+                setLoadingState(LoadingState.LOADED);
+            })
+            .catch(error => {
+                if (error.response && error.response.status === 403) {
+                    // Access illegal problem by user
+                    enqueueSnackbar(`دسترسی به مسئله مربوطه با توجه به سطح دسترسی شما امکان‌پذیر نمی‌باشد.`,
+                        {variant: "error"});
+                    browserHistory.push(DASHBOARD_VIEW_PATH);
+                } else {
+                    setLoadingState(LoadingState.FAILED)
+                }
+            });
+    }, [enqueueSnackbar, loadingState]);
 
     const events = problem.events.sort((a, b) =>
         new Date(a.createdDate!).valueOf() - new Date(b.createdDate!).valueOf())
@@ -58,7 +90,7 @@ const ProblemManagementView: React.FunctionComponent = () => {
             <Grid dir="rtl" container direction="row">
                 <Grid item xs={12} sm={12} md={4} lg={4} xl={4} className={classes.column}>
                     <Paper className={classes.innerOnePadding}>
-                        <Typography variant="h6">
+                        <Typography variant="h6" paragraph>
                             اطلاعات کلی
                         </Typography>
                         <Typography paragraph>
@@ -81,7 +113,7 @@ const ProblemManagementView: React.FunctionComponent = () => {
                 </Grid>
                 <Grid container item direction="column" xs={12} sm={12} md={4} lg={4} xl={4} className={classes.column}>
                     <Paper className={classes.innerOnePadding}>
-                        <Typography variant="h6">
+                        <Typography variant="h6" paragraph>
                             رخدادهای اخیر
                         </Typography>
                         {events.length !== 0 ? events :
@@ -93,7 +125,9 @@ const ProblemManagementView: React.FunctionComponent = () => {
                 </Grid>
                 <Grid item xs={12} sm={12} md={4} lg={4} xl={4} className={classes.column}>
                     <Paper className={classes.innerOnePadding}>
-                        بخش اساتید
+                        <Typography variant="h6" paragraph>
+                            اساتید
+                        </Typography>
                     </Paper>
                 </Grid>
             </Grid>
