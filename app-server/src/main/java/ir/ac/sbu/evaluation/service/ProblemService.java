@@ -5,6 +5,7 @@ import ir.ac.sbu.evaluation.dto.problem.ProblemEventDto;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
+import ir.ac.sbu.evaluation.model.BaseEntity;
 import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
 import ir.ac.sbu.evaluation.model.user.Master;
@@ -13,6 +14,7 @@ import ir.ac.sbu.evaluation.repository.problem.EventRepository;
 import ir.ac.sbu.evaluation.repository.problem.ProblemRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -53,9 +55,9 @@ public class ProblemService {
         return ProblemDto.from(problemRepository.save(problem));
     }
 
+    @Transactional
     public ProblemDto updateStudentProblem(long studentId, long problemId, ProblemDto problemDto) {
-        Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(() -> new ResourceNotFoundException("Problem not found: ID = " + problemId));
+        Problem problem = getProblem(problemId);
         if (problem.getStudent().getId() != studentId) {
             throw new IllegalResourceAccessException("Problem is not belong to student: " + studentId);
         }
@@ -72,9 +74,9 @@ public class ProblemService {
         return ProblemDto.from(problemRepository.save(problem));
     }
 
+    @Transactional
     public ProblemDto abandonProblem(long userId, long problemId) {
-        Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(() -> new ResourceNotFoundException("Problem not found: ID = " + problemId));
+        Problem problem = getProblem(problemId);
         if (problem.getStudent().getId() != userId && problem.getSupervisor().getId() != userId) {
             throw new IllegalResourceAccessException(
                     "Problem is not belong to student or supervisor: ID = " + userId + " Problem ID = " + problemId);
@@ -86,10 +88,10 @@ public class ProblemService {
         return ProblemDto.from(problemRepository.save(problem));
     }
 
+    @Transactional
     public ProblemDto initialApprovalOfProblem(long userId, long problemId) {
-        Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(() -> new ResourceNotFoundException("Problem not found: ID = " + problemId));
-        if (problem.getStudent().getId() != userId && problem.getSupervisor().getId() != userId) {
+        Problem problem = getProblem(problemId);
+        if (problem.getSupervisor().getId() != userId) {
             throw new IllegalResourceAccessException(
                     "Problem is not controlled by master user: ID = " + userId + " Problem ID = " + problemId);
         }
@@ -98,6 +100,16 @@ public class ProblemService {
         problem.getEvents().add(eventRepository.save(
                 ProblemEvent.builder().message("مسئله تایید اولیه شد.").build()));
         return ProblemDto.from(problemRepository.save(problem));
+    }
+
+    public ProblemDto retrieveProblem(long userId, long problemId) {
+        Problem problem = getProblem(problemId);
+        if (problem.getStudent().getId() != userId && problem.getSupervisor().getId() != userId
+                && problem.getReferees().stream().noneMatch(master -> master.getId() == userId)) {
+            throw new IllegalResourceAccessException(
+                    "Problem is not owned or controlled by user: ID = " + userId + " Problem ID = " + problemId);
+        }
+        return ProblemDto.from(problem);
     }
 
     public Page<ProblemDto> retrieveProblemsOfStudents(long studentUserId, ProblemState problemState,
@@ -115,13 +127,17 @@ public class ProblemService {
 
     @Transactional
     public ProblemEventDto placeCommentOnProblem(long problemId, ProblemEventDto comment) {
-        Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(() -> new ResourceNotFoundException("Problem not found: ID = " + problemId));
+        Problem problem = getProblem(problemId);
 
         ProblemEvent savedEvent = eventRepository.save(comment.toProblemEvent());
         problem.getEvents().add(savedEvent);
         problemRepository.save(problem);
 
         return ProblemEventDto.from(savedEvent);
+    }
+
+    private Problem getProblem(long problemId) {
+        return problemRepository.findById(problemId)
+                .orElseThrow(() -> new ResourceNotFoundException("Problem not found: ID = " + problemId));
     }
 }

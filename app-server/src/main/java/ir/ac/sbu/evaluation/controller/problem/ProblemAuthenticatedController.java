@@ -23,6 +23,14 @@ public class ProblemAuthenticatedController {
     }
 
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.STUDENT_ROLE_NAME, @SecurityRoles.MASTER_ROLE_NAME)")
+    @GetMapping(path = "/{problemId}")
+    public ProblemDto retrieveProblem(
+            @ModelAttribute AuthUserDetail authUserDetail,
+            @PathVariable long problemId) {
+        return problemService.retrieveProblem(authUserDetail.getUserId(), problemId);
+    }
+
+    @PreAuthorize("hasAnyAuthority(@SecurityRoles.STUDENT_ROLE_NAME, @SecurityRoles.MASTER_ROLE_NAME)")
     @GetMapping(path = "/{problemId}/abandon")
     public ProblemDto abandonProblem(
             @ModelAttribute AuthUserDetail authUserDetail,

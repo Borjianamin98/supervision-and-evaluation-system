@@ -1,10 +1,17 @@
 import apiAxios from "../../../config/axios-config";
 import {Problem} from "../../../model/problem/problem";
-import {API_PROBLEM_ABANDON_PATH} from "../../ApiPaths";
+import {API_PROBLEM_ABANDON_PATH, API_SELECTED_PROBLEM_PATH} from "../../ApiPaths";
 
 class ProblemAuthenticatedService {
 
     private constructor() {
+    }
+
+    static retrieveProblem(problemId: number) {
+        return apiAxios.get<Problem>(API_SELECTED_PROBLEM_PATH.replace("{0}", String(problemId)),
+            {
+                validateStatus: status => status === 200
+            })
     }
 
     static abandonProblem(problemId: number) {

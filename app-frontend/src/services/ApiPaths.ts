@@ -31,12 +31,14 @@ export const API_ADMIN_INFO_PATH = `${API_ADMIN_PATH}/info`
 
 // Problem Paths
 export const API_PROBLEM_ROOT_PATH = "/problem"
+// Authenticated Paths
+export const API_SELECTED_PROBLEM_PATH = `${API_PROBLEM_ROOT_PATH}/{0}`
 export const API_PROBLEM_ABANDON_PATH = `${API_PROBLEM_ROOT_PATH}/{0}/abandon`
-export const API_PROBLEM_STUDENT_ROOT_PATH = `${API_PROBLEM_ROOT_PATH}/authenticatedStudent`
-export const API_PROBLEM_MASTER_ROOT_PATH = `${API_PROBLEM_ROOT_PATH}/authenticatedMaster`
 // Student Problem Paths
+export const API_PROBLEM_STUDENT_ROOT_PATH = `${API_PROBLEM_ROOT_PATH}/authenticatedStudent`
 export const API_PROBLEM_STUDENT_RESOURCE_PATH = `${API_PROBLEM_STUDENT_ROOT_PATH}/{0}`
 // Master Problem Paths
+export const API_PROBLEM_MASTER_ROOT_PATH = `${API_PROBLEM_ROOT_PATH}/authenticatedMaster`
 export const API_PROBLEM_MASTER_COMMENT_ON_PROBLEM_PATH = `${API_PROBLEM_MASTER_ROOT_PATH}/{0}/comment`
 export const API_PROBLEM_MASTER_INITIAL_APPROVE_OF_PROBLEM_PATH = `${API_PROBLEM_MASTER_ROOT_PATH}/{0}/initialApprove`
 

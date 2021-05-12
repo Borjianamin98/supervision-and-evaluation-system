@@ -9,11 +9,12 @@ import {rtlTheme} from "../../App";
 import CustomAlert from "../../components/Alert/CustomAlert";
 import HistoryInfoAlert from "../../components/Alert/HistoryInfoAlert";
 import KeywordsList from "../../components/Chip/KeywordsList";
-import {getGeneralErrorMessage} from "../../config/axios-config";
 import browserHistory from "../../config/browserHistory";
 import {educationMapToPersian} from "../../model/enum/education";
 import {LoadingState} from "../../model/enum/loadingState";
 import {ProblemEvent} from "../../model/problem/problemEvent";
+import {ProblemState} from "../../model/problem/problemState";
+import ProblemAuthenticatedService from "../../services/api/problem/ProblemAuthenticatedService";
 import ProblemStudentService from "../../services/api/problem/ProblemStudentService";
 import {DASHBOARD_VIEW_PATH} from "../ViewPaths";
 
@@ -47,26 +48,44 @@ const ProblemManagementView: React.FunctionComponent = () => {
     const [loadingState, setLoadingState] = React.useState<LoadingState>(LoadingState.LOADING);
 
     React.useEffect(() => {
+        function illegalAccessHandler(message?: string) {
+            // Access illegal problem by user
+            enqueueSnackbar(message ??`دسترسی به مسئله مربوطه با توجه به سطح دسترسی شما امکان‌پذیر نمی‌باشد.`,
+                {variant: "error"});
+            browserHistory.push(DASHBOARD_VIEW_PATH);
+        }
+
         if (loadingState === LoadingState.LOADED) {
             return; // Nothing to load
         }
 
-        Promise.resolve(ProblemStudentService.createInitialProblem())
+        if (!(+problemId)) {
+            illegalAccessHandler();
+        }
+
+        ProblemAuthenticatedService.retrieveProblem(+problemId)
             .then(value => {
-                setProblem(value);
+                if (value.data.state === ProblemState.IN_PROGRESS || value.data.state === ProblemState.COMPLETED) {
+                    setProblem(value.data);
+                } else {
+                    illegalAccessHandler("دسترسی به مسئله مربوطه با توجه به نوع مسئله امکان‌پذیر نمی‌باشد.");
+                }
                 setLoadingState(LoadingState.LOADED);
             })
             .catch(error => {
-                if (error.response && error.response.status === 403) {
-                    // Access illegal problem by user
-                    enqueueSnackbar(`دسترسی به مسئله مربوطه با توجه به سطح دسترسی شما امکان‌پذیر نمی‌باشد.`,
-                        {variant: "error"});
-                    browserHistory.push(DASHBOARD_VIEW_PATH);
+                if (error.response) {
+                    if (error.response.status === 403) {
+                        illegalAccessHandler();
+                    } else if (error.response.status === 404) {
+                        // Not found
+                    } else {
+                        setLoadingState(LoadingState.FAILED);
+                    }
                 } else {
-                    setLoadingState(LoadingState.FAILED)
+                    setLoadingState(LoadingState.FAILED);
                 }
             });
-    }, [enqueueSnackbar, loadingState]);
+    }, [enqueueSnackbar, loadingState, problemId]);
 
     const events = problem.events.sort((a, b) =>
         new Date(a.createdDate!).valueOf() - new Date(b.createdDate!).valueOf())
