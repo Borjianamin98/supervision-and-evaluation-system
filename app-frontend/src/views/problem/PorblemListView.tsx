@@ -340,7 +340,7 @@ const ProblemListView: React.FunctionComponent = () => {
                                         <Typography paragraph>{`عنوان: ${row.title}`}</Typography>
                                         <Typography paragraph>{`عنوان انگلیسی: ${row.englishTitle}`}</Typography>
                                         <Hidden mdUp>
-                                            <Typography paragraph component="span">کلیدواژه‌ها: </Typography>
+                                            <Typography paragraph>کلیدواژه‌ها: </Typography>
                                             <Box marginBottom={2}>
                                                 {keywordsList}
                                             </Box>

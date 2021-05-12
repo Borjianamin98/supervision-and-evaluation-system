@@ -179,9 +179,7 @@ const ProfileView: React.FunctionComponent = () => {
                             </Badge>
                         </Grid>
                         <Grid item className={classNames(classes.gridItem, classes.centerAlign)}>
-                            <Typography variant="h5" className={classes.typography}>
-                                {`${user.firstName} ${user.lastName}`}
-                            </Typography>
+                            <Typography variant="h5" className={classes.typography}>{user.fullName}</Typography>
                             <Typography variant="h6" className={classes.typography}>
                                 {getUserSubHeader(user)}
                             </Typography>

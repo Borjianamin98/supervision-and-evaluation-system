@@ -1,4 +1,4 @@
-import {Box, Grid, Paper} from "@material-ui/core";
+import {Avatar, Box, Grid, Paper} from "@material-ui/core";
 import {createStyles, makeStyles, Theme, ThemeProvider} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import moment from "jalali-moment";
@@ -20,18 +20,19 @@ import {DASHBOARD_VIEW_PATH} from "../ViewPaths";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
-        innerOnePadding: {
-            padding: theme.spacing(1),
+        columnContent: {
+            padding: theme.spacing(4),
         },
         column: {
-            padding: theme.spacing(0, 1),
-        },
-        upDownMargin: {
-            margin: theme.spacing(1, 0),
+            padding: theme.spacing(1),
         },
         avatar: {
             width: 140,
             height: 140,
+            margin: theme.spacing(0, 0, 2),
+        },
+        justifyAlign: {
+            textAlign: "justify"
         },
         centerAlign: {
             textAlign: "center"
@@ -50,7 +51,7 @@ const ProblemManagementView: React.FunctionComponent = () => {
     React.useEffect(() => {
         function illegalAccessHandler(message?: string) {
             // Access illegal problem by user
-            enqueueSnackbar(message ??`دسترسی به مسئله مربوطه با توجه به سطح دسترسی شما امکان‌پذیر نمی‌باشد.`,
+            enqueueSnackbar(message ?? `دسترسی به مسئله مربوطه با توجه به سطح دسترسی شما امکان‌پذیر نمی‌باشد.`,
                 {variant: "error"});
             browserHistory.push(DASHBOARD_VIEW_PATH);
         }
@@ -94,7 +95,6 @@ const ProblemManagementView: React.FunctionComponent = () => {
         .map((event: ProblemEvent) =>
             <HistoryInfoAlert
                 key={event.id!}
-                className={classes.upDownMargin}
             >
                 {event.createdBy}
                 {"، "}
@@ -107,43 +107,62 @@ const ProblemManagementView: React.FunctionComponent = () => {
     return (
         <ThemeProvider theme={rtlTheme}>
             <Grid dir="rtl" container direction="row">
-                <Grid item xs={12} sm={12} md={4} lg={4} xl={4} className={classes.column}>
-                    <Paper className={classes.innerOnePadding}>
+                <Grid item xs={12} sm={12} md={12} lg={4} xl={4} className={classes.column}>
+                    <Paper className={classes.columnContent}>
                         <Typography variant="h6" paragraph>
                             اطلاعات کلی
                         </Typography>
                         <Typography paragraph>
                             {`دوره تحصیلی: ${educationMapToPersian(problem.education)}`}
                         </Typography>
-                        <Typography paragraph>{`عنوان: ${problem.title}`}</Typography>
-                        <Typography paragraph>{`عنوان انگلیسی: ${problem.englishTitle}`}</Typography>
+                        <Typography paragraph className={classes.justifyAlign}>{`عنوان: ${problem.title}`}</Typography>
+                        <Typography paragraph
+                                    className={classes.justifyAlign}>{`عنوان انگلیسی: ${problem.englishTitle}`}</Typography>
                         <Typography paragraph component="span">کلیدواژه‌ها: </Typography>
                         <Box marginBottom={2}>
                             <KeywordsList keywords={problem.keywords} marginDir="left"/>
                         </Box>
-                        <Typography paragraph>{`تعریف: ${problem.definition}`}</Typography>
-                        <Typography paragraph>{`بیشینه: ${problem.history}`}</Typography>
-                        <Typography paragraph>{`ملاحظات: ${problem.considerations}`}</Typography>
-                        <Typography paragraph>
-                            {"استاد راهنما: "}
-                            {problem.supervisor?.fullName ?? ""}
-                        </Typography>
+                        <Typography paragraph
+                                    className={classes.justifyAlign}>{`تعریف: ${problem.definition}`}</Typography>
+                        <Typography paragraph
+                                    className={classes.justifyAlign}>{`بیشینه: ${problem.history}`}</Typography>
+                        <Typography paragraph
+                                    className={classes.justifyAlign}>{`ملاحظات: ${problem.considerations}`}</Typography>
                     </Paper>
                 </Grid>
-                <Grid container item direction="column" xs={12} sm={12} md={4} lg={4} xl={4} className={classes.column}>
-                    <Paper className={classes.innerOnePadding}>
-                        <Typography variant="h6" paragraph>
-                            رخدادهای اخیر
-                        </Typography>
-                        {events.length !== 0 ? events :
-                            <CustomAlert variant="outlined" severity="info"
-                                         className={classes.upDownMargin}>
-                                هیچ رخدادی وجود ندارد.
-                            </CustomAlert>}
-                    </Paper>
+                <Grid container item direction="column" xs={12} sm={12} md={12} lg={4} xl={4}
+                      className={classes.column}>
+                    <Grid item>
+                        <Box marginBottom={1}>
+                            <Paper className={classes.columnContent}>
+                                <Grid container direction="column" alignItems="center">
+                                    <Grid item>
+                                        <Avatar src={""} className={classes.avatar}/>
+                                    </Grid>
+                                    <Grid item className={classes.centerAlign}>
+                                        <Typography variant="h5" paragraph>{problem.supervisor?.fullName}</Typography>
+                                        <Typography variant="h6">
+                                            {`استاد ${problem.supervisor?.facultyName} دانشگاه ${problem.supervisor?.universityName}`}
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+                            </Paper>
+                        </Box>
+                    </Grid>
+                    <Grid item>
+                        <Paper className={classes.columnContent}>
+                            <Typography variant="h6" paragraph>
+                                رخدادهای اخیر
+                            </Typography>
+                            {events.length !== 0 ? events :
+                                <CustomAlert variant="outlined" severity="info">
+                                    هیچ رخدادی وجود ندارد.
+                                </CustomAlert>}
+                        </Paper>
+                    </Grid>
                 </Grid>
-                <Grid item xs={12} sm={12} md={4} lg={4} xl={4} className={classes.column}>
-                    <Paper className={classes.innerOnePadding}>
+                <Grid item xs={12} sm={12} md={12} lg={4} xl={4} className={classes.column}>
+                    <Paper className={classes.columnContent}>
                         <Typography variant="h6" paragraph>
                             اساتید
                         </Typography>
