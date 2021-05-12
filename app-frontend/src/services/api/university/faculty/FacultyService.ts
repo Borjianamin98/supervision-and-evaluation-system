@@ -18,7 +18,6 @@ class UniversityService {
     static retrieveUniversityFaculties(universityId: number, pageSize: number, page: number, nameQuery?: string) {
         return apiAxios.get<Pageable<Faculty>>(API_FACULTY_ROOT_PATH,
             {
-                validateStatus: status => status === 200,
                 params: {
                     universityId: universityId,
                     size: pageSize,
@@ -32,7 +31,6 @@ class UniversityService {
         return apiAxios.post<Faculty>(API_FACULTY_REGISTER_PATH,
             faculty,
             {
-                validateStatus: status => status === 200,
                 params: {
                     universityId: universityId,
                 }
@@ -40,18 +38,11 @@ class UniversityService {
     }
 
     static updateFaculty(facultyId: number, faculty: Faculty) {
-        return apiAxios.put<Faculty>(API_FACULTY_RESOURCE_PATH.replace("{0}", String(facultyId)),
-            faculty,
-            {
-                validateStatus: status => status === 200
-            })
+        return apiAxios.put<Faculty>(API_FACULTY_RESOURCE_PATH.replace("{0}", String(facultyId)), faculty)
     }
 
     static deleteFaculty(facultyId: number) {
-        return apiAxios.delete<Faculty>(API_FACULTY_RESOURCE_PATH.replace("{0}", String(facultyId)),
-            {
-                validateStatus: status => status === 200
-            })
+        return apiAxios.delete<Faculty>(API_FACULTY_RESOURCE_PATH.replace("{0}", String(facultyId)))
     }
 
     static isFacultyValid(faculty: Faculty) {

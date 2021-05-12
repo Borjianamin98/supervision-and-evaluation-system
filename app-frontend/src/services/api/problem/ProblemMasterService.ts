@@ -17,7 +17,6 @@ class ProblemMasterService {
     static retrieveAssignedProblems(pageSize: number, page: number, problemState: ProblemState) {
         return apiAxios.get<Pageable<Problem>>(API_PROBLEM_MASTER_ROOT_PATH,
             {
-                validateStatus: status => status === 200,
                 params: {
                     size: pageSize,
                     page: page,
@@ -28,17 +27,11 @@ class ProblemMasterService {
 
     static placeCommentOnProblem(problemId: number, problemEvent: ProblemEvent) {
         return apiAxios.post<ProblemEvent>(API_PROBLEM_MASTER_COMMENT_ON_PROBLEM_PATH.replace("{0}", String(problemId)),
-            problemEvent,
-            {
-                validateStatus: status => status === 200,
-            });
+            problemEvent);
     }
 
     static initialApprovalOfProblem(problemId: number) {
-        return apiAxios.get<Problem>(API_PROBLEM_MASTER_INITIAL_APPROVE_OF_PROBLEM_PATH.replace("{0}", String(problemId)),
-            {
-                validateStatus: status => status === 200
-            })
+        return apiAxios.get<Problem>(API_PROBLEM_MASTER_INITIAL_APPROVE_OF_PROBLEM_PATH.replace("{0}", String(problemId)))
     }
 }
 

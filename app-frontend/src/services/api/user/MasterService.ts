@@ -9,16 +9,12 @@ class MasterService {
     }
 
     static registerMaster(masterRegister: MasterRegister) {
-        return apiAxios.post<Master>(API_MASTER_REGISTER_PATH, masterRegister,
-            {
-                validateStatus: status => status === 200
-            })
+        return apiAxios.post<Master>(API_MASTER_REGISTER_PATH, masterRegister)
     }
 
     static retrieveMasters(pageSize: number, page: number, nameQuery?: string) {
         return apiAxios.get<Pageable<Master>>(API_MASTER_PATH,
             {
-                validateStatus: status => status === 200,
                 params: {
                     size: pageSize,
                     page: page,
@@ -29,10 +25,7 @@ class MasterService {
 
     static retrieveMasterInfo() {
         // Returns info based on authenticated user.
-        return apiAxios.get<Master>(API_MASTER_INFO_PATH,
-            {
-                validateStatus: status => status === 200
-            })
+        return apiAxios.get<Master>(API_MASTER_INFO_PATH)
     }
 }
 

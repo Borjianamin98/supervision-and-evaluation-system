@@ -27,7 +27,6 @@ class UserService {
     static checkAvailableSignInNames(username: string) {
         return apiAxios.get<UserCheck>(API_USER_CHECK_AVAILABLE_SIGN_IN_NAMES_PATH,
             {
-                validateStatus: status => status === 200,
                 params: {
                     username: username,
                 }

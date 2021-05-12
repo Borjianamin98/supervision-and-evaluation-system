@@ -45,9 +45,6 @@ class AuthenticationService {
             {
                 username: username,
                 password: password
-            },
-            {
-                validateStatus: status => status === 200
             })
         localStorage.setItem(TokenType.ACCESS, response.data.access_token!);
         localStorage.setItem(TokenType.REFRESH, response.data.refresh_token!);
@@ -58,18 +55,12 @@ class AuthenticationService {
         const response = await apiAxios.post<AuthResponse>(API_AUTHENTICATION_REFRESH_PATH,
             {
                 refresh_token: AuthenticationService.getRefreshToken()
-            },
-            {
-                validateStatus: status => status === 200
             })
         localStorage.setItem(TokenType.ACCESS, response.data.access_token!);
     }
 
     static check() {
-        return apiAxios.get<AuthResponse>(API_AUTHENTICATION_CHECK_PATH,
-            {
-                validateStatus: status => status === 200
-            })
+        return apiAxios.get<AuthResponse>(API_AUTHENTICATION_CHECK_PATH)
     }
 
     static getJwtPayloadRole() {

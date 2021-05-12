@@ -8,17 +8,11 @@ class ProblemAuthenticatedService {
     }
 
     static retrieveProblem(problemId: number) {
-        return apiAxios.get<Problem>(API_SELECTED_PROBLEM_PATH.replace("{0}", String(problemId)),
-            {
-                validateStatus: status => status === 200
-            })
+        return apiAxios.get<Problem>(API_SELECTED_PROBLEM_PATH.replace("{0}", String(problemId)))
     }
 
     static abandonProblem(problemId: number) {
-        return apiAxios.get<Problem>(API_PROBLEM_ABANDON_PATH.replace("{0}", String(problemId)),
-            {
-                validateStatus: status => status === 200
-            })
+        return apiAxios.get<Problem>(API_PROBLEM_ABANDON_PATH.replace("{0}", String(problemId)))
     }
 
 }

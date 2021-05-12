@@ -11,10 +11,7 @@ class ActuatorService {
     }
 
     static async isServerUp() {
-        const response = await apiAxios.get<ActuatorHealthResponse>(API_ACTUATOR_HEALTH_PATH,
-            {
-                validateStatus: status => status === 200
-            })
+        const response = await apiAxios.get<ActuatorHealthResponse>(API_ACTUATOR_HEALTH_PATH)
         if (response.data.status !== "UP") {
             throw new Error("Backend server is not healthy");
         }

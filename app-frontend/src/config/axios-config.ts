@@ -14,7 +14,8 @@ declare module 'axios' {
 
 const apiAxios = axios.create({
     baseURL: API_ROOT_PATH,
-    timeout: 2000
+    timeout: 2000,
+    validateStatus: status => status === 200,
 });
 
 export function configAxios() {

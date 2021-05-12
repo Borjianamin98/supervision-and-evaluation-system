@@ -39,7 +39,6 @@ class ProblemStudentService {
     static retrieveProblemsOfStudent(pageSize: number, page: number, problemState: ProblemState) {
         return apiAxios.get<Pageable<Problem>>(API_PROBLEM_STUDENT_ROOT_PATH,
             {
-                validateStatus: status => status === 200,
                 params: {
                     size: pageSize,
                     page: page,
@@ -50,10 +49,7 @@ class ProblemStudentService {
 
     static updateProblem(problemId: number, problem: Problem) {
         return apiAxios.put<University>(API_PROBLEM_STUDENT_RESOURCE_PATH.replace("{0}", String(problemId)),
-            problem,
-            {
-                validateStatus: status => status === 200
-            })
+            problem)
     }
 
     static isValidProblem(problem: Problem) {

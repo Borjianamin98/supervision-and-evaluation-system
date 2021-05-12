@@ -83,7 +83,6 @@ const ProfileView: React.FunctionComponent = () => {
     React.useEffect(() => {
         apiAxios.get<Blob>(API_USER_PROFILE_PICTURE_PATH, {
             responseType: 'blob',
-            validateStatus: status => status === 200
         })
             .then(value => setAvatar(window.URL.createObjectURL(value.data)))
             .catch(error => {
@@ -114,9 +113,7 @@ const ProfileView: React.FunctionComponent = () => {
                 const formData = new FormData();
                 const file = new File([resizedImageBlob], "profile");
                 formData.append('file', file);
-                return apiAxios.post<FormData>(API_USER_PROFILE_PICTURE_PATH, formData, {
-                    validateStatus: status => status === 200
-                })
+                return apiAxios.post<FormData>(API_USER_PROFILE_PICTURE_PATH, formData)
                     .then(() => resizedImageBlob)
                     .catch(err => {
                         const {message, statusCode} = getGeneralErrorMessage(err);

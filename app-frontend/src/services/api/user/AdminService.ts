@@ -9,10 +9,7 @@ class AdminService {
 
     static retrieveAdminInfo() {
         // Returns info based on authenticated user.
-        return apiAxios.get<Admin>(API_ADMIN_INFO_PATH,
-            {
-                validateStatus: status => status === 200
-            })
+        return apiAxios.get<Admin>(API_ADMIN_INFO_PATH)
     }
 }
 
