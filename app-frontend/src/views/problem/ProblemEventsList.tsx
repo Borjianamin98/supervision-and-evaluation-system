@@ -3,6 +3,7 @@ import Button from "@material-ui/core/Button";
 import {Pagination} from "@material-ui/lab";
 import React from 'react';
 import {useQuery, useQueryClient} from "react-query";
+import CustomAlert from "../../components/Alert/CustomAlert";
 import CenterGrid from "../../components/Grid/CenterGrid";
 import {ProblemEvent} from "../../model/problem/problemEvent";
 import ProblemAuthenticatedService from "../../services/api/problem/ProblemAuthenticatedService";
@@ -45,29 +46,27 @@ const ProblemEventsList: React.FunctionComponent<ProblemEventListProps> = (props
         </CenterGrid>
     }
 
-    // <ProblemEventCard
-    //     title={"سامانه"}
-    //     subheader={"سامانه"}
-    //     body={"رخدادی ثبت نشده است."}
-    // />
+    const problemEventCards = events?.content.map((event: ProblemEvent) =>
+        <Box my={1} key={event.id}>
+            <ProblemEventCard
+                title={event.createdBy!}
+                subheader={"کاربر"}
+                body={event.message}
+                date={event.createdDate!}
+            />
+        </Box>
+    )
+
     return (
         <>
             {
-                events?.content
-                    .map((event: ProblemEvent) =>
-                        <Box my={1} key={event.id}>
-                            <ProblemEventCard
-                                title={event.createdBy!}
-                                subheader={"کاربر"}
-                                body={event.message}
-                                date={event.createdDate!}
-                            />
-                        </Box>
-                    )
+                events && events.totalPages !== 0 ? problemEventCards :
+                    <CustomAlert severity="info">هیچ رخدادی ثبت نشده است.</CustomAlert>
             }
             <CenterGrid>
                 <Pagination
                     count={events ? events.totalPages : 0}
+                    hidden={events && events.totalPages === 0}
                     page={page + 1}
                     color="primary"
                     onChange={(event, newPage) => setPage(newPage - 1)}
