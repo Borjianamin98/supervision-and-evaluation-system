@@ -89,7 +89,7 @@ const App: React.FunctionComponent = () => {
                     <QueryClientProvider client={queryClient}>
                         <>
                             {rootRouting}
-                            <ReactQueryDevtools initialIsOpen={true}/>
+                            <ReactQueryDevtools initialIsOpen={false}/>
                         </>
                     </QueryClientProvider>
                 </SnackbarProvider>
