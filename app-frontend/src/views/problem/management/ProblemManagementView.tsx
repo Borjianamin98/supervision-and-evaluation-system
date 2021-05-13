@@ -161,7 +161,7 @@ const ProblemManagementView: React.FunctionComponent = () => {
                                 رخدادهای اخیر
                             </Typography>
                             {
-                                problem ? <ProblemEventsList problemId={problem.id!} pageSize={5}/> : undefined
+                                problem ? <ProblemEventsList problemId={problem.id!} pageSize={1}/> : undefined
                             }
                         </Paper>
                     </Grid>

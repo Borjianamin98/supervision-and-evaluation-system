@@ -14,12 +14,14 @@ class ProblemAuthenticatedService {
             .then(response => response.data);
     }
 
-    static retrieveProblemEvents(pageSize: number, page: number, problemId: number) {
+    static retrieveProblemEvents(pageSize: number, page: number, problemId: number,
+                                 sortBy?: string, sortDirection?: "asc" | "desc") {
         return apiAxios.get<Pageable<ProblemEvent>>(API_PROBLEM_EVENTS_PATH.replace("{0}", String(problemId)),
             {
                 params: {
                     size: pageSize,
                     page: page,
+                    sort: sortBy ? (sortDirection ? `${sortBy},${sortDirection}` : sortBy) : undefined,
                 }
             }).then(response => response.data);
     }

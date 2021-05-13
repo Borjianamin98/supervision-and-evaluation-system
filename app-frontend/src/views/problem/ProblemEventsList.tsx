@@ -21,7 +21,8 @@ const ProblemEventsList: React.FunctionComponent<ProblemEventListProps> = (props
     const queryClient = useQueryClient();
     const {data: events, isLoading, isError} = useQuery(['events', problemId, pageSize, page],
         () => {
-            return ProblemAuthenticatedService.retrieveProblemEvents(pageSize, page, problemId);
+            return ProblemAuthenticatedService.retrieveProblemEvents(pageSize, page, problemId,
+                "createdDate", "desc");
         }, {
             keepPreviousData: true
         });
@@ -52,14 +53,10 @@ const ProblemEventsList: React.FunctionComponent<ProblemEventListProps> = (props
     return (
         <>
             {
-                events?.content.sort((a, b) =>
-                    new Date(a.createdDate!).valueOf() - new Date(b.createdDate!).valueOf())
-                    .reverse()
-                    .slice(0, 10)
+                events?.content
                     .map((event: ProblemEvent) =>
-                        <Box my={1}>
+                        <Box my={1} key={event.id}>
                             <ProblemEventCard
-                                key={event.id}
                                 title={event.createdBy!}
                                 subheader={"کاربر"}
                                 body={event.message}
@@ -71,8 +68,9 @@ const ProblemEventsList: React.FunctionComponent<ProblemEventListProps> = (props
             <CenterGrid>
                 <Pagination
                     count={events ? events.totalPages : 0}
-                    page={page}
-                    onChange={(event, newPage) => setPage(newPage)}
+                    page={page + 1}
+                    color="primary"
+                    onChange={(event, newPage) => setPage(newPage - 1)}
                 />
             </CenterGrid>
         </>
