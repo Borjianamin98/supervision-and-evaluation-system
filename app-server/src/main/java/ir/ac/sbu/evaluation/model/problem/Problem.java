@@ -71,8 +71,7 @@ public class Problem extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "referee_id"))
     private Set<Master> referees;
 
-    @OneToMany
-    @JoinColumn(name = "event_id")
+    @OneToMany(mappedBy = "problem")
     private Set<ProblemEvent> events = new HashSet<>();
 
     public Problem() {

@@ -4,12 +4,14 @@ import ir.ac.sbu.evaluation.enumeration.Education;
 import ir.ac.sbu.evaluation.enumeration.Gender;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.model.problem.Problem;
+import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
 import ir.ac.sbu.evaluation.model.university.Faculty;
 import ir.ac.sbu.evaluation.model.university.University;
 import ir.ac.sbu.evaluation.model.user.Admin;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.PersonalInfo;
 import ir.ac.sbu.evaluation.model.user.Student;
+import ir.ac.sbu.evaluation.repository.problem.ProblemEventRepository;
 import ir.ac.sbu.evaluation.repository.problem.ProblemRepository;
 import ir.ac.sbu.evaluation.repository.university.FacultyRepository;
 import ir.ac.sbu.evaluation.repository.university.UniversityRepository;
@@ -41,7 +43,9 @@ public class DataLoader implements CommandLineRunner {
     private final MasterRepository masterRepository;
     private final AdminRepository adminRepository;
     private final StudentRepository studentRepository;
+
     private final ProblemRepository problemRepository;
+    private final ProblemEventRepository problemEventRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -51,6 +55,7 @@ public class DataLoader implements CommandLineRunner {
             AdminRepository adminRepository, StudentRepository studentRepository,
             MasterRepository masterRepository,
             ProblemRepository problemRepository,
+            ProblemEventRepository problemEventRepository,
             PasswordEncoder passwordEncoder) {
         this.universityRepository = universityRepository;
         this.facultyRepository = facultyRepository;
@@ -59,6 +64,7 @@ public class DataLoader implements CommandLineRunner {
         this.studentRepository = studentRepository;
         this.masterRepository = masterRepository;
         this.problemRepository = problemRepository;
+        this.problemEventRepository = problemEventRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -108,6 +114,20 @@ public class DataLoader implements CommandLineRunner {
                 .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
                 .state(ProblemState.IN_PROGRESS)
                 .build());
+
+        ProblemEvent problemEvent1 = problemEventRepository.save(ProblemEvent.builder()
+                .createdBy("امین برجیان")
+                .message("پیشنهاد من برای این مسئله این است که تا حد امکان ویژگی‌های خیلی خوب را مستند کنیم.")
+                .problem(problem1)
+                .build());
+        ProblemEvent problemEvent2 = problemEventRepository.save(ProblemEvent.builder()
+                .createdBy("صادق علی‌اکبری")
+                .message(
+                        "من با پیشنهاد شما موافق هستم ولی خیلی می‌تواند بهتر باشد اگر جوانب مختلف این تصمیم را پیش از رفتن به سمت آن بسنجیم تا از درستی آن تا حد خوبی اطمینان پیدا کنیم.")
+                .problem(problem1)
+                .build());
+        problem1.setEvents(new HashSet<>(Arrays.asList(problemEvent1, problemEvent2)));
+        problem1 = problemRepository.save(problem1);
 
         PersonalInfo master1PersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
                 .gender(Gender.MALE)

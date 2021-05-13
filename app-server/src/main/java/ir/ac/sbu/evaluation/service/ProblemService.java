@@ -5,16 +5,14 @@ import ir.ac.sbu.evaluation.dto.problem.ProblemEventDto;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
-import ir.ac.sbu.evaluation.model.BaseEntity;
 import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.Student;
-import ir.ac.sbu.evaluation.repository.problem.EventRepository;
+import ir.ac.sbu.evaluation.repository.problem.ProblemEventRepository;
 import ir.ac.sbu.evaluation.repository.problem.ProblemRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
-import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,16 +21,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ProblemService {
 
-    private final EventRepository eventRepository;
+    private final ProblemEventRepository problemEventRepository;
 
     private final StudentRepository studentRepository;
     private final MasterRepository masterRepository;
     private final ProblemRepository problemRepository;
 
-    public ProblemService(EventRepository eventRepository,
+    public ProblemService(ProblemEventRepository problemEventRepository,
             StudentRepository studentRepository,
             MasterRepository masterRepository, ProblemRepository problemRepository) {
-        this.eventRepository = eventRepository;
+        this.problemEventRepository = problemEventRepository;
         this.studentRepository = studentRepository;
         this.masterRepository = masterRepository;
         this.problemRepository = problemRepository;
@@ -50,7 +48,7 @@ public class ProblemService {
         problem.setStudent(student);
         problem.setSupervisor(supervisor);
         problem.setState(ProblemState.CREATED);
-        problem.getEvents().add(eventRepository.save(
+        problem.getEvents().add(problemEventRepository.save(
                 ProblemEvent.builder().message("پایان‌نامه (پروژه) تعریف شد.").build()));
         return ProblemDto.from(problemRepository.save(problem));
     }
@@ -69,7 +67,7 @@ public class ProblemService {
         problem.setDefinition(problemDto.getDefinition());
         problem.setHistory(problemDto.getHistory());
         problem.setConsiderations(problemDto.getConsiderations());
-        problem.getEvents().add(eventRepository.save(
+        problem.getEvents().add(problemEventRepository.save(
                 ProblemEvent.builder().message("اطلاعات مربوط به مسئله ویرایش شد.").build()));
         return ProblemDto.from(problemRepository.save(problem));
     }
@@ -83,7 +81,7 @@ public class ProblemService {
         }
 
         problem.setState(ProblemState.ABANDONED);
-        problem.getEvents().add(eventRepository.save(
+        problem.getEvents().add(problemEventRepository.save(
                 ProblemEvent.builder().message("مسئله به وضعیت لغو شده تغییر کرد.").build()));
         return ProblemDto.from(problemRepository.save(problem));
     }
@@ -97,18 +95,14 @@ public class ProblemService {
         }
 
         problem.setState(ProblemState.IN_PROGRESS);
-        problem.getEvents().add(eventRepository.save(
+        problem.getEvents().add(problemEventRepository.save(
                 ProblemEvent.builder().message("مسئله تایید اولیه شد.").build()));
         return ProblemDto.from(problemRepository.save(problem));
     }
 
     public ProblemDto retrieveProblem(long userId, long problemId) {
         Problem problem = getProblem(problemId);
-        if (problem.getStudent().getId() != userId && problem.getSupervisor().getId() != userId
-                && problem.getReferees().stream().noneMatch(master -> master.getId() == userId)) {
-            throw new IllegalResourceAccessException(
-                    "Problem is not owned or controlled by user: ID = " + userId + " Problem ID = " + problemId);
-        }
+        checkUserAccessProblem(userId, problem);
         return ProblemDto.from(problem);
     }
 
@@ -129,11 +123,25 @@ public class ProblemService {
     public ProblemEventDto placeCommentOnProblem(long problemId, ProblemEventDto comment) {
         Problem problem = getProblem(problemId);
 
-        ProblemEvent savedEvent = eventRepository.save(comment.toProblemEvent());
+        ProblemEvent savedEvent = problemEventRepository.save(comment.toProblemEvent());
         problem.getEvents().add(savedEvent);
         problemRepository.save(problem);
 
         return ProblemEventDto.from(savedEvent);
+    }
+
+    public Page<ProblemEventDto> retrieveProblemEvents(long userId, long problemId, Pageable pageable) {
+        Problem problem = getProblem(problemId);
+        checkUserAccessProblem(userId, problem);
+        return problemEventRepository.findAllByProblemId(problemId, pageable).map(ProblemEventDto::from);
+    }
+
+    private void checkUserAccessProblem(long userId, Problem problem) {
+        if (problem.getStudent().getId() != userId && problem.getSupervisor().getId() != userId
+                && problem.getReferees().stream().noneMatch(master -> master.getId() == userId)) {
+            throw new IllegalResourceAccessException(
+                    "Problem is not owned or controlled by user: ID = " + userId + " Problem ID = " + problem.getId());
+        }
     }
 
     private Problem getProblem(long problemId) {
