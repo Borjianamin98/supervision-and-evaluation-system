@@ -14,8 +14,8 @@ import {ProblemEvent} from "../../../model/problem/problemEvent";
 import {ProblemState} from "../../../model/problem/problemState";
 import {User, userRoleInfo} from "../../../model/user/user";
 import ProblemAuthenticatedService from "../../../services/api/problem/ProblemAuthenticatedService";
-import EventInfoCard from "../../../services/api/university/EventInfoCard";
 import {DASHBOARD_VIEW_PATH} from "../../ViewPaths";
+import ProblemEventCard from "../ProblemEventCard";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -89,7 +89,13 @@ const ProblemManagementView: React.FunctionComponent = () => {
         .slice(0, 10)
         .map((event: ProblemEvent) =>
             <Box my={1}>
-                <EventInfoCard key={event.id} header={event.createdBy!} body={event.message} date={event.createdDate!}/>
+                <ProblemEventCard
+                    key={event.id}
+                    title={event.createdBy!}
+                    subheader={"کاربر"}
+                    body={event.message}
+                    date={event.createdDate!}
+                />
             </Box>
         );
 
@@ -172,7 +178,11 @@ const ProblemManagementView: React.FunctionComponent = () => {
                                 رخدادهای اخیر
                             </Typography>
                             {events && events.length !== 0 ? events :
-                                <EventInfoCard header={"سامانه"} body={"رخدادی وجود ندارد."}/>}
+                                <ProblemEventCard
+                                    title={"سامانه"}
+                                    subheader={"سامانه"}
+                                    body={"رخدادی ثبت نشده است."}
+                                />}
                         </Paper>
                     </Grid>
                 </Grid>
