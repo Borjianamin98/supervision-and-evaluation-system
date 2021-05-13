@@ -36,7 +36,6 @@ const LoadingGrid: React.FunctionComponent<LoadingGridProps> = (props) => {
     const {isLoading, isError, onRetryClick} = props;
 
     const [show, setShow] = React.useState(false);
-
     React.useEffect(
         () => {
             const timer = setTimeout(() => setShow(true), 1000);
@@ -51,9 +50,8 @@ const LoadingGrid: React.FunctionComponent<LoadingGridProps> = (props) => {
     const errorImage = <img src={NoConnectionImage} alt="مشکل در ارتباط" className={classes.image}/>;
     const imageElement = isLoading ? loadingImage : isError ? errorImage : null;
 
-
     return (
-        <CenterGrid>
+        <CenterGrid p={2}>
             <Fade
                 in={show}
                 style={{
