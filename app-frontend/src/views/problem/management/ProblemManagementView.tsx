@@ -4,17 +4,17 @@ import Typography from "@material-ui/core/Typography";
 import {useSnackbar} from "notistack";
 import React from 'react';
 import {useParams} from "react-router-dom";
-import {rtlTheme} from "../../App";
-import KeywordsList from "../../components/Chip/KeywordsList";
-import browserHistory from "../../config/browserHistory";
-import {educationMapToPersian} from "../../model/enum/education";
-import {LoadingState} from "../../model/enum/loadingState";
-import {ProblemEvent} from "../../model/problem/problemEvent";
-import {ProblemState} from "../../model/problem/problemState";
-import ProblemAuthenticatedService from "../../services/api/problem/ProblemAuthenticatedService";
-import ProblemStudentService from "../../services/api/problem/ProblemStudentService";
-import EventInfoCard from "../../services/api/university/EventInfoCard";
-import {DASHBOARD_VIEW_PATH} from "../ViewPaths";
+import {rtlTheme} from "../../../App";
+import KeywordsList from "../../../components/Chip/KeywordsList";
+import browserHistory from "../../../config/browserHistory";
+import {educationMapToPersian} from "../../../model/enum/education";
+import {LoadingState} from "../../../model/enum/loadingState";
+import {ProblemEvent} from "../../../model/problem/problemEvent";
+import {ProblemState} from "../../../model/problem/problemState";
+import ProblemAuthenticatedService from "../../../services/api/problem/ProblemAuthenticatedService";
+import ProblemStudentService from "../../../services/api/problem/ProblemStudentService";
+import EventInfoCard from "../../../services/api/university/EventInfoCard";
+import {DASHBOARD_VIEW_PATH} from "../../ViewPaths";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({

@@ -14,7 +14,7 @@ import AuthenticationService from "../../services/api/AuthenticationService";
 import DashboardView from "../dashboard/DashboardView";
 import ProblemEdit from "../problem/edit/ProblemEdit";
 import ProblemListView from "../problem/PorblemListView";
-import ProblemManagementView from "../problem/ProblemManagementView";
+import ProblemManagementView from "../problem/management/ProblemManagementView";
 import ProfileView from "../ProfileView";
 import SettingsView from "../SettingsView";
 import FacultyListView from "../university/faculty/FacultyListView";

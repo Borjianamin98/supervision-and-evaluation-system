@@ -8,10 +8,14 @@ export enum LoadingState {
 }
 
 export function toLoadingState<T>(result: Partial<UseQueryResult<T>>) {
+    const {isLoading, isFetching, isError} = result;
+    if (isLoading === undefined || isFetching === undefined || isError === undefined) {
+        throw new Error("Required parameters not provided.")
+    }
     return (
-        result.isLoading ? LoadingState.LOADING :
-            result.isFetching ? LoadingState.FETCHING :
-                result.isError ? LoadingState.FAILED :
+        isLoading ? LoadingState.LOADING :
+            isFetching ? LoadingState.FETCHING :
+                isError ? LoadingState.FAILED :
                     LoadingState.LOADED
     )
 }
