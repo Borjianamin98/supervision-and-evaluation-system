@@ -22,16 +22,17 @@ class ProblemMasterService {
                     page: page,
                     problemState: problemState,
                 }
-            })
+            }).then(response => response.data);
     }
 
     static placeCommentOnProblem(problemId: number, problemEvent: ProblemEvent) {
         return apiAxios.post<ProblemEvent>(API_PROBLEM_MASTER_COMMENT_ON_PROBLEM_PATH.replace("{0}", String(problemId)),
-            problemEvent);
+            problemEvent).then(response => response.data);
     }
 
     static initialApprovalOfProblem(problemId: number) {
         return apiAxios.get<Problem>(API_PROBLEM_MASTER_INITIAL_APPROVE_OF_PROBLEM_PATH.replace("{0}", String(problemId)))
+            .then(response => response.data);
     }
 }
 

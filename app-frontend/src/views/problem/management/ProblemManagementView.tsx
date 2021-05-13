@@ -89,7 +89,7 @@ const ProblemManagementView: React.FunctionComponent = () => {
         .slice(0, 10)
         .map((event: ProblemEvent) =>
             <Box my={1}>
-                <EventInfoCard header={event.createdBy!} body={event.message} date={event.createdDate!}/>
+                <EventInfoCard key={event.id} header={event.createdBy!} body={event.message} date={event.createdDate!}/>
             </Box>
         );
 

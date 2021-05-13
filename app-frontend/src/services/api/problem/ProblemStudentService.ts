@@ -44,7 +44,7 @@ class ProblemStudentService {
                     page: page,
                     problemState: problemState,
                 }
-            })
+            }).then(response => response.data);
     }
 
     static updateProblem(problemId: number, problem: Problem) {

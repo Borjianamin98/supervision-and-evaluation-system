@@ -10,10 +10,11 @@ import AddCommentIcon from '@material-ui/icons/AddComment';
 import CloseIcon from '@material-ui/icons/Close';
 import DoneIcon from '@material-ui/icons/Done';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import {AxiosError, AxiosResponse} from "axios";
+import {AxiosError} from "axios";
 import moment from "jalali-moment";
 import {useSnackbar} from "notistack";
 import React, {useState} from 'react';
+import {useMutation, useQuery, useQueryClient} from "react-query";
 import {rtlTheme} from "../../App";
 import CustomAlert from "../../components/Alert/CustomAlert";
 import HistoryInfoAlert from "../../components/Alert/HistoryInfoAlert";
@@ -27,9 +28,8 @@ import CustomTextField from "../../components/Text/CustomTextField";
 import {getGeneralErrorMessage} from "../../config/axios-config";
 import browserHistory from "../../config/browserHistory";
 import {educationMapToPersian} from "../../model/enum/education";
-import {LoadingState} from "../../model/enum/loadingState";
+import {toLoadingState} from "../../model/enum/loadingState";
 import {Role} from "../../model/enum/role";
-import {emptyPageable, Pageable} from "../../model/pageable";
 import {Problem} from "../../model/problem/problem";
 import {ProblemEvent} from "../../model/problem/problemEvent";
 import {
@@ -71,33 +71,61 @@ const ProblemListView: React.FunctionComponent = () => {
     const {enqueueSnackbar} = useSnackbar();
 
     const [selectedProblemState, setSelectedProblemState] = useState<ProblemState>(ProblemState.CREATED);
-    const [problems, setProblems] = React.useState<Pageable<Problem>>(emptyPageable());
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
-    const [loadingState, setLoadingState] = React.useState<LoadingState>(LoadingState.LOADING);
 
     const jwtPayloadRole = AuthenticationService.getJwtPayloadRole()!;
 
-    React.useEffect(() => {
-        if (loadingState === LoadingState.LOADED) {
-            return; // Nothing to load
-        }
+    const queryClient = useQueryClient();
+    const {
+        data: problems,
+        ...problemsQuery
+    } = useQuery(['problems', jwtPayloadRole, selectedProblemState, rowsPerPage, page],
+        () => {
+            if (jwtPayloadRole === Role.STUDENT) {
+                return ProblemStudentService.retrieveProblemsOfStudent(rowsPerPage, page, selectedProblemState);
+            } else if (jwtPayloadRole === Role.MASTER) {
+                return ProblemMasterService.retrieveAssignedProblems(rowsPerPage, page, selectedProblemState);
+            } else {
+                throw new Error("Unexpected view for current authenticated user: " + jwtPayloadRole);
+            }
+        }, {
+            keepPreviousData: true
+        });
 
-        let request: Promise<AxiosResponse<Pageable<Problem>>>;
-        if (jwtPayloadRole === Role.STUDENT) {
-            request = ProblemStudentService.retrieveProblemsOfStudent(rowsPerPage, page, selectedProblemState);
-        } else if (jwtPayloadRole === Role.MASTER) {
-            request = ProblemMasterService.retrieveAssignedProblems(rowsPerPage, page, selectedProblemState);
-        } else {
-            throw new Error("Unexpected view for current authenticated user: " + jwtPayloadRole);
+    const commentOnProblem = useMutation(
+        (comment: string) => ProblemMasterService.placeCommentOnProblem(commentProblem.id!, {
+            message: comment
+        }),
+        {
+            onSuccess: () => queryClient.invalidateQueries(['problems', jwtPayloadRole, selectedProblemState, rowsPerPage, page])
+                .then(() => enqueueSnackbar(`نظر جدید با موفقیت ثبت شد.`, {variant: "success"})),
+            onError: (error: AxiosError) => handleFailedRequest(error),
+        });
+    const abandonProblem = useMutation(
+        (problemId: number) => ProblemAuthenticatedService.abandonProblem(problemId),
+        {
+            onSuccess: data => queryClient.invalidateQueries(['problems', jwtPayloadRole, selectedProblemState, rowsPerPage])
+                .then(() => enqueueSnackbar(`پایان‌نامه (پروژه) ${data.title} به وضعیت لغو شده منتقل شد.`, {variant: "success"})),
+            onError: (error: AxiosError) => handleFailedRequest(error),
+        });
+    const approveProblem = useMutation(
+        (problemId: number) => ProblemMasterService.initialApprovalOfProblem(problemId),
+        {
+            onSuccess: data => queryClient.invalidateQueries(['problems', jwtPayloadRole, selectedProblemState, rowsPerPage])
+                .then(() => enqueueSnackbar(`پایان‌نامه (پروژه) ${data.title} مورد تایید اولیه قرار گرفت.`, {variant: "success"})),
+            onError: (error: AxiosError) => handleFailedRequest(error),
+        });
+
+    const handleFailedRequest = (error: AxiosError) => {
+        const {statusCode, message} = getGeneralErrorMessage(error);
+        if (statusCode) {
+            enqueueSnackbar(`در ارسال درخواست از سرور خطای ${statusCode} دریافت شد.`,
+                {variant: "error"});
+        } else if (!statusCode) {
+            enqueueSnackbar(message, {variant: "error"});
         }
-        request
-            .then(value => {
-                setProblems(value.data);
-                setLoadingState(LoadingState.LOADED);
-            })
-            .catch(error => setLoadingState(LoadingState.FAILED));
-    }, [jwtPayloadRole, loadingState, page, rowsPerPage, selectedProblemState]);
+    }
 
     const onEditClick = (problem: Problem) => {
         browserHistory.push({
@@ -154,21 +182,6 @@ const ProblemListView: React.FunctionComponent = () => {
     const [comment, setComment] = useState<string>("");
     const [commentDialogOpen, setCommentDialogOpen] = React.useState(false);
 
-    const handleFailedRequest = (error: AxiosError) => {
-        const {statusCode, message} = getGeneralErrorMessage(error);
-        if (statusCode) {
-            enqueueSnackbar(`در ارسال درخواست از سرور خطای ${statusCode} دریافت شد.`,
-                {variant: "error"});
-        } else if (!statusCode) {
-            enqueueSnackbar(message, {variant: "error"});
-        }
-    }
-
-    const handleSuccessComment = (problemEvent: ProblemEvent) => {
-        enqueueSnackbar(`نظر با موفقیت ثبت شد.`, {variant: "success"});
-        setLoadingState(LoadingState.FETCHING);
-    }
-
     const onCommentDialogOpen = (problem: Problem) => {
         setComment("");
         setCommentProblem(problem);
@@ -182,44 +195,28 @@ const ProblemListView: React.FunctionComponent = () => {
                 setErrorChecking(true);
                 return;
             }
-            ProblemMasterService.placeCommentOnProblem(commentProblem.id!, {
-                message: comment
-            })
-                .then(value => handleSuccessComment(value.data))
-                .catch(error => handleFailedRequest(error))
+            commentOnProblem.mutate(comment);
         }
         setCommentDialogOpen(false);
     };
 
     const [abandonDialogOpen, setAbandonDialogOpen] = React.useState(false);
-    const [abandonProblem, setAbandonProblem] = useState<Problem>(ProblemStudentService.createInitialProblem());
-
-    const handleSuccessAbandon = (problem: Problem) => {
-        enqueueSnackbar(`پایان‌نامه (پروژه) ${problem.title} به وضعیت لغو شده منتقل شد.`, {variant: "success"});
-        setLoadingState(LoadingState.FETCHING);
-    }
+    const [abandonedProblem, setAbandonedProblem] = useState<Problem>(ProblemStudentService.createInitialProblem());
 
     const onAbandonDialogOpen = (problem: Problem) => {
-        setAbandonProblem(problem);
+        setAbandonedProblem(problem);
         setAbandonDialogOpen(true);
     };
 
     const onAbandonDialogEvent = (confirmed: boolean) => {
         if (confirmed) {
-            ProblemAuthenticatedService.abandonProblem(abandonProblem.id!)
-                .then(value => handleSuccessAbandon(value.data))
-                .catch(error => handleFailedRequest(error))
+            abandonProblem.mutate(abandonedProblem.id!);
         }
         setAbandonDialogOpen(false);
     };
 
     const [approvalDialogOpen, setApprovalDialogOpen] = React.useState(false);
     const [approvalProblem, setApprovalProblem] = useState<Problem>(ProblemStudentService.createInitialProblem());
-
-    const handleSuccessApproval = (problem: Problem) => {
-        enqueueSnackbar(`پایان‌نامه (پروژه) ${problem.title} مورد تایید اولیه قرار گرفت.`, {variant: "success"});
-        setLoadingState(LoadingState.FETCHING);
-    }
 
     const onApprovalDialogOpen = (problem: Problem) => {
         setApprovalProblem(problem);
@@ -228,9 +225,7 @@ const ProblemListView: React.FunctionComponent = () => {
 
     const onApprovalDialogEvent = (confirmed: boolean) => {
         if (confirmed) {
-            ProblemMasterService.initialApprovalOfProblem(approvalProblem.id!)
-                .then(value => handleSuccessApproval(value.data))
-                .catch(error => handleFailedRequest(error))
+            approveProblem.mutate(approvalProblem.id!);
         }
         setApprovalDialogOpen(false);
     };
@@ -258,33 +253,28 @@ const ProblemListView: React.FunctionComponent = () => {
                             value={problemStateMapToPersian(selectedProblemState)}
                             onChange={(e, newValue) => {
                                 setSelectedProblemState(problemStateMapToEnglish(newValue));
-                                setLoadingState(LoadingState.FETCHING);
                             }}
                         />
                     </Grid>
                 </Grid>
                 <StatelessPaginationTable
-                    total={problems.totalElements}
+                    total={problems ? problems.totalElements : 0}
                     page={page}
-                    onPageChange={newPage => {
-                        setPage(newPage);
-                        setLoadingState(LoadingState.FETCHING);
-                    }}
+                    onPageChange={newPage => setPage(newPage)}
                     rowsPerPage={rowsPerPage}
                     onRowsPerPageChange={newRowsPerPage => {
                         setRowsPerPage(newRowsPerPage);
                         setPage(0);
-                        setLoadingState(LoadingState.FETCHING);
                     }}
                     rowsPerPageOptions={[5, 10]}
-                    loadingState={loadingState}
-                    collectionData={problems.content}
+                    loadingState={toLoadingState(problemsQuery)}
+                    collectionData={problems ? problems.content : []}
                     tableHeaderCells={[
                         {content: "دوره تحصیلی", xsOptional: true, width: "10%"},
                         {content: "عنوان", width: "30%"},
                         {content: "کلیدواژه‌ها", smOptional: true, width: "25%"},
                         {content: "استاد راهنما", xsOptional: true, width: "15%"},
-                        ...(problems.content.some(p => p.referees.length !== 0) ?
+                        ...(problems?.content.some(p => p.referees.length !== 0) ?
                             [{
                                 content: "استادهای داور", xsOptional: true,
                                 width: "15%"
@@ -299,7 +289,7 @@ const ProblemListView: React.FunctionComponent = () => {
                             {content: row.title},
                             {content: keywordsList, smOptional: true},
                             {content: row.supervisor!.fullName, xsOptional: true},
-                            ...(problems.content.some(p => p.referees.length !== 0) ?
+                            ...(problems?.content.some(p => p.referees.length !== 0) ?
                                 [{
                                     content: row.referees.map(r => r.fullName!).join("، "),
                                     xsOptional: true,
@@ -380,7 +370,8 @@ const ProblemListView: React.FunctionComponent = () => {
                     isEditable={row => true}
                     onEditRow={row => onEditClick(row)}
                     extraActions={getExtraActions()}
-                    onRetryClick={() => setLoadingState(LoadingState.LOADING)}
+                    onRetryClick={() =>
+                        queryClient.invalidateQueries(['problems', jwtPayloadRole, selectedProblemState, rowsPerPage, page])}
                 />
                 <div aria-label={"dialogs"}>
                     <Dialog dir="rtl" open={commentDialogOpen} onClose={() => onCommentDialogClose(false)}>
