@@ -4,6 +4,7 @@ import {create} from 'jss';
 import rtl from 'jss-rtl';
 import {SnackbarProvider} from "notistack";
 import React from 'react';
+import {QueryClient, QueryClientProvider} from "react-query";
 import {Route, Router, Switch} from 'react-router-dom';
 import {AuthenticationRoute, PrivateRoute} from './components/Route/CustomRoute';
 import {configAxios} from "./config/axios-config";
@@ -13,6 +14,7 @@ import SignUpView from "./views/auth/signup/SignUpView";
 import ErrorView from "./views/error/ErrorView";
 import MainView from "./views/main/MainView";
 import {AUTH_VIEW_PATH, LOGIN_VIEW_PATH, SIGNUP_VIEW_PATH} from "./views/ViewPaths";
+import { ReactQueryDevtools } from 'react-query/devtools'
 
 // Configuration
 // Configure axios library globally
@@ -37,6 +39,38 @@ const useStyles = makeStyles((theme: Theme) =>
 const App: React.FunctionComponent = () => {
     const classes = useStyles();
 
+    // React-Query client configurations
+    const queryClient = new QueryClient({
+        defaultOptions: {
+            queries: {
+                retry: false,
+            }
+        }
+    });
+
+    const rootRouting = (
+        <Router history={browserHistory}>
+            <Switch>
+                <AuthenticationRoute path={AUTH_VIEW_PATH}>
+                    <Switch>
+                        <AuthenticationRoute path={LOGIN_VIEW_PATH}>
+                            <LoginView/>
+                        </AuthenticationRoute>
+                        <AuthenticationRoute path={SIGNUP_VIEW_PATH}>
+                            <SignUpView/>
+                        </AuthenticationRoute>
+                    </Switch>
+                </AuthenticationRoute>
+                <Route exact path="/error">
+                    <ErrorView/>
+                </Route>
+                <PrivateRoute>
+                    <MainView/>
+                </PrivateRoute>
+            </Switch>
+        </Router>
+    )
+
     return (
         <StylesProvider jss={jss}>
             <ThemeProvider theme={vazirFontTheme}>
@@ -52,26 +86,12 @@ const App: React.FunctionComponent = () => {
                     }}
                     autoHideDuration={5000}
                 >
-                    <Router history={browserHistory}>
-                        <Switch>
-                            <AuthenticationRoute path={AUTH_VIEW_PATH}>
-                                <Switch>
-                                    <AuthenticationRoute path={LOGIN_VIEW_PATH}>
-                                        <LoginView/>
-                                    </AuthenticationRoute>
-                                    <AuthenticationRoute path={SIGNUP_VIEW_PATH}>
-                                        <SignUpView/>
-                                    </AuthenticationRoute>
-                                </Switch>
-                            </AuthenticationRoute>
-                            <Route exact path="/error">
-                                <ErrorView/>
-                            </Route>
-                            <PrivateRoute>
-                                <MainView/>
-                            </PrivateRoute>
-                        </Switch>
-                    </Router>
+                    <QueryClientProvider client={queryClient}>
+                        <>
+                            {rootRouting}
+                            <ReactQueryDevtools initialIsOpen={true}/>
+                        </>
+                    </QueryClientProvider>
                 </SnackbarProvider>
             </ThemeProvider>
         </StylesProvider>

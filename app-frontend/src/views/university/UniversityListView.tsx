@@ -9,16 +9,17 @@ import Typography from "@material-ui/core/Typography";
 import {AxiosError} from "axios";
 import {useSnackbar} from "notistack";
 import React from 'react';
+import {useMutation, useQuery, useQueryClient} from "react-query";
 import {rtlTheme} from "../../App";
 import ExtendedTableRow from "../../components/Table/ExtendedTableRow";
 import {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
+import StatelessPaginationTable from "../../components/Table/StatelessPaginationTable";
 import CustomTextField, {CustomTextFieldProps} from "../../components/Text/CustomTextField";
 import {getGeneralErrorMessage} from "../../config/axios-config";
-import {LoadingState} from "../../model/enum/loadingState";
-import {emptyPageable, Pageable} from "../../model/pageable";
+import {toLoadingState} from "../../model/enum/loadingState";
+import {emptyPageable} from "../../model/pageable";
 import {University} from "../../model/university/university";
 import UniversityService from "../../services/api/university/UniversityService";
-import StatelessPaginationTable from "../../components/Table/StatelessPaginationTable";
 
 const useStyles = makeStyles((theme) => ({
     createGrid: {
@@ -34,30 +35,45 @@ const UniversityListView: React.FunctionComponent = () => {
     const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar();
 
-    const [universities, setUniversities] = React.useState<Pageable<University>>(emptyPageable());
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [errorChecking, setErrorChecking] = React.useState(false);
 
     // University used to create a new one
     const [newUniversity, setNewUniversity] = React.useState<University>(UniversityService.createInitialUniversity());
     // University used to be in dialog and modified
     const [modifyUniversity, setModifyUniversity] = React.useState<University>(UniversityService.createInitialUniversity());
 
-    const [errorChecking, setErrorChecking] = React.useState(false);
-    const [loadingState, setLoadingState] = React.useState<LoadingState>(LoadingState.LOADING);
-
-    React.useEffect(() => {
-        if (loadingState === LoadingState.LOADED) {
-            return; // Nothing to load
-        }
-
-        UniversityService.retrieveUniversities(rowsPerPage, page)
-            .then(value => {
-                setUniversities(value.data);
-                setLoadingState(LoadingState.LOADED);
-            })
-            .catch(error => setLoadingState(LoadingState.FAILED));
-    }, [enqueueSnackbar, page, rowsPerPage, universities.number, universities.size, loadingState]);
+    const queryClient = useQueryClient();
+    const {data: universities, ...universitiesQuery} = useQuery(['universities', rowsPerPage, page],
+        () => UniversityService.retrieveUniversities(rowsPerPage, page), {
+            initialData: () => emptyPageable(),
+            keepPreviousData: true
+        });
+    const registerUniversity = useMutation(
+        (university: University) => UniversityService.registerUniversity(university),
+        {
+            onSuccess: data => queryClient.invalidateQueries(['universities', rowsPerPage, page]).then(() => {
+                enqueueSnackbar(`دانشگاه ${data.name} با موفقیت اضافه شد.`, {variant: "success"});
+                setErrorChecking(false);
+                setNewUniversity(UniversityService.createInitialUniversity());
+            }),
+            onError: (error: AxiosError) => handleFailedRequest(error),
+        });
+    const updateUniversity = useMutation(
+        (data: Parameters<typeof UniversityService.updateUniversity>) => UniversityService.updateUniversity(...data),
+        {
+            onSuccess: data => queryClient.invalidateQueries(['universities', rowsPerPage, page])
+                .then(() => enqueueSnackbar(`دانشگاه ${data.name} با موفقیت ویرایش شد.`, {variant: "success"})),
+            onError: (error: AxiosError) => handleFailedRequest(error),
+        });
+    const deleteUniversity = useMutation(
+        (universityId: number) => UniversityService.deleteUniversity(universityId),
+        {
+            onSuccess: data => queryClient.invalidateQueries(['universities'])
+                .then(() => enqueueSnackbar(`دانشگاه ${data.name} با موفقیت حذف شد.`, {variant: "success"})),
+            onError: (error: AxiosError) => handleFailedRequest(error),
+        });
 
     const handleFailedRequest = (error: AxiosError) => {
         const {statusCode, message} = getGeneralErrorMessage(error);
@@ -69,60 +85,28 @@ const UniversityListView: React.FunctionComponent = () => {
         }
     }
 
-    const handleSuccessRegister = (university: University) => {
-        enqueueSnackbar(`دانشگاه ${university.name} با موفقیت اضافه شد.`, {variant: "success"});
-        setErrorChecking(false);
-        setNewUniversity(UniversityService.createInitialUniversity());
-        setLoadingState(LoadingState.SHOULD_RELOAD);
-    }
-
     const registerHandler: React.MouseEventHandler<HTMLButtonElement> = (event) => {
         event.preventDefault();
         if (!UniversityService.isUniversityValid(newUniversity)) {
             setErrorChecking(true);
             return;
         }
-        UniversityService.registerUniversity(newUniversity)
-            .then(value => handleSuccessRegister(value.data))
-            .catch(error => handleFailedRequest(error))
+        registerUniversity.mutate(newUniversity);
     }
 
-    const handleSuccessDelete = (university: University) => {
-        enqueueSnackbar(`دانشگاه ${university.name} با موفقیت حذف شد.`, {variant: "success"});
-        setLoadingState(LoadingState.SHOULD_RELOAD);
-    }
-
-    const deleteHandler = (university: University) => {
-        UniversityService.deleteUniversity(university.id!)
-            .then(value => handleSuccessDelete(value.data))
-            .catch(error => handleFailedRequest(error))
-    }
-
-    const handleSuccessUpdate = (university: University) => {
-        enqueueSnackbar(`دانشگاه ${university.name} با موفقیت ویرایش شد.`, {variant: "success"});
-        setLoadingState(LoadingState.SHOULD_RELOAD);
-    }
-
-    const [dialogOpen, setDialogOpen] = React.useState(false);
-    const handleDialogOpen = (university: University) => {
-        const foundUniversities = universities.content.filter(value => value.id === university.id!);
-        if (foundUniversities.length === 0 || foundUniversities.length > 1) {
-            throw new Error(`Unexpected error because university IDs should be unique: ID = ${university.id!}`);
-        }
-        setModifyUniversity(foundUniversities[0]);
-        setDialogOpen(true);
+    const [updateDialogOpen, setUpdateDialogOpen] = React.useState(false);
+    const handleUpdateDialogOpen = (university: University) => {
+        setModifyUniversity(university);
+        setUpdateDialogOpen(true);
     };
-
-    const handleDialogClose = (shouldUpdate: boolean) => {
+    const handleUpdateDialogClose = (shouldUpdate: boolean) => {
         if (shouldUpdate) {
-            UniversityService.updateUniversity(modifyUniversity.id!, modifyUniversity)
-                .then(value => handleSuccessUpdate(value.data))
-                .catch(error => handleFailedRequest(error))
+            updateUniversity.mutate([modifyUniversity.id!, modifyUniversity]);
         }
-        setDialogOpen(false);
+        setUpdateDialogOpen(false);
     };
 
-    const isNotBlank = (c: string) => !errorChecking || c.length > 0;
+    const isBlank = (c: string) => errorChecking && c.length === 0;
     const UniversityNameTextFieldProps: CustomTextFieldProps = {
         required: true,
         label: "نام دانشگاه",
@@ -157,8 +141,8 @@ const UniversityListView: React.FunctionComponent = () => {
                             value={newUniversity.name}
                             onChange={(e) =>
                                 setNewUniversity({...newUniversity, name: e.target.value})}
-                            helperText={isNotBlank(newUniversity.name) ? "" : "نام دانشگاه باید مشخص شود."}
-                            error={!isNotBlank(newUniversity.name)}
+                            helperText={isBlank(newUniversity.name) ? "نام دانشگاه باید مشخص شود." : ""}
+                            error={isBlank(newUniversity.name)}
                         />
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={4} xl={4} className={classes.gridItem}>
@@ -190,21 +174,17 @@ const UniversityListView: React.FunctionComponent = () => {
                     </Grid>
                 </Grid>
                 <StatelessPaginationTable
-                    total={universities.totalElements}
+                    total={universities? universities.totalElements : 0}
                     page={page}
-                    onPageChange={newPage => {
-                        setPage(newPage);
-                        setLoadingState(LoadingState.SHOULD_RELOAD);
-                    }}
+                    onPageChange={newPage => setPage(newPage)}
                     rowsPerPage={rowsPerPage}
                     onRowsPerPageChange={newRowsPerPage => {
                         setRowsPerPage(newRowsPerPage);
                         setPage(0);
-                        setLoadingState(LoadingState.SHOULD_RELOAD);
                     }}
                     rowsPerPageOptions={[5, 10]}
-                    loadingState={loadingState}
-                    collectionData={universities.content}
+                    loadingState={toLoadingState(universitiesQuery)}
+                    collectionData={universities ? universities.content : []}
                     tableHeaderCells={[
                         {content: "نام", width: "60%"},
                         {content: "آدرس", xsOptional: true, width: "15%"},
@@ -225,13 +205,13 @@ const UniversityListView: React.FunctionComponent = () => {
                     noDataMessage="دانشگاهی تعریف نشده است."
                     hasDelete={row => true}
                     isDeletable={row => row.facultiesCount! === 0}
-                    onDeleteRow={deleteHandler}
+                    onDeleteRow={row => deleteUniversity.mutate(row.id!)}
                     hasEdit={row => true}
                     isEditable={row => true}
-                    onEditRow={handleDialogOpen}
-                    onRetryClick={() => setLoadingState(LoadingState.LOADING)}
+                    onEditRow={handleUpdateDialogOpen}
+                    onRetryClick={() => queryClient.invalidateQueries(["universities", rowsPerPage, page])}
                 />
-                <Dialog dir="rtl" open={dialogOpen} onClose={() => handleDialogClose(false)}>
+                <Dialog dir="rtl" open={updateDialogOpen} onClose={() => handleUpdateDialogClose(false)}>
                     <DialogTitle>ویرایش دانشگاه</DialogTitle>
                     <DialogContent>
                         <DialogContentText style={{textAlign: "justify"}}>
@@ -243,8 +223,8 @@ const UniversityListView: React.FunctionComponent = () => {
                             value={modifyUniversity.name}
                             onChange={(e) =>
                                 setModifyUniversity({...modifyUniversity, name: e.target.value})}
-                            helperText={isNotBlank(modifyUniversity.name) ? "" : "نام دانشگاه باید مشخص شود."}
-                            error={!isNotBlank(modifyUniversity.name)}
+                            helperText={isBlank(modifyUniversity.name) ? "نام دانشگاه باید مشخص شود." : ""}
+                            error={isBlank(modifyUniversity.name)}
                         />
                         <CustomTextField
                             {...UniversityLocationTextFieldProps}
@@ -260,10 +240,10 @@ const UniversityListView: React.FunctionComponent = () => {
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => handleDialogClose(false)} color="primary">
+                        <Button onClick={() => handleUpdateDialogClose(false)} color="primary">
                             لغو ویرایش
                         </Button>
-                        <Button onClick={() => handleDialogClose(true)} color="primary">
+                        <Button onClick={() => handleUpdateDialogClose(true)} color="primary">
                             تایید
                         </Button>
                     </DialogActions>

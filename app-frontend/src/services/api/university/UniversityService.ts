@@ -22,22 +22,23 @@ class UniversityService {
                 params: {
                     size: pageSize,
                     page: page,
-                    nameQuery: nameQuery ?? "",
+                    nameQuery: nameQuery,
                 }
-            })
+            }).then(response => response.data)
     }
 
     static registerUniversity(university: University) {
-        return apiAxios.post<University>(API_UNIVERSITY_REGISTER_PATH, university)
+        return apiAxios.post<University>(API_UNIVERSITY_REGISTER_PATH, university).then(response => response.data)
     }
 
     static updateUniversity(universityId: number, university: University) {
         return apiAxios.put<University>(API_UNIVERSITY_RESOURCE_PATH.replace("{0}", String(universityId)),
-            university)
+            university).then(response => response.data)
     }
 
     static deleteUniversity(universityId: number) {
         return apiAxios.delete<University>(API_UNIVERSITY_RESOURCE_PATH.replace("{0}", String(universityId)))
+            .then(response => response.data)
     }
 
     static isUniversityValid(university: University) {

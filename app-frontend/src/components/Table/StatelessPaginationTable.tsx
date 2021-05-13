@@ -153,7 +153,7 @@ function StatelessPaginationTable<T>(props: StatelessPaginationListProps<T>) {
                     </FullRowCell>
                 )
             case LoadingState.LOADED:
-            case LoadingState.SHOULD_RELOAD:
+            case LoadingState.FETCHING:
                 if (collectionData.length === 0) {
                     return <FullRowCell
                         className={classes.cellInfo}

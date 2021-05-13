@@ -46,14 +46,14 @@ function AsynchronousComboBox<T>(props: AsynchronousComboBoxProps<T>) {
             setOptions([]);
             setLoadingState(LoadingState.LOADED);
         } else {
-            setLoadingState(LoadingState.SHOULD_RELOAD);
+            setLoadingState(LoadingState.FETCHING);
         }
     }, [open]);
 
     const noOptionsTextValue = (state: LoadingState) => {
         switch (state) {
             case LoadingState.LOADING:
-            case LoadingState.SHOULD_RELOAD:
+            case LoadingState.FETCHING:
                 return <Typography>در حال بارگیری ...</Typography>;
             case LoadingState.LOADED:
                 if (options.length === 0) {
@@ -81,7 +81,7 @@ function AsynchronousComboBox<T>(props: AsynchronousComboBoxProps<T>) {
             inputValue={inputValue}
             onInputChange={(event, value) => {
                 setInputValue(value);
-                setLoadingState(LoadingState.SHOULD_RELOAD);
+                setLoadingState(LoadingState.FETCHING);
             }}
             {...rest}
         />

@@ -9,6 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import {AxiosError} from "axios";
 import {useSnackbar} from "notistack";
 import React, {useState} from 'react';
+import {useMutation, useQuery, useQueryClient} from "react-query";
 import {rtlTheme} from "../../../App";
 import CustomAlert from "../../../components/Alert/CustomAlert";
 import AsynchronousComboBox from "../../../components/ComboBox/AsynchronousComboBox";
@@ -18,8 +19,8 @@ import {OptionalTableCellProps} from "../../../components/Table/OptionalTableCel
 import StatelessPaginationTable from "../../../components/Table/StatelessPaginationTable";
 import CustomTextField, {CustomTextFieldProps} from "../../../components/Text/CustomTextField";
 import {getGeneralErrorMessage} from "../../../config/axios-config";
-import {LoadingState} from "../../../model/enum/loadingState";
-import {emptyPageable, Pageable} from "../../../model/pageable";
+import {toLoadingState} from "../../../model/enum/loadingState";
+import {emptyPageable} from "../../../model/pageable";
 import {Faculty} from "../../../model/university/faculty";
 import {University} from "../../../model/university/university";
 import FacultyService from "../../../services/api/university/faculty/FacultyService";
@@ -43,39 +44,54 @@ const FacultyListView: React.FunctionComponent = () => {
     const {enqueueSnackbar} = useSnackbar();
 
     const [selectedUniversity, setSelectedUniversity] = useState<University>(UniversityService.createInitialUniversity());
-    const [faculties, setFaculties] = React.useState<Pageable<Faculty>>(emptyPageable());
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [noDataMessage, setNoDataMessage] = React.useState("دانشکده‌ای تعریف نشده است.");
+    const [errorChecking, setErrorChecking] = React.useState(false);
 
     // Faculty used to create a new one
     const [newFaculty, setNewFaculty] = React.useState<Faculty>(FacultyService.createInitialFaculty());
     // Faculty used to be in dialog and modified
     const [modifyFaculty, setModifyFaculty] = React.useState<Faculty>(FacultyService.createInitialFaculty());
 
-    const [errorChecking, setErrorChecking] = React.useState(false);
-    const [loadingState, setLoadingState] = React.useState<LoadingState>(LoadingState.LOADING);
+    const queryClient = useQueryClient();
+    const {data: faculties, ...facultiesQuery} = useQuery(['faculties', selectedUniversity, rowsPerPage, page],
+        () => {
+            if (!selectedUniversity.id) {
+                setNoDataMessage("دانشگاهی انتخاب نشده است.");
+                return;
+            }
+            setNoDataMessage("دانشکده‌ای تعریف نشده است.");
+            return FacultyService.retrieveUniversityFaculties(selectedUniversity.id, rowsPerPage, page);
+        }, {
+            initialData: () => emptyPageable(),
+            keepPreviousData: true
+        });
 
-    React.useEffect(() => {
-        if (loadingState === LoadingState.LOADED) {
-            return; // Nothing to load
-        }
-
-        if (!selectedUniversity.id) {
-            setNoDataMessage("دانشگاهی انتخاب نشده است.");
-            setLoadingState(LoadingState.LOADED)
-            return;
-        }
-        setNoDataMessage("دانشکده‌ای تعریف نشده است.");
-
-        FacultyService.retrieveUniversityFaculties(selectedUniversity.id, rowsPerPage, page)
-            .then(value => {
-                setFaculties(value.data);
-                setLoadingState(LoadingState.LOADED);
-            })
-            .catch(error => setLoadingState(LoadingState.FAILED));
-    }, [enqueueSnackbar, loadingState, page, rowsPerPage, selectedUniversity.id]);
-
+    const registerFaculty = useMutation(
+        (data: Parameters<typeof FacultyService.registerFaculty>) => FacultyService.registerFaculty(data[0], data[1]),
+        {
+            onSuccess: data => queryClient.invalidateQueries(['faculties', selectedUniversity, rowsPerPage, page]).then(() => {
+                enqueueSnackbar(`دانشکده ${data.name} با موفقیت اضافه شد.`, {variant: "success"});
+                setErrorChecking(false);
+                setNewFaculty(FacultyService.createInitialFaculty());
+            }),
+            onError: (error: AxiosError) => handleFailedRequest(error),
+        });
+    const updateFaculty = useMutation(
+        (data: Parameters<typeof FacultyService.updateFaculty>) => FacultyService.updateFaculty(...data),
+        {
+            onSuccess: data => queryClient.invalidateQueries(['faculties', selectedUniversity, rowsPerPage, page])
+                .then(() => enqueueSnackbar(`دانشکده ${data.name} با موفقیت ویرایش شد.`, {variant: "success"})),
+            onError: (error: AxiosError) => handleFailedRequest(error),
+        });
+    const deleteFaculty = useMutation(
+        (facultyId: number) => FacultyService.deleteFaculty(facultyId),
+        {
+            onSuccess: data => queryClient.invalidateQueries(['faculties', selectedUniversity])
+                .then(() => enqueueSnackbar(`دانشکده ${data.name} با موفقیت حذف شد.`, {variant: "success"})),
+            onError: (error: AxiosError) => handleFailedRequest(error),
+        });
     const handleFailedRequest = (error: AxiosError) => {
         const {statusCode, message} = getGeneralErrorMessage(error);
         if (statusCode) {
@@ -86,61 +102,30 @@ const FacultyListView: React.FunctionComponent = () => {
         }
     }
 
-    const handleSuccessRegister = (faculty: Faculty) => {
-        enqueueSnackbar(`دانشکده ${faculty.name} با موفقیت اضافه شد.`, {variant: "success"});
-        setErrorChecking(false);
-        setNewFaculty(FacultyService.createInitialFaculty());
-        setLoadingState(LoadingState.SHOULD_RELOAD);
-    }
-
     const registerHandler: React.MouseEventHandler<HTMLButtonElement> = (event) => {
         event.preventDefault();
         if (!FacultyService.isFacultyValid(newFaculty)) {
             setErrorChecking(true);
             return;
         }
-        FacultyService.registerFaculty(selectedUniversity.id!, newFaculty)
-            .then(value => handleSuccessRegister(value.data))
-            .catch(error => handleFailedRequest(error))
+        registerFaculty.mutate([selectedUniversity.id!, newFaculty]);
     }
 
-    const handleSuccessDelete = (faculty: Faculty) => {
-        enqueueSnackbar(`دانشکده ${faculty.name} با موفقیت حذف شد.`, {variant: "success"});
-        setLoadingState(LoadingState.SHOULD_RELOAD);
-    }
-
-    const deleteHandler = (faculty: Faculty) => {
-        FacultyService.deleteFaculty(faculty.id!)
-            .then(value => handleSuccessDelete(value.data))
-            .catch(error => handleFailedRequest(error))
-    }
-
-    const handleSuccessUpdate = (faculty: Faculty) => {
-        enqueueSnackbar(`دانشکده ${faculty.name} با موفقیت ویرایش شد.`, {variant: "success"});
-        setLoadingState(LoadingState.SHOULD_RELOAD);
-    }
-
-    const [dialogOpen, setDialogOpen] = React.useState(false);
-    const handleDialogOpen = (faculty: Faculty) => {
-        const foundUniversities = faculties.content.filter(value => value.id === faculty.id!);
-        if (foundUniversities.length === 0 || foundUniversities.length > 1) {
-            throw new Error(`Unexpected error because university IDs should be unique: ID = ${faculty.id!}`);
-        }
-        setModifyFaculty(foundUniversities[0]);
-        setDialogOpen(true);
+    const [updateDialogOpen, setUpdateDialogOpen] = React.useState(false);
+    const handleUpdateDialogOpen = (faculty: Faculty) => {
+        setModifyFaculty(faculty);
+        setUpdateDialogOpen(true);
     };
     const handleDialogClose = (shouldUpdate: boolean) => {
         if (shouldUpdate) {
-            FacultyService.updateFaculty(modifyFaculty.id!, modifyFaculty)
-                .then(value => handleSuccessUpdate(value.data))
-                .catch(error => handleFailedRequest(error))
+            updateFaculty.mutate([modifyFaculty.id!, modifyFaculty]);
         }
-        setDialogOpen(false);
+        setUpdateDialogOpen(false);
     };
 
     function retrieveUniversities(inputValue: string) {
         return UniversityService.retrieveUniversities(100, 0, inputValue)
-            .then(value => value.data.content)
+            .then(value => value.content)
     }
 
     const isBlank = (c: string) => errorChecking && c.length === 0;
@@ -186,7 +171,6 @@ const FacultyListView: React.FunctionComponent = () => {
                             onChange={(e, newValue) => {
                                 setSelectedUniversity(newValue);
                                 setNewFaculty(FacultyService.createInitialFaculty());
-                                setLoadingState(LoadingState.SHOULD_RELOAD);
                             }}
                         />
                     </Grid>
@@ -227,21 +211,17 @@ const FacultyListView: React.FunctionComponent = () => {
                     </Grid>
                 </Grid>
                 <StatelessPaginationTable
-                    total={faculties.totalElements}
+                    total={faculties ? faculties.totalElements : 0}
                     page={page}
-                    onPageChange={newPage => {
-                        setPage(newPage);
-                        setLoadingState(LoadingState.SHOULD_RELOAD);
-                    }}
+                    onPageChange={newPage => setPage(newPage)}
                     rowsPerPage={rowsPerPage}
                     onRowsPerPageChange={newRowsPerPage => {
                         setRowsPerPage(newRowsPerPage);
                         setPage(0);
-                        setLoadingState(LoadingState.SHOULD_RELOAD);
                     }}
                     rowsPerPageOptions={[5, 10]}
-                    loadingState={loadingState}
-                    collectionData={faculties.content}
+                    loadingState={toLoadingState(facultiesQuery)}
+                    collectionData={faculties ? faculties.content : []}
                     tableHeaderCells={[
                         {content: "نام", width: "60%"},
                         {content: "آدرس اینترنتی", smOptional: true, width: "25%"},
@@ -261,14 +241,14 @@ const FacultyListView: React.FunctionComponent = () => {
                     }}
                     noDataMessage={noDataMessage}
                     hasDelete={row => true}
-                    onDeleteRow={deleteHandler}
+                    onDeleteRow={row => deleteFaculty.mutate(row.id!)}
                     isDeletable={row => row.mastersCount! === 0 && row.studentsCount! === 0}
                     hasEdit={row => true}
                     isEditable={row => true}
-                    onEditRow={handleDialogOpen}
-                    onRetryClick={() => setLoadingState(LoadingState.LOADING)}
+                    onEditRow={handleUpdateDialogOpen}
+                    onRetryClick={() => queryClient.invalidateQueries(["faculties", selectedUniversity, rowsPerPage, page])}
                 />
-                <Dialog dir="rtl" open={dialogOpen} onClose={() => handleDialogClose(false)}>
+                <Dialog dir="rtl" open={updateDialogOpen} onClose={() => handleDialogClose(false)}>
                     <DialogTitle>ویرایش دانشگاه</DialogTitle>
                     <DialogContent>
                         <DialogContentText style={{textAlign: "justify"}}>

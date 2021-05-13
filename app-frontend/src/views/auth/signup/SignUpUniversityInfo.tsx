@@ -18,12 +18,12 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
 
     function retrieveUniversities(inputValue: string) {
         return UniversityService.retrieveUniversities(100, 0, inputValue)
-            .then(value => value.data.content)
+            .then(value => value.content)
     }
 
     function retrieveUniversityFaculties(inputValue: string) {
         return FacultyService.retrieveUniversityFaculties(university.id!, 100, 0, inputValue)
-            .then(value => value.data.content)
+            .then(value => value.content)
     }
 
     const handleStudentNumberChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {

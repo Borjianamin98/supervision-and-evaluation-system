@@ -166,7 +166,7 @@ const ProblemListView: React.FunctionComponent = () => {
 
     const handleSuccessComment = (problemEvent: ProblemEvent) => {
         enqueueSnackbar(`نظر با موفقیت ثبت شد.`, {variant: "success"});
-        setLoadingState(LoadingState.SHOULD_RELOAD);
+        setLoadingState(LoadingState.FETCHING);
     }
 
     const onCommentDialogOpen = (problem: Problem) => {
@@ -196,7 +196,7 @@ const ProblemListView: React.FunctionComponent = () => {
 
     const handleSuccessAbandon = (problem: Problem) => {
         enqueueSnackbar(`پایان‌نامه (پروژه) ${problem.title} به وضعیت لغو شده منتقل شد.`, {variant: "success"});
-        setLoadingState(LoadingState.SHOULD_RELOAD);
+        setLoadingState(LoadingState.FETCHING);
     }
 
     const onAbandonDialogOpen = (problem: Problem) => {
@@ -218,7 +218,7 @@ const ProblemListView: React.FunctionComponent = () => {
 
     const handleSuccessApproval = (problem: Problem) => {
         enqueueSnackbar(`پایان‌نامه (پروژه) ${problem.title} مورد تایید اولیه قرار گرفت.`, {variant: "success"});
-        setLoadingState(LoadingState.SHOULD_RELOAD);
+        setLoadingState(LoadingState.FETCHING);
     }
 
     const onApprovalDialogOpen = (problem: Problem) => {
@@ -258,7 +258,7 @@ const ProblemListView: React.FunctionComponent = () => {
                             value={problemStateMapToPersian(selectedProblemState)}
                             onChange={(e, newValue) => {
                                 setSelectedProblemState(problemStateMapToEnglish(newValue));
-                                setLoadingState(LoadingState.SHOULD_RELOAD);
+                                setLoadingState(LoadingState.FETCHING);
                             }}
                         />
                     </Grid>
@@ -268,13 +268,13 @@ const ProblemListView: React.FunctionComponent = () => {
                     page={page}
                     onPageChange={newPage => {
                         setPage(newPage);
-                        setLoadingState(LoadingState.SHOULD_RELOAD);
+                        setLoadingState(LoadingState.FETCHING);
                     }}
                     rowsPerPage={rowsPerPage}
                     onRowsPerPageChange={newRowsPerPage => {
                         setRowsPerPage(newRowsPerPage);
                         setPage(0);
-                        setLoadingState(LoadingState.SHOULD_RELOAD);
+                        setLoadingState(LoadingState.FETCHING);
                     }}
                     rowsPerPageOptions={[5, 10]}
                     loadingState={loadingState}

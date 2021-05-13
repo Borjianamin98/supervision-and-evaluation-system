@@ -24,7 +24,7 @@ class UniversityService {
                     page: page,
                     nameQuery: nameQuery ?? "",
                 }
-            })
+            }).then(response => response.data);
     }
 
     static registerFaculty(universityId: number, faculty: Faculty) {
@@ -34,15 +34,17 @@ class UniversityService {
                 params: {
                     universityId: universityId,
                 }
-            })
+            }).then(response => response.data);
     }
 
     static updateFaculty(facultyId: number, faculty: Faculty) {
         return apiAxios.put<Faculty>(API_FACULTY_RESOURCE_PATH.replace("{0}", String(facultyId)), faculty)
+            .then(response => response.data);
     }
 
     static deleteFaculty(facultyId: number) {
         return apiAxios.delete<Faculty>(API_FACULTY_RESOURCE_PATH.replace("{0}", String(facultyId)))
+            .then(response => response.data);
     }
 
     static isFacultyValid(faculty: Faculty) {
