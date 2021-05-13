@@ -1,12 +1,15 @@
-import {Box} from "@material-ui/core";
+import {Avatar, Box, Grid, Paper} from "@material-ui/core";
 import {createStyles, makeStyles, Theme, ThemeProvider} from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
 import {useSnackbar} from "notistack";
 import React from 'react';
 import {useQuery, useQueryClient} from "react-query";
 import {useParams} from "react-router-dom";
 import {rtlTheme} from "../../../App";
+import KeywordsList from "../../../components/Chip/KeywordsList";
 import LoadingGrid from "../../../components/Grid/LoadingGrid";
 import browserHistory from "../../../config/browserHistory";
+import {educationMapToPersian} from "../../../model/enum/education";
 import {ProblemEvent} from "../../../model/problem/problemEvent";
 import {ProblemState} from "../../../model/problem/problemState";
 import ProblemAuthenticatedService from "../../../services/api/problem/ProblemAuthenticatedService";
@@ -89,98 +92,81 @@ const ProblemManagementView: React.FunctionComponent = () => {
             </Box>
         );
 
-    let viewContent: React.ReactNode;
     if (isProblemLoading || isProblemLoadingFailed) {
-        viewContent = <LoadingGrid
-            isLoading={isProblemLoading}
-            isError={isProblemLoadingFailed}
-            onRetryClick={() => queryClient.invalidateQueries(["problem", +problemId])}
-        />;
-    }
-
-    const mainPageContent = () => {
-        // console.log(toLoadingState(problemQuery));
-        // switch (toLoadingState(problemQuery)) {
-        //     case LoadingState.LOADING:
-        //         return (
-        //             <CircularProgress/>
-        //         )
-        //     case LoadingState.LOADED:
-        //     case LoadingState.FETCHING:
-        //         return (
-        //             <Grid dir="rtl" container direction="row">
-        //                 <Grid item xs={12} sm={12} md={12} lg={4} xl={4} className={classes.column}>
-        //                     <Paper className={classes.columnContent}>
-        //                         <Typography variant="h6" paragraph>
-        //                             اطلاعات کلی
-        //                         </Typography>
-        //                         <Typography paragraph>
-        //                             {`دوره تحصیلی: ${problem ? educationMapToPersian(problem.education) : ""}`}
-        //                         </Typography>
-        //                         <Typography paragraph
-        //                                     className={classes.justifyAlign}>{`عنوان: ${problem?.title}`}</Typography>
-        //                         <Typography paragraph className={classes.justifyAlign}>
-        //                             {`عنوان انگلیسی: ${problem?.englishTitle}`}
-        //                         </Typography>
-        //                         <Typography paragraph>کلیدواژه‌ها: </Typography>
-        //                         <Box marginBottom={2}>
-        //                             <KeywordsList keywords={problem ? problem.keywords : []} marginDir="left"/>
-        //                         </Box>
-        //                         <Typography paragraph
-        //                                     className={classes.justifyAlign}>{`تعریف: ${problem?.definition}`}</Typography>
-        //                         <Typography paragraph
-        //                                     className={classes.justifyAlign}>{`بیشینه: ${problem?.history}`}</Typography>
-        //                         <Typography paragraph
-        //                                     className={classes.justifyAlign}>{`ملاحظات: ${problem?.considerations}`}</Typography>
-        //                     </Paper>
-        //                 </Grid>
-        //                 <Grid container item direction="column" xs={12} sm={12} md={12} lg={4} xl={4}
-        //                       className={classes.column}>
-        //                     <Grid item>
-        //                         <Box marginBottom={1}>
-        //                             <Paper className={classes.columnContent}>
-        //                                 <Grid container direction="column" alignItems="center">
-        //                                     <Grid item>
-        //                                         <Avatar src={""} className={classes.avatar}/>
-        //                                     </Grid>
-        //                                     <Grid item className={classes.centerAlign}>
-        //                                         <Typography variant="h5"
-        //                                                     paragraph>{problem?.supervisor?.fullName}</Typography>
-        //                                         <Typography variant="h6">
-        //                                             {`استاد ${problem?.supervisor?.facultyName} دانشگاه ${problem?.supervisor?.universityName}`}
-        //                                         </Typography>
-        //                                     </Grid>
-        //                                 </Grid>
-        //                             </Paper>
-        //                         </Box>
-        //                     </Grid>
-        //                     <Grid item>
-        //                         <Paper className={classes.columnContent}>
-        //                             <Typography variant="h6" paragraph>
-        //                                 رخدادهای اخیر
-        //                             </Typography>
-        //                             {events ?? <EventInfoCard header={"سامانه"} body={"رخدادی وجود ندارد."}/>}
-        //                         </Paper>
-        //                     </Grid>
-        //                 </Grid>
-        //                 <Grid item xs={12} sm={12} md={12} lg={4} xl={4} className={classes.column}>
-        //                     <Paper className={classes.columnContent}>
-        //                         <Typography variant="h6" paragraph>
-        //                             اساتید
-        //                         </Typography>
-        //                     </Paper>
-        //                 </Grid>
-        //             </Grid>
-        //         )
-        //     case LoadingState.FAILED:
-        //         return "failed";
-        // }
-        return null;
+        return <ThemeProvider theme={rtlTheme}>
+            <LoadingGrid
+                isLoading={isProblemLoading}
+                isError={isProblemLoadingFailed}
+                onRetryClick={() => queryClient.invalidateQueries(["problem", +problemId])}
+            />
+        </ThemeProvider>
     }
 
     return (
         <ThemeProvider theme={rtlTheme}>
-            {viewContent}
+            <Grid dir="rtl" container direction="row">
+                <Grid item xs={12} sm={12} md={12} lg={4} xl={4} className={classes.column}>
+                    <Paper className={classes.columnContent}>
+                        <Typography variant="h6" paragraph>
+                            اطلاعات کلی
+                        </Typography>
+                        <Typography paragraph>
+                            {`دوره تحصیلی: ${problem ? educationMapToPersian(problem.education) : ""}`}
+                        </Typography>
+                        <Typography paragraph
+                                    className={classes.justifyAlign}>{`عنوان: ${problem?.title}`}</Typography>
+                        <Typography paragraph className={classes.justifyAlign}>
+                            {`عنوان انگلیسی: ${problem?.englishTitle}`}
+                        </Typography>
+                        <Typography paragraph>کلیدواژه‌ها: </Typography>
+                        <Box marginBottom={2}>
+                            <KeywordsList keywords={problem ? problem.keywords : []} marginDir="left"/>
+                        </Box>
+                        <Typography paragraph
+                                    className={classes.justifyAlign}>{`تعریف: ${problem?.definition}`}</Typography>
+                        <Typography paragraph
+                                    className={classes.justifyAlign}>{`بیشینه: ${problem?.history}`}</Typography>
+                        <Typography paragraph
+                                    className={classes.justifyAlign}>{`ملاحظات: ${problem?.considerations}`}</Typography>
+                    </Paper>
+                </Grid>
+                <Grid container item direction="column" xs={12} sm={12} md={12} lg={4} xl={4}
+                      className={classes.column}>
+                    <Grid item>
+                        <Box marginBottom={1}>
+                            <Paper className={classes.columnContent}>
+                                <Grid container direction="column" alignItems="center">
+                                    <Grid item>
+                                        <Avatar src={""} className={classes.avatar}/>
+                                    </Grid>
+                                    <Grid item className={classes.centerAlign}>
+                                        <Typography variant="h5"
+                                                    paragraph>{problem?.supervisor?.fullName}</Typography>
+                                        <Typography variant="h6">
+                                            {`استاد ${problem?.supervisor?.facultyName} دانشگاه ${problem?.supervisor?.universityName}`}
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+                            </Paper>
+                        </Box>
+                    </Grid>
+                    <Grid item>
+                        <Paper className={classes.columnContent}>
+                            <Typography variant="h6" paragraph>
+                                رخدادهای اخیر
+                            </Typography>
+                            {events ?? <EventInfoCard header={"سامانه"} body={"رخدادی وجود ندارد."}/>}
+                        </Paper>
+                    </Grid>
+                </Grid>
+                <Grid item xs={12} sm={12} md={12} lg={4} xl={4} className={classes.column}>
+                    <Paper className={classes.columnContent}>
+                        <Typography variant="h6" paragraph>
+                            اساتید
+                        </Typography>
+                    </Paper>
+                </Grid>
+            </Grid>
         </ThemeProvider>
     );
 }
