@@ -12,6 +12,7 @@ import browserHistory from "../../../config/browserHistory";
 import {educationMapToPersian} from "../../../model/enum/education";
 import {ProblemEvent} from "../../../model/problem/problemEvent";
 import {ProblemState} from "../../../model/problem/problemState";
+import {User, userRoleInfo} from "../../../model/user/user";
 import ProblemAuthenticatedService from "../../../services/api/problem/ProblemAuthenticatedService";
 import EventInfoCard from "../../../services/api/university/EventInfoCard";
 import {DASHBOARD_VIEW_PATH} from "../../ViewPaths";
@@ -92,6 +93,22 @@ const ProblemManagementView: React.FunctionComponent = () => {
             </Box>
         );
 
+    const ProfileInfo: React.FunctionComponent<{ user?: User }> = ({user}) => {
+        return (
+            <Grid container direction="column" alignItems="center">
+                <Grid item>
+                    <Avatar src={""} className={classes.avatar}/>
+                </Grid>
+                <Grid item className={classes.centerAlign}>
+                    <Typography variant="h5" paragraph>{user?.fullName}</Typography>
+                    <Typography variant="h6">
+                        {user ? userRoleInfo(user) : ""}
+                    </Typography>
+                </Grid>
+            </Grid>
+        )
+    }
+
     if (isProblemLoading || isProblemLoadingFailed) {
         return <ThemeProvider theme={rtlTheme}>
             <LoadingGrid
@@ -105,49 +122,47 @@ const ProblemManagementView: React.FunctionComponent = () => {
     return (
         <ThemeProvider theme={rtlTheme}>
             <Grid dir="rtl" container direction="row">
-                <Grid item xs={12} sm={12} md={12} lg={4} xl={4} className={classes.column}>
-                    <Paper className={classes.columnContent}>
-                        <Typography variant="h6" paragraph>
-                            اطلاعات کلی
-                        </Typography>
-                        <Typography paragraph>
-                            {`دوره تحصیلی: ${problem ? educationMapToPersian(problem.education) : ""}`}
-                        </Typography>
-                        <Typography paragraph
-                                    className={classes.justifyAlign}>{`عنوان: ${problem?.title}`}</Typography>
-                        <Typography paragraph className={classes.justifyAlign}>
-                            {`عنوان انگلیسی: ${problem?.englishTitle}`}
-                        </Typography>
-                        <Typography paragraph>کلیدواژه‌ها: </Typography>
-                        <Box marginBottom={2}>
-                            <KeywordsList keywords={problem ? problem.keywords : []} marginDir="left"/>
+                <Grid container item direction="column" xs={12} sm={12} md={12} lg={4} xl={4}
+                      className={classes.column}>
+                    <Grid item>
+                        <Box marginBottom={1}>
+                            <Paper className={classes.columnContent}>
+                                <ProfileInfo user={problem ? problem.student : undefined}/>
+                            </Paper>
                         </Box>
-                        <Typography paragraph
-                                    className={classes.justifyAlign}>{`تعریف: ${problem?.definition}`}</Typography>
-                        <Typography paragraph
-                                    className={classes.justifyAlign}>{`بیشینه: ${problem?.history}`}</Typography>
-                        <Typography paragraph
-                                    className={classes.justifyAlign}>{`ملاحظات: ${problem?.considerations}`}</Typography>
-                    </Paper>
+                    </Grid>
+                    <Grid item>
+                        <Paper className={classes.columnContent}>
+                            <Typography variant="h6" paragraph>
+                                اطلاعات کلی
+                            </Typography>
+                            <Typography paragraph>
+                                {`دوره تحصیلی: ${problem ? educationMapToPersian(problem.education) : ""}`}
+                            </Typography>
+                            <Typography paragraph
+                                        className={classes.justifyAlign}>{`عنوان: ${problem?.title}`}</Typography>
+                            <Typography paragraph className={classes.justifyAlign}>
+                                {`عنوان انگلیسی: ${problem?.englishTitle}`}
+                            </Typography>
+                            <Typography paragraph>کلیدواژه‌ها: </Typography>
+                            <Box marginBottom={2}>
+                                <KeywordsList keywords={problem ? problem.keywords : []} marginDir="left"/>
+                            </Box>
+                            <Typography paragraph
+                                        className={classes.justifyAlign}>{`تعریف: ${problem?.definition}`}</Typography>
+                            <Typography paragraph
+                                        className={classes.justifyAlign}>{`بیشینه: ${problem?.history}`}</Typography>
+                            <Typography paragraph
+                                        className={classes.justifyAlign}>{`ملاحظات: ${problem?.considerations}`}</Typography>
+                        </Paper>
+                    </Grid>
                 </Grid>
                 <Grid container item direction="column" xs={12} sm={12} md={12} lg={4} xl={4}
                       className={classes.column}>
                     <Grid item>
                         <Box marginBottom={1}>
                             <Paper className={classes.columnContent}>
-                                <Grid container direction="column" alignItems="center">
-                                    <Grid item>
-                                        <Avatar src={""} className={classes.avatar}/>
-                                    </Grid>
-                                    <Grid item className={classes.centerAlign}>
-                                        <Typography variant="h5" paragraph>
-                                            {problem?.supervisor?.fullName}
-                                        </Typography>
-                                        <Typography variant="h6">
-                                            {`استاد ${problem?.supervisor?.facultyName} دانشگاه ${problem?.supervisor?.universityName}`}
-                                        </Typography>
-                                    </Grid>
-                                </Grid>
+                                <ProfileInfo user={problem ? problem.supervisor : undefined}/>
                             </Paper>
                         </Box>
                     </Grid>
@@ -156,7 +171,8 @@ const ProblemManagementView: React.FunctionComponent = () => {
                             <Typography variant="h6" paragraph>
                                 رخدادهای اخیر
                             </Typography>
-                            {events ?? <EventInfoCard header={"سامانه"} body={"رخدادی وجود ندارد."}/>}
+                            {events && events.length !== 0 ? events :
+                                <EventInfoCard header={"سامانه"} body={"رخدادی وجود ندارد."}/>}
                         </Paper>
                     </Grid>
                 </Grid>
