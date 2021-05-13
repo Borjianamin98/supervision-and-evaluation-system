@@ -1,6 +1,8 @@
 import apiAxios from "../../../config/axios-config";
+import {Pageable} from "../../../model/pageable";
 import {Problem} from "../../../model/problem/problem";
-import {API_PROBLEM_ABANDON_PATH, API_SELECTED_PROBLEM_PATH} from "../../ApiPaths";
+import {ProblemEvent} from "../../../model/problem/problemEvent";
+import {API_PROBLEM_ABANDON_PATH, API_PROBLEM_EVENTS_PATH, API_SELECTED_PROBLEM_PATH} from "../../ApiPaths";
 
 class ProblemAuthenticatedService {
 
@@ -10,6 +12,16 @@ class ProblemAuthenticatedService {
     static retrieveProblem(problemId: number) {
         return apiAxios.get<Problem>(API_SELECTED_PROBLEM_PATH.replace("{0}", String(problemId)))
             .then(response => response.data);
+    }
+
+    static retrieveProblemEvents(pageSize: number, page: number, problemId: number) {
+        return apiAxios.get<Pageable<ProblemEvent>>(API_PROBLEM_EVENTS_PATH.replace("{0}", String(problemId)),
+            {
+                params: {
+                    size: pageSize,
+                    page: page,
+                }
+            }).then(response => response.data);
     }
 
     static abandonProblem(problemId: number) {

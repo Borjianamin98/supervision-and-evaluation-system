@@ -34,6 +34,7 @@ export const API_PROBLEM_ROOT_PATH = "/problem"
 // Authenticated Paths
 export const API_SELECTED_PROBLEM_PATH = `${API_PROBLEM_ROOT_PATH}/{0}`
 export const API_PROBLEM_ABANDON_PATH = `${API_PROBLEM_ROOT_PATH}/{0}/abandon`
+export const API_PROBLEM_EVENTS_PATH = `${API_PROBLEM_ROOT_PATH}/{0}/events`
 // Student Problem Paths
 export const API_PROBLEM_STUDENT_ROOT_PATH = `${API_PROBLEM_ROOT_PATH}/authenticatedStudent`
 export const API_PROBLEM_STUDENT_RESOURCE_PATH = `${API_PROBLEM_STUDENT_ROOT_PATH}/{0}`

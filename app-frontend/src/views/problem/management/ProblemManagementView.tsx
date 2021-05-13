@@ -10,12 +10,11 @@ import KeywordsList from "../../../components/Chip/KeywordsList";
 import LoadingGrid from "../../../components/Grid/LoadingGrid";
 import browserHistory from "../../../config/browserHistory";
 import {educationMapToPersian} from "../../../model/enum/education";
-import {ProblemEvent} from "../../../model/problem/problemEvent";
 import {ProblemState} from "../../../model/problem/problemState";
 import {User, userRoleInfo} from "../../../model/user/user";
 import ProblemAuthenticatedService from "../../../services/api/problem/ProblemAuthenticatedService";
 import {DASHBOARD_VIEW_PATH} from "../../ViewPaths";
-import ProblemEventCard from "../ProblemEventCard";
+import ProblemEventsList from "../ProblemEventsList";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -82,22 +81,6 @@ const ProblemManagementView: React.FunctionComponent = () => {
         }, {
             keepPreviousData: true
         });
-
-    const events = problem?.events.sort((a, b) =>
-        new Date(a.createdDate!).valueOf() - new Date(b.createdDate!).valueOf())
-        .reverse()
-        .slice(0, 10)
-        .map((event: ProblemEvent) =>
-            <Box my={1}>
-                <ProblemEventCard
-                    key={event.id}
-                    title={event.createdBy!}
-                    subheader={"کاربر"}
-                    body={event.message}
-                    date={event.createdDate!}
-                />
-            </Box>
-        );
 
     const ProfileInfo: React.FunctionComponent<{ user?: User }> = ({user}) => {
         return (
@@ -177,12 +160,9 @@ const ProblemManagementView: React.FunctionComponent = () => {
                             <Typography variant="h6" paragraph>
                                 رخدادهای اخیر
                             </Typography>
-                            {events && events.length !== 0 ? events :
-                                <ProblemEventCard
-                                    title={"سامانه"}
-                                    subheader={"سامانه"}
-                                    body={"رخدادی ثبت نشده است."}
-                                />}
+                            {
+                                problem ? <ProblemEventsList problemId={problem.id!} pageSize={5}/> : undefined
+                            }
                         </Paper>
                     </Grid>
                 </Grid>
