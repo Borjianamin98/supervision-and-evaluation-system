@@ -9,6 +9,7 @@ class ProblemAuthenticatedService {
 
     static retrieveProblem(problemId: number) {
         return apiAxios.get<Problem>(API_SELECTED_PROBLEM_PATH.replace("{0}", String(problemId)))
+            .then(response => response.data)
     }
 
     static abandonProblem(problemId: number) {

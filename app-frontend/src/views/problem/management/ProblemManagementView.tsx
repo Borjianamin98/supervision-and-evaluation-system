@@ -3,12 +3,12 @@ import {createStyles, makeStyles, Theme, ThemeProvider} from "@material-ui/core/
 import Typography from "@material-ui/core/Typography";
 import {useSnackbar} from "notistack";
 import React from 'react';
+import {useQuery, useQueryClient} from "react-query";
 import {useParams} from "react-router-dom";
 import {rtlTheme} from "../../../App";
 import KeywordsList from "../../../components/Chip/KeywordsList";
 import browserHistory from "../../../config/browserHistory";
 import {educationMapToPersian} from "../../../model/enum/education";
-import {LoadingState} from "../../../model/enum/loadingState";
 import {ProblemEvent} from "../../../model/problem/problemEvent";
 import {ProblemState} from "../../../model/problem/problemState";
 import ProblemAuthenticatedService from "../../../services/api/problem/ProblemAuthenticatedService";
@@ -42,51 +42,44 @@ const ProblemManagementView: React.FunctionComponent = () => {
     const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar();
 
+    function illegalAccessHandler(message?: string) {
+        // Access illegal problem by user
+        enqueueSnackbar(message ?? `دسترسی به مسئله مربوطه با توجه به سطح دسترسی شما امکان‌پذیر نمی‌باشد.`,
+            {variant: "error"});
+        browserHistory.push(DASHBOARD_VIEW_PATH);
+    }
+
     const {problemId} = useParams<{ problemId: string }>();
-    const [problem, setProblem] = React.useState(ProblemStudentService.createInitialProblem());
-    const [loadingState, setLoadingState] = React.useState<LoadingState>(LoadingState.LOADING);
+    if (!(+problemId)) {
+        illegalAccessHandler();
+    }
 
-    React.useEffect(() => {
-        function illegalAccessHandler(message?: string) {
-            // Access illegal problem by user
-            enqueueSnackbar(message ?? `دسترسی به مسئله مربوطه با توجه به سطح دسترسی شما امکان‌پذیر نمی‌باشد.`,
-                {variant: "error"});
-            browserHistory.push(DASHBOARD_VIEW_PATH);
-        }
-
-        if (loadingState === LoadingState.LOADED) {
-            return; // Nothing to load
-        }
-
-        if (!(+problemId)) {
-            illegalAccessHandler();
-        }
-
-        ProblemAuthenticatedService.retrieveProblem(+problemId)
-            .then(value => {
-                if (value.data.state === ProblemState.IN_PROGRESS || value.data.state === ProblemState.COMPLETED) {
-                    setProblem(value.data);
-                } else {
-                    illegalAccessHandler("دسترسی به مسئله مربوطه با توجه به نوع مسئله امکان‌پذیر نمی‌باشد.");
-                }
-                setLoadingState(LoadingState.LOADED);
-            })
-            .catch(error => {
-                if (error.response) {
-                    if (error.response.status === 403) {
-                        illegalAccessHandler();
-                    } else if (error.response.status === 404) {
-                        illegalAccessHandler("مسئله مربوطه یافت نشد.")
-                    } else {
-                        setLoadingState(LoadingState.FAILED);
+    const queryClient = useQueryClient();
+    const {data: problem, ...problemQuery} = useQuery(['problem', +problemId],
+        () => {
+            return ProblemAuthenticatedService.retrieveProblem(+problemId)
+                .then(problem => {
+                    if (problem.state !== ProblemState.IN_PROGRESS && problem.state !== ProblemState.COMPLETED) {
+                        illegalAccessHandler("دسترسی به مسئله مربوطه با توجه به نوع مسئله امکان‌پذیر نمی‌باشد.");
                     }
-                } else {
-                    setLoadingState(LoadingState.FAILED);
-                }
-            });
-    }, [enqueueSnackbar, loadingState, problemId]);
+                    return Promise.resolve(problem);
+                })
+                .catch(error => {
+                    if (error.response) {
+                        if (error.response.status === 403) {
+                            illegalAccessHandler();
+                        } else if (error.response.status === 404) {
+                            illegalAccessHandler("مسئله مربوطه یافت نشد.")
+                        }
+                    }
+                    return Promise.reject(error);
+                })
+        }, {
+            initialData: () => ProblemStudentService.createInitialProblem(),
+            keepPreviousData: true
+        });
 
-    const events = problem.events.sort((a, b) =>
+    const events = problem?.events.sort((a, b) =>
         new Date(a.createdDate!).valueOf() - new Date(b.createdDate!).valueOf())
         .reverse()
         .slice(0, 10)
@@ -94,7 +87,7 @@ const ProblemManagementView: React.FunctionComponent = () => {
             <Box my={1}>
                 <EventInfoCard header={event.createdBy!} body={event.message} date={event.createdDate!}/>
             </Box>
-        )
+        );
 
     return (
         <ThemeProvider theme={rtlTheme}>
@@ -105,21 +98,21 @@ const ProblemManagementView: React.FunctionComponent = () => {
                             اطلاعات کلی
                         </Typography>
                         <Typography paragraph>
-                            {`دوره تحصیلی: ${educationMapToPersian(problem.education)}`}
+                            {`دوره تحصیلی: ${problem ? educationMapToPersian(problem.education) : ""}`}
                         </Typography>
-                        <Typography paragraph className={classes.justifyAlign}>{`عنوان: ${problem.title}`}</Typography>
+                        <Typography paragraph className={classes.justifyAlign}>{`عنوان: ${problem?.title}`}</Typography>
                         <Typography paragraph
-                                    className={classes.justifyAlign}>{`عنوان انگلیسی: ${problem.englishTitle}`}</Typography>
+                                    className={classes.justifyAlign}>{`عنوان انگلیسی: ${problem?.englishTitle}`}</Typography>
                         <Typography paragraph>کلیدواژه‌ها: </Typography>
                         <Box marginBottom={2}>
-                            <KeywordsList keywords={problem.keywords} marginDir="left"/>
+                            <KeywordsList keywords={problem ? problem.keywords : []} marginDir="left"/>
                         </Box>
                         <Typography paragraph
-                                    className={classes.justifyAlign}>{`تعریف: ${problem.definition}`}</Typography>
+                                    className={classes.justifyAlign}>{`تعریف: ${problem?.definition}`}</Typography>
                         <Typography paragraph
-                                    className={classes.justifyAlign}>{`بیشینه: ${problem.history}`}</Typography>
+                                    className={classes.justifyAlign}>{`بیشینه: ${problem?.history}`}</Typography>
                         <Typography paragraph
-                                    className={classes.justifyAlign}>{`ملاحظات: ${problem.considerations}`}</Typography>
+                                    className={classes.justifyAlign}>{`ملاحظات: ${problem?.considerations}`}</Typography>
                     </Paper>
                 </Grid>
                 <Grid container item direction="column" xs={12} sm={12} md={12} lg={4} xl={4}
@@ -132,9 +125,9 @@ const ProblemManagementView: React.FunctionComponent = () => {
                                         <Avatar src={""} className={classes.avatar}/>
                                     </Grid>
                                     <Grid item className={classes.centerAlign}>
-                                        <Typography variant="h5" paragraph>{problem.supervisor?.fullName}</Typography>
+                                        <Typography variant="h5" paragraph>{problem?.supervisor?.fullName}</Typography>
                                         <Typography variant="h6">
-                                            {`استاد ${problem.supervisor?.facultyName} دانشگاه ${problem.supervisor?.universityName}`}
+                                            {`استاد ${problem?.supervisor?.facultyName} دانشگاه ${problem?.supervisor?.universityName}`}
                                         </Typography>
                                     </Grid>
                                 </Grid>
@@ -146,8 +139,7 @@ const ProblemManagementView: React.FunctionComponent = () => {
                             <Typography variant="h6" paragraph>
                                 رخدادهای اخیر
                             </Typography>
-                            {events.length !== 0 ? events :
-                                <EventInfoCard header={"سامانه"} body={"رخدادی وجود ندارد."}/>}
+                            {events ?? <EventInfoCard header={"سامانه"} body={"رخدادی وجود ندارد."}/>}
                         </Paper>
                     </Grid>
                 </Grid>
