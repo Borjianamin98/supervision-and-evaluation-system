@@ -17,7 +17,6 @@ import StatelessPaginationTable from "../../components/Table/StatelessPagination
 import CustomTextField, {CustomTextFieldProps} from "../../components/Text/CustomTextField";
 import {getGeneralErrorMessage} from "../../config/axios-config";
 import {toLoadingState} from "../../model/enum/loadingState";
-import {emptyPageable} from "../../model/pageable";
 import {University} from "../../model/university/university";
 import UniversityService from "../../services/api/university/UniversityService";
 
@@ -47,7 +46,6 @@ const UniversityListView: React.FunctionComponent = () => {
     const queryClient = useQueryClient();
     const {data: universities, ...universitiesQuery} = useQuery(['universities', rowsPerPage, page],
         () => UniversityService.retrieveUniversities(rowsPerPage, page), {
-            initialData: () => emptyPageable(),
             keepPreviousData: true
         });
     const registerUniversity = useMutation(
@@ -174,7 +172,7 @@ const UniversityListView: React.FunctionComponent = () => {
                     </Grid>
                 </Grid>
                 <StatelessPaginationTable
-                    total={universities? universities.totalElements : 0}
+                    total={universities ? universities.totalElements : 0}
                     page={page}
                     onPageChange={newPage => setPage(newPage)}
                     rowsPerPage={rowsPerPage}

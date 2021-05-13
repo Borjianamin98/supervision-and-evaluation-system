@@ -20,7 +20,6 @@ import StatelessPaginationTable from "../../../components/Table/StatelessPaginat
 import CustomTextField, {CustomTextFieldProps} from "../../../components/Text/CustomTextField";
 import {getGeneralErrorMessage} from "../../../config/axios-config";
 import {toLoadingState} from "../../../model/enum/loadingState";
-import {emptyPageable} from "../../../model/pageable";
 import {Faculty} from "../../../model/university/faculty";
 import {University} from "../../../model/university/university";
 import FacultyService from "../../../services/api/university/faculty/FacultyService";
@@ -43,7 +42,7 @@ const FacultyListView: React.FunctionComponent = () => {
     const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar();
 
-    const [selectedUniversity, setSelectedUniversity] = useState<University>(UniversityService.createInitialUniversity());
+    const [selectedUniversity, setSelectedUniversity] = useState<University>();
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [noDataMessage, setNoDataMessage] = React.useState("دانشکده‌ای تعریف نشده است.");
@@ -57,14 +56,13 @@ const FacultyListView: React.FunctionComponent = () => {
     const queryClient = useQueryClient();
     const {data: faculties, ...facultiesQuery} = useQuery(['faculties', selectedUniversity, rowsPerPage, page],
         () => {
-            if (!selectedUniversity.id) {
+            if (!selectedUniversity) {
                 setNoDataMessage("دانشگاهی انتخاب نشده است.");
                 return;
             }
             setNoDataMessage("دانشکده‌ای تعریف نشده است.");
-            return FacultyService.retrieveUniversityFaculties(selectedUniversity.id, rowsPerPage, page);
+            return FacultyService.retrieveUniversityFaculties(selectedUniversity.id!, rowsPerPage, page);
         }, {
-            initialData: () => emptyPageable(),
             keepPreviousData: true
         });
 
@@ -104,7 +102,7 @@ const FacultyListView: React.FunctionComponent = () => {
 
     const registerHandler: React.MouseEventHandler<HTMLButtonElement> = (event) => {
         event.preventDefault();
-        if (!FacultyService.isFacultyValid(newFaculty)) {
+        if (!selectedUniversity || !FacultyService.isFacultyValid(newFaculty)) {
             setErrorChecking(true);
             return;
         }
@@ -128,7 +126,7 @@ const FacultyListView: React.FunctionComponent = () => {
             .then(value => value.content)
     }
 
-    const isBlank = (c: string) => errorChecking && c.length === 0;
+    const isBlank = (c?: string) => errorChecking && (!c || c.length === 0);
     const FacultyNameTextFieldProps: CustomTextFieldProps = {
         required: true,
         label: "نام دانشکده",
@@ -164,8 +162,8 @@ const FacultyListView: React.FunctionComponent = () => {
                             loadingFunction={inputValue => retrieveUniversities(inputValue)}
                             textFieldInputProps={{
                                 label: "دانشگاه",
-                                helperText: (isBlank(selectedUniversity.name) ? "دانشگاه مربوطه باید انتخاب شود." : ""),
-                                error: isBlank(selectedUniversity.name),
+                                helperText: (isBlank(selectedUniversity?.name) ? "دانشگاه مربوطه باید انتخاب شود." : ""),
+                                error: isBlank(selectedUniversity?.name),
                             }}
                             value={selectedUniversity}
                             onChange={(e, newValue) => {
