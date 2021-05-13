@@ -11,13 +11,10 @@ import CloseIcon from '@material-ui/icons/Close';
 import DoneIcon from '@material-ui/icons/Done';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import {AxiosError} from "axios";
-import moment from "jalali-moment";
 import {useSnackbar} from "notistack";
 import React, {useState} from 'react';
 import {useMutation, useQuery, useQueryClient} from "react-query";
 import {rtlTheme} from "../../App";
-import CustomAlert from "../../components/Alert/CustomAlert";
-import HistoryInfoAlert from "../../components/Alert/HistoryInfoAlert";
 import KeywordsList from "../../components/Chip/KeywordsList";
 import ComboBox from "../../components/ComboBox/ComboBox";
 import ConfirmDialog from "../../components/Dialog/ConfirmDialog";
@@ -31,7 +28,6 @@ import {educationMapToPersian} from "../../model/enum/education";
 import {toLoadingState} from "../../model/enum/loadingState";
 import {Role} from "../../model/enum/role";
 import {Problem} from "../../model/problem/problem";
-import {ProblemEvent} from "../../model/problem/problemEvent";
 import {
     PERSIAN_PROBLEM_STATES,
     ProblemState,
@@ -43,6 +39,7 @@ import ProblemAuthenticatedService from "../../services/api/problem/ProblemAuthe
 import ProblemMasterService from "../../services/api/problem/ProblemMasterService";
 import ProblemStudentService from "../../services/api/problem/ProblemStudentService";
 import {PROBLEM_EDIT_VIEW_PATH, PROBLEM_MANAGEMENT_VIEW_PATH} from "../ViewPaths";
+import ProblemEventsList from "./ProblemEventsList";
 
 const useStyles = makeStyles((theme) => ({
     noWrap: {
@@ -297,22 +294,6 @@ const ProblemListView: React.FunctionComponent = () => {
                                 }] : []),
                             {content: actions}
                         ];
-                        const events = row.events.sort((a, b) =>
-                            new Date(a.createdDate!).valueOf() - new Date(b.createdDate!).valueOf())
-                            .reverse()
-                            .slice(0, 10)
-                            .map((event: ProblemEvent) =>
-                                <HistoryInfoAlert
-                                    key={event.id!}
-                                    className={classes.event}
-                                >
-                                    {event.createdBy}
-                                    {"، "}
-                                    {moment(event.createdDate!).locale('fa').format('ddd، D MMMM YYYY (h:mm a)')}
-                                    {": "}
-                                    {event.message}
-                                </HistoryInfoAlert>
-                            )
 
                         return (
                             <CollapsibleTableRow
@@ -352,72 +333,68 @@ const ProblemListView: React.FunctionComponent = () => {
                                         <Typography variant="h6" className={classes.tableContentHeader}>
                                             رخدادهای اخیر
                                         </Typography>
-                                        {events.length !== 0 ? events :
-                                            <CustomAlert variant="outlined" severity="info"
-                                                         className={classes.event}>
-                                                هیچ رخدادی وجود ندارد.
-                                            </CustomAlert>}
+                                        {<ProblemEventsList problemId={row.id!} pageSize={3}/>}
                                     </Grid>
                                 </Grid>
                             </CollapsibleTableRow>
                         )
                     }}
-                    noDataMessage={"پایان‌نامه یا پروژه‌ای تعریف نشده است."}
-                    hasDelete={row => false}
-                    isDeletable={row => false}
-                    onDeleteRow={row => undefined}
-                    hasEdit={row => jwtPayloadRole === Role.STUDENT && selectedProblemState === ProblemState.CREATED}
-                    isEditable={row => true}
-                    onEditRow={row => onEditClick(row)}
-                    extraActions={getExtraActions()}
-                    onRetryClick={() =>
+                        noDataMessage={"پایان‌نامه یا پروژه‌ای تعریف نشده است."}
+                        hasDelete={row => false}
+                        isDeletable={row => false}
+                        onDeleteRow={row => undefined}
+                        hasEdit={row => jwtPayloadRole === Role.STUDENT && selectedProblemState === ProblemState.CREATED}
+                        isEditable={row => true}
+                        onEditRow={row => onEditClick(row)}
+                        extraActions={getExtraActions()}
+                        onRetryClick={() =>
                         queryClient.invalidateQueries(['problems', jwtPayloadRole, selectedProblemState, rowsPerPage, page])}
-                />
-                <div aria-label={"dialogs"}>
-                    <Dialog dir="rtl" open={commentDialogOpen} onClose={() => onCommentDialogClose(false)}>
+                        />
+                        <div aria-label={"dialogs"}>
+                        <Dialog dir="rtl" open={commentDialogOpen} onClose={() => onCommentDialogClose(false)}>
                         <DialogTitle>ثبت نظر</DialogTitle>
                         <DialogContent>
-                            <DialogContentText style={{textAlign: "justify"}}>
-                                نظرات، بازخوردها یا پیشنهادات خود را برای تایید مسئله وارد نمایید.
-                            </DialogContentText>
-                            <Typography paragraph>{`عنوان مسئله: ${commentProblem.title}`}</Typography>
-                            <CustomTextField
-                                autoFocus
-                                label="نظرات"
-                                multiline={true}
-                                rows={6}
-                                maxLength={1000}
-                                value={comment}
-                                onChange={(e) => setComment(e.target.value)}
-                                helperText={isBlank(comment) ? "ثبت نظر خالی امکان‌پذیر نمی‌باشد." : ""}
-                                error={isBlank(comment)}
-                            />
+                        <DialogContentText style={{textAlign: "justify"}}>
+                        نظرات، بازخوردها یا پیشنهادات خود را برای تایید مسئله وارد نمایید.
+                        </DialogContentText>
+                        <Typography paragraph>{`عنوان مسئله: ${commentProblem.title}`}</Typography>
+                        <CustomTextField
+                        autoFocus
+                        label="نظرات"
+                        multiline={true}
+                        rows={6}
+                        maxLength={1000}
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                        helperText={isBlank(comment) ? "ثبت نظر خالی امکان‌پذیر نمی‌باشد." : ""}
+                        error={isBlank(comment)}
+                        />
                         </DialogContent>
                         <DialogActions>
-                            <Button onClick={() => onCommentDialogClose(false)} color="primary">
-                                انصراف
-                            </Button>
-                            <Button onClick={() => onCommentDialogClose(true)} color="primary">
-                                ثبت نظر
-                            </Button>
+                        <Button onClick={() => onCommentDialogClose(false)} color="primary">
+                        انصراف
+                        </Button>
+                        <Button onClick={() => onCommentDialogClose(true)} color="primary">
+                        ثبت نظر
+                        </Button>
                         </DialogActions>
-                    </Dialog>
-                    <ConfirmDialog
+                        </Dialog>
+                        <ConfirmDialog
                         open={abandonDialogOpen}
                         onDialogOpenClose={onAbandonDialogEvent}
                         title={"لغو پایان‌نامه (پروژه)"}
                         description={"در صورتی که تمایل به لغو مسئله ایجاد شده دارید، تایید نمایید. دقت کنید که این عمل برگشت‌پذیر نمی‌باشد."}
-                    />
-                    <ConfirmDialog
+                        />
+                        <ConfirmDialog
                         open={approvalDialogOpen}
                         onDialogOpenClose={onApprovalDialogEvent}
                         title={"تایید اولیه پایان‌نامه (پروژه)"}
                         description={"با تایید اولیه مسئله، کلیت مسئله و توضیحات آن مورد تایید قرار می‌گیرد و ادامه‌ی روند مسئله در بخش مسائل در حال پیگیری دنبال می‌شود."}
-                    />
-                </div>
-            </Grid>
-        </ThemeProvider>
-    );
-}
+                        />
+                        </div>
+                        </Grid>
+                        </ThemeProvider>
+                        );
+                    }
 
 export default ProblemListView;
