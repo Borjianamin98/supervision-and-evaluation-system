@@ -35,19 +35,17 @@ const LoadingGrid: React.FunctionComponent<LoadingGridProps> = (props) => {
     const classes = useStyles();
     const {isLoading, isError, onRetryClick} = props;
 
-    const timerRef = React.useRef<number>();
     const [show, setShow] = React.useState(false);
 
     React.useEffect(
-        () => () => {
-            clearTimeout(timerRef.current);
+        () => {
+            const timer = setTimeout(() => setShow(true), 1000);
+            return () => {
+                clearTimeout(timer);
+            };
         },
-        [],
+        []
     );
-
-    timerRef.current = window.setTimeout(() => {
-        setShow(true);
-    }, 1000);
 
     const loadingImage = <img src={LoadingImage} alt="بارگیری" className={classes.image}/>;
     const errorImage = <img src={NoConnectionImage} alt="مشکل در ارتباط" className={classes.image}/>;

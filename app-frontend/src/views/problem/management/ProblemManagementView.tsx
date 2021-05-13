@@ -140,8 +140,9 @@ const ProblemManagementView: React.FunctionComponent = () => {
                                         <Avatar src={""} className={classes.avatar}/>
                                     </Grid>
                                     <Grid item className={classes.centerAlign}>
-                                        <Typography variant="h5"
-                                                    paragraph>{problem?.supervisor?.fullName}</Typography>
+                                        <Typography variant="h5" paragraph>
+                                            {problem?.supervisor?.fullName}
+                                        </Typography>
                                         <Typography variant="h6">
                                             {`استاد ${problem?.supervisor?.facultyName} دانشگاه ${problem?.supervisor?.universityName}`}
                                         </Typography>

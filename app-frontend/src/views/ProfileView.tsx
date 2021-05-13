@@ -14,9 +14,7 @@ import apiAxios, {getGeneralErrorMessage} from "../config/axios-config";
 import browserHistory from "../config/browserHistory";
 import {genderMapToPersian} from "../model/enum/gender";
 import {Role} from "../model/enum/role";
-import {Master} from "../model/user/master";
-import {Student} from "../model/user/student";
-import {User} from "../model/user/user";
+import {User, userRoleInfo} from "../model/user/user";
 import AuthenticationService from "../services/api/AuthenticationService";
 import AdminService from "../services/api/user/AdminService";
 import MasterService from "../services/api/user/MasterService";
@@ -56,7 +54,7 @@ const ProfileView: React.FunctionComponent = () => {
     const {enqueueSnackbar} = useSnackbar();
 
     const [avatar, setAvatar] = useState<string>("");
-    const [user, setUser] = useState<User>(UserService.createInitialUser());
+    const [user, setUser] = useState<User>();
 
     React.useEffect(() => {
         AuthenticationService.check()
@@ -126,24 +124,6 @@ const ProfileView: React.FunctionComponent = () => {
             .then(resizedImageBlob => setAvatar(window.URL.createObjectURL(resizedImageBlob)));
     }
 
-    const getUserSubHeader = (user: User) => {
-        if (!user.role) {
-            return ""; // Happen in first load
-        }
-        const userRole = user.role;
-        if (userRole === Role.STUDENT) {
-            const studentUser = user as Student;
-            return `دانشجوی ${studentUser.facultyName} دانشگاه ${studentUser.universityName}`;
-        } else if (userRole === Role.MASTER) {
-            const masterUser = user as Master;
-            return `استاد ${masterUser.facultyName} دانشگاه ${masterUser.universityName}`;
-        } else if (userRole === Role.ADMIN) {
-            return "مدیر";
-        } else {
-            throw new Error("Invalid user roles: " + userRole)
-        }
-    }
-
     const commonTextFieldProps: CustomTextFieldProps = {
         extraInputProps: {
             disableUnderline: true,
@@ -179,9 +159,9 @@ const ProfileView: React.FunctionComponent = () => {
                             </Badge>
                         </Grid>
                         <Grid item className={classNames(classes.gridItem, classes.centerAlign)}>
-                            <Typography variant="h5" className={classes.typography}>{user.fullName}</Typography>
+                            <Typography variant="h5" className={classes.typography}>{user?.fullName}</Typography>
                             <Typography variant="h6" className={classes.typography}>
-                                {getUserSubHeader(user)}
+                                {user ? userRoleInfo(user) : ""}
                             </Typography>
                         </Grid>
                         <Grid container spacing={2} className={classes.gridItem}>
@@ -211,26 +191,26 @@ const ProfileView: React.FunctionComponent = () => {
                         <CustomTextField
                             variant="standard"
                             label="نام"
-                            value={user.firstName}
+                            value={user ? user.firstName : ""}
                             {...commonTextFieldProps}
                         />
                         <CustomTextField
                             variant="standard"
                             label="نام خانوادگی"
-                            value={user.lastName}
+                            value={user ? user.lastName : ""}
                             {...commonTextFieldProps}
                         />
                         <CustomTextField
                             variant="standard"
                             label="جنسیت"
-                            value={genderMapToPersian(user.personalInfo!.gender)}
+                            value={user ? genderMapToPersian(user.personalInfo!.gender) : ""}
                             {...commonTextFieldProps}
                         />
                         <CustomTextField
                             variant="standard"
                             textDir="ltr"
                             label="شماره تلفن"
-                            value={UserService.getPhoneNumberRepresentation(user.personalInfo!.telephoneNumber)}
+                            value={user ? UserService.getPhoneNumberRepresentation(user.personalInfo!.telephoneNumber) : ""}
                             InputProps={{
                                 endAdornment: <InputAdornment position="end">98+</InputAdornment>,
                             }}
@@ -240,7 +220,7 @@ const ProfileView: React.FunctionComponent = () => {
                             variant="standard"
                             textDir="ltr"
                             label="آدرس ایمیل"
-                            value={user.personalInfo!.email}
+                            value={user ? user.personalInfo!.email : ""}
                             {...commonTextFieldProps}
                         />
                         <CustomTextField
@@ -248,7 +228,7 @@ const ProfileView: React.FunctionComponent = () => {
                             textDir="ltr"
                             label="نام کاربری"
                             autoComplete="username"
-                            value={user.username}
+                            value={user ? user.username : ""}
                             {...commonTextFieldProps}
                         />
                     </Paper>

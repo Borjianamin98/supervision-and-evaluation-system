@@ -3,6 +3,7 @@ package ir.ac.sbu.evaluation.dto.problem;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
+import ir.ac.sbu.evaluation.dto.user.student.StudentDto;
 import ir.ac.sbu.evaluation.enumeration.Education;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.model.problem.Problem;
@@ -56,6 +57,9 @@ public class ProblemDto {
     private ProblemState state;
 
     @NotNull
+    private StudentDto student;
+
+    @NotNull
     private MasterDto supervisor;
 
     @NotNull
@@ -70,7 +74,7 @@ public class ProblemDto {
             String title, String englishTitle, Set<String> keywords,
             String definition, String history, String considerations,
             ProblemState state, Set<ProblemEventDto> events,
-            MasterDto supervisor, Set<MasterDto> referees) {
+            StudentDto student, MasterDto supervisor, Set<MasterDto> referees) {
         this.id = id;
         this.education = education;
         this.title = title;
@@ -81,6 +85,7 @@ public class ProblemDto {
         this.considerations = considerations;
         this.state = state;
         this.events = events;
+        this.student = student;
         this.supervisor = supervisor;
         this.referees = referees;
     }
@@ -95,6 +100,7 @@ public class ProblemDto {
                 .considerations(problem.getConsiderations())
                 .state(problem.getState())
                 .events(problem.getEvents().stream().map(ProblemEventDto::from).collect(Collectors.toSet()))
+                .student(StudentDto.from(problem.getStudent()))
                 .supervisor(MasterDto.from(problem.getSupervisor()))
                 .referees(problem.getReferees().stream().map(MasterDto::from).collect(Collectors.toSet()))
                 .build();
