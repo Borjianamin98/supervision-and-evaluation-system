@@ -91,8 +91,8 @@ const ProblemListView: React.FunctionComponent = () => {
         });
 
     const commentOnProblem = useMutation(
-        (comment: string) => ProblemMasterService.placeCommentOnProblem(commentProblem.id!, {
-            message: comment
+        (data: { problemId: number, comment: string }) => ProblemMasterService.placeCommentOnProblem(data.problemId, {
+            message: data.comment
         }),
         {
             onSuccess: () => queryClient.invalidateQueries(['problems', jwtPayloadRole, selectedProblemState, rowsPerPage, page])
@@ -175,7 +175,7 @@ const ProblemListView: React.FunctionComponent = () => {
     const [errorChecking, setErrorChecking] = React.useState(false);
     const isBlank = (c: string) => errorChecking && c.length === 0;
 
-    const [commentProblem, setCommentProblem] = useState<Problem>(ProblemStudentService.createInitialProblem());
+    const [commentProblem, setCommentProblem] = useState<Problem>();
     const [comment, setComment] = useState<string>("");
     const [commentDialogOpen, setCommentDialogOpen] = React.useState(false);
 
@@ -192,13 +192,16 @@ const ProblemListView: React.FunctionComponent = () => {
                 setErrorChecking(true);
                 return;
             }
-            commentOnProblem.mutate(comment);
+            commentOnProblem.mutate({
+                problemId: commentProblem!.id!,
+                comment: comment,
+            });
         }
         setCommentDialogOpen(false);
     };
 
     const [abandonDialogOpen, setAbandonDialogOpen] = React.useState(false);
-    const [abandonedProblem, setAbandonedProblem] = useState<Problem>(ProblemStudentService.createInitialProblem());
+    const [abandonedProblem, setAbandonedProblem] = useState<Problem>();
 
     const onAbandonDialogOpen = (problem: Problem) => {
         setAbandonedProblem(problem);
@@ -207,13 +210,13 @@ const ProblemListView: React.FunctionComponent = () => {
 
     const onAbandonDialogEvent = (confirmed: boolean) => {
         if (confirmed) {
-            abandonProblem.mutate(abandonedProblem.id!);
+            abandonProblem.mutate(abandonedProblem!.id!);
         }
         setAbandonDialogOpen(false);
     };
 
     const [approvalDialogOpen, setApprovalDialogOpen] = React.useState(false);
-    const [approvalProblem, setApprovalProblem] = useState<Problem>(ProblemStudentService.createInitialProblem());
+    const [approvalProblem, setApprovalProblem] = useState<Problem>();
 
     const onApprovalDialogOpen = (problem: Problem) => {
         setApprovalProblem(problem);
@@ -222,7 +225,7 @@ const ProblemListView: React.FunctionComponent = () => {
 
     const onApprovalDialogEvent = (confirmed: boolean) => {
         if (confirmed) {
-            approveProblem.mutate(approvalProblem.id!);
+            approveProblem.mutate(approvalProblem!.id!);
         }
         setApprovalDialogOpen(false);
     };
@@ -339,62 +342,62 @@ const ProblemListView: React.FunctionComponent = () => {
                             </CollapsibleTableRow>
                         )
                     }}
-                        noDataMessage={"پایان‌نامه یا پروژه‌ای تعریف نشده است."}
-                        hasDelete={row => false}
-                        isDeletable={row => false}
-                        onDeleteRow={row => undefined}
-                        hasEdit={row => jwtPayloadRole === Role.STUDENT && selectedProblemState === ProblemState.CREATED}
-                        isEditable={row => true}
-                        onEditRow={row => onEditClick(row)}
-                        extraActions={getExtraActions()}
-                        onRetryClick={() =>
+                    noDataMessage={"پایان‌نامه یا پروژه‌ای تعریف نشده است."}
+                    hasDelete={row => false}
+                    isDeletable={row => false}
+                    onDeleteRow={row => undefined}
+                    hasEdit={row => jwtPayloadRole === Role.STUDENT && selectedProblemState === ProblemState.CREATED}
+                    isEditable={row => true}
+                    onEditRow={row => onEditClick(row)}
+                    extraActions={getExtraActions()}
+                    onRetryClick={() =>
                         queryClient.invalidateQueries(['problems', jwtPayloadRole, selectedProblemState, rowsPerPage, page])}
-                        />
-                        <div aria-label={"dialogs"}>
-                        <Dialog dir="rtl" open={commentDialogOpen} onClose={() => onCommentDialogClose(false)}>
+                />
+                <div aria-label={"dialogs"}>
+                    <Dialog dir="rtl" open={commentDialogOpen} onClose={() => onCommentDialogClose(false)}>
                         <DialogTitle>ثبت نظر</DialogTitle>
                         <DialogContent>
-                        <DialogContentText style={{textAlign: "justify"}}>
-                        نظرات، بازخوردها یا پیشنهادات خود را برای تایید مسئله وارد نمایید.
-                        </DialogContentText>
-                        <Typography paragraph>{`عنوان مسئله: ${commentProblem.title}`}</Typography>
-                        <CustomTextField
-                        autoFocus
-                        label="نظرات"
-                        multiline={true}
-                        rows={6}
-                        maxLength={1000}
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
-                        helperText={isBlank(comment) ? "ثبت نظر خالی امکان‌پذیر نمی‌باشد." : ""}
-                        error={isBlank(comment)}
-                        />
+                            <DialogContentText style={{textAlign: "justify"}}>
+                                نظرات، بازخوردها یا پیشنهادات خود را برای تایید مسئله وارد نمایید.
+                            </DialogContentText>
+                            <Typography paragraph>{`عنوان مسئله: ${commentProblem?.title ?? ""}`}</Typography>
+                            <CustomTextField
+                                autoFocus
+                                label="نظرات"
+                                multiline={true}
+                                rows={6}
+                                maxLength={1000}
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                                helperText={isBlank(comment) ? "ثبت نظر خالی امکان‌پذیر نمی‌باشد." : ""}
+                                error={isBlank(comment)}
+                            />
                         </DialogContent>
                         <DialogActions>
-                        <Button onClick={() => onCommentDialogClose(false)} color="primary">
-                        انصراف
-                        </Button>
-                        <Button onClick={() => onCommentDialogClose(true)} color="primary">
-                        ثبت نظر
-                        </Button>
+                            <Button onClick={() => onCommentDialogClose(false)} color="primary">
+                                انصراف
+                            </Button>
+                            <Button onClick={() => onCommentDialogClose(true)} color="primary">
+                                ثبت نظر
+                            </Button>
                         </DialogActions>
-                        </Dialog>
-                        <ConfirmDialog
+                    </Dialog>
+                    <ConfirmDialog
                         open={abandonDialogOpen}
                         onDialogOpenClose={onAbandonDialogEvent}
                         title={"لغو پایان‌نامه (پروژه)"}
                         description={"در صورتی که تمایل به لغو مسئله ایجاد شده دارید، تایید نمایید. دقت کنید که این عمل برگشت‌پذیر نمی‌باشد."}
-                        />
-                        <ConfirmDialog
+                    />
+                    <ConfirmDialog
                         open={approvalDialogOpen}
                         onDialogOpenClose={onApprovalDialogEvent}
                         title={"تایید اولیه پایان‌نامه (پروژه)"}
                         description={"با تایید اولیه مسئله، کلیت مسئله و توضیحات آن مورد تایید قرار می‌گیرد و ادامه‌ی روند مسئله در بخش مسائل در حال پیگیری دنبال می‌شود."}
-                        />
-                        </div>
-                        </Grid>
-                        </ThemeProvider>
-                        );
-                    }
+                    />
+                </div>
+            </Grid>
+        </ThemeProvider>
+    );
+}
 
 export default ProblemListView;

@@ -51,9 +51,6 @@ public class ProblemDto {
     private String considerations;
 
     @JsonProperty(access = Access.READ_ONLY)
-    private Set<ProblemEventDto> events;
-
-    @JsonProperty(access = Access.READ_ONLY)
     private ProblemState state;
 
     @NotNull
@@ -73,7 +70,7 @@ public class ProblemDto {
             Education education,
             String title, String englishTitle, Set<String> keywords,
             String definition, String history, String considerations,
-            ProblemState state, Set<ProblemEventDto> events,
+            ProblemState state,
             StudentDto student, MasterDto supervisor, Set<MasterDto> referees) {
         this.id = id;
         this.education = education;
@@ -84,7 +81,6 @@ public class ProblemDto {
         this.history = history;
         this.considerations = considerations;
         this.state = state;
-        this.events = events;
         this.student = student;
         this.supervisor = supervisor;
         this.referees = referees;
@@ -99,7 +95,6 @@ public class ProblemDto {
                 .definition(problem.getDefinition()).history(problem.getHistory())
                 .considerations(problem.getConsiderations())
                 .state(problem.getState())
-                .events(problem.getEvents().stream().map(ProblemEventDto::from).collect(Collectors.toSet()))
                 .student(StudentDto.from(problem.getStudent()))
                 .supervisor(MasterDto.from(problem.getSupervisor()))
                 .referees(problem.getReferees().stream().map(MasterDto::from).collect(Collectors.toSet()))
