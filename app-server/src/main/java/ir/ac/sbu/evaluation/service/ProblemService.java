@@ -120,14 +120,17 @@ public class ProblemService {
     }
 
     @Transactional
-    public ProblemEventDto placeCommentOnProblem(long problemId, ProblemEventDto comment) {
+    public ProblemEventDto placeCommentOnProblem(long userId, long problemId, ProblemEventDto comment) {
         Problem problem = getProblem(problemId);
+        checkUserAccessProblem(userId, problem);
 
-        ProblemEvent savedEvent = problemEventRepository.save(comment.toProblemEvent());
-        problem.getEvents().add(savedEvent);
+        ProblemEvent problemEvent = comment.toProblemEvent();
+        problemEvent.setProblem(problem);
+        ProblemEvent savedProblemEvent = problemEventRepository.save(problemEvent);
+        problem.getEvents().add(savedProblemEvent);
         problemRepository.save(problem);
 
-        return ProblemEventDto.from(savedEvent);
+        return ProblemEventDto.from(savedProblemEvent);
     }
 
     public Page<ProblemEventDto> retrieveProblemEvents(long userId, long problemId, Pageable pageable) {

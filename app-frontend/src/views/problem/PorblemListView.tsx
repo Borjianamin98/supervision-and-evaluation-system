@@ -95,8 +95,12 @@ const ProblemListView: React.FunctionComponent = () => {
             message: data.comment
         }),
         {
-            onSuccess: () => queryClient.invalidateQueries(['problems', jwtPayloadRole, selectedProblemState, rowsPerPage, page])
-                .then(() => enqueueSnackbar(`نظر جدید با موفقیت ثبت شد.`, {variant: "success"})),
+            onSuccess: (data, variables) => {
+                return Promise.all([
+                    queryClient.invalidateQueries(['problems', jwtPayloadRole, selectedProblemState, rowsPerPage, page]),
+                    queryClient.refetchQueries(['events', variables.problemId])
+                ]).then(() => enqueueSnackbar(`نظر جدید با موفقیت ثبت شد.`, {variant: "success"}))
+            },
             onError: (error: AxiosError) => handleFailedRequest(error),
         });
     const abandonProblem = useMutation(

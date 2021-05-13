@@ -44,8 +44,6 @@ public class ProblemEventDto extends AuditableDto {
         return ProblemEvent.builder()
                 .id(id)
                 .message(message)
-                .createdBy(getCreatedBy())
-                .createdDate(getCreatedDate())
                 .build();
     }
 }

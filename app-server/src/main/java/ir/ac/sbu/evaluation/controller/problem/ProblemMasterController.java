@@ -44,9 +44,10 @@ public class ProblemMasterController {
 
     @PostMapping(path = "/{problemId}" + API_PROBLEM_MASTER_COMMENT_ON_PROBLEM_PATH)
     public ProblemEventDto placeCommentOnProblem(
+            @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long problemId,
             @Valid @RequestBody ProblemEventDto problemEventDto) {
-        return problemService.placeCommentOnProblem(problemId, problemEventDto);
+        return problemService.placeCommentOnProblem(authUserDetail.getUserId(), problemId, problemEventDto);
     }
 
     @GetMapping(path = "/{problemId}" + API_PROBLEM_MASTER_INITIAL_APPROVE_OF_PROBLEM_PATH)
