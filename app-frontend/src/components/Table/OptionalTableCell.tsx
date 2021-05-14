@@ -3,12 +3,13 @@ import React from "react";
 
 export interface OptionalTableCellProps extends TableCellProps {
     content: React.ReactNode,
+    mdOptional?: boolean,
     smOptional?: boolean,
     xsOptional?: boolean,
 }
 
 const OptionalTableCell: React.FunctionComponent<OptionalTableCellProps> = (props) => {
-    const {content, smOptional, xsOptional, ...rest} = props;
+    const {content, mdOptional, smOptional, xsOptional, ...rest} = props;
 
     function InternalTableCell() {
         return <TableCell
@@ -19,7 +20,7 @@ const OptionalTableCell: React.FunctionComponent<OptionalTableCellProps> = (prop
     }
 
     return (
-        <Hidden smDown={smOptional} xsDown={xsOptional}>
+        <Hidden smDown={smOptional} xsDown={xsOptional} mdDown={mdOptional}>
             <InternalTableCell/>
         </Hidden>
     )

@@ -16,9 +16,6 @@ import OptionalTableCell, {OptionalTableCellProps} from "./OptionalTableCell";
 import CustomTablePagination from "./Pagination/CustomTablePagination";
 
 const useStyles = makeStyles((theme) => ({
-    action: {
-        margin: theme.spacing(0, 0.5),
-    },
     actionContainer: {
         whiteSpace: "nowrap",
         overflow: "hidden",
@@ -106,7 +103,6 @@ function StatelessPaginationTable<T>(props: StatelessPaginationListProps<T>) {
         const editAction = <TooltipIconButton
             tooltipTitle="ویرایش"
             color="secondary"
-            className={classes.action}
             disabled={!isEditable(row)}
             onClick={() => onEditRow(row)}>
             <EditIcon/>
@@ -114,7 +110,6 @@ function StatelessPaginationTable<T>(props: StatelessPaginationListProps<T>) {
         const deleteAction = <TooltipIconButton
             tooltipTitle="حذف"
             color="secondary"
-            className={classes.action}
             disabled={!isDeletable(row)}
             onClick={() => onDeleteRow(row)}>
             <DeleteIcon/>
@@ -125,7 +120,6 @@ function StatelessPaginationTable<T>(props: StatelessPaginationListProps<T>) {
                 <TooltipIconButton
                     key={index}
                     color="secondary"
-                    className={classes.action}
                     onClick={() => onClickAction(row)}
                     {...rest}
                 >

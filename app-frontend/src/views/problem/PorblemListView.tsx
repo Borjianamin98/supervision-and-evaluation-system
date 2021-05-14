@@ -274,10 +274,11 @@ const ProblemListView: React.FunctionComponent = () => {
                     loadingState={toLoadingState(problemsQuery)}
                     collectionData={problems ? problems.content : []}
                     tableHeaderCells={[
-                        {content: "دوره تحصیلی", xsOptional: true, width: "10%"},
+                        {content: "دوره تحصیلی", smOptional: true, width: "10%"},
                         {content: "عنوان", width: "30%"},
-                        {content: "کلیدواژه‌ها", smOptional: true, width: "25%"},
-                        {content: "استاد راهنما", xsOptional: true, width: "15%"},
+                        {content: "کلیدواژه‌ها", mdOptional: true, width: "20%"},
+                        {content: "دانشجو", xsOptional: true, width: "10%"},
+                        {content: "استاد راهنما", xsOptional: true, width: "10%"},
                         ...(problems?.content.some(p => p.referees.length !== 0) ?
                             [{
                                 content: "استادهای داور", xsOptional: true,
@@ -289,9 +290,10 @@ const ProblemListView: React.FunctionComponent = () => {
                     tableRow={(row: Problem, actions) => {
                         const keywordsList = <KeywordsList keywords={row.keywords} marginDir="left"/>;
                         const cells: OptionalTableCellProps[] = [
-                            {content: educationMapToPersian(row.education), xsOptional: true},
+                            {content: educationMapToPersian(row.education), smOptional: true},
                             {content: row.title},
-                            {content: keywordsList, smOptional: true},
+                            {content: keywordsList, mdOptional: true},
+                            {content: row.student!.fullName, xsOptional: true},
                             {content: row.supervisor!.fullName, xsOptional: true},
                             ...(problems?.content.some(p => p.referees.length !== 0) ?
                                 [{

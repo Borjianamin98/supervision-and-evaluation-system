@@ -2,7 +2,6 @@ import {Box, Card, CardActions, CardContent, CardHeader, CardProps} from "@mater
 import Avatar from "@material-ui/core/Avatar";
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import HistoryIcon from "@material-ui/icons/History";
 import moment from "jalali-moment";
 import React from 'react';
 
@@ -37,9 +36,7 @@ const ProblemEventCard: React.FunctionComponent<ProblemEventCardProps> = (props)
         <Card variant="outlined" {...rest} className={classes.root}>
             <CardHeader
                 avatar={
-                    <Avatar aria-label="card-type" className={classes.avatar}>
-                        <HistoryIcon/>
-                    </Avatar>
+                    <Avatar src={""} aria-label="card-type" className={classes.avatar}/>
                 }
                 title={title}
                 subheader={subheader}

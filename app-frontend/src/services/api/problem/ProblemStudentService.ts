@@ -29,10 +29,9 @@ class ProblemStudentService {
 
     static createProblem(problem: Problem) {
         return apiAxios.post(API_PROBLEM_STUDENT_ROOT_PATH,
-            problem,
-            {
+            problem, {
                 validateStatus: status => status === 201
-            })
+            }).then(response => response.data);
     }
 
     static retrieveProblemsOfStudent(pageSize: number, page: number, problemState: ProblemState) {
@@ -48,7 +47,7 @@ class ProblemStudentService {
 
     static updateProblem(problemId: number, problem: Problem) {
         return apiAxios.put<University>(API_PROBLEM_STUDENT_RESOURCE_PATH.replace("{0}", String(problemId)),
-            problem)
+            problem).then(response => response.data);
     }
 
     static isValidProblem(problem: Problem) {
