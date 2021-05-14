@@ -7,12 +7,11 @@ import {makeStyles, ThemeProvider} from '@material-ui/core/styles';
 import {ClassNameMap} from "@material-ui/core/styles/withStyles";
 import Typography from '@material-ui/core/Typography';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import {AxiosError} from "axios";
 import {useSnackbar} from "notistack";
 import React, {FormEventHandler, useState} from 'react';
 import {rtlTheme} from '../../../App';
 import ButtonLink from "../../../components/Button/ButtonLink";
-import {getGeneralErrorMessage} from "../../../config/axios-config";
+import {generalErrorHandler} from "../../../config/axios-config";
 import browserHistory from "../../../config/browserHistory";
 import {ENGLISH_ROLES, Role} from "../../../model/enum/role";
 import {Faculty} from "../../../model/university/faculty";
@@ -92,16 +91,6 @@ const SignUpView: React.FunctionComponent = (props) => {
         browserHistory.push(LOGIN_VIEW_PATH);
     }
 
-    const handleFailedSubmit = (error: AxiosError) => {
-        const {statusCode, message} = getGeneralErrorMessage(error);
-        if (statusCode) {
-            enqueueSnackbar(`در ارسال درخواست از سرور خطای ${statusCode} دریافت شد.`,
-                {variant: "error"});
-        } else if (!statusCode) {
-            enqueueSnackbar(message, {variant: "error"});
-        }
-    }
-
     const formSubmitHandler: FormEventHandler = (event) => {
         event.preventDefault();
         if (!UserService.isUserValid(user)) {
@@ -115,7 +104,7 @@ const SignUpView: React.FunctionComponent = (props) => {
                     studentNumber: extraUserInfo.studentNumber,
                 },
                 facultyId: faculty.id!
-            }).then(value => handleSuccessSubmit()).catch(error => handleFailedSubmit(error))
+            }).then(value => handleSuccessSubmit()).catch(error => generalErrorHandler(error, enqueueSnackbar))
         } else if (extraUserInfo.role === Role.MASTER && extraUserInfo.degree.length > 1) {
             MasterService.registerMaster({
                 master: {
@@ -123,7 +112,7 @@ const SignUpView: React.FunctionComponent = (props) => {
                     degree: extraUserInfo.degree,
                 },
                 facultyId: faculty.id!
-            }).then(value => handleSuccessSubmit()).catch(error => handleFailedSubmit(error))
+            }).then(value => handleSuccessSubmit()).catch(error => generalErrorHandler(error, enqueueSnackbar))
         } else {
             setErrorChecking(true);
         }

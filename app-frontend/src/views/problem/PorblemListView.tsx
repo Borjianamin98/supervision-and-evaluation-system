@@ -19,7 +19,7 @@ import SingleFieldFormDialog from "../../components/Dialog/SingleFieldFormDialog
 import CollapsibleTableRow from "../../components/Table/CollapsibleTableRow";
 import {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
 import StatelessPaginationTable, {StatelessPaginationListAction} from "../../components/Table/StatelessPaginationTable";
-import {getGeneralErrorMessage} from "../../config/axios-config";
+import {generalErrorHandler} from "../../config/axios-config";
 import browserHistory from "../../config/browserHistory";
 import {educationMapToPersian} from "../../model/enum/education";
 import {toLoadingState} from "../../model/enum/loadingState";
@@ -98,32 +98,22 @@ const ProblemListView: React.FunctionComponent = () => {
                     queryClient.refetchQueries(['events', variables.problemId])
                 ]).then(() => enqueueSnackbar(`نظر جدید با موفقیت ثبت شد.`, {variant: "success"}))
             },
-            onError: (error: AxiosError) => handleFailedRequest(error),
+            onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
     const abandonProblem = useMutation(
         (problemId: number) => ProblemAuthenticatedService.abandonProblem(problemId),
         {
             onSuccess: data => queryClient.invalidateQueries(['problems', jwtPayloadRole, selectedProblemState, rowsPerPage])
                 .then(() => enqueueSnackbar(`پایان‌نامه (پروژه) ${data.title} به وضعیت لغو شده منتقل شد.`, {variant: "success"})),
-            onError: (error: AxiosError) => handleFailedRequest(error),
+            onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
     const approveProblem = useMutation(
         (problemId: number) => ProblemMasterService.initialApprovalOfProblem(problemId),
         {
             onSuccess: data => queryClient.invalidateQueries(['problems', jwtPayloadRole, selectedProblemState, rowsPerPage])
                 .then(() => enqueueSnackbar(`پایان‌نامه (پروژه) ${data.title} مورد تایید اولیه قرار گرفت.`, {variant: "success"})),
-            onError: (error: AxiosError) => handleFailedRequest(error),
+            onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
-
-    const handleFailedRequest = (error: AxiosError) => {
-        const {statusCode, message} = getGeneralErrorMessage(error);
-        if (statusCode) {
-            enqueueSnackbar(`در ارسال درخواست از سرور خطای ${statusCode} دریافت شد.`,
-                {variant: "error"});
-        } else if (!statusCode) {
-            enqueueSnackbar(message, {variant: "error"});
-        }
-    }
 
     const onEditClick = (problem: Problem) => {
         browserHistory.push({
@@ -175,13 +165,11 @@ const ProblemListView: React.FunctionComponent = () => {
 
     const [commentProblem, setCommentProblem] = useState<Problem>();
     const [commentDialogOpen, setCommentDialogOpen] = React.useState(false);
-
     const onCommentDialogOpen = (problem: Problem) => {
         setCommentProblem(problem);
         setCommentDialogOpen(true);
     };
-
-    const onCommentDialogOpenClose = (comment?: string) => {
+    const onCommentDialogEvent = (comment?: string) => {
         if (comment) {
             commentOnProblem.mutate({
                 problemId: commentProblem!.id!,
@@ -193,12 +181,10 @@ const ProblemListView: React.FunctionComponent = () => {
 
     const [abandonDialogOpen, setAbandonDialogOpen] = React.useState(false);
     const [abandonedProblem, setAbandonedProblem] = useState<Problem>();
-
     const onAbandonDialogOpen = (problem: Problem) => {
         setAbandonedProblem(problem);
         setAbandonDialogOpen(true);
     };
-
     const onAbandonDialogEvent = (confirmed: boolean) => {
         if (confirmed) {
             abandonProblem.mutate(abandonedProblem!.id!);
@@ -208,12 +194,10 @@ const ProblemListView: React.FunctionComponent = () => {
 
     const [approvalDialogOpen, setApprovalDialogOpen] = React.useState(false);
     const [approvalProblem, setApprovalProblem] = useState<Problem>();
-
     const onApprovalDialogOpen = (problem: Problem) => {
         setApprovalProblem(problem);
         setApprovalDialogOpen(true);
     };
-
     const onApprovalDialogEvent = (confirmed: boolean) => {
         if (confirmed) {
             approveProblem.mutate(approvalProblem!.id!);
@@ -349,7 +333,7 @@ const ProblemListView: React.FunctionComponent = () => {
                 <div aria-label={"dialogs"}>
                     <SingleFieldFormDialog
                         open={commentDialogOpen}
-                        onDialogOpenClose={onCommentDialogOpenClose}
+                        onDialogOpenClose={onCommentDialogEvent}
                         title="ثبت نظر"
                         descriptions={[
                             "نظرات، بازخوردها یا پیشنهادات خود را برای تایید مسئله وارد نمایید.",

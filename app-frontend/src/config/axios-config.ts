@@ -1,4 +1,5 @@
 import axios, {AxiosError} from "axios";
+import {ProviderContext} from "notistack";
 import AuthenticationService from "../services/api/AuthenticationService";
 import {API_AUTHENTICATION_LOGIN_PATH, API_AUTHENTICATION_REFRESH_PATH, API_ROOT_PATH} from "../services/ApiPaths";
 import {LOGIN_VIEW_PATH} from "../views/ViewPaths";
@@ -81,6 +82,16 @@ export function getGeneralErrorMessage(error: AxiosError): { message: string, st
     return {
         message,
         statusCode
+    }
+}
+
+export const generalErrorHandler = (error: AxiosError, enqueueSnackbar: ProviderContext["enqueueSnackbar"]) => {
+    const {statusCode, message} = getGeneralErrorMessage(error);
+    if (statusCode) {
+        enqueueSnackbar(`در ارسال درخواست از سرور خطای ${statusCode} دریافت شد.`,
+            {variant: "error"});
+    } else if (!statusCode) {
+        enqueueSnackbar(message, {variant: "error"});
     }
 }
 

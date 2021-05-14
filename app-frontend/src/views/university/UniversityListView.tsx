@@ -15,7 +15,7 @@ import ExtendedTableRow from "../../components/Table/ExtendedTableRow";
 import {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
 import StatelessPaginationTable from "../../components/Table/StatelessPaginationTable";
 import CustomTextField, {CustomTextFieldProps} from "../../components/Text/CustomTextField";
-import {getGeneralErrorMessage} from "../../config/axios-config";
+import {generalErrorHandler} from "../../config/axios-config";
 import {toLoadingState} from "../../model/enum/loadingState";
 import {University} from "../../model/university/university";
 import UniversityService from "../../services/api/university/UniversityService";
@@ -56,32 +56,22 @@ const UniversityListView: React.FunctionComponent = () => {
                 setErrorChecking(false);
                 setNewUniversity(UniversityService.createInitialUniversity());
             }),
-            onError: (error: AxiosError) => handleFailedRequest(error),
+            onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
     const updateUniversity = useMutation(
         (data: Parameters<typeof UniversityService.updateUniversity>) => UniversityService.updateUniversity(...data),
         {
             onSuccess: data => queryClient.invalidateQueries(['universities', rowsPerPage, page])
                 .then(() => enqueueSnackbar(`دانشگاه ${data.name} با موفقیت ویرایش شد.`, {variant: "success"})),
-            onError: (error: AxiosError) => handleFailedRequest(error),
+            onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
     const deleteUniversity = useMutation(
         (universityId: number) => UniversityService.deleteUniversity(universityId),
         {
             onSuccess: data => queryClient.invalidateQueries(['universities'])
                 .then(() => enqueueSnackbar(`دانشگاه ${data.name} با موفقیت حذف شد.`, {variant: "success"})),
-            onError: (error: AxiosError) => handleFailedRequest(error),
+            onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
-
-    const handleFailedRequest = (error: AxiosError) => {
-        const {statusCode, message} = getGeneralErrorMessage(error);
-        if (statusCode) {
-            enqueueSnackbar(`در ارسال درخواست از سرور خطای ${statusCode} دریافت شد.`,
-                {variant: "error"});
-        } else if (!statusCode) {
-            enqueueSnackbar(message, {variant: "error"});
-        }
-    }
 
     const registerHandler: React.MouseEventHandler<HTMLButtonElement> = (event) => {
         event.preventDefault();

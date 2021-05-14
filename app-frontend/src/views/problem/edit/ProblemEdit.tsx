@@ -9,12 +9,11 @@ import Typography from '@material-ui/core/Typography';
 import AddOutlinedIcon from '@material-ui/icons/AddOutlined';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
-import {AxiosError} from "axios";
 import {useSnackbar} from "notistack";
 import React, {useState} from 'react';
 import {useLocation} from "react-router-dom";
 import {rtlTheme} from '../../../App';
-import {getGeneralErrorMessage} from "../../../config/axios-config";
+import {generalErrorHandler} from "../../../config/axios-config";
 import browserHistory from "../../../config/browserHistory";
 import {Problem} from "../../../model/problem/problem";
 import ProblemStudentService from "../../../services/api/problem/ProblemStudentService";
@@ -143,7 +142,6 @@ const ProblemEdit: React.FunctionComponent = () => {
         }
     }
 
-
     const handleSuccessSubmit = (editState: EditState) => {
         let message: string;
         switch (editState) {
@@ -158,16 +156,6 @@ const ProblemEdit: React.FunctionComponent = () => {
         }
         enqueueSnackbar(message, {variant: "success"});
         browserHistory.push(PROBLEM_LIST_VIEW_PATH)
-    }
-
-    const handleFailedSubmit = (error: AxiosError) => {
-        const {statusCode, message} = getGeneralErrorMessage(error);
-        if (statusCode) {
-            enqueueSnackbar(`در ارسال درخواست از سرور خطای ${statusCode} دریافت شد.`,
-                {variant: "error"});
-        } else if (!statusCode) {
-            enqueueSnackbar(message, {variant: "error"});
-        }
     }
 
     const submitHandler = () => {
@@ -185,11 +173,11 @@ const ProblemEdit: React.FunctionComponent = () => {
                 if (oldEditState === EditState.ADD) {
                     ProblemStudentService.createProblem(problem)
                         .then(() => handleSuccessSubmit(oldEditState))
-                        .catch((error) => handleFailedSubmit(error));
+                        .catch((error) => generalErrorHandler(error, enqueueSnackbar));
                 } else if (oldEditState === EditState.EDIT) {
                     ProblemStudentService.updateProblem(problem.id!, problem)
                         .then(() => handleSuccessSubmit(oldEditState))
-                        .catch((error) => handleFailedSubmit(error));
+                        .catch((error) => generalErrorHandler(error, enqueueSnackbar));
                 }
                 break;
         }
