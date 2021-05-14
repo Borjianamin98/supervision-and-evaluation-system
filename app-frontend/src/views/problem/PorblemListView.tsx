@@ -15,7 +15,6 @@ import {rtlTheme} from "../../App";
 import KeywordsList from "../../components/Chip/KeywordsList";
 import ComboBox from "../../components/ComboBox/ComboBox";
 import ConfirmDialog from "../../components/Dialog/ConfirmDialog";
-import SingleFieldFormDialog from "../../components/Dialog/SingleFieldFormDialog";
 import CollapsibleTableRow from "../../components/Table/CollapsibleTableRow";
 import {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
 import StatelessPaginationTable, {StatelessPaginationListAction} from "../../components/Table/StatelessPaginationTable";
@@ -36,12 +35,10 @@ import ProblemAuthenticatedService from "../../services/api/problem/ProblemAuthe
 import ProblemMasterService from "../../services/api/problem/ProblemMasterService";
 import ProblemStudentService from "../../services/api/problem/ProblemStudentService";
 import {PROBLEM_EDIT_VIEW_PATH, PROBLEM_MANAGEMENT_VIEW_PATH} from "../ViewPaths";
+import ProblemAddEvent from "./management/PorblemAddEvent";
 import ProblemEventsList from "./ProblemEventsList";
 
 const useStyles = makeStyles((theme) => ({
-    noWrap: {
-        wrap: "nowrap",
-    },
     createGrid: {
         margin: theme.spacing(1, 0),
         padding: theme.spacing(2),
@@ -52,11 +49,8 @@ const useStyles = makeStyles((theme) => ({
     tableContentHeader: {
         margin: theme.spacing(2, 0),
     },
-    text: {
+    justifyAlign: {
         textAlign: "justify",
-    },
-    event: {
-        margin: theme.spacing(1, 0),
     },
 }));
 
@@ -87,19 +81,6 @@ const ProblemListView: React.FunctionComponent = () => {
             keepPreviousData: true
         });
 
-    const commentOnProblem = useMutation(
-        (data: { problemId: number, comment: string }) => ProblemMasterService.placeCommentOnProblem(data.problemId, {
-            message: data.comment
-        }),
-        {
-            onSuccess: (data, variables) => {
-                return Promise.all([
-                    queryClient.invalidateQueries(['problems', jwtPayloadRole, selectedProblemState, rowsPerPage, page]),
-                    queryClient.refetchQueries(['events', variables.problemId])
-                ]).then(() => enqueueSnackbar(`نظر جدید با موفقیت ثبت شد.`, {variant: "success"}))
-            },
-            onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
-        });
     const abandonProblem = useMutation(
         (problemId: number) => ProblemAuthenticatedService.abandonProblem(problemId),
         {
@@ -168,15 +149,6 @@ const ProblemListView: React.FunctionComponent = () => {
     const onCommentDialogOpen = (problem: Problem) => {
         setCommentProblem(problem);
         setCommentDialogOpen(true);
-    };
-    const onCommentDialogEvent = (comment?: string) => {
-        if (comment) {
-            commentOnProblem.mutate({
-                problemId: commentProblem!.id!,
-                comment: comment,
-            });
-        }
-        setCommentDialogOpen(false);
     };
 
     const [abandonDialogOpen, setAbandonDialogOpen] = React.useState(false);
@@ -280,7 +252,7 @@ const ProblemListView: React.FunctionComponent = () => {
                                 key={row.id!}
                                 cells={cells}
                             >
-                                <Grid container className={classes.text}>
+                                <Grid container className={classes.justifyAlign}>
                                     <Grid container item direction="column" xs={12} sm={12} md={5} lg={5} xl={5}>
                                         <Typography variant="h6" className={classes.tableContentHeader}>
                                             اطلاعات کلی
@@ -331,20 +303,11 @@ const ProblemListView: React.FunctionComponent = () => {
                         queryClient.invalidateQueries(['problems', jwtPayloadRole, selectedProblemState, rowsPerPage, page])}
                 />
                 <div aria-label={"dialogs"}>
-                    <SingleFieldFormDialog
+                    <ProblemAddEvent
                         open={commentDialogOpen}
-                        onDialogOpenClose={onCommentDialogEvent}
-                        title="ثبت نظر"
-                        descriptions={[
-                            "نظرات، بازخوردها یا پیشنهادات خود را برای تایید مسئله وارد نمایید.",
-                            `عنوان مسئله: ${commentProblem ? commentProblem.title : ""}`
-                        ]}
-                        textFieldProps={{
-                            label: "نظرات",
-                            multiline: true,
-                            rows: 6,
-                            maxLength: 1000,
-                        }}
+                        problemId={commentProblem ? commentProblem.id! : 0}
+                        problemTitle={commentProblem ? commentProblem.title : ""}
+                        onClose={() => setCommentDialogOpen(false)}
                     />
                     <ConfirmDialog
                         open={abandonDialogOpen}
