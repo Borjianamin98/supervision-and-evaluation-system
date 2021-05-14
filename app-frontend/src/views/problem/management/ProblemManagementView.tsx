@@ -11,11 +11,14 @@ import KeywordsList from "../../../components/Chip/KeywordsList";
 import LoadingGrid from "../../../components/Grid/LoadingGrid";
 import browserHistory from "../../../config/browserHistory";
 import {educationMapToPersian} from "../../../model/enum/education";
+import {Role} from "../../../model/enum/role";
 import {ProblemState} from "../../../model/problem/problemState";
 import {User, userRoleInfo} from "../../../model/user/user";
+import AuthenticationService from "../../../services/api/AuthenticationService";
 import ProblemAuthenticatedService from "../../../services/api/problem/ProblemAuthenticatedService";
 import {DASHBOARD_VIEW_PATH} from "../../ViewPaths";
 import ProblemEventsList from "../ProblemEventsList";
+import ProblemAddEvent from "./PorblemAddEvent";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -82,6 +85,9 @@ const ProblemManagementView: React.FunctionComponent = () => {
         }, {
             keepPreviousData: true
         });
+
+    const jwtPayloadRole = AuthenticationService.getJwtPayloadRole()!;
+    const [commentDialogOpen, setCommentDialogOpen] = React.useState(false);
 
     const ProfileInfo: React.FunctionComponent<{ user?: User }> = ({user}) => {
         return (
@@ -162,14 +168,17 @@ const ProblemManagementView: React.FunctionComponent = () => {
                                 <Typography variant="h6">
                                     رخدادهای اخیر
                                 </Typography>
-                                <Button
-                                    color="secondary"
-                                    variant="contained"
-                                    startIcon={<AddCommentIcon/>}
-                                    style={{marginRight: "auto"}}
-                                >
-                                    ثبت نظر
-                                </Button>
+                                <Box display={jwtPayloadRole === Role.STUDENT ? "none" : undefined}
+                                     style={{marginRight: "auto"}}>
+                                    <Button
+                                        color="secondary"
+                                        variant="contained"
+                                        startIcon={<AddCommentIcon/>}
+                                        onClick={() => setCommentDialogOpen(true)}
+                                    >
+                                        ثبت نظر
+                                    </Button>
+                                </Box>
                             </Grid>
                             <Box marginTop={2}>
                                 {problem ? <ProblemEventsList problemId={problem.id!} pageSize={3}/> : undefined}
@@ -184,6 +193,14 @@ const ProblemManagementView: React.FunctionComponent = () => {
                         </Typography>
                     </Paper>
                 </Grid>
+                <div aria-label={"dialogs"}>
+                    <ProblemAddEvent
+                        open={commentDialogOpen}
+                        problemId={+problemId}
+                        problemTitle={problem ? problem.title : ""}
+                        onClose={() => setCommentDialogOpen(false)}
+                    />
+                </div>
             </Grid>
         </ThemeProvider>
     );

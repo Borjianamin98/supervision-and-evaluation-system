@@ -46,6 +46,7 @@ const SingleFieldFormDialog: React.FunctionComponent<ConfirmDialogProps> = (prop
 
     React.useEffect(() => {
         setContent("");
+        setErrorChecking(false);
     }, [open])
 
     return (
