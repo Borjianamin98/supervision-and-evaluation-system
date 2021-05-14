@@ -2,6 +2,7 @@ import {Avatar, Box, Button, Grid, Paper} from "@material-ui/core";
 import {createStyles, makeStyles, Theme, ThemeProvider} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import AddCommentIcon from "@material-ui/icons/AddComment";
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import {useSnackbar} from "notistack";
 import React from 'react';
 import {useQuery, useQueryClient} from "react-query";
@@ -43,6 +44,14 @@ const useStyles = makeStyles((theme: Theme) =>
         centerAlign: {
             textAlign: "center"
         },
+        refereeSelectionButton: {
+            borderStyle: "dashed",
+            borderWidth: "3px",
+            borderRadius: "0px",
+            borderColor: theme.palette.action.active,
+            padding: theme.spacing(4, 10),
+            margin: theme.spacing(1, 0),
+        }
     }),
 );
 
@@ -93,11 +102,18 @@ const ProblemManagementView: React.FunctionComponent = () => {
     const jwtPayloadRole = AuthenticationService.getJwtPayloadRole()!;
     const [commentDialogOpen, setCommentDialogOpen] = React.useState(false);
 
-    const [referees, setReferees] = React.useState<(Master | null)[]>([null, null]);
+    const [referees, setReferees] = React.useState<Master[]>([]);
     const [selectedRefereeDialog, setSelectedRefereeDialog] = React.useState(0);
     const [refereeDialogOpen, setRefereeDialogOpen] = React.useState(false);
     const onRefereeSelect = (master?: Master) => {
         if (master) {
+            if (referees.filter((value, index) => index !== selectedRefereeDialog)
+                .some(value => value.id! === master.id!)) {
+                enqueueSnackbar(
+                    "داور انتخاب‌شده در لیست داورهای از قبل انتخاب شده می‌باشد. امکان انتخاب یک داور برای بیش از یک بار وجود ندارد.",
+                    {variant: "error"})
+                return;
+            }
             const copyReferees = [...referees];
             copyReferees[selectedRefereeDialog] = master;
             setReferees(copyReferees);
@@ -205,38 +221,31 @@ const ProblemManagementView: React.FunctionComponent = () => {
                 <Grid item xs={12} sm={12} md={12} lg={4} xl={4} className={classes.column}>
                     <Paper className={classes.columnContent}>
                         <Typography variant="h6" paragraph>
-                            اساتید
+                            اساتید داور
                         </Typography>
-                        {
-                            referees.filter(referee => referee !== null)
-                                .map(referee => <Typography variant="h6" paragraph>
-                                    {referee!.fullName!}
-                                </Typography>)
-                        }
                         <Box display={jwtPayloadRole === Role.STUDENT ? "none" : undefined}>
-                            <Button
-                                color="secondary"
-                                variant="contained"
-                                startIcon={<AddCommentIcon/>}
-                                onClick={() => {
-                                    setSelectedRefereeDialog(0);
-                                    setRefereeDialogOpen(true);
-                                }}
-                            >
-                                افزودن داور اول
-                            </Button>
-                            <Button
-                                color="secondary"
-                                variant="contained"
-                                startIcon={<AddCommentIcon/>}
-                                onClick={() => {
-                                    setSelectedRefereeDialog(1);
-                                    setRefereeDialogOpen(true);
-                                }}
-                            >
-                                افزودن داور دوم
-                            </Button>
+                            {
+                                [...Array(2)].map((e, index) => (
+                                    <Button
+                                        key={index}
+                                        fullWidth
+                                        startIcon={<PersonAddIcon style={{fontSize: 40}}/>}
+                                        className={classes.refereeSelectionButton}
+                                        onClick={() => {
+                                            setSelectedRefereeDialog(index);
+                                            setRefereeDialogOpen(true);
+                                        }}
+                                    >
+                                        {`تایین داور ${mapNumberToPersianOrderName(index + 1)}`}
+                                    </Button>
+                                ))
+                            }
                         </Box>
+                        {
+                            referees.map(referee => <Typography variant="h6" paragraph>
+                                {referee.fullName!}
+                            </Typography>)
+                        }
                     </Paper>
                 </Grid>
                 <div aria-label={"dialogs"}>
