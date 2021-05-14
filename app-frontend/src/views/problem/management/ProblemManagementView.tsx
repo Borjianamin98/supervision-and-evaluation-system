@@ -1,6 +1,7 @@
-import {Avatar, Box, Grid, Paper} from "@material-ui/core";
+import {Avatar, Box, Button, Grid, Paper} from "@material-ui/core";
 import {createStyles, makeStyles, Theme, ThemeProvider} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
+import AddCommentIcon from "@material-ui/icons/AddComment";
 import {useSnackbar} from "notistack";
 import React from 'react';
 import {useQuery, useQueryClient} from "react-query";
@@ -157,12 +158,22 @@ const ProblemManagementView: React.FunctionComponent = () => {
                     </Grid>
                     <Grid item>
                         <Paper className={classes.columnContent}>
-                            <Typography variant="h6" paragraph>
-                                رخدادهای اخیر
-                            </Typography>
-                            {
-                                problem ? <ProblemEventsList problemId={problem.id!} pageSize={3}/> : undefined
-                            }
+                            <Grid container>
+                                <Typography variant="h6">
+                                    رخدادهای اخیر
+                                </Typography>
+                                <Button
+                                    color="secondary"
+                                    variant="contained"
+                                    startIcon={<AddCommentIcon/>}
+                                    style={{marginRight: "auto"}}
+                                >
+                                    ثبت نظر
+                                </Button>
+                            </Grid>
+                            <Box marginTop={2}>
+                                {problem ? <ProblemEventsList problemId={problem.id!} pageSize={3}/> : undefined}
+                            </Box>
                         </Paper>
                     </Grid>
                 </Grid>

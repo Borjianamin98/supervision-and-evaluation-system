@@ -1,7 +1,4 @@
-import {Box, DialogActions, DialogContent, DialogTitle, Hidden} from "@material-ui/core";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogContentText from "@material-ui/core/DialogContentText";
+import {Box, Hidden} from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
@@ -18,10 +15,10 @@ import {rtlTheme} from "../../App";
 import KeywordsList from "../../components/Chip/KeywordsList";
 import ComboBox from "../../components/ComboBox/ComboBox";
 import ConfirmDialog from "../../components/Dialog/ConfirmDialog";
+import SingleFieldFormDialog from "../../components/Dialog/SingleFieldFormDialog";
 import CollapsibleTableRow from "../../components/Table/CollapsibleTableRow";
 import {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
 import StatelessPaginationTable, {StatelessPaginationListAction} from "../../components/Table/StatelessPaginationTable";
-import CustomTextField from "../../components/Text/CustomTextField";
 import {getGeneralErrorMessage} from "../../config/axios-config";
 import browserHistory from "../../config/browserHistory";
 import {educationMapToPersian} from "../../model/enum/education";
@@ -176,26 +173,16 @@ const ProblemListView: React.FunctionComponent = () => {
         }
     }
 
-    const [errorChecking, setErrorChecking] = React.useState(false);
-    const isBlank = (c: string) => errorChecking && c.length === 0;
-
     const [commentProblem, setCommentProblem] = useState<Problem>();
-    const [comment, setComment] = useState<string>("");
     const [commentDialogOpen, setCommentDialogOpen] = React.useState(false);
 
     const onCommentDialogOpen = (problem: Problem) => {
-        setComment("");
         setCommentProblem(problem);
-        setErrorChecking(false);
         setCommentDialogOpen(true);
     };
 
-    const onCommentDialogClose = (shouldUpdate: boolean) => {
-        if (shouldUpdate) {
-            if (comment.length === 0) {
-                setErrorChecking(true);
-                return;
-            }
+    const onCommentDialogOpenClose = (comment?: string) => {
+        if (comment) {
             commentOnProblem.mutate({
                 problemId: commentProblem!.id!,
                 comment: comment,
@@ -360,34 +347,21 @@ const ProblemListView: React.FunctionComponent = () => {
                         queryClient.invalidateQueries(['problems', jwtPayloadRole, selectedProblemState, rowsPerPage, page])}
                 />
                 <div aria-label={"dialogs"}>
-                    <Dialog dir="rtl" open={commentDialogOpen} onClose={() => onCommentDialogClose(false)}>
-                        <DialogTitle>ثبت نظر</DialogTitle>
-                        <DialogContent>
-                            <DialogContentText style={{textAlign: "justify"}}>
-                                نظرات، بازخوردها یا پیشنهادات خود را برای تایید مسئله وارد نمایید.
-                            </DialogContentText>
-                            <Typography paragraph>{`عنوان مسئله: ${commentProblem?.title ?? ""}`}</Typography>
-                            <CustomTextField
-                                autoFocus
-                                label="نظرات"
-                                multiline={true}
-                                rows={6}
-                                maxLength={1000}
-                                value={comment}
-                                onChange={(e) => setComment(e.target.value)}
-                                helperText={isBlank(comment) ? "ثبت نظر خالی امکان‌پذیر نمی‌باشد." : ""}
-                                error={isBlank(comment)}
-                            />
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={() => onCommentDialogClose(false)} color="primary">
-                                انصراف
-                            </Button>
-                            <Button onClick={() => onCommentDialogClose(true)} color="primary">
-                                ثبت نظر
-                            </Button>
-                        </DialogActions>
-                    </Dialog>
+                    <SingleFieldFormDialog
+                        open={commentDialogOpen}
+                        onDialogOpenClose={onCommentDialogOpenClose}
+                        title="ثبت نظر"
+                        descriptions={[
+                            "نظرات، بازخوردها یا پیشنهادات خود را برای تایید مسئله وارد نمایید.",
+                            `عنوان مسئله: ${commentProblem ? commentProblem.title : ""}`
+                        ]}
+                        textFieldProps={{
+                            label: "نظرات",
+                            multiline: true,
+                            rows: 6,
+                            maxLength: 1000,
+                        }}
+                    />
                     <ConfirmDialog
                         open={abandonDialogOpen}
                         onDialogOpenClose={onAbandonDialogEvent}

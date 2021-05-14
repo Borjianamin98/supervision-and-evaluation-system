@@ -4,7 +4,14 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import {makeStyles} from "@material-ui/core/styles";
 import React from 'react';
+
+const useStyles = makeStyles((theme) => ({
+    justifyAlign: {
+        textAlign: "justify",
+    },
+}));
 
 interface ConfirmDialogProps extends Omit<DialogProps, "onClose" | "onOpen" | "open"> {
     open: boolean,
@@ -14,6 +21,7 @@ interface ConfirmDialogProps extends Omit<DialogProps, "onClose" | "onOpen" | "o
 }
 
 const ConfirmDialog: React.FunctionComponent<ConfirmDialogProps> = (props) => {
+    const classes = useStyles();
     const {open, onDialogOpenClose, title, description, ...rest} = props;
 
     return (
@@ -25,7 +33,9 @@ const ConfirmDialog: React.FunctionComponent<ConfirmDialogProps> = (props) => {
         >
             <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
             <DialogContent>
-                <DialogContentText id="alert-dialog-description">{description}</DialogContentText>
+                <DialogContentText id="alert-dialog-description" className={classes.justifyAlign}>
+                    {description}
+                </DialogContentText>
             </DialogContent>
             <DialogActions>
                 <Button onClick={event => onDialogOpenClose(false)} color="primary">
