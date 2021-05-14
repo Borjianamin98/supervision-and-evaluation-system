@@ -4,7 +4,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import {makeStyles} from "@material-ui/core/styles";
+import {makeStyles, useTheme} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import React from 'react';
 import CustomTextField, {CustomTextFieldProps} from "../Text/CustomTextField";
@@ -25,6 +25,7 @@ interface ConfirmDialogProps extends Omit<DialogProps, "onClose" | "onOpen" | "o
 
 const SingleFieldFormDialog: React.FunctionComponent<ConfirmDialogProps> = (props) => {
     const classes = useStyles();
+    const theme = useTheme();
 
     const {open, onDialogOpenClose, title, descriptions, textFieldProps, ...rest} = props;
     const [content, setContent] = React.useState("");
@@ -51,7 +52,7 @@ const SingleFieldFormDialog: React.FunctionComponent<ConfirmDialogProps> = (prop
 
     return (
         <Dialog
-            dir="rtl"
+            dir={theme.direction}
             open={open}
             onClose={event => onCommentDialogClose(false)}
             {...rest}

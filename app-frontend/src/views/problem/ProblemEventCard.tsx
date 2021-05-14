@@ -13,8 +13,9 @@ const useStyles = makeStyles((theme: Theme) =>
         avatar: {
             backgroundColor: theme.palette.info.main,
         },
-        justifyAlign: {
-            textAlign: "justify"
+        bodyContent: {
+            textAlign: "justify",
+            whiteSpace: "pre-line",
         },
         cardContent: {
             padding: theme.spacing(0, 2),
@@ -44,7 +45,7 @@ const ProblemEventCard: React.FunctionComponent<ProblemEventCardProps> = (props)
             <CardContent classes={{
                 root: classes.cardContent,
             }}>
-                <Typography variant="body2" color="textSecondary" className={classes.justifyAlign}>
+                <Typography variant="body2" color="textSecondary" className={classes.bodyContent}>
                     {body}
                 </Typography>
             </CardContent>

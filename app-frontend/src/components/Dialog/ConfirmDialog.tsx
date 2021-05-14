@@ -4,7 +4,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import {makeStyles} from "@material-ui/core/styles";
+import {makeStyles, useTheme} from "@material-ui/core/styles";
 import React from 'react';
 
 const useStyles = makeStyles((theme) => ({
@@ -22,18 +22,19 @@ interface ConfirmDialogProps extends Omit<DialogProps, "onClose" | "onOpen" | "o
 
 const ConfirmDialog: React.FunctionComponent<ConfirmDialogProps> = (props) => {
     const classes = useStyles();
+    const theme = useTheme();
     const {open, onDialogOpenClose, title, description, ...rest} = props;
 
     return (
         <Dialog
-            dir="rtl"
+            dir={theme.direction}
             open={open}
             onClose={event => onDialogOpenClose(false)}
             {...rest}
         >
-            <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
+            <DialogTitle id="dialog-title">{title}</DialogTitle>
             <DialogContent>
-                <DialogContentText id="alert-dialog-description" className={classes.justifyAlign}>
+                <DialogContentText id="dialog-description" className={classes.justifyAlign}>
                     {description}
                 </DialogContentText>
             </DialogContent>
