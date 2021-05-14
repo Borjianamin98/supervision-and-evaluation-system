@@ -1,4 +1,4 @@
-import {Avatar, Box, Button, Grid, Paper} from "@material-ui/core";
+import {Box, Button, Grid, Paper} from "@material-ui/core";
 import {createStyles, makeStyles, Theme, ThemeProvider} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import AddCommentIcon from "@material-ui/icons/AddComment";
@@ -16,7 +16,6 @@ import {educationMapToPersian} from "../../../model/enum/education";
 import {Role} from "../../../model/enum/role";
 import {ProblemState} from "../../../model/problem/problemState";
 import {Master} from "../../../model/user/master";
-import {User, userRoleInfo} from "../../../model/user/user";
 import AuthenticationService from "../../../services/api/AuthenticationService";
 import ProblemAuthenticatedService from "../../../services/api/problem/ProblemAuthenticatedService";
 import MasterService from "../../../services/api/user/MasterService";
@@ -24,6 +23,7 @@ import {mapNumberToPersianOrderName} from "../../../utility/numberUtils";
 import {DASHBOARD_VIEW_PATH} from "../../ViewPaths";
 import ProblemEventsList from "../ProblemEventsList";
 import ProblemAddEvent from "./PorblemAddEvent";
+import ProfileInfoCard from "./ProfileInfoCard";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -32,11 +32,6 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         column: {
             padding: theme.spacing(1),
-        },
-        avatar: {
-            width: 140,
-            height: 140,
-            margin: theme.spacing(0, 0, 2),
         },
         justifyAlign: {
             textAlign: "justify"
@@ -49,9 +44,8 @@ const useStyles = makeStyles((theme: Theme) =>
             borderWidth: "3px",
             borderRadius: "0px",
             borderColor: theme.palette.action.active,
-            padding: theme.spacing(4, 10),
-            margin: theme.spacing(1, 0),
-        }
+            height: 130,
+        },
     }),
 );
 
@@ -121,22 +115,6 @@ const ProblemManagementView: React.FunctionComponent = () => {
         setRefereeDialogOpen(false);
     }
 
-    const ProfileInfo: React.FunctionComponent<{ user?: User }> = ({user}) => {
-        return (
-            <Grid container direction="column" alignItems="center">
-                <Grid item>
-                    <Avatar src={""} className={classes.avatar}/>
-                </Grid>
-                <Grid item className={classes.centerAlign}>
-                    <Typography variant="h5" paragraph>{user?.fullName}</Typography>
-                    <Typography variant="h6">
-                        {user ? userRoleInfo(user) : ""}
-                    </Typography>
-                </Grid>
-            </Grid>
-        )
-    }
-
     if (isProblemLoading || isProblemLoadingFailed) {
         return <ThemeProvider theme={rtlTheme}>
             <LoadingGrid
@@ -154,9 +132,11 @@ const ProblemManagementView: React.FunctionComponent = () => {
                       className={classes.column}>
                     <Grid item>
                         <Box marginBottom={1}>
-                            <Paper className={classes.columnContent}>
-                                <ProfileInfo user={problem ? problem.student : undefined}/>
-                            </Paper>
+                            <ProfileInfoCard
+                                user={problem ? problem.student : undefined}
+                                actionVisible={false}
+                                subheader="دانشجوی پایان‌نامه (پروژه)"
+                            />
                         </Box>
                     </Grid>
                     <Grid item>
@@ -189,9 +169,11 @@ const ProblemManagementView: React.FunctionComponent = () => {
                       className={classes.column}>
                     <Grid item>
                         <Box marginBottom={1}>
-                            <Paper className={classes.columnContent}>
-                                <ProfileInfo user={problem ? problem.supervisor : undefined}/>
-                            </Paper>
+                            <ProfileInfoCard
+                                user={problem ? problem.supervisor : undefined}
+                                actionVisible={false}
+                                subheader="استاد راهنمای پایان‌نامه (پروژه)"
+                            />
                         </Box>
                     </Grid>
                     <Grid item>
@@ -221,31 +203,34 @@ const ProblemManagementView: React.FunctionComponent = () => {
                 <Grid item xs={12} sm={12} md={12} lg={4} xl={4} className={classes.column}>
                     <Paper className={classes.columnContent}>
                         <Typography variant="h6" paragraph>
-                            اساتید داور
+                            داورها
                         </Typography>
                         <Box display={jwtPayloadRole === Role.STUDENT ? "none" : undefined}>
                             {
-                                [...Array(2)].map((e, index) => (
-                                    <Button
-                                        key={index}
-                                        fullWidth
-                                        startIcon={<PersonAddIcon style={{fontSize: 40}}/>}
-                                        className={classes.refereeSelectionButton}
-                                        onClick={() => {
-                                            setSelectedRefereeDialog(index);
-                                            setRefereeDialogOpen(true);
-                                        }}
-                                    >
-                                        {`تایین داور ${mapNumberToPersianOrderName(index + 1)}`}
-                                    </Button>
-                                ))
+                                [...Array(2)].map((e, index) => {
+                                    let content: React.ReactNode;
+                                    if (index < referees.length && referees[index] != null) {
+                                        content = <ProfileInfoCard user={referees[index]} actionVisible={true}/>;
+                                    } else {
+                                        content = <Button
+                                            key={index}
+                                            fullWidth
+                                            startIcon={<PersonAddIcon style={{fontSize: 40}}/>}
+                                            className={classes.refereeSelectionButton}
+                                            onClick={() => {
+                                                setSelectedRefereeDialog(index);
+                                                setRefereeDialogOpen(true);
+                                            }}
+                                        >
+                                            {`تایین داور ${mapNumberToPersianOrderName(index + 1)}`}
+                                        </Button>
+                                    }
+                                    return <Box my={1}>
+                                        {content}
+                                    </Box>;
+                                })
                             }
                         </Box>
-                        {
-                            referees.map(referee => <Typography variant="h6" paragraph>
-                                {referee.fullName!}
-                            </Typography>)
-                        }
                     </Paper>
                 </Grid>
                 <div aria-label={"dialogs"}>
