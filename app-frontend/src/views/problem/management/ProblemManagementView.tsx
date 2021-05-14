@@ -8,14 +8,18 @@ import {useQuery, useQueryClient} from "react-query";
 import {useParams} from "react-router-dom";
 import {rtlTheme} from "../../../App";
 import KeywordsList from "../../../components/Chip/KeywordsList";
+import SearchableListDialog from "../../../components/Dialog/SearchableListDialog";
 import LoadingGrid from "../../../components/Grid/LoadingGrid";
 import browserHistory from "../../../config/browserHistory";
 import {educationMapToPersian} from "../../../model/enum/education";
 import {Role} from "../../../model/enum/role";
 import {ProblemState} from "../../../model/problem/problemState";
+import {Master} from "../../../model/user/master";
 import {User, userRoleInfo} from "../../../model/user/user";
 import AuthenticationService from "../../../services/api/AuthenticationService";
 import ProblemAuthenticatedService from "../../../services/api/problem/ProblemAuthenticatedService";
+import MasterService from "../../../services/api/user/MasterService";
+import {mapNumberToPersianOrderName} from "../../../utility/numberUtils";
 import {DASHBOARD_VIEW_PATH} from "../../ViewPaths";
 import ProblemEventsList from "../ProblemEventsList";
 import ProblemAddEvent from "./PorblemAddEvent";
@@ -88,6 +92,18 @@ const ProblemManagementView: React.FunctionComponent = () => {
 
     const jwtPayloadRole = AuthenticationService.getJwtPayloadRole()!;
     const [commentDialogOpen, setCommentDialogOpen] = React.useState(false);
+
+    const [referees, setReferees] = React.useState<(Master | null)[]>([null, null]);
+    const [selectedRefereeDialog, setSelectedRefereeDialog] = React.useState(0);
+    const [refereeDialogOpen, setRefereeDialogOpen] = React.useState(false);
+    const onRefereeSelect = (master?: Master) => {
+        if (master) {
+            const copyReferees = [...referees];
+            copyReferees[selectedRefereeDialog] = master;
+            setReferees(copyReferees);
+        }
+        setRefereeDialogOpen(false);
+    }
 
     const ProfileInfo: React.FunctionComponent<{ user?: User }> = ({user}) => {
         return (
@@ -191,6 +207,36 @@ const ProblemManagementView: React.FunctionComponent = () => {
                         <Typography variant="h6" paragraph>
                             اساتید
                         </Typography>
+                        {
+                            referees.filter(referee => referee !== null)
+                                .map(referee => <Typography variant="h6" paragraph>
+                                    {referee!.fullName!}
+                                </Typography>)
+                        }
+                        <Box display={jwtPayloadRole === Role.STUDENT ? "none" : undefined}>
+                            <Button
+                                color="secondary"
+                                variant="contained"
+                                startIcon={<AddCommentIcon/>}
+                                onClick={() => {
+                                    setSelectedRefereeDialog(0);
+                                    setRefereeDialogOpen(true);
+                                }}
+                            >
+                                افزودن داور اول
+                            </Button>
+                            <Button
+                                color="secondary"
+                                variant="contained"
+                                startIcon={<AddCommentIcon/>}
+                                onClick={() => {
+                                    setSelectedRefereeDialog(1);
+                                    setRefereeDialogOpen(true);
+                                }}
+                            >
+                                افزودن داور دوم
+                            </Button>
+                        </Box>
                     </Paper>
                 </Grid>
                 <div aria-label={"dialogs"}>
@@ -199,6 +245,18 @@ const ProblemManagementView: React.FunctionComponent = () => {
                         problemId={+problemId}
                         problemTitle={problem ? problem.title : ""}
                         onClose={() => setCommentDialogOpen(false)}
+                    />
+                    <SearchableListDialog
+                        title={`انتخاب استاد داور ${mapNumberToPersianOrderName(selectedRefereeDialog + 1)}`}
+                        description={"استاد مربوطه را مشخص نمایید."}
+                        open={refereeDialogOpen}
+                        getItems={searchQuery => [
+                            ['masters', searchQuery],
+                            MasterService.retrieveMasters(100, 0, searchQuery).then(value => value.content)
+                        ]}
+                        getItemLabel={(item: Master) => item.fullName!}
+                        getItemKey={(index, item) => item.id!}
+                        onSelect={onRefereeSelect}
                     />
                 </div>
             </Grid>

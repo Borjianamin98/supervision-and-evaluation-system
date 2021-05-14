@@ -20,7 +20,7 @@ class MasterService {
                     page: page,
                     nameQuery: nameQuery ?? "",
                 }
-            })
+            }).then(response => response.data);
     }
 
     static retrieveMasterInfo() {

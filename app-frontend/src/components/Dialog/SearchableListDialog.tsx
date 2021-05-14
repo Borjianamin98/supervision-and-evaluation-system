@@ -1,4 +1,4 @@
-import {Checkbox, ListItemIcon, ListItemText} from "@material-ui/core";
+import {Box, Checkbox, ListItemIcon, ListItemText} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -8,8 +8,10 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import ListItem from "@material-ui/core/ListItem";
 import {makeStyles, useTheme} from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
 import SearchIcon from '@material-ui/icons/Search';
 import React from 'react';
+import {useQuery} from "react-query";
 import {FixedSizeList, ListChildComponentProps} from "react-window";
 import CustomTextField from "../Text/CustomTextField";
 
@@ -23,7 +25,7 @@ interface SearchableListDialogProps<T> {
     open: boolean,
     title: string,
     description: string,
-    items: T[],
+    getItems: (searchQuery: string) => [queryKey: string[], items: Promise<T[]>],
     getItemLabel: (item: T) => string,
     getItemKey: (index: number, item: T) => number,
     onSelect: (item?: T) => void,
@@ -32,7 +34,7 @@ interface SearchableListDialogProps<T> {
 function SearchableListDialog<T>(props: SearchableListDialogProps<T>) {
     const classes = useStyles();
     const theme = useTheme();
-    const {open, title, description, items, getItemLabel, getItemKey, onSelect, ...rest} = props;
+    const {open, title, description, getItems, getItemLabel, getItemKey, onSelect, ...rest} = props;
 
     const [searchContent, setSearchContent] = React.useState("");
     const [checkedIndex, setCheckedIndex] = React.useState(-1);
@@ -44,9 +46,15 @@ function SearchableListDialog<T>(props: SearchableListDialogProps<T>) {
         setCheckedIndex(-1);
     }, [searchContent])
 
+    const [queryKey, items] = getItems(searchContent);
+    const {data: calculatedItems, isLoading, isError} = useQuery(queryKey,
+        () => items, {
+            keepPreviousData: true
+        });
+
     const onDialogClose = (shouldUpdate: boolean) => {
         if (shouldUpdate) {
-            onSelect(items[checkedIndex]);
+            onSelect(calculatedItems![checkedIndex]);
         } else {
             onSelect();
         }
@@ -54,7 +62,7 @@ function SearchableListDialog<T>(props: SearchableListDialogProps<T>) {
 
     function renderRow(props: ListChildComponentProps) {
         const {index, style} = props;
-        const item = items[index];
+        const item = calculatedItems![index];
         return (
             <ListItem role={undefined} button style={style} key={getItemKey(index, item)}
                       onClick={event => setCheckedIndex(index)}>
@@ -71,11 +79,28 @@ function SearchableListDialog<T>(props: SearchableListDialogProps<T>) {
         )
     }
 
+    const viewWidth = 300;
+    let viewContent: React.ReactNode;
+    if (isLoading) {
+        viewContent = <Typography style={{width: viewWidth}}>در حال بارگزاری اطلاعات ...</Typography>
+    } else if (isError) {
+        viewContent =
+            <Typography style={{width: viewWidth}}>در بارگزاری اطلاعات خطا رخ داده است. دوباره تلاش نمایید.</Typography>
+    } else {
+        viewContent = calculatedItems?.length !== 0 ? (<FixedSizeList
+            direction={theme.direction}
+            itemSize={48} itemCount={calculatedItems!.length}
+            height={Math.min(calculatedItems!.length * 48, 200)} width={viewWidth}
+        >
+            {renderRow}
+        </FixedSizeList>) : <Typography style={{width: viewWidth}}>نتیجه‌ای یافت نشد.</Typography>;
+    }
+
     return (
         <Dialog
             dir={theme.direction}
             open={open}
-            onClose={event => onDialogClose(false)}
+            onClose={() => onDialogClose(false)}
             {...rest}
         >
             <DialogTitle id="dialog-title">{title}</DialogTitle>
@@ -83,33 +108,31 @@ function SearchableListDialog<T>(props: SearchableListDialogProps<T>) {
                 <DialogContentText id="dialog-description" className={classes.justifyAlign}>
                     {description}
                 </DialogContentText>
-                <CustomTextField
-                    variant="outlined"
-                    textDir={theme.direction}
-                    label="جستجو"
-                    value={searchContent}
-                    onChange={event => setSearchContent(event.target.value)}
-                    InputProps={{
-                        startAdornment: <InputAdornment position="start"><SearchIcon/></InputAdornment>,
-                    }}
-                />
-                <FixedSizeList
-                    direction={theme.direction}
-                    itemSize={48} itemCount={items.length}
-                    height={Math.min(items.length * 48, 200)} width={300}
-                >
-                    {renderRow}
-                </FixedSizeList>
+                <Box marginBottom={2}>
+                    <CustomTextField
+                        variant="outlined"
+                        textDir={theme.direction}
+                        label="جستجو"
+                        value={searchContent}
+                        onChange={event => setSearchContent(event.target.value)}
+                        InputProps={{
+                            startAdornment: <InputAdornment position="start"><SearchIcon/></InputAdornment>,
+                        }}
+                    />
+                </Box>
+                {viewContent}
             </DialogContent>
             <DialogActions>
                 <Button
                     onClick={event => onDialogClose(false)}
-                    color="primary">
+                    color="primary"
+                >
                     انصراف
                 </Button>
                 <Button
                     onClick={event => onDialogClose(true)}
-                    color="primary" autoFocus disabled={checkedIndex === -1}>
+                    color="primary" autoFocus disabled={checkedIndex === -1}
+                >
                     تایید
                 </Button>
             </DialogActions>

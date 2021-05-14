@@ -23,7 +23,7 @@ const ProblemEditGeneralInfo: React.FunctionComponent<ProblemEditSectionsProps> 
 
     function retrieveMasters(inputValue: string): Promise<Master[]> {
         return MasterService.retrieveMasters(100, 0, inputValue)
-            .then(value => value.data.content)
+            .then(value => value.content)
     }
 
     return (
