@@ -134,7 +134,8 @@ const ProblemManagementView: React.FunctionComponent = () => {
                         <Box marginBottom={1}>
                             <ProfileInfoCard
                                 user={problem ? problem.student : undefined}
-                                actionVisible={false}
+                                onEdit={() => undefined}
+                                onDelete={() => undefined}
                                 subheader="دانشجوی پایان‌نامه (پروژه)"
                             />
                         </Box>
@@ -171,7 +172,8 @@ const ProblemManagementView: React.FunctionComponent = () => {
                         <Box marginBottom={1}>
                             <ProfileInfoCard
                                 user={problem ? problem.supervisor : undefined}
-                                actionVisible={false}
+                                onEdit={() => undefined}
+                                onDelete={() => undefined}
                                 subheader="استاد راهنمای پایان‌نامه (پروژه)"
                             />
                         </Box>
@@ -210,7 +212,13 @@ const ProblemManagementView: React.FunctionComponent = () => {
                                 [...Array(2)].map((e, index) => {
                                     let content: React.ReactNode;
                                     if (index < referees.length && referees[index] != null) {
-                                        content = <ProfileInfoCard user={referees[index]} actionVisible={true}/>;
+                                        content = <ProfileInfoCard
+                                            user={referees[index]}
+                                            hasEdit={true}
+                                            hasDelete={true}
+                                            onEdit={() => undefined}
+                                            onDelete={() => undefined}
+                                        />;
                                     } else {
                                         content = <Button
                                             key={index}

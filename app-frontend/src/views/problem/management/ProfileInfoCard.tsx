@@ -30,13 +30,16 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface ProfileInfoCardProps {
     user?: User,
-    actionVisible: boolean,
     subheader?: string,
+    hasEdit?: boolean,
+    onEdit: () => void,
+    hasDelete?: boolean,
+    onDelete: () => void,
 }
 
 const ProfileInfoCard: React.FunctionComponent<ProfileInfoCardProps> = (params) => {
     const classes = useStyles();
-    const {user, actionVisible, subheader} = params;
+    const {user, subheader, hasEdit, onEdit, hasDelete, onDelete} = params;
 
     return (
         <Card className={classes.root}>
@@ -53,15 +56,25 @@ const ProfileInfoCard: React.FunctionComponent<ProfileInfoCardProps> = (params) 
                             </Typography>
                         ) : undefined
                     }
-                    <Box marginTop={1} display={actionVisible ? undefined : "none"}>
+                    <Box marginTop={1} display={(hasEdit ?? false) || (hasDelete ?? false) ? undefined : "none"}>
                         <Grid container alignItems="center" justify="center" spacing={1}>
                             <Grid item>
-                                <Button variant="contained" color="secondary" startIcon={<EditIcon/>}>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    startIcon={<EditIcon/>}
+                                    onClick={() => onEdit()}
+                                >
                                     ویرایش
                                 </Button>
                             </Grid>
                             <Grid item>
-                                <Button variant="contained" color="secondary" startIcon={<DeleteIcon/>}>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    startIcon={<DeleteIcon/>}
+                                    onClick={() => onDelete()}
+                                >
                                     حذف
                                 </Button>
                             </Grid>
