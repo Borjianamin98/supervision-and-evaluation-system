@@ -144,6 +144,11 @@ public class DataLoader implements CommandLineRunner {
                 .telephoneNumber("9137654123")
                 .email("master3@sbu.ac.ir")
                 .build());
+        PersonalInfo master4PersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
+                .gender(Gender.MALE)
+                .telephoneNumber("9137651234")
+                .email("master4@sbu.ac.ir")
+                .build());
         PersonalInfo studentPersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
                 .gender(Gender.MALE)
                 .telephoneNumber("9137654321")
@@ -215,6 +220,19 @@ public class DataLoader implements CommandLineRunner {
         problem3 = problemRepository.save(problem3);
         problem4.getReferees().add(master3);
         problem4 = problemRepository.save(problem4);
+
+        Master master4 = masterRepository.save(Master.builder()
+                .firstName("حسن")
+                .lastName("حقیقی")
+                .degree("استاد")
+                .username("master4")
+                .password(passwordEncoder.encode("pass"))
+                .personalInfo(master4PersonalInfo)
+                .faculty(computerEngineeringFaculty)
+                .build());
+
+        computerEngineeringFaculty.getMasters().add(master4);
+        facultyRepository.save(computerEngineeringFaculty);
 
         Student student1 = studentRepository.save(Student.builder()
                 .firstName("امین")

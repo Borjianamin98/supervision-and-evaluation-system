@@ -14,6 +14,7 @@ import ir.ac.sbu.evaluation.repository.problem.ProblemEventRepository;
 import ir.ac.sbu.evaluation.repository.problem.ProblemRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
@@ -98,8 +99,9 @@ public class ProblemService {
         }
 
         problem.setState(ProblemState.IN_PROGRESS);
-        problem.getEvents().add(problemEventRepository.save(
-                ProblemEvent.builder().message("مسئله تایید اولیه شد.").build()));
+        ProblemEvent savedProblemEvent = problemEventRepository.save(ProblemEvent.builder()
+                .message("مسئله تایید اولیه شد.").problem(problem).build());
+        problem.getEvents().add(savedProblemEvent);
         return ProblemDto.from(problemRepository.save(problem));
     }
 
@@ -158,6 +160,16 @@ public class ProblemService {
             referee.getProblemsReferee().add(savedProblem);
             masterRepository.save(referee);
         }
+
+        List<String> refereeNames = referees.stream()
+                .map(master -> master.getFirstName() + " " + master.getLastName())
+                .collect(Collectors.toList());
+        String message = refereeNames.isEmpty() ?
+                "داورهای مسئله حذف شدند." :
+                String.format("لیست داورهای مسئله به «%s» تغییر یافت.", String.join("، ", refereeNames));
+        ProblemEvent savedProblemEvent = problemEventRepository.save(ProblemEvent.builder()
+                .message(message).problem(problem).build());
+        problem.getEvents().add(savedProblemEvent);
 
         return ProblemDto.from(savedProblem);
     }

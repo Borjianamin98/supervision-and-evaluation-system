@@ -98,8 +98,9 @@ const ProblemManagementView: React.FunctionComponent = () => {
     const updateReferees = useMutation(
         (data: Parameters<typeof MasterService.updateReferees>) => MasterService.updateReferees(data[0], data[1]),
         {
-            onSuccess: data => {
+            onSuccess: async data => {
                 queryClient.setQueryData(['problem', +problemId], data);
+                await queryClient.invalidateQueries(['events', +problemId])
             },
             onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
@@ -110,16 +111,24 @@ const ProblemManagementView: React.FunctionComponent = () => {
     const [refereeDialogOpen, setRefereeDialogOpen] = React.useState(false);
     const onRefereeSelect = (master?: Master) => {
         if (master && referees) {
-            if (referees.filter((value, index) => index !== selectedRefereeDialog)
-                .some(value => value.id! === master.id!)) {
+            if (referees.some(value => value.id! === master.id!)) {
                 enqueueSnackbar(
                     "داور انتخاب‌شده در لیست داورهای از قبل انتخاب شده می‌باشد. امکان انتخاب یک داور برای بیش از یک بار وجود ندارد.",
                     {variant: "error"})
                 return;
+            } else if (master.id === problem!.supervisor?.id) {
+                enqueueSnackbar(
+                    "داور انتخاب‌شده نمی‌تواند استاد راهنمای مسئله باشد.",
+                    {variant: "error"})
+                return;
             }
-            const copyReferees = [...referees];
-            copyReferees[selectedRefereeDialog] = master;
-            updateReferees.mutate([+problemId, copyReferees])
+            if (selectedRefereeDialog === -1) {
+                updateReferees.mutate([+problemId, [...referees, master]]);
+            } else {
+                const copyReferees = [...referees];
+                copyReferees[selectedRefereeDialog] = master;
+                updateReferees.mutate([+problemId, copyReferees])
+            }
         }
         setRefereeDialogOpen(false);
     }
@@ -215,37 +224,47 @@ const ProblemManagementView: React.FunctionComponent = () => {
                         <Typography variant="h6" paragraph>
                             داورها
                         </Typography>
-                        <Box display={jwtPayloadRole === Role.STUDENT ? "none" : undefined}>
-                            {
-                                referees && [...Array(2)].map((e, index) => {
-                                    let content: React.ReactNode;
-                                    if (index < referees.length && referees[index] != null) {
-                                        content = <ProfileInfoCard
-                                            user={referees[index]}
-                                            hasEdit={true}
-                                            hasDelete={true}
-                                            onEdit={() => undefined}
-                                            onDelete={() => undefined}
-                                        />;
-                                    } else {
-                                        content = <Button
+
+                        {
+                            referees && [...Array(2)].map((e, index) => {
+                                let content: React.ReactNode;
+                                if (index < referees.length && referees[index] != null) {
+                                    content = <ProfileInfoCard
+                                        user={referees[index]}
+                                        hasEdit={true}
+                                        hasDelete={true}
+                                        onEdit={() => {
+                                            setSelectedRefereeDialog(index);
+                                            setRefereeDialogOpen(true);
+                                        }}
+                                        onDelete={() => {
+                                            const copyReferees = [...referees];
+                                            copyReferees.splice(index, 1);
+                                            updateReferees.mutate([+problemId, copyReferees])
+                                        }}
+                                    />;
+                                } else {
+                                    content = (
+                                        <Button
                                             fullWidth
-                                            startIcon={<PersonAddIcon style={{fontSize: 40}}/>}
+                                            startIcon={jwtPayloadRole !== Role.STUDENT &&
+                                            <PersonAddIcon style={{fontSize: 40}}/>}
                                             className={classes.refereeSelectionButton}
                                             onClick={() => {
-                                                setSelectedRefereeDialog(index);
+                                                setSelectedRefereeDialog(-1);
                                                 setRefereeDialogOpen(true);
                                             }}
+                                            disabled={jwtPayloadRole === Role.STUDENT}
                                         >
-                                            {`تایین داور ${mapNumberToPersianOrderName(index + 1)}`}
+                                            {`داور ${mapNumberToPersianOrderName(index + 1)} مشخص نشده است.`}
                                         </Button>
-                                    }
-                                    return <Box key={index} my={1}>
-                                        {content}
-                                    </Box>;
-                                })
-                            }
-                        </Box>
+                                    )
+                                }
+                                return <Box key={index} my={1}>
+                                    {content}
+                                </Box>;
+                            })
+                        }
                     </Paper>
                 </Grid>
                 <div aria-label={"dialogs"}>
