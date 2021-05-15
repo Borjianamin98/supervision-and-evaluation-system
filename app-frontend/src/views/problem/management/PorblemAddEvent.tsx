@@ -25,7 +25,7 @@ const ProblemAddEvent: React.FunctionComponent<ProblemAddEventProps> = (props) =
     const queryClient = useQueryClient();
     const commentOnProblem = useMutation(
         (data: { problemId: number, comment: string }) =>
-            ProblemMasterService.placeCommentOnProblem(data.problemId, {
+            ProblemMasterService.addProblemEvent(data.problemId, {
                 message: data.comment
             }),
         {

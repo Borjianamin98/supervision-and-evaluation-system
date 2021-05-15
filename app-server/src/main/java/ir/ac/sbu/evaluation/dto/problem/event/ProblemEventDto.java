@@ -1,4 +1,4 @@
-package ir.ac.sbu.evaluation.dto.problem;
+package ir.ac.sbu.evaluation.dto.problem.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -26,8 +26,8 @@ public class ProblemEventDto extends AuditableDto {
     }
 
     @Builder
-    public ProblemEventDto(String createdBy, Instant createdDate, long id, String message) {
-        super(createdBy, createdDate);
+    public ProblemEventDto(String createdBy, String createdByRole, Instant createdDate, long id, String message) {
+        super(createdBy, createdByRole, createdDate);
         this.id = id;
         this.message = message;
     }
@@ -36,7 +36,9 @@ public class ProblemEventDto extends AuditableDto {
         return ProblemEventDto.builder()
                 .id(problemEvent.getId())
                 .message(problemEvent.getMessage())
-                .createdBy(problemEvent.getCreatedBy()).createdDate(problemEvent.getCreatedDate())
+                .createdBy(problemEvent.getCreatedBy())
+                .createdByRole(problemEvent.getCreatedByRole())
+                .createdDate(problemEvent.getCreatedDate())
                 .build();
     }
 

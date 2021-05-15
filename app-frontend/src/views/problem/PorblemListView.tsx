@@ -113,6 +113,7 @@ const ProblemListView: React.FunctionComponent = () => {
                 switch (jwtPayloadRole) {
                     case Role.STUDENT:
                         return [
+                            {tooltipTitle: "ثبت نظر", icon: <AddCommentIcon/>, onClickAction: onCommentDialogOpen},
                             {
                                 tooltipTitle: "لغو مسئله",
                                 icon: <CloseIcon/>,

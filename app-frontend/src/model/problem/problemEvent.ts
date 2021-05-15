@@ -1,7 +1,16 @@
-export interface ProblemEvent {
-    id?: number,
+import {Role} from "../enum/role";
 
-    createdBy?: string,
-    createdDate?: string,
+export interface Auditable {
+    createdBy: string,
+    createdByRole: Role,
+    createdDate: string,
+}
+
+export interface ProblemEvent extends Auditable {
+    id: number,
+    message: string,
+}
+
+export interface ProblemEventCreate {
     message: string,
 }

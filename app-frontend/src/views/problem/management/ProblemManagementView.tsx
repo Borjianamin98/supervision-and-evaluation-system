@@ -184,8 +184,7 @@ const ProblemManagementView: React.FunctionComponent = () => {
                                 <Typography variant="h6">
                                     رخدادهای اخیر
                                 </Typography>
-                                <Box display={jwtPayloadRole === Role.STUDENT ? "none" : undefined}
-                                     style={{marginRight: "auto"}}>
+                                <Box style={{marginRight: "auto"}}>
                                     <Button
                                         color="secondary"
                                         variant="contained"

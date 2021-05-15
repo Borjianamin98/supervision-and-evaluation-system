@@ -18,7 +18,7 @@ class MasterService {
                 params: {
                     size: pageSize,
                     page: page,
-                    nameQuery: nameQuery ?? "",
+                    nameQuery: nameQuery,
                 }
             }).then(response => response.data);
     }

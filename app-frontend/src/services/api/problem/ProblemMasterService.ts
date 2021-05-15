@@ -1,10 +1,10 @@
 import apiAxios from "../../../config/axios-config";
 import {Pageable} from "../../../model/pageable";
 import {Problem} from "../../../model/problem/problem";
-import {ProblemEvent} from "../../../model/problem/problemEvent";
+import {ProblemEvent, ProblemEventCreate} from "../../../model/problem/problemEvent";
 import {ProblemState} from "../../../model/problem/problemState";
 import {
-    API_PROBLEM_MASTER_COMMENT_ON_PROBLEM_PATH,
+    API_PROBLEM_EVENTS_PATH,
     API_PROBLEM_MASTER_INITIAL_APPROVE_OF_PROBLEM_PATH,
     API_PROBLEM_MASTER_ROOT_PATH
 } from "../../ApiPaths";
@@ -25,9 +25,9 @@ class ProblemMasterService {
             }).then(response => response.data);
     }
 
-    static placeCommentOnProblem(problemId: number, problemEvent: ProblemEvent) {
-        return apiAxios.post<ProblemEvent>(API_PROBLEM_MASTER_COMMENT_ON_PROBLEM_PATH.replace("{0}", String(problemId)),
-            problemEvent).then(response => response.data);
+    static addProblemEvent(problemId: number, problemEventCreate: ProblemEventCreate) {
+        return apiAxios.post<ProblemEvent>(API_PROBLEM_EVENTS_PATH.replace("{0}", String(problemId)),
+            problemEventCreate).then(response => response.data);
     }
 
     static initialApprovalOfProblem(problemId: number) {

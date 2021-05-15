@@ -3,7 +3,8 @@ package ir.ac.sbu.evaluation.controller.problem;
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_PROBLEM_MASTER_ROOT_PATH;
 
 import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
-import ir.ac.sbu.evaluation.dto.problem.ProblemEventDto;
+import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventCreateDto;
+import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventDto;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.service.ProblemService;
@@ -25,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 @PreAuthorize("hasAuthority(@SecurityRoles.MASTER_ROLE_NAME)")
 public class ProblemMasterController {
 
-    private static final String API_PROBLEM_MASTER_COMMENT_ON_PROBLEM_PATH = "/comment";
     private static final String API_PROBLEM_MASTER_INITIAL_APPROVE_OF_PROBLEM_PATH = "/initialApprove";
 
     private final ProblemService problemService;
@@ -40,14 +40,6 @@ public class ProblemMasterController {
             @RequestParam(name = "problemState") ProblemState problemState,
             Pageable pageable) {
         return problemService.retrieveMasterAssignedProblems(authUserDetail.getUserId(), problemState, pageable);
-    }
-
-    @PostMapping(path = "/{problemId}" + API_PROBLEM_MASTER_COMMENT_ON_PROBLEM_PATH)
-    public ProblemEventDto placeCommentOnProblem(
-            @ModelAttribute AuthUserDetail authUserDetail,
-            @PathVariable long problemId,
-            @Valid @RequestBody ProblemEventDto problemEventDto) {
-        return problemService.placeCommentOnProblem(authUserDetail.getUserId(), problemId, problemEventDto);
     }
 
     @GetMapping(path = "/{problemId}" + API_PROBLEM_MASTER_INITIAL_APPROVE_OF_PROBLEM_PATH)

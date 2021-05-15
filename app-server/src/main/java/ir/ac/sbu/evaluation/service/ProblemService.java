@@ -1,7 +1,8 @@
 package ir.ac.sbu.evaluation.service;
 
 import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
-import ir.ac.sbu.evaluation.dto.problem.ProblemEventDto;
+import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventCreateDto;
+import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventDto;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
@@ -120,11 +121,11 @@ public class ProblemService {
     }
 
     @Transactional
-    public ProblemEventDto placeCommentOnProblem(long userId, long problemId, ProblemEventDto comment) {
+    public ProblemEventDto addProblemEvent(long userId, long problemId, ProblemEventCreateDto problemEventCreateDto) {
         Problem problem = getProblem(problemId);
         checkUserAccessProblem(userId, problem);
 
-        ProblemEvent problemEvent = comment.toProblemEvent();
+        ProblemEvent problemEvent = problemEventCreateDto.toProblemEvent();
         problemEvent.setProblem(problem);
         ProblemEvent savedProblemEvent = problemEventRepository.save(problemEvent);
         problem.getEvents().add(savedProblemEvent);

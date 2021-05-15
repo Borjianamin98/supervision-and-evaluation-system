@@ -5,6 +5,7 @@ import React from 'react';
 import {useQuery, useQueryClient} from "react-query";
 import CustomAlert from "../../components/Alert/CustomAlert";
 import CenterGrid from "../../components/Grid/CenterGrid";
+import {roleMapToPersian} from "../../model/enum/role";
 import {ProblemEvent} from "../../model/problem/problemEvent";
 import ProblemAuthenticatedService from "../../services/api/problem/ProblemAuthenticatedService";
 import ProblemEventCard from "./ProblemEventCard";
@@ -49,10 +50,10 @@ const ProblemEventsList: React.FunctionComponent<ProblemEventListProps> = (props
     const problemEventCards = events?.content.map((event: ProblemEvent) =>
         <Box my={1} key={event.id}>
             <ProblemEventCard
-                title={event.createdBy!}
-                subheader={"کاربر"}
+                title={event.createdBy}
+                subheader={roleMapToPersian(event.createdByRole)}
                 body={event.message}
-                date={event.createdDate!}
+                date={event.createdDate}
             />
         </Box>
     )

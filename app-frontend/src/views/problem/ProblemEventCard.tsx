@@ -37,7 +37,7 @@ const ProblemEventCard: React.FunctionComponent<ProblemEventCardProps> = (props)
         <Card variant="outlined" {...rest} className={classes.root}>
             <CardHeader
                 avatar={
-                    <Avatar src={""} aria-label="card-type" className={classes.avatar}/>
+                    <Avatar src={""} className={classes.avatar}/>
                 }
                 title={title}
                 subheader={subheader}

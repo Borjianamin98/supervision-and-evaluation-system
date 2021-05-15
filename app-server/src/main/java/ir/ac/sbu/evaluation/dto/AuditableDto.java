@@ -15,14 +15,18 @@ public class AuditableDto {
     private String createdBy;
 
     @JsonProperty(access = Access.READ_ONLY)
+    private String createdByRole;
+
+    @JsonProperty(access = Access.READ_ONLY)
     private Instant createdDate; // ISO-8601 representation
 
     public AuditableDto() {
     }
 
     @Builder(builderMethodName = "auditableDtoBuilder")
-    public AuditableDto(String createdBy, Instant createdDate) {
+    public AuditableDto(String createdBy, String createdByRole, Instant createdDate) {
         this.createdBy = createdBy;
+        this.createdByRole = createdByRole;
         this.createdDate = createdDate;
     }
 }

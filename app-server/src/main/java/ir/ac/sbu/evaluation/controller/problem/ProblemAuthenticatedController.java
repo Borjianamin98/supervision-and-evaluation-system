@@ -3,15 +3,19 @@ package ir.ac.sbu.evaluation.controller.problem;
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_PROBLEM_ROOT_PATH;
 
 import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
-import ir.ac.sbu.evaluation.dto.problem.ProblemEventDto;
+import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventCreateDto;
+import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventDto;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.service.ProblemService;
+import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,6 +38,15 @@ public class ProblemAuthenticatedController {
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long problemId) {
         return problemService.retrieveProblem(authUserDetail.getUserId(), problemId);
+    }
+
+    @PreAuthorize("hasAnyAuthority(@SecurityRoles.STUDENT_ROLE_NAME, @SecurityRoles.MASTER_ROLE_NAME)")
+    @PostMapping(path = "/{problemId}" + API_PROBLEM_AUTHENTICATED_PROBLEM_EVENTS_PATH)
+    public ProblemEventDto addProblemEvent(
+            @ModelAttribute AuthUserDetail authUserDetail,
+            @PathVariable long problemId,
+            @Valid @RequestBody ProblemEventCreateDto problemEventCreateDto) {
+        return problemService.addProblemEvent(authUserDetail.getUserId(), problemId, problemEventCreateDto);
     }
 
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.STUDENT_ROLE_NAME, @SecurityRoles.MASTER_ROLE_NAME)")

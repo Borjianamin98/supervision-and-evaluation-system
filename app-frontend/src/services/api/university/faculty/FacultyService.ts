@@ -22,7 +22,7 @@ class UniversityService {
                     universityId: universityId,
                     size: pageSize,
                     page: page,
-                    nameQuery: nameQuery ?? "",
+                    nameQuery: nameQuery,
                 }
             }).then(response => response.data);
     }

@@ -81,7 +81,7 @@ const SingleFieldFormDialog: React.FunctionComponent<ConfirmDialogProps> = (prop
                 <Button onClick={event => onCommentDialogClose(false)} color="primary">
                     انصراف
                 </Button>
-                <Button onClick={event => onCommentDialogClose(true)} color="primary" autoFocus>
+                <Button onClick={event => onCommentDialogClose(true)} color="primary">
                     ثبت
                 </Button>
             </DialogActions>
