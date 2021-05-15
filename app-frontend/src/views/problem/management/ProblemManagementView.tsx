@@ -2,7 +2,9 @@ import {Box, Button, Grid, Paper} from "@material-ui/core";
 import {createStyles, makeStyles, Theme, ThemeProvider} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import AddCommentIcon from "@material-ui/icons/AddComment";
+import GradeIcon from '@material-ui/icons/Grade';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import ScheduleIcon from '@material-ui/icons/Schedule';
 import {AxiosError} from "axios";
 import {useSnackbar} from "notistack";
 import React from 'react';
@@ -219,53 +221,90 @@ const ProblemManagementView: React.FunctionComponent = () => {
                         </Paper>
                     </Grid>
                 </Grid>
-                <Grid item xs={12} sm={12} md={12} lg={4} xl={4} className={classes.column}>
-                    <Paper className={classes.columnContent}>
-                        <Typography variant="h6" paragraph>
-                            داورها
-                        </Typography>
-
-                        {
-                            referees && [...Array(2)].map((e, index) => {
-                                let content: React.ReactNode;
-                                if (index < referees.length && referees[index] != null) {
-                                    content = <ProfileInfoCard
-                                        user={referees[index]}
-                                        hasEdit={true}
-                                        hasDelete={true}
-                                        onEdit={() => {
-                                            setSelectedRefereeDialog(index);
-                                            setRefereeDialogOpen(true);
-                                        }}
-                                        onDelete={() => {
-                                            const copyReferees = [...referees];
-                                            copyReferees.splice(index, 1);
-                                            updateReferees.mutate([+problemId, copyReferees])
-                                        }}
-                                    />;
-                                } else {
-                                    content = (
+                <Grid container item direction="column" xs={12} sm={12} md={12} lg={4} xl={4}
+                      className={classes.column}>
+                    <Grid item>
+                        <Box marginBottom={1}>
+                            <Paper className={classes.columnContent}>
+                                <Typography variant="h6" paragraph>
+                                    داورها
+                                </Typography>
+                                {
+                                    referees && [...Array(2)].map((e, index) => {
+                                        let content: React.ReactNode;
+                                        if (index < referees.length && referees[index] != null) {
+                                            content = <ProfileInfoCard
+                                                user={referees[index]}
+                                                hasEdit={true}
+                                                hasDelete={true}
+                                                onEdit={() => {
+                                                    setSelectedRefereeDialog(index);
+                                                    setRefereeDialogOpen(true);
+                                                }}
+                                                onDelete={() => {
+                                                    const copyReferees = [...referees];
+                                                    copyReferees.splice(index, 1);
+                                                    updateReferees.mutate([+problemId, copyReferees])
+                                                }}
+                                            />;
+                                        } else {
+                                            content = (
+                                                <Button
+                                                    fullWidth
+                                                    startIcon={jwtPayloadRole !== Role.STUDENT &&
+                                                    <PersonAddIcon style={{fontSize: 40}}/>}
+                                                    className={classes.refereeSelectionButton}
+                                                    onClick={() => {
+                                                        setSelectedRefereeDialog(-1);
+                                                        setRefereeDialogOpen(true);
+                                                    }}
+                                                    disabled={jwtPayloadRole === Role.STUDENT}
+                                                >
+                                                    {`داور ${mapNumberToPersianOrderName(index + 1)} مشخص نشده است.`}
+                                                </Button>
+                                            )
+                                        }
+                                        return <Box key={index} my={1}>
+                                            {content}
+                                        </Box>;
+                                    })
+                                }
+                            </Paper>
+                        </Box>
+                    </Grid>
+                    <Grid item>
+                        <Paper>
+                            <Box px={4}>
+                                <Grid container spacing={1} className={classes.columnContent}>
+                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                        <Typography variant="h6" className={classes.centerAlign} paragraph>
+                                            عملیات
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                         <Button
                                             fullWidth
-                                            startIcon={jwtPayloadRole !== Role.STUDENT &&
-                                            <PersonAddIcon style={{fontSize: 40}}/>}
-                                            className={classes.refereeSelectionButton}
-                                            onClick={() => {
-                                                setSelectedRefereeDialog(-1);
-                                                setRefereeDialogOpen(true);
-                                            }}
-                                            disabled={jwtPayloadRole === Role.STUDENT}
+                                            variant="contained"
+                                            color="secondary"
+                                            startIcon={<ScheduleIcon/>}
                                         >
-                                            {`داور ${mapNumberToPersianOrderName(index + 1)} مشخص نشده است.`}
+                                            زمان‌بندی مسئله
                                         </Button>
-                                    )
-                                }
-                                return <Box key={index} my={1}>
-                                    {content}
-                                </Box>;
-                            })
-                        }
-                    </Paper>
+                                    </Grid>
+                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                        <Button
+                                            fullWidth
+                                            variant="contained"
+                                            color="secondary"
+                                            startIcon={<GradeIcon/>}
+                                        >
+                                            نمره‌دهی
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                            </Box>
+                        </Paper>
+                    </Grid>
                 </Grid>
                 <div aria-label={"dialogs"}>
                     <ProblemAddEvent
