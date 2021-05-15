@@ -220,7 +220,6 @@ const ProblemManagementView: React.FunctionComponent = () => {
                                         />;
                                     } else {
                                         content = <Button
-                                            key={index}
                                             fullWidth
                                             startIcon={<PersonAddIcon style={{fontSize: 40}}/>}
                                             className={classes.refereeSelectionButton}
@@ -232,7 +231,7 @@ const ProblemManagementView: React.FunctionComponent = () => {
                                             {`تایین داور ${mapNumberToPersianOrderName(index + 1)}`}
                                         </Button>
                                     }
-                                    return <Box my={1}>
+                                    return <Box key={index} my={1}>
                                         {content}
                                     </Box>;
                                 })

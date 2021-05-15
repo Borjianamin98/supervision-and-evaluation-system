@@ -57,9 +57,9 @@ const SingleFieldFormDialog: React.FunctionComponent<ConfirmDialogProps> = (prop
             onClose={event => onCommentDialogClose(false)}
             {...rest}
         >
-            <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
+            <DialogTitle>{title}</DialogTitle>
             <DialogContent>
-                <DialogContentText id="alert-dialog-description" className={classes.justifyAlign}>
+                <DialogContentText component="div" className={classes.justifyAlign}>
                     {
                         descriptions.map((value, index) =>
                             <Typography key={index}>
