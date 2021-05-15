@@ -14,6 +14,8 @@ import ir.ac.sbu.evaluation.repository.problem.ProblemEventRepository;
 import ir.ac.sbu.evaluation.repository.problem.ProblemRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -138,6 +140,26 @@ public class ProblemService {
         Problem problem = getProblem(problemId);
         checkUserAccessProblem(userId, problem);
         return problemEventRepository.findAllByProblemId(problemId, pageable).map(ProblemEventDto::from);
+    }
+
+    @Transactional
+    public ProblemDto updateReferees(long userId, long problemId, Set<Long> refereeIds) {
+        Problem problem = getProblem(problemId);
+        checkUserAccessProblem(userId, problem);
+
+        Set<Master> referees = refereeIds.stream()
+                .map(id -> masterRepository.findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Master not found: ID = " + id)))
+                .collect(Collectors.toSet());
+
+        problem.setReferees(referees);
+        Problem savedProblem = problemRepository.save(problem);
+        for (Master referee : referees) {
+            referee.getProblemsReferee().add(savedProblem);
+            masterRepository.save(referee);
+        }
+
+        return ProblemDto.from(savedProblem);
     }
 
     private void checkUserAccessProblem(long userId, Problem problem) {

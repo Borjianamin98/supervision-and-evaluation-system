@@ -3,14 +3,16 @@ import {createStyles, makeStyles, Theme, ThemeProvider} from "@material-ui/core/
 import Typography from "@material-ui/core/Typography";
 import AddCommentIcon from "@material-ui/icons/AddComment";
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import {AxiosError} from "axios";
 import {useSnackbar} from "notistack";
 import React from 'react';
-import {useQuery, useQueryClient} from "react-query";
+import {useMutation, useQuery, useQueryClient} from "react-query";
 import {useParams} from "react-router-dom";
 import {rtlTheme} from "../../../App";
 import KeywordsList from "../../../components/Chip/KeywordsList";
 import SearchableListDialog from "../../../components/Dialog/SearchableListDialog";
 import LoadingGrid from "../../../components/Grid/LoadingGrid";
+import {generalErrorHandler} from "../../../config/axios-config";
 import browserHistory from "../../../config/browserHistory";
 import {educationMapToPersian} from "../../../model/enum/education";
 import {Role} from "../../../model/enum/role";
@@ -92,15 +94,22 @@ const ProblemManagementView: React.FunctionComponent = () => {
         }, {
             keepPreviousData: true
         });
+    const referees = problem?.referees;
+    const updateReferees = useMutation(
+        (data: Parameters<typeof MasterService.updateReferees>) => MasterService.updateReferees(data[0], data[1]),
+        {
+            onSuccess: data => {
+                queryClient.setQueryData(['problem', +problemId], data);
+            },
+            onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
+        });
 
     const jwtPayloadRole = AuthenticationService.getJwtPayloadRole()!;
     const [commentDialogOpen, setCommentDialogOpen] = React.useState(false);
-
-    const [referees, setReferees] = React.useState<Master[]>([]);
     const [selectedRefereeDialog, setSelectedRefereeDialog] = React.useState(0);
     const [refereeDialogOpen, setRefereeDialogOpen] = React.useState(false);
     const onRefereeSelect = (master?: Master) => {
-        if (master) {
+        if (master && referees) {
             if (referees.filter((value, index) => index !== selectedRefereeDialog)
                 .some(value => value.id! === master.id!)) {
                 enqueueSnackbar(
@@ -110,7 +119,7 @@ const ProblemManagementView: React.FunctionComponent = () => {
             }
             const copyReferees = [...referees];
             copyReferees[selectedRefereeDialog] = master;
-            setReferees(copyReferees);
+            updateReferees.mutate([+problemId, copyReferees])
         }
         setRefereeDialogOpen(false);
     }
@@ -208,7 +217,7 @@ const ProblemManagementView: React.FunctionComponent = () => {
                         </Typography>
                         <Box display={jwtPayloadRole === Role.STUDENT ? "none" : undefined}>
                             {
-                                [...Array(2)].map((e, index) => {
+                                referees && [...Array(2)].map((e, index) => {
                                     let content: React.ReactNode;
                                     if (index < referees.length && referees[index] != null) {
                                         content = <ProfileInfoCard

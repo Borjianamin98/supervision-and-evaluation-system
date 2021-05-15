@@ -45,8 +45,8 @@ public class MasterDto extends UserDto {
                 .role(master.getRole())
                 .personalInfo(master.getPersonalInfo() != null ? PersonalInfoDto.from(master.getPersonalInfo()) : null)
                 .degree(master.getDegree())
-                .universityName(master.getFaculty().getUniversity().getName())
-                .facultyName(master.getFaculty().getName())
+                .universityName(master.getFaculty() != null ? master.getFaculty().getUniversity().getName() : null)
+                .facultyName(master.getFaculty() != null ? master.getFaculty().getName() : null)
                 .build();
     }
 

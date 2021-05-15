@@ -1,7 +1,13 @@
 import apiAxios from "../../../config/axios-config";
 import {Pageable} from "../../../model/pageable";
+import {Problem} from "../../../model/problem/problem";
 import {Master, MasterRegister} from "../../../model/user/master";
-import {API_MASTER_INFO_PATH, API_MASTER_PATH, API_MASTER_REGISTER_PATH} from "../../ApiPaths";
+import {
+    API_MASTER_INFO_PATH,
+    API_MASTER_PATH,
+    API_MASTER_REGISTER_PATH,
+    API_PROBLEM_MASTER_UPDATE_REFEREES_PATH
+} from "../../ApiPaths";
 
 class MasterService {
 
@@ -21,6 +27,12 @@ class MasterService {
                     nameQuery: nameQuery,
                 }
             }).then(response => response.data);
+    }
+
+    static updateReferees(problemId: number, referees: Master[]) {
+        return apiAxios.post<Problem>(
+            API_PROBLEM_MASTER_UPDATE_REFEREES_PATH.replace("{0}", String(problemId)),
+            referees.map(referee => referee.id!)).then(response => response.data);
     }
 
     static retrieveMasterInfo() {

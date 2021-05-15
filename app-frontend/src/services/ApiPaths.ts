@@ -41,6 +41,7 @@ export const API_PROBLEM_STUDENT_RESOURCE_PATH = `${API_PROBLEM_STUDENT_ROOT_PAT
 // Master Problem Paths
 export const API_PROBLEM_MASTER_ROOT_PATH = `${API_PROBLEM_ROOT_PATH}/authenticatedMaster`
 export const API_PROBLEM_MASTER_INITIAL_APPROVE_OF_PROBLEM_PATH = `${API_PROBLEM_MASTER_ROOT_PATH}/{0}/initialApprove`
+export const API_PROBLEM_MASTER_UPDATE_REFEREES_PATH = `${API_PROBLEM_MASTER_ROOT_PATH}/{0}/referees`
 
 // University Paths
 export const API_UNIVERSITY_ROOT_PATH = "/university"

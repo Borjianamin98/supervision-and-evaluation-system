@@ -3,6 +3,7 @@ package ir.ac.sbu.evaluation.model.user;
 import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.university.Faculty;
 import ir.ac.sbu.evaluation.security.SecurityRoles;
+import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,7 +13,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "master")
 public class Master extends User {
@@ -21,10 +26,10 @@ public class Master extends User {
     private String degree;
 
     @OneToMany(mappedBy = "supervisor")
-    private Set<Problem> problemsSupervisor;
+    private Set<Problem> problemsSupervisor = new HashSet<>();
 
     @ManyToMany(mappedBy = "referees")
-    private Set<Problem> problemsReferee;
+    private Set<Problem> problemsReferee = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "faculty_id")
@@ -41,40 +46,8 @@ public class Master extends User {
         super(id, firstName, lastName, username, password, SecurityRoles.MASTER_ROLE_NAME, personalInfo,
                 profilePicture);
         this.degree = degree;
-        this.problemsSupervisor = problemsSupervisor;
-        this.problemsReferee = problemsReferee;
-        this.faculty = faculty;
-    }
-
-    public String getDegree() {
-        return degree;
-    }
-
-    public void setDegree(String degree) {
-        this.degree = degree;
-    }
-
-    public Set<Problem> getProblemsSupervisor() {
-        return problemsSupervisor;
-    }
-
-    public void setProblemsSupervisor(Set<Problem> problemsSupervisor) {
-        this.problemsSupervisor = problemsSupervisor;
-    }
-
-    public Set<Problem> getProblemsReferee() {
-        return problemsReferee;
-    }
-
-    public void setProblemsReferee(Set<Problem> problemsReferee) {
-        this.problemsReferee = problemsReferee;
-    }
-
-    public Faculty getFaculty() {
-        return faculty;
-    }
-
-    public void setFaculty(Faculty faculty) {
+        this.problemsSupervisor = problemsSupervisor == null ? new HashSet<>() : problemsSupervisor;
+        this.problemsReferee = problemsReferee == null ? new HashSet<>() : problemsReferee;
         this.faculty = faculty;
     }
 }

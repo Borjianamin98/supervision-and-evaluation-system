@@ -3,11 +3,10 @@ package ir.ac.sbu.evaluation.controller.problem;
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_PROBLEM_MASTER_ROOT_PATH;
 
 import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
-import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventCreateDto;
-import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventDto;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.service.ProblemService;
+import java.util.Set;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @PreAuthorize("hasAuthority(@SecurityRoles.MASTER_ROLE_NAME)")
 public class ProblemMasterController {
 
+    private static final String API_PROBLEM_MASTER_UPDATE_REFEREES_PATH = "/referees";
     private static final String API_PROBLEM_MASTER_INITIAL_APPROVE_OF_PROBLEM_PATH = "/initialApprove";
 
     private final ProblemService problemService;
@@ -47,5 +47,13 @@ public class ProblemMasterController {
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long problemId) {
         return problemService.initialApprovalOfProblem(authUserDetail.getUserId(), problemId);
+    }
+
+    @PostMapping(path = "/{problemId}" + API_PROBLEM_MASTER_UPDATE_REFEREES_PATH)
+    public ProblemDto updateReferees(
+            @ModelAttribute AuthUserDetail authUserDetail,
+            @PathVariable long problemId,
+            @Valid @RequestBody Set<Long> referees) {
+        return problemService.updateReferees(authUserDetail.getUserId(), problemId, referees);
     }
 }
