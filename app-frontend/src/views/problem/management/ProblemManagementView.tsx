@@ -231,12 +231,14 @@ const ProblemManagementView: React.FunctionComponent = () => {
                                 </Typography>
                                 {
                                     referees && [...Array(2)].map((e, index) => {
+                                        const orderString = mapNumberToPersianOrderName(index + 1);
                                         let content: React.ReactNode;
                                         if (index < referees.length && referees[index] != null) {
                                             content = <ProfileInfoCard
                                                 user={referees[index]}
-                                                hasEdit={true}
-                                                hasDelete={true}
+                                                subheader={`داور ${orderString} پایان‌نامه (پروژه)`}
+                                                hasEdit={jwtPayloadRole === Role.MASTER}
+                                                hasDelete={jwtPayloadRole === Role.MASTER}
                                                 onEdit={() => {
                                                     setSelectedRefereeDialog(index);
                                                     setRefereeDialogOpen(true);
@@ -248,6 +250,16 @@ const ProblemManagementView: React.FunctionComponent = () => {
                                                 }}
                                             />;
                                         } else {
+                                            let buttonContent: string;
+                                            switch (jwtPayloadRole) {
+                                                case Role.STUDENT:
+                                                    buttonContent = `داور ${orderString} مشخص نشده است.`;
+                                                    break;
+                                                case Role.MASTER:
+                                                case Role.ADMIN:
+                                                    buttonContent = `تایین داور ${orderString}`;
+                                                    break;
+                                            }
                                             content = (
                                                 <Button
                                                     fullWidth
@@ -260,7 +272,7 @@ const ProblemManagementView: React.FunctionComponent = () => {
                                                     }}
                                                     disabled={jwtPayloadRole === Role.STUDENT}
                                                 >
-                                                    {`داور ${mapNumberToPersianOrderName(index + 1)} مشخص نشده است.`}
+                                                    {buttonContent}
                                                 </Button>
                                             )
                                         }
@@ -288,7 +300,7 @@ const ProblemManagementView: React.FunctionComponent = () => {
                                             color="secondary"
                                             startIcon={<ScheduleIcon/>}
                                         >
-                                            زمان‌بندی مسئله
+                                            زمان‌بندی دفاع
                                         </Button>
                                     </Grid>
                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>

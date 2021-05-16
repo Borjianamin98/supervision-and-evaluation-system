@@ -14,7 +14,6 @@ import SignUpView from "./views/auth/signup/SignUpView";
 import ErrorView from "./views/error/ErrorView";
 import MainView from "./views/main/MainView";
 import {AUTH_VIEW_PATH, LOGIN_VIEW_PATH, SIGNUP_VIEW_PATH} from "./views/ViewPaths";
-import { ReactQueryDevtools } from 'react-query/devtools'
 
 // Configuration
 // Configure axios library globally
@@ -89,7 +88,7 @@ const App: React.FunctionComponent = () => {
                     <QueryClientProvider client={queryClient}>
                         <>
                             {rootRouting}
-                            <ReactQueryDevtools initialIsOpen={false}/>
+                            {/*<ReactQueryDevtools initialIsOpen={false}/>*/}
                         </>
                     </QueryClientProvider>
                 </SnackbarProvider>

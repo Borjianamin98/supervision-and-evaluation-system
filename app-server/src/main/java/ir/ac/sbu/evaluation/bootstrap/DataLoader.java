@@ -276,10 +276,12 @@ public class DataLoader implements CommandLineRunner {
                 .build());
         Faculty computerEngineeringFaculty = facultyRepository.save(Faculty.builder()
                 .name("مهندسی کامپیوتر")
+                .webAddress("https://www.sbu.ac.ir/en/web/cse")
                 .university(shahidBeheshtiUniversity)
                 .build());
         Faculty physicFaculty = facultyRepository.save(Faculty.builder()
                 .name("فیزیک")
+                .webAddress("https://www.sbu.ac.ir/en/web/physics")
                 .university(shahidBeheshtiUniversity)
                 .build());
         shahidBeheshtiUniversity.getFaculties().add(computerEngineeringFaculty);
