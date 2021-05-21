@@ -24,26 +24,27 @@ import moment from "jalali-moment";
 import React from 'react';
 import {rtlTheme} from "../App";
 import CenterGrid from "../components/Grid/CenterGrid";
+import {ScheduleEvent} from "../model/schedule/ScheduleEvent";
 import "./scheduler.css"
 
 const SettingsView: React.FunctionComponent = () => {
     const scheduleComponentRef = React.useRef<ScheduleComponent>(null);
+    const theme = useTheme();
+    const isRtlTheme = theme.direction === 'rtl';
 
-    const data = [{
+    const data: ScheduleEvent[] = [{
         id: 1,
-        subject: 'Meeting',
-        startTime: new Date(2021, 4, 18, 10, 0),
-        endTime: new Date(2021, 4, 18, 12, 30),
+        subject: 'ملاقات',
+        startDate: new Date(2021, 4, 22, 10, 0),
+        endDate: new Date(2021, 4, 22, 12, 30),
         isAllDay: false,
-        Status: 'Completed',
-        Priority: 'High',
-        ownerId: 1,
         // isReadonly: true,
+        ownerId: 1,
     }];
 
     const ownerData = [
-        {id: 1, ownerName: 'Nancy', color: '#ffaa00'},
-        {id: 2, ownerName: 'Steven', color: '#f8a398'},
+        {id: 1, ownerName: 'Nancy', color: theme.palette.primary.main},
+        {id: 2, ownerName: 'Steven', color: theme.palette.secondary.main},
         {id: 3, ownerName: 'Michael', color: '#7499e1'}
     ];
 
@@ -137,11 +138,11 @@ const SettingsView: React.FunctionComponent = () => {
                 args.cancel = true; // Disable all day events.
             } else {
                 if (scheduleComponentRef.current) {
-                    let Data = [{
+                    const Data: ScheduleEvent[] = [{
                         id: 1,
                         subject: "New Event",
-                        startTime: args.startTime,
-                        endTime: args.endTime,
+                        startDate: args.startTime,
+                        endDate: args.endTime,
                         isAllDay: false,
                         ownerId: 2,
                     }];
@@ -151,8 +152,14 @@ const SettingsView: React.FunctionComponent = () => {
         }
     }
 
-    const theme = useTheme();
-    const isRtlTheme = theme.direction === 'rtl';
+    const eventTemplate = (props: ScheduleEvent) => {
+        const startTime = moment(props.startDate).locale("fa").format("hh:mm a");
+        const endTime = moment(props.endDate).locale("fa").format("hh:mm a");
+        return <CenterGrid>
+            <div>{`${startTime} - ${endTime}`}</div>
+            <div style={{maxHeight: 140, fontSize: "13px"}}>{props.subject}</div>
+        </CenterGrid>;
+    }
 
     return (
         <ThemeProvider theme={rtlTheme}>
@@ -216,8 +223,8 @@ const SettingsView: React.FunctionComponent = () => {
                         id: 'id',
                         subject: {name: 'subject'},
                         isAllDay: {name: 'isAllDay'},
-                        startTime: {name: 'startTime'},
-                        endTime: {name: 'endTime'},
+                        startTime: {name: 'startDate'},
+                        endTime: {name: 'endDate'},
                         isReadonly: 'isReadonly'
                     }
                 }}
@@ -228,6 +235,7 @@ const SettingsView: React.FunctionComponent = () => {
                         interval={7}
                         workDays={[0, 1, 2, 3, 6]}
                         displayName="روزانه"
+                        eventTemplate={(props: ScheduleEvent) => eventTemplate(props)}
                     />
                 </ViewsDirective>
                 <ResourcesDirective>
