@@ -1,5 +1,4 @@
 import {Box, IconButton} from "@material-ui/core";
-import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import {ThemeProvider, useTheme} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
@@ -83,6 +82,22 @@ const SettingsView: React.FunctionComponent = () => {
         }
     }
 
+    const hasBeyondMaxRange = () => {
+        if (scheduleComponentRef.current) {
+            const targetDate = moment(selectedDate).add(+7, "days").toDate();
+            return targetDate > scheduleComponentRef.current.maxDate;
+        } else {
+            return false;
+        }
+    }
+    const hasBeforeMinRange = () => {
+        if (scheduleComponentRef.current) {
+            const targetDate = moment(selectedDate).add(-1, "days").toDate();
+            return targetDate < scheduleComponentRef.current.minDate;
+        } else {
+            return false;
+        }
+    }
     const changeIntervalOnClick = (days: number) => {
         if (scheduleComponentRef.current) {
             const currentStartDate = scheduleComponentRef.current.getCurrentViewDates()[0];
@@ -120,12 +135,6 @@ const SettingsView: React.FunctionComponent = () => {
 
     return (
         <ThemeProvider theme={rtlTheme}>
-            <Button variant="contained" color="primary" onClick={() => changeIntervalOnClick(+7)}>
-                هفته بعد
-            </Button>
-            <Button variant="contained" color="primary" onClick={() => changeIntervalOnClick(-7)}>
-                هفته قبل
-            </Button>
             <Box paddingY={1} className="e-schedule e-schedule-toolbar">
                 <Grid
                     container alignItems="center" justify="space-between"
@@ -134,8 +143,8 @@ const SettingsView: React.FunctionComponent = () => {
                     <Grid item>
                         <IconButton
                             color="primary"
-                            // onClick={() => isRtlTheme ? handleBackButtonClick() : handleNextButtonClick()}
-                            // disabled={isRtlTheme ? page === 0 : page === maxPageNumber}
+                            onClick={() => isRtlTheme ? changeIntervalOnClick(+7) : changeIntervalOnClick(-7)}
+                            disabled={isRtlTheme ? hasBeyondMaxRange() : hasBeforeMinRange()}
                         >
                             {isRtlTheme ? <KeyboardArrowLeft/> : <KeyboardArrowRight/>}
                         </IconButton>
@@ -148,8 +157,8 @@ const SettingsView: React.FunctionComponent = () => {
                     <Grid item>
                         <IconButton
                             color="primary"
-                            // onClick={() => isRtlTheme ? handleNextButtonClick() : handleBackButtonClick()}
-                            // disabled={isRtlTheme ? page === maxPageNumber : page === 0}
+                            onClick={() => isRtlTheme ? changeIntervalOnClick(-7) : changeIntervalOnClick(+7)}
+                            disabled={isRtlTheme ? hasBeforeMinRange() : hasBeyondMaxRange()}
                         >
                             {isRtlTheme ? <KeyboardArrowRight/> : <KeyboardArrowLeft/>}
                         </IconButton>
