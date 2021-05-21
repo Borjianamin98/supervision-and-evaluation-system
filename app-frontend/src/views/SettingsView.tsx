@@ -7,6 +7,7 @@ import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import {EmitType} from '@syncfusion/ej2-base'
 import {
+    ActionEventArgs,
     Day,
     DragAndDrop,
     Inject,
@@ -72,23 +73,45 @@ const SettingsView: React.FunctionComponent = () => {
         (scheduleComponentRef.current.timeScale as any).majorSlotTemplate = majorSlotTemplate;
     }
 
-    const addDaysToDate = (date: Date, days: number) => {
-        return new Date(date.setDate(date.getDate() + days));
-    }
-    const changeIntervalOnClick = (days: number) => {
-        if (scheduleComponentRef.current) {
-            const currentStartDate = scheduleComponentRef.current.getCurrentViewDates()[0];
-            scheduleComponentRef.current.changeDate(addDaysToDate(currentStartDate, days));
+    const [selectedDate, setSelectedDate] = React.useState(new Date());
+    const onActionComplete: EmitType<ActionEventArgs> = (args) => {
+        if (scheduleComponentRef.current && args) {
+            if (args.requestType === "viewNavigate" || args.requestType === "dateNavigate") {
+                const currentViewDates = scheduleComponentRef.current.getCurrentViewDates();
+                setSelectedDate(currentViewDates[0]);
+            }
         }
     }
 
+    const changeIntervalOnClick = (days: number) => {
+        if (scheduleComponentRef.current) {
+            const currentStartDate = scheduleComponentRef.current.getCurrentViewDates()[0];
+            scheduleComponentRef.current.changeDate(moment(currentStartDate).add(days, "days").toDate());
+        }
+    }
     const headerBarDate = () => {
-        const currentStartDateMoment = moment(new Date()).locale("fa");
-        const currentEndDateMoment = moment(new Date()).locale("fa");
-        if (currentStartDateMoment.month() === currentEndDateMoment.month()) {
-            return `${currentStartDateMoment.day()} تا ${currentEndDateMoment.day()} ${currentStartDateMoment.format("MMMM")} ${currentStartDateMoment.year()}`
+        const currentStartDateMoment = moment(selectedDate).locale("fa");
+        const currentEndDateMoment = moment(selectedDate).add(6, "days").locale("fa");
+        const currentStartDateMonth = currentStartDateMoment.format("MMMM");
+        const currentEndDateMonth = currentEndDateMoment.format("MMMM");
+        if (currentStartDateMonth === currentEndDateMonth) {
+            return currentStartDateMoment.format("D")
+                + " تا "
+                + currentEndDateMoment.format("D")
+                + " "
+                + currentStartDateMonth
+                + " "
+                + currentStartDateMoment.format("YYYY");
         } else {
-            return `${currentStartDateMoment.day()} تا ${currentEndDateMoment.day()} ${currentStartDateMoment.format("MMMM")} ${currentStartDateMoment.year()}`
+            return currentStartDateMoment.format("D")
+                + " "
+                + currentStartDateMonth
+                + " تا "
+                + currentEndDateMoment.format("D")
+                + " "
+                + currentEndDateMonth
+                + " "
+                + currentStartDateMoment.format("YYYY");
         }
     }
 
@@ -143,6 +166,7 @@ const SettingsView: React.FunctionComponent = () => {
                 showQuickInfo={false}
                 showTimeIndicator={false}
                 dateHeaderTemplate={dateHeaderTemplate}
+                actionComplete={onActionComplete}
                 // popupOpen={onPopupOpen}
                 height="550px"
                 enableRtl={true}
