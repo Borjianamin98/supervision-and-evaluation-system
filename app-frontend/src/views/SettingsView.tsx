@@ -7,6 +7,7 @@ import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import {EmitType} from '@syncfusion/ej2-base'
 import {
     ActionEventArgs,
+    CellClickEventArgs,
     Day,
     DragAndDrop,
     Inject,
@@ -36,13 +37,14 @@ const SettingsView: React.FunctionComponent = () => {
         isAllDay: false,
         Status: 'Completed',
         Priority: 'High',
+        ownerId: 1,
         // isReadonly: true,
     }];
 
     const ownerData = [
-        {OwnerText: 'Nancy', Id: 1, OwnerColor: '#ffaa00'},
-        {OwnerText: 'Steven', Id: 2, OwnerColor: '#f8a398'},
-        {OwnerText: 'Michael', Id: 3, OwnerColor: '#7499e1'}
+        {id: 1, ownerName: 'Nancy', color: '#ffaa00'},
+        {id: 2, ownerName: 'Steven', color: '#f8a398'},
+        {id: 3, ownerName: 'Michael', color: '#7499e1'}
     ];
 
     const onPopupOpen: EmitType<PopupOpenEventArgs> = (args) => {
@@ -73,12 +75,10 @@ const SettingsView: React.FunctionComponent = () => {
     }
 
     const [selectedDate, setSelectedDate] = React.useState(new Date());
-    const onActionComplete: EmitType<ActionEventArgs> = (args) => {
-        if (scheduleComponentRef.current && args) {
-            if (args.requestType === "viewNavigate" || args.requestType === "dateNavigate") {
-                const currentViewDates = scheduleComponentRef.current.getCurrentViewDates();
-                setSelectedDate(currentViewDates[0]);
-            }
+    const onActionBegin: EmitType<ActionEventArgs> = (args) => {
+        if (args && scheduleComponentRef.current && args.requestType === "dateNavigate") {
+            // Fix it when possible. Related issues is opened.
+            // args.cancel = true;
         }
     }
 
@@ -99,10 +99,11 @@ const SettingsView: React.FunctionComponent = () => {
         }
     }
     const changeIntervalOnClick = (days: number) => {
-        if (scheduleComponentRef.current) {
-            const currentStartDate = scheduleComponentRef.current.getCurrentViewDates()[0];
-            scheduleComponentRef.current.changeDate(moment(currentStartDate).add(days, "days").toDate());
-        }
+        const targetDate = moment(selectedDate).add(days, "days").toDate();
+        setSelectedDate(prevState => {
+            scheduleComponentRef.current?.changeDate(targetDate);
+            return targetDate;
+        });
     }
     const headerBarDate = () => {
         const currentStartDateMoment = moment(selectedDate).locale("fa");
@@ -127,6 +128,26 @@ const SettingsView: React.FunctionComponent = () => {
                 + currentEndDateMonth
                 + " "
                 + currentStartDateMoment.format("YYYY");
+        }
+    }
+
+    const onCellClick: EmitType<CellClickEventArgs> = (args) => {
+        if (args) {
+            if (args.isAllDay) {
+                args.cancel = true; // Disable all day events.
+            } else {
+                if (scheduleComponentRef.current) {
+                    let Data = [{
+                        id: 1,
+                        subject: "New Event",
+                        startTime: args.startTime,
+                        endTime: args.endTime,
+                        isAllDay: false,
+                        ownerId: 2,
+                    }];
+                    scheduleComponentRef.current.addEvent(Data);
+                }
+            }
         }
     }
 
@@ -174,12 +195,21 @@ const SettingsView: React.FunctionComponent = () => {
                 allowInline={false}
                 showQuickInfo={false}
                 showTimeIndicator={false}
+                allowMultiCellSelection={false}
+                allowMultiDrag={false}
+                allowMultiRowSelection={false}
+                cellClick={onCellClick}
                 dateHeaderTemplate={dateHeaderTemplate}
-                actionComplete={onActionComplete}
-                // popupOpen={onPopupOpen}
+                actionBegin={onActionBegin}
+                popupOpen={onPopupOpen}
                 height="550px"
                 enableRtl={true}
-                selectedDate={new Date()}
+                selectedDate={selectedDate}
+                startHour="07:00"
+                endHour="20:00"
+                workHours={{
+                    highlight: true, start: '09:00', end: '18:00'
+                }}
                 eventSettings={{
                     dataSource: data,
                     fields: {
@@ -197,20 +227,18 @@ const SettingsView: React.FunctionComponent = () => {
                         option="Day"
                         interval={7}
                         workDays={[0, 1, 2, 3, 6]}
-                        startHour="07:00"
-                        endHour="20:00"
                         displayName="روزانه"
                     />
                 </ViewsDirective>
                 <ResourcesDirective>
                     <ResourceDirective
-                        field='OwnerId'
-                        title='Owner'
-                        name='Owners'
+                        field='ownerId'
+                        title='فرد'
+                        name='افراد'
                         dataSource={ownerData}
-                        textField='OwnerText'
-                        idField='Id'
-                        colorField='OwnerColor'
+                        textField='ownerName'
+                        idField='id'
+                        colorField='color'
                     >
                     </ResourceDirective>
                 </ResourcesDirective>
