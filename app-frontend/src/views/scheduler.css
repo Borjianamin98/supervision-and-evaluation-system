@@ -1,8 +1,7 @@
-/*.e-today {*/
-/*    !* To hide Today option *!*/
-/*    display: none !important;*/
-/*}*/
-
 .e-control {
     font-family: "Vazir" !important;
+}
+
+.e-schedule .e-schedule-table > tbody > tr > th, .e-schedule .e-schedule-table > tbody > tr > td {
+     white-space: normal;
 }

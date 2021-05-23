@@ -27,6 +27,7 @@ import CenterGrid from "../components/Grid/CenterGrid";
 import {ScheduleEvent} from "../model/schedule/ScheduleEvent";
 import "./scheduler.css"
 
+var id = 2;
 const SettingsView: React.FunctionComponent = () => {
     const scheduleComponentRef = React.useRef<ScheduleComponent>(null);
     const theme = useTheme();
@@ -139,8 +140,8 @@ const SettingsView: React.FunctionComponent = () => {
             } else {
                 if (scheduleComponentRef.current) {
                     const Data: ScheduleEvent[] = [{
-                        id: 1,
-                        subject: "New Event",
+                        id: id++,
+                        subject: "جدید",
                         startDate: args.startTime,
                         endDate: args.endTime,
                         isAllDay: false,
@@ -153,12 +154,22 @@ const SettingsView: React.FunctionComponent = () => {
     }
 
     const eventTemplate = (props: ScheduleEvent) => {
-        const startTime = moment(props.startDate).locale("fa").format("hh:mm a");
-        const endTime = moment(props.endDate).locale("fa").format("hh:mm a");
-        return <CenterGrid>
-            <div>{`${startTime} - ${endTime}`}</div>
-            <div style={{maxHeight: 140, fontSize: "13px"}}>{props.subject}</div>
-        </CenterGrid>;
+        const startTime = moment(props.startDate).locale("fa").format("HH:mm");
+        const endTime = moment(props.endDate).locale("fa").format("HH:mm");
+        return (
+            <>
+                <div style={{
+                    fontSize: "10px",
+                    textAlign: "center",
+                    overflow: "hidden",
+                }}>{`${startTime} تا ${endTime}`}</div>
+                <div style={{
+                    fontSize: "13px",
+                    textAlign: "center",
+                    overflow: "hidden",
+                }}>{props.subject}</div>
+            </>
+        );
     }
 
     return (
