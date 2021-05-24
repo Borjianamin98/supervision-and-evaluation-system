@@ -1,12 +1,12 @@
 import {Box, IconButton} from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
-import {ThemeProvider, useTheme} from "@material-ui/core/styles";
+import {Theme, ThemeProvider, useTheme} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import {EmitType} from '@syncfusion/ej2-base'
 import {
-    ActionEventArgs,
     CellClickEventArgs,
     Day,
     DragAndDrop,
@@ -29,8 +29,9 @@ import "./scheduler.css"
 
 var id = 2;
 const SettingsView: React.FunctionComponent = () => {
-    const scheduleComponentRef = React.useRef<ScheduleComponent>(null);
     const theme = useTheme();
+    const mobileMatches = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
+    const scheduleComponentRef = React.useRef<ScheduleComponent>(null);
     const isRtlTheme = theme.direction === 'rtl';
 
     const data: ScheduleEvent[] = [{
@@ -60,7 +61,9 @@ const SettingsView: React.FunctionComponent = () => {
         return (
             <CenterGrid>
                 <div className="e-header-date">{dateMoment.format('D')}</div>
-                <div className="e-header-day">{dateMoment.format('ddd')}</div>
+                <div className="e-header-day">
+                    {mobileMatches ? dateMoment.format('dd') : dateMoment.format('ddd')}
+                </div>
             </CenterGrid>
         );
     }
@@ -77,10 +80,12 @@ const SettingsView: React.FunctionComponent = () => {
     }
 
     const [selectedDate, setSelectedDate] = React.useState(new Date());
-    const onActionBegin: EmitType<ActionEventArgs> = (args) => {
-        if (args && scheduleComponentRef.current && args.requestType === "dateNavigate") {
-            // Fix it when possible. Related issues is opened.
-            // args.cancel = true;
+    const onDataBound = () => {
+        if (scheduleComponentRef.current?.scheduleTouchModule) {
+            // @ts-ignore
+            scheduleComponentRef.current.scheduleTouchModule.touchObj.destroy();
+            // @ts-ignore
+            scheduleComponentRef.current.scheduleTouchModule.touchObj = null;
         }
     }
 
@@ -177,6 +182,7 @@ const SettingsView: React.FunctionComponent = () => {
             <Box paddingY={1} className="e-schedule e-schedule-toolbar">
                 <Grid
                     container alignItems="center" justify="space-between"
+                    wrap="nowrap"
                     dir="rtl"
                 >
                     <Grid item>
@@ -189,7 +195,7 @@ const SettingsView: React.FunctionComponent = () => {
                         </IconButton>
                     </Grid>
                     <Grid item>
-                        <Typography variant="h6">
+                        <Typography color="textPrimary" variant="body1" style={{textAlign: "center"}}>
                             {headerBarDate()}
                         </Typography>
                     </Grid>
@@ -218,7 +224,7 @@ const SettingsView: React.FunctionComponent = () => {
                 allowMultiRowSelection={false}
                 cellClick={onCellClick}
                 dateHeaderTemplate={dateHeaderTemplate}
-                actionBegin={onActionBegin}
+                dataBound={onDataBound}
                 popupOpen={onPopupOpen}
                 height="550px"
                 enableRtl={true}
