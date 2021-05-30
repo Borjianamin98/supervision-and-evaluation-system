@@ -19,12 +19,12 @@ public class Student extends User {
     @Column(name = "student_number")
     private String studentNumber;
 
-    @OneToMany(mappedBy = "student")
-    private Set<Problem> problems;
-
     @ManyToOne
     @JoinColumn(name = "faculty_id")
     private Faculty faculty;
+
+    @OneToMany(mappedBy = "student")
+    private Set<Problem> problems;
 
     public Student() {
     }

@@ -3,6 +3,7 @@ package ir.ac.sbu.evaluation.model.problem;
 import ir.ac.sbu.evaluation.enumeration.Education;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.model.BaseEntity;
+import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.Student;
 import java.util.HashSet;
@@ -18,6 +19,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
@@ -74,6 +76,10 @@ public class Problem extends BaseEntity {
     @OneToMany(mappedBy = "problem")
     private Set<ProblemEvent> events = new HashSet<>();
 
+    @OneToOne
+    @JoinColumn(name = "schedule")
+    private MeetSchedule schedule;
+
     public Problem() {
     }
 
@@ -81,7 +87,8 @@ public class Problem extends BaseEntity {
     public Problem(Long id, Education education, String title, String englishTitle,
             Set<String> keywords, String definition, String history, String considerations,
             ProblemState state, Student student, Master supervisor,
-            Set<Master> referees, Set<ProblemEvent> events) {
+            Set<Master> referees, Set<ProblemEvent> events,
+            MeetSchedule schedule) {
         super(id);
         this.education = education;
         this.title = title;
@@ -95,5 +102,6 @@ public class Problem extends BaseEntity {
         this.supervisor = supervisor;
         this.referees = referees == null ? new HashSet<>() : referees;
         this.events = events == null ? new HashSet<>() : events;
+        this.schedule = schedule;
     }
 }

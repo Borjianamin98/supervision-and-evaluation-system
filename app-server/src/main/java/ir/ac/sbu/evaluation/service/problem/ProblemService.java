@@ -1,8 +1,9 @@
-package ir.ac.sbu.evaluation.service;
+package ir.ac.sbu.evaluation.service.problem;
 
 import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventCreateDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventDto;
+import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleDto;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
@@ -142,6 +143,15 @@ public class ProblemService {
         Problem problem = getProblem(problemId);
         checkUserAccessProblem(userId, problem);
         return problemEventRepository.findAllByProblemId(problemId, pageable).map(ProblemEventDto::from);
+    }
+
+    public MeetScheduleDto retrieveProblemSchedule(long userId, long problemId) {
+        Problem problem = getProblem(problemId);
+        checkUserAccessProblem(userId, problem);
+        if (problem.getSchedule() == null) {
+            throw new ResourceNotFoundException("No schedule found for problem: id = " + problemId);
+        }
+        return MeetScheduleDto.from(problem.getSchedule());
     }
 
     @Transactional

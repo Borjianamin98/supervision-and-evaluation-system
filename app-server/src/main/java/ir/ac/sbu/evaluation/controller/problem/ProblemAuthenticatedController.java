@@ -5,8 +5,9 @@ import static ir.ac.sbu.evaluation.controller.ApiPaths.API_PROBLEM_ROOT_PATH;
 import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventCreateDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventDto;
+import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleDto;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
-import ir.ac.sbu.evaluation.service.ProblemService;
+import ir.ac.sbu.evaluation.service.problem.ProblemService;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,7 @@ public class ProblemAuthenticatedController {
 
     private static final String API_PROBLEM_AUTHENTICATED_PROBLEM_EVENTS_PATH = "/events";
     private static final String API_PROBLEM_AUTHENTICATED_ABANDON_PROBLEM_PATH = "/abandon";
+    private static final String API_PROBLEM_AUTHENTICATED_PROBLEM_SCHEDULE_PATH = "/schedule";
 
     private final ProblemService problemService;
 
@@ -64,5 +66,13 @@ public class ProblemAuthenticatedController {
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long problemId) {
         return problemService.abandonProblem(authUserDetail.getUserId(), problemId);
+    }
+
+    @PreAuthorize("hasAnyAuthority(@SecurityRoles.STUDENT_ROLE_NAME, @SecurityRoles.MASTER_ROLE_NAME)")
+    @GetMapping(path = "/{problemId}" + API_PROBLEM_AUTHENTICATED_PROBLEM_SCHEDULE_PATH)
+    public MeetScheduleDto retrieveProblemSchedule(
+            @ModelAttribute AuthUserDetail authUserDetail,
+            @PathVariable long problemId) {
+        return problemService.retrieveProblemSchedule(authUserDetail.getUserId(), problemId);
     }
 }

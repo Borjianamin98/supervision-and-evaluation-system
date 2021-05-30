@@ -14,7 +14,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "event")
+@Table(name = "problem_event")
 public class ProblemEvent extends Auditable {
 
     @Column(name = "message", length = 1000, nullable = false, updatable = false)

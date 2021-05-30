@@ -5,6 +5,8 @@ import ir.ac.sbu.evaluation.enumeration.Gender;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
+import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
+import ir.ac.sbu.evaluation.model.schedule.ScheduleEvent;
 import ir.ac.sbu.evaluation.model.university.Faculty;
 import ir.ac.sbu.evaluation.model.university.University;
 import ir.ac.sbu.evaluation.model.user.Admin;
@@ -13,12 +15,16 @@ import ir.ac.sbu.evaluation.model.user.PersonalInfo;
 import ir.ac.sbu.evaluation.model.user.Student;
 import ir.ac.sbu.evaluation.repository.problem.ProblemEventRepository;
 import ir.ac.sbu.evaluation.repository.problem.ProblemRepository;
+import ir.ac.sbu.evaluation.repository.schedule.MeetScheduleRepository;
+import ir.ac.sbu.evaluation.repository.schedule.ScheduleEventRepository;
 import ir.ac.sbu.evaluation.repository.university.FacultyRepository;
 import ir.ac.sbu.evaluation.repository.university.UniversityRepository;
 import ir.ac.sbu.evaluation.repository.user.AdminRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.PersonalInfoRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,6 +39,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class DataLoader implements CommandLineRunner {
 
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+
     private static List<University> universities;
     private static Map<Long /* university ID */, List<Faculty>> faculties;
 
@@ -44,6 +52,9 @@ public class DataLoader implements CommandLineRunner {
     private final AdminRepository adminRepository;
     private final StudentRepository studentRepository;
 
+    private final MeetScheduleRepository meetScheduleRepository;
+    private final ScheduleEventRepository scheduleEventRepository;
+
     private final ProblemRepository problemRepository;
     private final ProblemEventRepository problemEventRepository;
 
@@ -54,6 +65,8 @@ public class DataLoader implements CommandLineRunner {
             PersonalInfoRepository personalInfoRepository,
             AdminRepository adminRepository, StudentRepository studentRepository,
             MasterRepository masterRepository,
+            MeetScheduleRepository meetScheduleRepository,
+            ScheduleEventRepository scheduleEventRepository,
             ProblemRepository problemRepository,
             ProblemEventRepository problemEventRepository,
             PasswordEncoder passwordEncoder) {
@@ -63,13 +76,15 @@ public class DataLoader implements CommandLineRunner {
         this.adminRepository = adminRepository;
         this.studentRepository = studentRepository;
         this.masterRepository = masterRepository;
+        this.meetScheduleRepository = meetScheduleRepository;
+        this.scheduleEventRepository = scheduleEventRepository;
         this.problemRepository = problemRepository;
         this.problemEventRepository = problemEventRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public void run(String... args) {
+    public void run(String... args) throws ParseException {
         prepareUniversities();
 
         Problem problem1 = problemRepository.save(Problem.builder()
@@ -256,6 +271,40 @@ public class DataLoader implements CommandLineRunner {
         problem3 = problemRepository.save(problem3);
         problem4.setStudent(student1);
         problem4 = problemRepository.save(problem4);
+
+        ScheduleEvent scheduleEvent1 = scheduleEventRepository.save(ScheduleEvent.builder()
+                .subject("موضوع 1")
+                .startDate(dateFormat.parse("2021-05-30 09:00").toInstant())
+                .endDate(dateFormat.parse("2021-05-30 10:00").toInstant())
+                .owner(problem3.getReferees().iterator().next())
+                .isAllDay(false)
+                .build());
+        ScheduleEvent scheduleEvent2 = scheduleEventRepository.save(ScheduleEvent.builder()
+                .subject("موضوع 2")
+                .startDate(dateFormat.parse("2021-05-30 11:00").toInstant())
+                .endDate(dateFormat.parse("2021-05-30 12:00").toInstant())
+                .owner(problem3.getStudent())
+                .isAllDay(false)
+                .build());
+        ScheduleEvent scheduleEvent3 = scheduleEventRepository.save(ScheduleEvent.builder()
+                .subject("موضوع 3")
+                .startDate(dateFormat.parse("2021-05-30 07:00").toInstant())
+                .endDate(dateFormat.parse("2021-05-30 08:00").toInstant())
+                .owner(problem3.getSupervisor())
+                .isAllDay(false)
+                .build());
+        MeetSchedule meetSchedule1 = meetScheduleRepository.save(MeetSchedule.builder()
+                .problem(problem3)
+                .scheduleEvents(new HashSet<>(Arrays.asList(scheduleEvent1, scheduleEvent2, scheduleEvent3)))
+                .build());
+        scheduleEvent1.setSchedule(meetSchedule1);
+        scheduleEvent1 = scheduleEventRepository.save(scheduleEvent1);
+        scheduleEvent2.setSchedule(meetSchedule1);
+        scheduleEvent2 = scheduleEventRepository.save(scheduleEvent2);
+        scheduleEvent3.setSchedule(meetSchedule1);
+        scheduleEvent3 = scheduleEventRepository.save(scheduleEvent3);
+        problem3.setSchedule(meetSchedule1);
+        problem3 = problemRepository.save(problem3);
 
         Admin admin1 = adminRepository.save(Admin.builder()
                 .firstName("مدیر")
