@@ -27,6 +27,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,7 +40,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DataLoader implements CommandLineRunner {
 
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     private static List<University> universities;
     private static Map<Long /* university ID */, List<Faculty>> faculties;
@@ -272,24 +273,29 @@ public class DataLoader implements CommandLineRunner {
         problem4.setStudent(student1);
         problem4 = problemRepository.save(problem4);
 
+        Calendar calendar = Calendar.getInstance();
+        String todayDate = String.format("%04d-%02d-%02d",
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DAY_OF_MONTH));
         ScheduleEvent scheduleEvent1 = scheduleEventRepository.save(ScheduleEvent.builder()
                 .subject("موضوع 1")
-                .startDate(dateFormat.parse("2021-05-30 09:00").toInstant())
-                .endDate(dateFormat.parse("2021-05-30 10:00").toInstant())
+                .startDate(dateFormat.parse(String.format("%s 07:00", todayDate)).toInstant())
+                .endDate(dateFormat.parse(String.format("%s 08:00", todayDate)).toInstant())
                 .owner(problem3.getReferees().iterator().next())
                 .isAllDay(false)
                 .build());
         ScheduleEvent scheduleEvent2 = scheduleEventRepository.save(ScheduleEvent.builder()
                 .subject("موضوع 2")
-                .startDate(dateFormat.parse("2021-05-30 11:00").toInstant())
-                .endDate(dateFormat.parse("2021-05-30 12:00").toInstant())
+                .startDate(dateFormat.parse(String.format("%s 09:00", todayDate)).toInstant())
+                .endDate(dateFormat.parse(String.format("%s 10:00", todayDate)).toInstant())
                 .owner(problem3.getStudent())
                 .isAllDay(false)
                 .build());
         ScheduleEvent scheduleEvent3 = scheduleEventRepository.save(ScheduleEvent.builder()
                 .subject("موضوع 3")
-                .startDate(dateFormat.parse("2021-05-30 07:00").toInstant())
-                .endDate(dateFormat.parse("2021-05-30 08:00").toInstant())
+                .startDate(dateFormat.parse(String.format("%s 12:00", todayDate)).toInstant())
+                .endDate(dateFormat.parse(String.format("%s 14:00", todayDate)).toInstant())
                 .owner(problem3.getSupervisor())
                 .isAllDay(false)
                 .build());
