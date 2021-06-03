@@ -2,6 +2,7 @@ package ir.ac.sbu.evaluation.dto.schedule;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import ir.ac.sbu.evaluation.dto.schedule.event.ScheduleEventInfoDto;
 import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,13 +19,13 @@ public class MeetScheduleDto {
     private long id;
 
     @JsonProperty(access = Access.READ_ONLY)
-    private Set<ScheduleEventDto> scheduleEvents;
+    private Set<ScheduleEventInfoDto> scheduleEvents;
 
     public MeetScheduleDto() {
     }
 
     @Builder
-    public MeetScheduleDto(long id, Set<ScheduleEventDto> scheduleEvents) {
+    public MeetScheduleDto(long id, Set<ScheduleEventInfoDto> scheduleEvents) {
         this.id = id;
         this.scheduleEvents = scheduleEvents;
     }
@@ -33,7 +34,7 @@ public class MeetScheduleDto {
         return MeetScheduleDto.builder()
                 .id(schedule.getId())
                 .scheduleEvents(schedule.getScheduleEvents().stream()
-                        .map(ScheduleEventDto::from).collect(Collectors.toSet()))
+                        .map(ScheduleEventInfoDto::from).collect(Collectors.toSet()))
                 .build();
     }
 
@@ -41,7 +42,7 @@ public class MeetScheduleDto {
         return MeetSchedule.builder()
                 .id(id)
                 .scheduleEvents(scheduleEvents != null ? scheduleEvents.stream()
-                        .map(ScheduleEventDto::toScheduleEvent).collect(Collectors.toSet()) : new HashSet<>())
+                        .map(ScheduleEventInfoDto::toScheduleEvent).collect(Collectors.toSet()) : new HashSet<>())
                 .build();
     }
 }

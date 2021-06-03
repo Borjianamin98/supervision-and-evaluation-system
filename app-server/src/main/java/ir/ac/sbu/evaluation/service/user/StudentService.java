@@ -41,7 +41,7 @@ public class StudentService {
 
     public List<UserDto> listAsUser() {
         return studentRepository.findAll().stream()
-                .map(user -> UserDto.from(user, false))
+                .map(user -> UserDto.from(user))
                 .collect(Collectors.toList());
     }
 

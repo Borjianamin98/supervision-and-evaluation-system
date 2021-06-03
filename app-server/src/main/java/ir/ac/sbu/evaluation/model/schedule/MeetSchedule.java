@@ -24,10 +24,10 @@ import lombok.Setter;
 @Table(name = "meet_schedule")
 public class MeetSchedule extends BaseEntity {
 
-    @OneToMany(mappedBy = "schedule")
+    @OneToMany(mappedBy = "meetSchedule")
     private Set<ScheduleEvent> scheduleEvents = new HashSet<>();
 
-    @OneToOne(mappedBy = "schedule")
+    @OneToOne(mappedBy = "meetSchedule")
     private Problem problem;
 
     public MeetSchedule() {

@@ -78,7 +78,7 @@ public class Problem extends BaseEntity {
 
     @OneToOne
     @JoinColumn(name = "schedule")
-    private MeetSchedule schedule;
+    private MeetSchedule meetSchedule;
 
     public Problem() {
     }
@@ -88,7 +88,7 @@ public class Problem extends BaseEntity {
             Set<String> keywords, String definition, String history, String considerations,
             ProblemState state, Student student, Master supervisor,
             Set<Master> referees, Set<ProblemEvent> events,
-            MeetSchedule schedule) {
+            MeetSchedule meetSchedule) {
         super(id);
         this.education = education;
         this.title = title;
@@ -102,6 +102,6 @@ public class Problem extends BaseEntity {
         this.supervisor = supervisor;
         this.referees = referees == null ? new HashSet<>() : referees;
         this.events = events == null ? new HashSet<>() : events;
-        this.schedule = schedule;
+        this.meetSchedule = meetSchedule;
     }
 }

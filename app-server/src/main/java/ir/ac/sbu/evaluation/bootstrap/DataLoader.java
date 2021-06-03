@@ -279,37 +279,31 @@ public class DataLoader implements CommandLineRunner {
                 calendar.get(Calendar.MONTH) + 1,
                 calendar.get(Calendar.DAY_OF_MONTH));
         ScheduleEvent scheduleEvent1 = scheduleEventRepository.save(ScheduleEvent.builder()
-                .subject("موضوع 1")
                 .startDate(dateFormat.parse(String.format("%s 07:00", todayDate)).toInstant())
                 .endDate(dateFormat.parse(String.format("%s 08:00", todayDate)).toInstant())
                 .owner(problem3.getReferees().iterator().next())
-                .isAllDay(false)
                 .build());
         ScheduleEvent scheduleEvent2 = scheduleEventRepository.save(ScheduleEvent.builder()
-                .subject("موضوع 2")
                 .startDate(dateFormat.parse(String.format("%s 09:00", todayDate)).toInstant())
                 .endDate(dateFormat.parse(String.format("%s 10:00", todayDate)).toInstant())
                 .owner(problem3.getStudent())
-                .isAllDay(false)
                 .build());
         ScheduleEvent scheduleEvent3 = scheduleEventRepository.save(ScheduleEvent.builder()
-                .subject("موضوع 3")
                 .startDate(dateFormat.parse(String.format("%s 12:00", todayDate)).toInstant())
                 .endDate(dateFormat.parse(String.format("%s 14:00", todayDate)).toInstant())
                 .owner(problem3.getSupervisor())
-                .isAllDay(false)
                 .build());
         MeetSchedule meetSchedule1 = meetScheduleRepository.save(MeetSchedule.builder()
                 .problem(problem3)
                 .scheduleEvents(new HashSet<>(Arrays.asList(scheduleEvent1, scheduleEvent2, scheduleEvent3)))
                 .build());
-        scheduleEvent1.setSchedule(meetSchedule1);
+        scheduleEvent1.setMeetSchedule(meetSchedule1);
         scheduleEvent1 = scheduleEventRepository.save(scheduleEvent1);
-        scheduleEvent2.setSchedule(meetSchedule1);
+        scheduleEvent2.setMeetSchedule(meetSchedule1);
         scheduleEvent2 = scheduleEventRepository.save(scheduleEvent2);
-        scheduleEvent3.setSchedule(meetSchedule1);
+        scheduleEvent3.setMeetSchedule(meetSchedule1);
         scheduleEvent3 = scheduleEventRepository.save(scheduleEvent3);
-        problem3.setSchedule(meetSchedule1);
+        problem3.setMeetSchedule(meetSchedule1);
         problem3 = problemRepository.save(problem3);
 
         Admin admin1 = adminRepository.save(Admin.builder()

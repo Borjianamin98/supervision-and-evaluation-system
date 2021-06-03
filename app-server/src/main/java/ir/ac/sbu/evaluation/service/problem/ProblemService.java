@@ -148,10 +148,10 @@ public class ProblemService {
     public MeetScheduleDto retrieveProblemSchedule(long userId, long problemId) {
         Problem problem = getProblem(problemId);
         checkUserAccessProblem(userId, problem);
-        if (problem.getSchedule() == null) {
+        if (problem.getMeetSchedule() == null) {
             throw new ResourceNotFoundException("No schedule found for problem: id = " + problemId);
         }
-        return MeetScheduleDto.from(problem.getSchedule());
+        return MeetScheduleDto.from(problem.getMeetSchedule());
     }
 
     @Transactional

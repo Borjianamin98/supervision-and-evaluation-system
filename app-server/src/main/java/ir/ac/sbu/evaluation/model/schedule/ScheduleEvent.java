@@ -19,37 +19,30 @@ import lombok.Setter;
 @Table(name = "schedule_event")
 public class ScheduleEvent extends BaseEntity {
 
-    @Column(name = "subject")
-    private String subject;
-
     @Column(name = "start_date")
-    private Instant startDate;
+    private Instant startDate; // ISO-8601 representation
 
     @Column(name = "end_date")
-    private Instant endDate;
-
-    @Column(name = "is_all_day")
-    private boolean isAllDay;
+    private Instant endDate; // ISO-8601 representation
 
     @OneToOne
     @JoinColumn(name = "owner", referencedColumnName = "id")
     private User owner;
 
     @ManyToOne
-    @JoinColumn(name = "event_meet")
-    private MeetSchedule schedule;
+    @JoinColumn(name = "meetSchedule_eventSchedule")
+    private MeetSchedule meetSchedule;
 
     public ScheduleEvent() {
     }
 
     @Builder
-    public ScheduleEvent(Long id, String subject, Instant startDate, Instant endDate, boolean isAllDay,
-            User owner) {
+    public ScheduleEvent(Long id, Instant startDate, Instant endDate,
+            User owner, MeetSchedule meetSchedule) {
         super(id);
-        this.subject = subject;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.isAllDay = isAllDay;
         this.owner = owner;
+        this.meetSchedule = meetSchedule;
     }
 }

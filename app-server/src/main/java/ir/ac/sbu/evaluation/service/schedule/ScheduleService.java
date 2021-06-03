@@ -1,6 +1,6 @@
 package ir.ac.sbu.evaluation.service.schedule;
 
-import ir.ac.sbu.evaluation.dto.schedule.ScheduleEventDto;
+import ir.ac.sbu.evaluation.dto.schedule.event.ScheduleEventInfoDto;
 import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
 import ir.ac.sbu.evaluation.model.problem.Problem;
@@ -25,13 +25,13 @@ public class ScheduleService {
         this.scheduleEventRepository = scheduleEventRepository;
     }
 
-    public List<ScheduleEventDto> retrieveScheduleEvents(long userId, long scheduleId,
+    public List<ScheduleEventInfoDto> retrieveScheduleEvents(long userId, long scheduleId,
             Instant startDate, Instant endDate) {
         MeetSchedule meetSchedule = getMeetSchedule(scheduleId);
         checkUserAccessMeetSchedule(userId, meetSchedule);
         List<ScheduleEvent> scheduleEvents = scheduleEventRepository
-                .findAllByScheduleIdAndStartDateGreaterThanEqualAndEndDateLessThanEqual(scheduleId, startDate, endDate);
-        return scheduleEvents.stream().map(ScheduleEventDto::from).collect(Collectors.toList());
+                .findAllByMeetScheduleIdAndStartDateGreaterThanEqualAndEndDateLessThanEqual(scheduleId, startDate, endDate);
+        return scheduleEvents.stream().map(ScheduleEventInfoDto::from).collect(Collectors.toList());
     }
 
     private void checkUserAccessMeetSchedule(long userId, MeetSchedule meetSchedule) {

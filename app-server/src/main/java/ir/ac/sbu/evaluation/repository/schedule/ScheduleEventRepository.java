@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ScheduleEventRepository extends JpaRepository<ScheduleEvent, Long> {
 
-    List<ScheduleEvent> findAllByScheduleIdAndStartDateGreaterThanEqualAndEndDateLessThanEqual(long scheduleId,
+    List<ScheduleEvent> findAllByMeetScheduleIdAndStartDateGreaterThanEqualAndEndDateLessThanEqual(long meetScheduleId,
             Instant startDate, Instant endDate);
 }

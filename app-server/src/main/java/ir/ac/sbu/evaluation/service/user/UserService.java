@@ -65,7 +65,7 @@ public class UserService implements UserDetailsService {
         User user = optionalUser.get();
         user.setProfilePicture(ByteUtility.toWrapperBytes(rawPictureBytes));
         userRepository.save(user);
-        return UserDto.from(user);
+        return UserDto.from(user, true);
     }
 
     public Optional<byte[]> getProfilePicture(String username) {

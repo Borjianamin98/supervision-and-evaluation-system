@@ -2,7 +2,7 @@ package ir.ac.sbu.evaluation.controller.schedule;
 
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_SCHEDULE_ROOT_PATH;
 
-import ir.ac.sbu.evaluation.dto.schedule.ScheduleEventDto;
+import ir.ac.sbu.evaluation.dto.schedule.event.ScheduleEventInfoDto;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.service.schedule.ScheduleService;
 import java.time.Instant;
@@ -25,7 +25,7 @@ public class ScheduleController {
     }
 
     @GetMapping(path = "/{scheduleId}/events")
-    public List<ScheduleEventDto> retrieveScheduleEvents(
+    public List<ScheduleEventInfoDto> retrieveScheduleEvents(
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long scheduleId,
             @RequestParam(name = "startDate") Instant startDate,
