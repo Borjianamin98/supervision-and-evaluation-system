@@ -5,7 +5,7 @@ import Typography from "@material-ui/core/Typography";
 import React from "react";
 import LoadingImage from "../../assets/images/loading/loading.png";
 import NoConnectionImage from "../../assets/images/noConnection/noConnection.png";
-import CenterGrid from "./CenterGrid";
+import CenterBox from "./CenterBox";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -51,7 +51,7 @@ const LoadingGrid: React.FunctionComponent<LoadingGridProps> = (props) => {
     const imageElement = isLoading ? loadingImage : isError ? errorImage : null;
 
     return (
-        <CenterGrid p={2}>
+        <CenterBox p={2}>
             <Fade
                 in={show}
                 style={{
@@ -82,7 +82,7 @@ const LoadingGrid: React.FunctionComponent<LoadingGridProps> = (props) => {
                     }
                 </>
             </Fade>
-        </CenterGrid>
+        </CenterBox>
     );
 }
 

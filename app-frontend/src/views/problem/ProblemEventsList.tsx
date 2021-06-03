@@ -4,7 +4,7 @@ import {Pagination} from "@material-ui/lab";
 import React from 'react';
 import {useQuery, useQueryClient} from "react-query";
 import CustomAlert from "../../components/Alert/CustomAlert";
-import CenterGrid from "../../components/Grid/CenterGrid";
+import CenterBox from "../../components/Grid/CenterBox";
 import {roleMapToPersian} from "../../model/enum/role";
 import {ProblemEvent} from "../../model/problem/problemEvent";
 import ProblemAuthenticatedService from "../../services/api/problem/ProblemAuthenticatedService";
@@ -30,13 +30,13 @@ const ProblemEventsList: React.FunctionComponent<ProblemEventListProps> = (props
         });
 
     if (isLoading) {
-        return <CenterGrid p={2}>
+        return <CenterBox p={2}>
             <CircularProgress/>
-        </CenterGrid>
+        </CenterBox>
     }
 
     if (isError) {
-        return <CenterGrid p={2}>
+        return <CenterBox p={2}>
             <Button
                 variant="outlined"
                 color="primary"
@@ -44,7 +44,7 @@ const ProblemEventsList: React.FunctionComponent<ProblemEventListProps> = (props
             >
                 تلاش دوباره
             </Button>
-        </CenterGrid>
+        </CenterBox>
     }
 
     const problemEventCards = events?.content.map((event: ProblemEvent) =>
@@ -64,7 +64,7 @@ const ProblemEventsList: React.FunctionComponent<ProblemEventListProps> = (props
                 events && events.totalPages !== 0 ? problemEventCards :
                     <CustomAlert severity="info">هیچ رخدادی ثبت نشده است.</CustomAlert>
             }
-            <CenterGrid>
+            <CenterBox>
                 <Pagination
                     count={events ? events.totalPages : 0}
                     hidden={events && events.totalPages === 0}
@@ -72,7 +72,7 @@ const ProblemEventsList: React.FunctionComponent<ProblemEventListProps> = (props
                     color="primary"
                     onChange={(event, newPage) => setPage(newPage - 1)}
                 />
-            </CenterGrid>
+            </CenterBox>
         </>
     );
 }
