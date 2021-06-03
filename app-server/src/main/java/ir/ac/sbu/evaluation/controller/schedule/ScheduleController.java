@@ -2,7 +2,7 @@ package ir.ac.sbu.evaluation.controller.schedule;
 
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_SCHEDULE_ROOT_PATH;
 
-import ir.ac.sbu.evaluation.dto.schedule.event.ScheduleEventCreateDto;
+import ir.ac.sbu.evaluation.dto.schedule.event.ScheduleEventDateDto;
 import ir.ac.sbu.evaluation.dto.schedule.event.ScheduleEventInfoDto;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.service.schedule.ScheduleService;
@@ -44,8 +44,19 @@ public class ScheduleController {
     public ScheduleEventInfoDto addScheduleEvent(
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long meetScheduleId,
-            @Valid @RequestBody ScheduleEventCreateDto scheduleEventCreateDto) {
-        return scheduleService.addScheduleEvent(authUserDetail.getUserId(), meetScheduleId, scheduleEventCreateDto);
+            @Valid @RequestBody ScheduleEventDateDto scheduleEventDateDto) {
+        return scheduleService.addScheduleEvent(authUserDetail.getUserId(), meetScheduleId, scheduleEventDateDto);
+    }
+
+    @PreAuthorize("hasAnyAuthority(@SecurityRoles.STUDENT_ROLE_NAME, @SecurityRoles.MASTER_ROLE_NAME)")
+    @PostMapping(path = "/{meetScheduleId}/event/{scheduleEventId}")
+    public ScheduleEventInfoDto updateScheduleEvent(
+            @ModelAttribute AuthUserDetail authUserDetail,
+            @PathVariable long meetScheduleId,
+            @PathVariable long scheduleEventId,
+            @Valid @RequestBody ScheduleEventDateDto scheduleEventDateDto) {
+        return scheduleService.updateScheduleEvent(authUserDetail.getUserId(),
+                meetScheduleId, scheduleEventId, scheduleEventDateDto);
     }
 
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.STUDENT_ROLE_NAME, @SecurityRoles.MASTER_ROLE_NAME)")
