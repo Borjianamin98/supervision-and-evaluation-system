@@ -1,11 +1,5 @@
-import {Box, BoxProps, Grow, IconButton} from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
-import {createStyles, makeStyles, Theme, ThemeProvider, useTheme} from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
+import {Theme, ThemeProvider, useTheme} from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import DeleteIcon from "@material-ui/icons/Delete";
-import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
-import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import {EmitType} from '@syncfusion/ej2-base'
 import {
     ActionEventArgs,
@@ -29,45 +23,22 @@ import React from 'react';
 import {useMutation, useQuery, useQueryClient} from "react-query";
 import {rtlTheme} from "../App";
 import CenterBox from "../components/Grid/CenterBox";
+import AppointmentEventTemplate from "../components/Scheduler/AppointmentEventTemplate";
+import ScheduleHeaderBar from "../components/Scheduler/ScheduleHeaderBar";
 import {generalErrorHandler} from "../config/axios-config";
 import {ScheduleEventInfo, SyncfusionSchedulerEvent} from "../model/schedule/ScheduleEvent";
 import ScheduleService from "../services/api/schedule/ScheduleService";
 import "./scheduler.css"
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        backdrop: {
-            backgroundColor: "rgba(0, 0, 0, 0.7)",
-            position: "absolute",
-            right: 0,
-            bottom: 0,
-            top: 0,
-            left: 0,
-        },
-        appointment: {
-            textAlign: "center",
-            overflow: "hidden",
-        },
-        centerAlign: {
-            textAlign: "center"
-        },
-        imageIcon: {
-            display: "flex",
-            justifyContent: "center"
-        },
-    }),
-);
-
 var id = 2;
 const SettingsView: React.FunctionComponent = () => {
-    const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar();
     const theme = useTheme();
     const mobileMatches = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
-    const isRtlTheme = theme.direction === 'rtl';
+    const largeScreenMatches = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'));
 
     const scheduleComponentRef = React.useRef<ScheduleComponent>(null);
-    const totalDaysInView = mobileMatches ? 3 : 7;
+    const totalDaysInView = largeScreenMatches ? 7 : (mobileMatches ? 3 : 5);
 
     const onPopupOpen: EmitType<PopupOpenEventArgs> = (args) => {
         if (args) {
@@ -109,54 +80,7 @@ const SettingsView: React.FunctionComponent = () => {
 
     const [selectedDate, setSelectedDate] = React.useState(moment(new Date())
         .set({hour: 0, minute: 0, second: 0, millisecond: 0}).toDate());
-    const hasBeyondMaxRange = () => {
-        if (scheduleComponentRef.current) {
-            const targetDate = moment(selectedDate).add(totalDaysInView, "days").toDate();
-            return targetDate > scheduleComponentRef.current.maxDate;
-        } else {
-            return false;
-        }
-    }
-    const hasBeforeMinRange = () => {
-        if (scheduleComponentRef.current) {
-            const targetDate = moment(selectedDate).add(-1, "days").toDate();
-            return targetDate < scheduleComponentRef.current.minDate;
-        } else {
-            return false;
-        }
-    }
-    const changeIntervalOnClick = (days: number) => {
-        const targetDate = moment(selectedDate).add(days, "days").toDate();
-        setSelectedDate(prevState => {
-            scheduleComponentRef.current?.changeDate(targetDate);
-            return targetDate;
-        });
-    }
-    const headerBarDate = () => {
-        const currentStartDateMoment = moment(selectedDate).locale("fa");
-        const currentEndDateMoment = moment(selectedDate).add(totalDaysInView - 1, "days").locale("fa");
-        const currentStartDateMonth = currentStartDateMoment.format("MMMM");
-        const currentEndDateMonth = currentEndDateMoment.format("MMMM");
-        if (currentStartDateMonth === currentEndDateMonth) {
-            return currentStartDateMoment.format("D")
-                + " تا "
-                + currentEndDateMoment.format("D")
-                + " "
-                + currentStartDateMonth
-                + " "
-                + currentStartDateMoment.format("YYYY");
-        } else {
-            return currentStartDateMoment.format("D")
-                + " "
-                + currentStartDateMonth
-                + " تا "
-                + currentEndDateMoment.format("D")
-                + " "
-                + currentEndDateMonth
-                + " "
-                + currentStartDateMoment.format("YYYY");
-        }
-    }
+
 
     const onCellClick: EmitType<CellClickEventArgs> = (args) => {
         if (args) {
@@ -164,14 +88,25 @@ const SettingsView: React.FunctionComponent = () => {
                 args.cancel = true; // Disable all day events.
             } else {
                 if (scheduleComponentRef.current) {
-                    addScheduleEvent.mutate([meetScheduleId, {
+                    // addScheduleEvent.mutate([meetScheduleId, {
+                    //     startDate: args.startTime,
+                    //     endDate: args.endTime,
+                    // }])
+                    ScheduleService.addMeetScheduleEvent(meetScheduleId, {
                         startDate: args.startTime,
                         endDate: args.endTime,
-                    }])
+                    }).then(data => {
+                        if (scheduleComponentRef.current) {
+                            scheduleComponentRef.current.addEvent(scheduleEventToSyncfusionSchedulerEvent(data));
+                        }
+                    }).catch((error: AxiosError) => {
+                        generalErrorHandler(error, enqueueSnackbar);
+                    })
                     // const Data: SyncfusionSchedulerEvent[] = [{
                     //     id: id++,
                     //     subject: "جدید",
-                    //
+                    //     startDate: args.startTime,
+                    //     endDate: args.endTime,
                     //     isAllDay: false,
                     //     ownerId: (id % 3) + 1,
                     // }];
@@ -187,28 +122,6 @@ const SettingsView: React.FunctionComponent = () => {
         }
     }
 
-    const EventTemplate = (props: SyncfusionSchedulerEvent) => {
-        const [isBackdrop, setIsBackdrop] = React.useState(false);
-
-        const appointmentClick: BoxProps["onClick"] = (event) => {
-            event.stopPropagation(); // Suppress scheduler events
-            setIsBackdrop(prevState => !prevState);
-        }
-        return (
-            <Box dir="rtl" padding={1} style={{height: "100%"}} onClick={appointmentClick}>
-                <Typography variant="body2" className={classes.appointment}>
-                    {props.subject}
-                </Typography>
-                <Grow in={isBackdrop}>
-                    <CenterBox className={classes.backdrop}>
-                        <IconButton aria-label="delete" color="inherit">
-                            <DeleteIcon fontSize="small"/>
-                        </IconButton>
-                    </CenterBox>
-                </Grow>
-            </Box>
-        )
-    }
 
     const meetScheduleId = 1;
     // const startDate = moment(selectedDate).set({hour: 0, minute: 0, second: 0, millisecond: 0}).toDate();
@@ -274,39 +187,30 @@ const SettingsView: React.FunctionComponent = () => {
         }
     }
 
+    const onDeleteSyncfusionEvent = (syncfusionEvent: SyncfusionSchedulerEvent) => {
+        ScheduleService.deleteMeetScheduleEvent(meetScheduleId, syncfusionEvent.id)
+            .then(value => {
+                scheduleComponentRef.current?.deleteEvent(syncfusionEvent);
+                console.log("deleted " + JSON.stringify(value));
+            })
+            .catch(error => generalErrorHandler(error, enqueueSnackbar))
+    }
+
+    const minimumDate = new Date(new Date().getFullYear() - 1, 0, 1);
+    const maximumDate = new Date(new Date().getFullYear() + 2, 0, 1);
+
     return (
         <ThemeProvider theme={rtlTheme}>
-            <Box paddingY={1} className="e-schedule e-schedule-toolbar">
-                <Grid
-                    container alignItems="center" justify="space-between"
-                    wrap="nowrap"
-                    dir="rtl"
-                >
-                    <Grid item>
-                        <IconButton
-                            color="primary"
-                            onClick={() => isRtlTheme ? changeIntervalOnClick(totalDaysInView) : changeIntervalOnClick(-totalDaysInView)}
-                            disabled={isRtlTheme ? hasBeyondMaxRange() : hasBeforeMinRange()}
-                        >
-                            {isRtlTheme ? <KeyboardArrowLeft/> : <KeyboardArrowRight/>}
-                        </IconButton>
-                    </Grid>
-                    <Grid item>
-                        <Typography color="textPrimary" variant="body1" style={{textAlign: "center"}}>
-                            {headerBarDate()}
-                        </Typography>
-                    </Grid>
-                    <Grid item>
-                        <IconButton
-                            color="primary"
-                            onClick={() => isRtlTheme ? changeIntervalOnClick(-totalDaysInView) : changeIntervalOnClick(+totalDaysInView)}
-                            disabled={isRtlTheme ? hasBeforeMinRange() : hasBeyondMaxRange()}
-                        >
-                            {isRtlTheme ? <KeyboardArrowRight/> : <KeyboardArrowLeft/>}
-                        </IconButton>
-                    </Grid>
-                </Grid>
-            </Box>
+            <ScheduleHeaderBar
+                totalDaysInView={totalDaysInView}
+                startDate={selectedDate}
+                minimumDate={minimumDate}
+                maximumDate={maximumDate}
+                onDateChange={newDate => {
+                    scheduleComponentRef.current?.changeDate(newDate);
+                    setSelectedDate(newDate);
+                }}
+            />
             <ScheduleComponent
                 // allowDragAndDrop={true}
                 // allowResizing={true}
@@ -330,6 +234,8 @@ const SettingsView: React.FunctionComponent = () => {
                 height="550px"
                 enableRtl={true}
                 selectedDate={selectedDate}
+                minDate={minimumDate}
+                maxDate={maximumDate}
                 startHour="07:00"
                 endHour="20:00"
                 workHours={{
@@ -353,7 +259,10 @@ const SettingsView: React.FunctionComponent = () => {
                         interval={totalDaysInView}
                         workDays={[0, 1, 2, 3, 6]}
                         displayName="روزانه"
-                        eventTemplate={(props: SyncfusionSchedulerEvent) => EventTemplate(props)}
+                        eventTemplate={(syncfusionEvent: SyncfusionSchedulerEvent) => AppointmentEventTemplate({
+                            syncfusionEvent: syncfusionEvent,
+                            onDelete: onDeleteSyncfusionEvent,
+                        })}
                     />
                 </ViewsDirective>
                 <ResourcesDirective>

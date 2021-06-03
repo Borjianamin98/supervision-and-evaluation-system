@@ -23,9 +23,15 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const AppointmentEventTemplate = (props: SyncfusionSchedulerEvent) => {
+interface AppointmentEventTemplateProps {
+    syncfusionEvent: SyncfusionSchedulerEvent,
+    onDelete: (event: SyncfusionSchedulerEvent) => void,
+}
+
+const AppointmentEventTemplate = (props: AppointmentEventTemplateProps) => {
     const classes = useStyles();
     const [isBackdrop, setIsBackdrop] = React.useState(false);
+    const {syncfusionEvent, onDelete} = props;
 
     const appointmentClick: BoxProps["onClick"] = (event) => {
         event.stopPropagation(); // Suppress scheduler events
@@ -35,12 +41,12 @@ const AppointmentEventTemplate = (props: SyncfusionSchedulerEvent) => {
     return (
         <Box dir="rtl" padding={1} style={{height: "100%"}} onClick={appointmentClick}>
             <Typography variant="body2" className={classes.appointment}>
-                {props.subject}
+                {syncfusionEvent.subject}
             </Typography>
             <Grow in={isBackdrop}>
                 <CenterBox className={classes.backdrop}>
                     <IconButton aria-label="delete" color="inherit">
-                        <DeleteIcon fontSize="small"/>
+                        <DeleteIcon fontSize="small" onClick={event => onDelete(syncfusionEvent)}/>
                     </IconButton>
                 </CenterBox>
             </Grow>

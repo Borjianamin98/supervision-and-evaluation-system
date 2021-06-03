@@ -20,8 +20,14 @@ class ScheduleService {
     }
 
     static addMeetScheduleEvent(meetScheduleId: number, scheduleEvent: ScheduleEventCreate) {
-        return apiAxios.post<ScheduleEventInfo>(`${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/events`,
+        return apiAxios.post<ScheduleEventInfo>(`${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/event`,
             scheduleEvent).then(response => response.data)
+    }
+
+    static deleteMeetScheduleEvent(meetScheduleId: number, meetScheduleEventId: number) {
+        return apiAxios.delete<ScheduleEventInfo>(
+            `${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/event/${meetScheduleEventId}`)
+            .then(response => response.data)
     }
 
 }
