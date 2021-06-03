@@ -22,6 +22,7 @@ import {ProblemState} from "../../../model/problem/problemState";
 import {Master} from "../../../model/user/master";
 import AuthenticationService from "../../../services/api/AuthenticationService";
 import ProblemAuthenticatedService from "../../../services/api/problem/ProblemAuthenticatedService";
+import ProblemMasterService from "../../../services/api/problem/ProblemMasterService";
 import MasterService from "../../../services/api/user/MasterService";
 import {mapNumberToPersianOrderName} from "../../../utility/numberUtils";
 import {DASHBOARD_VIEW_PATH} from "../../ViewPaths";
@@ -98,7 +99,7 @@ const ProblemManagementView: React.FunctionComponent = () => {
         });
     const referees = problem?.referees;
     const updateReferees = useMutation(
-        (data: Parameters<typeof MasterService.updateReferees>) => MasterService.updateReferees(data[0], data[1]),
+        (data: Parameters<typeof ProblemMasterService.updateReferees>) => ProblemMasterService.updateReferees(data[0], data[1]),
         {
             onSuccess: async data => {
                 queryClient.setQueryData(['problem', +problemId], data);

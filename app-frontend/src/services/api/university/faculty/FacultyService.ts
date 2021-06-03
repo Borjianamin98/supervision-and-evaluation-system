@@ -1,9 +1,11 @@
 import apiAxios from "../../../../config/axios-config";
 import {Pageable} from "../../../../model/pageable";
 import {Faculty} from "../../../../model/university/faculty";
-import {API_FACULTY_REGISTER_PATH, API_FACULTY_RESOURCE_PATH, API_FACULTY_ROOT_PATH} from "../../../ApiPaths";
 
-class UniversityService {
+class FacultyService {
+
+    private static readonly API_FACULTY_ROOT_PATH = "/faculty"
+    private static readonly API_FACULTY_REGISTER_PATH = `${FacultyService.API_FACULTY_ROOT_PATH}/register`
 
     private constructor() {
     }
@@ -16,7 +18,7 @@ class UniversityService {
     }
 
     static retrieveUniversityFaculties(universityId: number, pageSize: number, page: number, nameQuery?: string) {
-        return apiAxios.get<Pageable<Faculty>>(API_FACULTY_ROOT_PATH,
+        return apiAxios.get<Pageable<Faculty>>(FacultyService.API_FACULTY_ROOT_PATH,
             {
                 params: {
                     universityId: universityId,
@@ -28,7 +30,7 @@ class UniversityService {
     }
 
     static registerFaculty(universityId: number, faculty: Faculty) {
-        return apiAxios.post<Faculty>(API_FACULTY_REGISTER_PATH,
+        return apiAxios.post<Faculty>(FacultyService.API_FACULTY_REGISTER_PATH,
             faculty,
             {
                 params: {
@@ -38,12 +40,12 @@ class UniversityService {
     }
 
     static updateFaculty(facultyId: number, faculty: Faculty) {
-        return apiAxios.put<Faculty>(API_FACULTY_RESOURCE_PATH.replace("{0}", String(facultyId)), faculty)
+        return apiAxios.put<Faculty>(`${FacultyService.API_FACULTY_ROOT_PATH}/${facultyId}`, faculty)
             .then(response => response.data);
     }
 
     static deleteFaculty(facultyId: number) {
-        return apiAxios.delete<Faculty>(API_FACULTY_RESOURCE_PATH.replace("{0}", String(facultyId)))
+        return apiAxios.delete<Faculty>(`${FacultyService.API_FACULTY_ROOT_PATH}/${facultyId}`)
             .then(response => response.data);
     }
 
@@ -52,4 +54,4 @@ class UniversityService {
     }
 }
 
-export default UniversityService;
+export default FacultyService;

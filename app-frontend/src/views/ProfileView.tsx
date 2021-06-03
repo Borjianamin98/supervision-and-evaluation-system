@@ -10,7 +10,7 @@ import React, {useState} from 'react';
 import {rtlTheme} from "../App";
 import InputFileIconButton from "../components/Input/InputFileIconButton";
 import CustomTextField, {CustomTextFieldProps} from "../components/Text/CustomTextField";
-import apiAxios, {getGeneralErrorMessage} from "../config/axios-config";
+import {getGeneralErrorMessage} from "../config/axios-config";
 import browserHistory from "../config/browserHistory";
 import {genderMapToPersian} from "../model/enum/gender";
 import {Role} from "../model/enum/role";
@@ -20,7 +20,6 @@ import AdminService from "../services/api/user/AdminService";
 import MasterService from "../services/api/user/MasterService";
 import StudentService from "../services/api/user/StudentService";
 import UserService from "../services/api/user/UserService";
-import {API_USER_PROFILE_PICTURE_PATH} from "../services/ApiPaths";
 import {resizeImage} from "../utility/image-resize";
 import {ERROR_VIEW_PATH, LOGIN_VIEW_PATH} from "./ViewPaths";
 
@@ -79,9 +78,7 @@ const ProfileView: React.FunctionComponent = () => {
     }, []);
 
     React.useEffect(() => {
-        apiAxios.get<Blob>(API_USER_PROFILE_PICTURE_PATH, {
-            responseType: 'blob',
-        })
+        UserService.retrieveUserProfilePicture()
             .then(value => setAvatar(window.URL.createObjectURL(value.data)))
             .catch(error => {
                 const {statusCode} = getGeneralErrorMessage(error);
@@ -111,7 +108,7 @@ const ProfileView: React.FunctionComponent = () => {
                 const formData = new FormData();
                 const file = new File([resizedImageBlob], "profile");
                 formData.append('file', file);
-                return apiAxios.post<FormData>(API_USER_PROFILE_PICTURE_PATH, formData)
+                return UserService.sendUserProfilePicture(formData)
                     .then(() => resizedImageBlob)
                     .catch(err => {
                         const {message, statusCode} = getGeneralErrorMessage(err);

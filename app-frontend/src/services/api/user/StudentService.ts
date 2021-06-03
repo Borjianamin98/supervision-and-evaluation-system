@@ -1,19 +1,22 @@
 import apiAxios from "../../../config/axios-config";
 import {Student, StudentRegister} from "../../../model/user/student";
-import {API_STUDENT_INFO_PATH, API_STUDENT_REGISTER_PATH} from "../../ApiPaths";
 
 class StudentService {
+
+    private static readonly API_STUDENT_ROOT_PATH = "/student"
+    private static readonly API_STUDENT_REGISTER_PATH = `${StudentService.API_STUDENT_ROOT_PATH}/register`
+    private static readonly API_STUDENT_INFO_PATH = `${StudentService.API_STUDENT_ROOT_PATH}/info`
 
     private constructor() {
     }
 
     static registerStudent(studentRegister: StudentRegister) {
-        return apiAxios.post<Student>(API_STUDENT_REGISTER_PATH, studentRegister)
+        return apiAxios.post<Student>(StudentService.API_STUDENT_REGISTER_PATH, studentRegister)
     }
 
     static retrieveStudentInfo() {
         // Returns info based on authenticated user.
-        return apiAxios.get<Student>(API_STUDENT_INFO_PATH)
+        return apiAxios.get<Student>(StudentService.API_STUDENT_INFO_PATH)
     }
 
     static isStudentNumberValid(studentNumber: string) {

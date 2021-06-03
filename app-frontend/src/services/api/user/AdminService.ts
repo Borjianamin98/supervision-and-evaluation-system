@@ -1,15 +1,17 @@
 import apiAxios from "../../../config/axios-config";
 import {Admin} from "../../../model/user/admin";
-import {API_ADMIN_INFO_PATH} from "../../ApiPaths";
 
 class AdminService {
+
+    private static readonly API_ADMIN_ROOT_PATH = "/admin"
+    private static readonly API_ADMIN_INFO_PATH = `${AdminService.API_ADMIN_ROOT_PATH}/info`
 
     private constructor() {
     }
 
     static retrieveAdminInfo() {
         // Returns info based on authenticated user.
-        return apiAxios.get<Admin>(API_ADMIN_INFO_PATH)
+        return apiAxios.get<Admin>(AdminService.API_ADMIN_INFO_PATH)
     }
 }
 

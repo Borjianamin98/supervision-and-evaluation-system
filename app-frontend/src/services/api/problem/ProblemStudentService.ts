@@ -4,11 +4,12 @@ import {Pageable} from "../../../model/pageable";
 import {Problem} from "../../../model/problem/problem";
 import {ProblemState} from "../../../model/problem/problemState";
 import {University} from "../../../model/university/university";
-import {API_PROBLEM_STUDENT_RESOURCE_PATH, API_PROBLEM_STUDENT_ROOT_PATH} from "../../ApiPaths";
+import {API_PROBLEM_ROOT_PATH} from "../../ApiPaths";
 
 class ProblemStudentService {
 
     public static readonly MAX_LONG_STRING_LENGTH = 1000;
+    private static readonly API_PROBLEM_STUDENT_ROOT_PATH = `${API_PROBLEM_ROOT_PATH}/authenticatedStudent`
 
     private constructor() {
     }
@@ -28,14 +29,14 @@ class ProblemStudentService {
     }
 
     static createProblem(problem: Problem) {
-        return apiAxios.post(API_PROBLEM_STUDENT_ROOT_PATH,
+        return apiAxios.post(ProblemStudentService.API_PROBLEM_STUDENT_ROOT_PATH,
             problem, {
                 validateStatus: status => status === 201
             }).then(response => response.data);
     }
 
     static retrieveProblemsOfStudent(pageSize: number, page: number, problemState: ProblemState) {
-        return apiAxios.get<Pageable<Problem>>(API_PROBLEM_STUDENT_ROOT_PATH,
+        return apiAxios.get<Pageable<Problem>>(ProblemStudentService.API_PROBLEM_STUDENT_ROOT_PATH,
             {
                 params: {
                     size: pageSize,
@@ -46,7 +47,7 @@ class ProblemStudentService {
     }
 
     static updateProblem(problemId: number, problem: Problem) {
-        return apiAxios.put<University>(API_PROBLEM_STUDENT_RESOURCE_PATH.replace("{0}", String(problemId)),
+        return apiAxios.put<University>(`${ProblemStudentService.API_PROBLEM_STUDENT_ROOT_PATH}/${problemId}`,
             problem).then(response => response.data);
     }
 

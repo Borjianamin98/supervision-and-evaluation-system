@@ -1,5 +1,5 @@
 import apiAxios from "../../config/axios-config";
-import {API_ACTUATOR_HEALTH_PATH} from "../ApiPaths";
+import {BACKEND_SERVICE_HOST} from "../ApiPaths";
 
 interface ActuatorHealthResponse {
     status: string
@@ -7,11 +7,14 @@ interface ActuatorHealthResponse {
 
 class ActuatorService {
 
+    private static readonly API_ACTUATOR_ROOT_PATH = `${BACKEND_SERVICE_HOST}/actuator`
+
     private constructor() {
     }
 
     static async isServerUp() {
-        const response = await apiAxios.get<ActuatorHealthResponse>(API_ACTUATOR_HEALTH_PATH)
+        const response = await apiAxios.get<ActuatorHealthResponse>(
+            `${(ActuatorService.API_ACTUATOR_ROOT_PATH)}/health`)
         if (response.data.status !== "UP") {
             throw new Error("Backend server is not healthy");
         }

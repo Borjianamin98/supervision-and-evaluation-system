@@ -3,9 +3,13 @@ import apiAxios from "../../../config/axios-config";
 import {Gender} from "../../../model/enum/gender";
 import {User, UserCheck} from "../../../model/user/user";
 import {validateEmail} from "../../../utility/email-utils";
-import {API_USER_CHECK_AVAILABLE_SIGN_IN_NAMES_PATH} from "../../ApiPaths";
 
 class UserService {
+
+    private static readonly API_USER_ROOT_PATH = "/user"
+    private static readonly API_USER_PROFILE_PICTURE_PATH = `${UserService.API_USER_ROOT_PATH}/profile/picture`
+    private static readonly API_USER_CHECK_AVAILABLE_SIGN_IN_NAMES_PATH =
+        `${UserService.API_USER_ROOT_PATH}/checkAvailableSignInNames`
 
     private constructor() {
     }
@@ -25,12 +29,22 @@ class UserService {
     }
 
     static checkAvailableSignInNames(username: string) {
-        return apiAxios.get<UserCheck>(API_USER_CHECK_AVAILABLE_SIGN_IN_NAMES_PATH,
+        return apiAxios.get<UserCheck>(UserService.API_USER_CHECK_AVAILABLE_SIGN_IN_NAMES_PATH,
             {
                 params: {
                     username: username,
                 }
             })
+    }
+
+    static retrieveUserProfilePicture() {
+        return apiAxios.get<Blob>(UserService.API_USER_PROFILE_PICTURE_PATH, {
+            responseType: 'blob',
+        })
+    }
+
+    static sendUserProfilePicture(formData: FormData) {
+        return apiAxios.post<FormData>(UserService.API_USER_PROFILE_PICTURE_PATH, formData)
     }
 
     static isUserValid(user: User) {
