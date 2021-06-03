@@ -1,5 +1,5 @@
 import apiAxios from "../../../config/axios-config";
-import {ScheduleEventCreate, ScheduleEventInfo} from "../../../model/schedule/ScheduleEvent";
+import {ScheduleEventDate, ScheduleEventInfo} from "../../../model/schedule/ScheduleEvent";
 
 class ScheduleService {
 
@@ -19,14 +19,20 @@ class ScheduleService {
             }).then(response => response.data)
     }
 
-    static addMeetScheduleEvent(meetScheduleId: number, scheduleEvent: ScheduleEventCreate) {
+    static addMeetScheduleEvent(meetScheduleId: number, scheduleEvent: ScheduleEventDate) {
         return apiAxios.post<ScheduleEventInfo>(`${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/event`,
             scheduleEvent).then(response => response.data)
     }
 
-    static deleteMeetScheduleEvent(meetScheduleId: number, meetScheduleEventId: number) {
+    static updateMeetScheduleEvent(meetScheduleId: number, scheduleEventId: number, updatedDates: ScheduleEventDate) {
+        return apiAxios.post<ScheduleEventInfo>(
+            `${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/event/${scheduleEventId}`, updatedDates)
+            .then(response => response.data)
+    }
+
+    static deleteMeetScheduleEvent(meetScheduleId: number, scheduleEventId: number) {
         return apiAxios.delete<ScheduleEventInfo>(
-            `${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/event/${meetScheduleEventId}`)
+            `${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/event/${scheduleEventId}`)
             .then(response => response.data)
     }
 

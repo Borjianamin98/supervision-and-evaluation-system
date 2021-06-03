@@ -7,7 +7,7 @@ export interface ScheduleEventInfo {
     owner: User,
 }
 
-export interface ScheduleEventCreate {
+export interface ScheduleEventDate {
     startDate: Date,
     endDate: Date,
 }

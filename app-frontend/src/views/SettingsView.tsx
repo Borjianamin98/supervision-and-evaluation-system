@@ -160,16 +160,22 @@ const SettingsView: React.FunctionComponent = () => {
     ];
 
     const onActionBegin: EmitType<ActionEventArgs> = (actionEventArgs) => {
-        // if (actionEventArgs) {
-        //     console.log("onActionBegin: " + actionEventArgs.requestType);
-        //     if (actionEventArgs.requestType === "eventCreate") {
-        //         const newEvent = actionEventArgs.addedRecords
-        //             && actionEventArgs.addedRecords[0] as SyncfusionSchedulerEvent;
-        //         if (newEvent) {
-        //             console.log(newEvent);
-        //         }
-        //     }
-        // }
+        if (actionEventArgs) {
+            console.log("New Begin Event: " + actionEventArgs.requestType)
+            if (actionEventArgs.requestType === "eventChange") {
+                const changedEvent = actionEventArgs.changedRecords
+                    && actionEventArgs.changedRecords[0] as SyncfusionSchedulerEvent;
+                if (changedEvent && scheduleComponentRef.current) {
+                    ScheduleService.updateMeetScheduleEvent(meetScheduleId, changedEvent.id, {
+                        startDate: changedEvent.startDate,
+                        endDate: changedEvent.endDate,
+                    })
+                        // .then(() => scheduleComponentRef.current?.saveEvent(changedEvent))
+                        .catch(error => generalErrorHandler(error, enqueueSnackbar))
+                    // actionEventArgs.cancel = true;
+                }
+            }
+        }
     }
 
     const onActionComplete: EmitType<ActionEventArgs> = (actionEventArgs) => {
@@ -189,10 +195,7 @@ const SettingsView: React.FunctionComponent = () => {
 
     const onDeleteSyncfusionEvent = (syncfusionEvent: SyncfusionSchedulerEvent) => {
         ScheduleService.deleteMeetScheduleEvent(meetScheduleId, syncfusionEvent.id)
-            .then(value => {
-                scheduleComponentRef.current?.deleteEvent(syncfusionEvent);
-                console.log("deleted " + JSON.stringify(value));
-            })
+            .then(() => scheduleComponentRef.current?.deleteEvent(syncfusionEvent))
             .catch(error => generalErrorHandler(error, enqueueSnackbar))
     }
 

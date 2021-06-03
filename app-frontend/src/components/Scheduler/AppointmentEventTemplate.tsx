@@ -45,8 +45,8 @@ const AppointmentEventTemplate = (props: AppointmentEventTemplateProps) => {
             </Typography>
             <Grow in={isBackdrop}>
                 <CenterBox className={classes.backdrop}>
-                    <IconButton aria-label="delete" color="inherit">
-                        <DeleteIcon fontSize="small" onClick={event => onDelete(syncfusionEvent)}/>
+                    <IconButton aria-label="delete" color="inherit" onClick={() => onDelete(syncfusionEvent)}>
+                        <DeleteIcon fontSize="small"/>
                     </IconButton>
                 </CenterBox>
             </Grow>
