@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,11 +40,20 @@ public class ScheduleController {
     }
 
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.STUDENT_ROLE_NAME, @SecurityRoles.MASTER_ROLE_NAME)")
-    @PostMapping(path = "/{meetScheduleId}/events")
+    @PostMapping(path = "/{meetScheduleId}/event")
     public ScheduleEventInfoDto addScheduleEvent(
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long meetScheduleId,
             @Valid @RequestBody ScheduleEventCreateDto scheduleEventCreateDto) {
         return scheduleService.addScheduleEvent(authUserDetail.getUserId(), meetScheduleId, scheduleEventCreateDto);
+    }
+
+    @PreAuthorize("hasAnyAuthority(@SecurityRoles.STUDENT_ROLE_NAME, @SecurityRoles.MASTER_ROLE_NAME)")
+    @DeleteMapping(path = "/{meetScheduleId}/event/{scheduleEventId}")
+    public ScheduleEventInfoDto deleteScheduleEvent(
+            @ModelAttribute AuthUserDetail authUserDetail,
+            @PathVariable long meetScheduleId,
+            @PathVariable long scheduleEventId) {
+        return scheduleService.deleteScheduleEvent(authUserDetail.getUserId(), meetScheduleId, scheduleEventId);
     }
 }

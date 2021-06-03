@@ -3,6 +3,7 @@ package ir.ac.sbu.evaluation.model.schedule;
 import ir.ac.sbu.evaluation.model.BaseEntity;
 import ir.ac.sbu.evaluation.model.user.User;
 import java.time.Instant;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -44,5 +45,23 @@ public class ScheduleEvent extends BaseEntity {
         this.endDate = endDate;
         this.owner = owner;
         this.meetSchedule = meetSchedule;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ScheduleEvent that = (ScheduleEvent) o;
+        return Objects.equals(getId(), that.getId()) &&
+                Objects.equals(startDate, that.startDate) && Objects.equals(endDate, that.endDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), startDate, endDate);
     }
 }

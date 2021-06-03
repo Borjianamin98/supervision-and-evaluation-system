@@ -1,5 +1,7 @@
 server:
   port: 8080
+  error:
+    include-message: always # Show error message in server error: https://stackoverflow.com/a/62586031/3739748
 spring:
   h2:
     console:

@@ -62,6 +62,30 @@ public class ScheduleService {
         return ScheduleEventInfoDto.from(newScheduleEvent);
     }
 
+    @Transactional
+    public ScheduleEventInfoDto deleteScheduleEvent(long userId, long meetScheduleId, long scheduleEventId) {
+        MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
+        checkUserAccessMeetSchedule(userId, meetSchedule);
+
+        ScheduleEvent scheduleEvent = getScheduleEvent(scheduleEventId);
+        if (scheduleEvent.getMeetSchedule().getId() != meetScheduleId) {
+            throw new IllegalResourceAccessException(
+                    String.format("Schedule event selected is not belonging to meet schedule: "
+                            + "meet schedule ID = %s schedule event ID = %s", meetScheduleId, scheduleEventId));
+        }
+        if (scheduleEvent.getOwner().getId() != userId) {
+            throw new IllegalResourceAccessException(
+                    "Schedule event is not created by user: user ID = " + userId
+                            + " Schedule event ID = " + scheduleEventId
+                            + " schedule event owner: " + scheduleEvent.getOwner().getFullName());
+        }
+
+        scheduleEventRepository.delete(scheduleEvent);
+        meetSchedule.getScheduleEvents().remove(scheduleEvent);
+        meetScheduleRepository.save(meetSchedule);
+        return ScheduleEventInfoDto.from(scheduleEvent);
+    }
+
     private void checkUserAccessMeetSchedule(long userId, MeetSchedule meetSchedule) {
         Problem scheduleProblem = meetSchedule.getProblem();
         if (scheduleProblem.getStudent().getId() != userId && scheduleProblem.getSupervisor().getId() != userId
@@ -75,5 +99,10 @@ public class ScheduleService {
     private MeetSchedule getMeetSchedule(long meetScheduleId) {
         return meetScheduleRepository.findById(meetScheduleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Meet schedule not found: ID = " + meetScheduleId));
+    }
+
+    private ScheduleEvent getScheduleEvent(long scheduleEventId) {
+        return scheduleEventRepository.findById(scheduleEventId)
+                .orElseThrow(() -> new ResourceNotFoundException("Schedule event not found: ID = " + scheduleEventId));
     }
 }

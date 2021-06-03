@@ -1,6 +1,7 @@
 package ir.ac.sbu.evaluation.model.user;
 
 import ir.ac.sbu.evaluation.model.BaseEntity;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
@@ -10,9 +11,13 @@ import javax.persistence.Lob;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "user")
+@Getter
+@Setter
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User extends BaseEntity {
 
@@ -54,59 +59,27 @@ public class User extends BaseEntity {
         this.profilePicture = profilePicture;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getFullName() {
+        return getFirstName() + " " + getLastName();
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        User user = (User) o;
+        return Objects.equals(getId(), user.getId()) &&
+                Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName)
+                && Objects.equals(username, user.username) && Objects.equals(password, user.password)
+                && Objects.equals(role, user.role);
     }
 
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public Byte[] getProfilePicture() {
-        return profilePicture;
-    }
-
-    public void setProfilePicture(Byte[] profilePicture) {
-        this.profilePicture = profilePicture;
-    }
-
-    public PersonalInfo getPersonalInfo() {
-        return personalInfo;
-    }
-
-    public void setPersonalInfo(PersonalInfo personalInfo) {
-        this.personalInfo = personalInfo;
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), firstName, lastName, username, password, role);
     }
 }

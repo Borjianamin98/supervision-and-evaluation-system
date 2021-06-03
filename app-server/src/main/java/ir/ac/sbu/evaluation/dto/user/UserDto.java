@@ -68,7 +68,7 @@ public class UserDto {
                 .id(user.getId())
                 .username(user.getUsername()).password(user.getPassword())
                 .firstName(user.getFirstName()).lastName(user.getLastName())
-                .fullName(user.getFirstName() + " " + user.getLastName())
+                .fullName(user.getFullName())
                 .role(user.getRole())
                 .personalInfo(hasExpansionInfo && user.getPersonalInfo() != null ? PersonalInfoDto
                         .from(user.getPersonalInfo()) : null)
