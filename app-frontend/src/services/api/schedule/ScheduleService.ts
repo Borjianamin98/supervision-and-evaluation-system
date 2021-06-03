@@ -1,5 +1,5 @@
 import apiAxios from "../../../config/axios-config";
-import {ScheduleEvent} from "../../../model/schedule/ScheduleEvent";
+import {ScheduleEventInfo} from "../../../model/schedule/ScheduleEvent";
 
 class ScheduleService {
 
@@ -8,9 +8,9 @@ class ScheduleService {
     private constructor() {
     }
 
-    static retrieveScheduleEvents(scheduleId: number, startDate: Date, endDate: Date) {
-        return apiAxios.get<ScheduleEvent[]>(
-            `${ScheduleService.API_SCHEDULE_ROOT_PATH}/${scheduleId}/events`,
+    static retrieveMeetScheduleEvents(meetScheduleId: number, startDate: Date, endDate: Date) {
+        return apiAxios.get<ScheduleEventInfo[]>(
+            `${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/events`,
             {
                 params: {
                     startDate,

@@ -1,4 +1,13 @@
-export interface ScheduleEvent {
+import {User} from "../user/user";
+
+export interface ScheduleEventInfo {
+    id: number,
+    startDate: Date,
+    endDate: Date,
+    owner: User,
+}
+
+export interface SyncfusionSchedulerEvent {
     id: number,
     subject: string,
     startDate: Date,
