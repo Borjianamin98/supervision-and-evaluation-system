@@ -1,7 +1,22 @@
 .e-control {
-    font-family: "Vazir" !important;
+    font-family: "Vazir", serif !important;
 }
 
 .e-schedule .e-schedule-table > tbody > tr > th, .e-schedule .e-schedule-table > tbody > tr > td {
-     white-space: normal;
+    white-space: normal;
+}
+
+/*
+More information on cell dimension customization:
+https://ej2.syncfusion.com/react/demos/#/material/schedule/cell-dimension
+*/
+.schedule-cell-dimension.e-schedule .e-vertical-view .e-time-cells-wrap table td,
+.schedule-cell-dimension.e-schedule .e-vertical-view .e-work-cells {
+    height: 42px /* Default is 36px */
+}
+
+.schedule-cell-dimension.e-schedule .e-vertical-view .e-day-wrapper .e-appointment .e-appointment-details,
+.schedule-cell-dimension.e-schedule .e-vertical-view .e-day-wrapper .e-appointment .e-appointment-details > :nth-child(1) {
+    height: 100%;
+    padding: 0;
 }
