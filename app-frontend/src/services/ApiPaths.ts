@@ -53,3 +53,7 @@ export const API_FACULTY_ROOT_PATH = "/faculty"
 export const API_FACULTY_RESOURCE_PATH = `${API_FACULTY_ROOT_PATH}/{0}`
 export const API_FACULTY_REGISTER_PATH = `${API_FACULTY_ROOT_PATH}/register`
 
+// Schedule Paths
+export const API_SCHEDULE_ROOT_PATH = "/schedule"
+export const API_SCHEDULE_RESOURCE_PATH = `${API_SCHEDULE_ROOT_PATH}/{0}`
+export const API_SCHEDULE_RESOURCE_EVENTS_PATH = `${API_SCHEDULE_RESOURCE_PATH}/events`
