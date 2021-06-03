@@ -9,7 +9,6 @@ class ScheduleService {
     }
 
     static retrieveMeetScheduleEvents(meetScheduleId: number, startDate: Date, endDate: Date) {
-        console.log("retrieve")
         return apiAxios.get<ScheduleEventInfo[]>(
             `${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/events`,
             {
