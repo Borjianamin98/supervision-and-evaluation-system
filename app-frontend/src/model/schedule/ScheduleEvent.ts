@@ -7,6 +7,11 @@ export interface ScheduleEventInfo {
     owner: User,
 }
 
+export interface ScheduleEventCreate {
+    startDate: Date,
+    endDate: Date,
+}
+
 export interface SyncfusionSchedulerEvent {
     id: number,
     subject: string,
