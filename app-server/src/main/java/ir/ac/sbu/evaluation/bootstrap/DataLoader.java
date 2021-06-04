@@ -13,6 +13,7 @@ import ir.ac.sbu.evaluation.model.user.Admin;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.PersonalInfo;
 import ir.ac.sbu.evaluation.model.user.Student;
+import ir.ac.sbu.evaluation.model.user.User;
 import ir.ac.sbu.evaluation.repository.problem.ProblemEventRepository;
 import ir.ac.sbu.evaluation.repository.problem.ProblemRepository;
 import ir.ac.sbu.evaluation.repository.schedule.MeetScheduleRepository;
@@ -23,6 +24,7 @@ import ir.ac.sbu.evaluation.repository.user.AdminRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.PersonalInfoRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
+import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,6 +36,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -130,20 +134,6 @@ public class DataLoader implements CommandLineRunner {
                 .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
                 .state(ProblemState.IN_PROGRESS)
                 .build());
-
-        ProblemEvent problemEvent1 = problemEventRepository.save(ProblemEvent.builder()
-                .createdBy("امین برجیان")
-                .message("پیشنهاد من برای این مسئله این است که تا حد امکان ویژگی‌های خیلی خوب را مستند کنیم.")
-                .problem(problem1)
-                .build());
-        ProblemEvent problemEvent2 = problemEventRepository.save(ProblemEvent.builder()
-                .createdBy("صادق علی‌اکبری")
-                .message(
-                        "من با پیشنهاد شما موافق هستم ولی خیلی می‌تواند بهتر باشد اگر جوانب مختلف این تصمیم را پیش از رفتن به سمت آن بسنجیم تا از درستی آن تا حد خوبی اطمینان پیدا کنیم.")
-                .problem(problem1)
-                .build());
-        problem1.setEvents(new HashSet<>(Arrays.asList(problemEvent1, problemEvent2)));
-        problem1 = problemRepository.save(problem1);
 
         PersonalInfo master1PersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
                 .gender(Gender.MALE)
@@ -272,6 +262,20 @@ public class DataLoader implements CommandLineRunner {
         problem3 = problemRepository.save(problem3);
         problem4.setStudent(student1);
         problem4 = problemRepository.save(problem4);
+
+        setSpringSecurityAuthentication(student1);
+        ProblemEvent problemEvent1 = problemEventRepository.save(ProblemEvent.builder()
+                .message("پیشنهاد من برای این مسئله این است که تا حد امکان ویژگی‌های خیلی خوب را مستند کنیم.")
+                .problem(problem1)
+                .build());
+        setSpringSecurityAuthentication(master1);
+        ProblemEvent problemEvent2 = problemEventRepository.save(ProblemEvent.builder()
+                .message(
+                        "من با پیشنهاد شما موافق هستم ولی خیلی می‌تواند بهتر باشد اگر جوانب مختلف این تصمیم را پیش از رفتن به سمت آن بسنجیم تا از درستی آن تا حد خوبی اطمینان پیدا کنیم.")
+                .problem(problem1)
+                .build());
+        problem1.setEvents(new HashSet<>(Arrays.asList(problemEvent1, problemEvent2)));
+        problem1 = problemRepository.save(problem1);
 
         Calendar calendar = Calendar.getInstance();
         String todayDate = String.format("%04d-%02d-%02d",
@@ -412,5 +416,24 @@ public class DataLoader implements CommandLineRunner {
         universityRepository.save(atuUniversity);
         universities.add(atuUniversity);
         faculties.put(atuUniversity.getId(), Collections.singletonList(chemistryFaculty));
+    }
+
+    /**
+     * Copy-pasted function from {@link ir.ac.sbu.evaluation.security.JwtAuthenticationFilter} to provide mock username
+     * in preparing initial data.
+     */
+    private void setSpringSecurityAuthentication(User user) {
+        AuthUserDetail authUserDetail = AuthUserDetail.builder()
+                .userId(user.getId())
+                .fullName(user.getFullName())
+                .username(user.getUsername())
+                .role(user.getRole())
+                .build();
+        // Manually provided authentication for Spring Security.
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                new UsernamePasswordAuthenticationToken(authUserDetail, null, authUserDetail.getAuthorities());
+        // After setting the Authentication in the context, we specify that the current user is authenticated.
+        // So it passes the Spring Security configurations successfully.
+        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
     }
 }
