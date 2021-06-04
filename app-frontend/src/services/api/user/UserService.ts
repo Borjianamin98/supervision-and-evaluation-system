@@ -2,7 +2,7 @@ import update from "immutability-helper";
 import apiAxios from "../../../config/axios-config";
 import {Gender} from "../../../model/enum/gender";
 import {User, UserCheck} from "../../../model/user/user";
-import {validateEmail} from "../../../utility/email-utils";
+import EmailUtils from "../../../utility/EmailUtils";
 
 class UserService {
 
@@ -83,7 +83,7 @@ class UserService {
     }
 
     static isEmailValid(email: string) {
-        return validateEmail(email)
+        return EmailUtils.validateEmail(email)
     }
 }
 

@@ -24,7 +24,7 @@ import AuthenticationService from "../../../services/api/AuthenticationService";
 import ProblemAuthenticatedService from "../../../services/api/problem/ProblemAuthenticatedService";
 import ProblemMasterService from "../../../services/api/problem/ProblemMasterService";
 import MasterService from "../../../services/api/user/MasterService";
-import {mapNumberToPersianOrderName} from "../../../utility/numberUtils";
+import NumberUtils from "../../../utility/NumberUtils";
 import {DASHBOARD_VIEW_PATH} from "../../ViewPaths";
 import ProblemEventsList from "../ProblemEventsList";
 import ProblemAddEvent from "./PorblemAddEvent";
@@ -232,7 +232,7 @@ const ProblemManagementView: React.FunctionComponent = () => {
                                 </Typography>
                                 {
                                     referees && [...Array(2)].map((e, index) => {
-                                        const orderString = mapNumberToPersianOrderName(index + 1);
+                                        const orderString = NumberUtils.mapNumberToPersianOrderName(index + 1);
                                         let content: React.ReactNode;
                                         if (index < referees.length && referees[index] != null) {
                                             content = <ProfileInfoCard
@@ -327,7 +327,7 @@ const ProblemManagementView: React.FunctionComponent = () => {
                         onClose={() => setCommentDialogOpen(false)}
                     />
                     <SearchableListDialog
-                        title={`انتخاب استاد داور ${mapNumberToPersianOrderName(selectedRefereeDialog + 1)}`}
+                        title={`انتخاب استاد داور ${NumberUtils.mapNumberToPersianOrderName(selectedRefereeDialog + 1)}`}
                         description={"استاد مربوطه را مشخص نمایید."}
                         open={refereeDialogOpen}
                         getItems={searchQuery => [
