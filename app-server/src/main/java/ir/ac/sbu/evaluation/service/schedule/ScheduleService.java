@@ -1,6 +1,6 @@
 package ir.ac.sbu.evaluation.service.schedule;
 
-import ir.ac.sbu.evaluation.dto.schedule.event.ScheduleEventDateDto;
+import ir.ac.sbu.evaluation.dto.schedule.event.DateRangeDto;
 import ir.ac.sbu.evaluation.dto.schedule.event.ScheduleEventInfoDto;
 import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
@@ -45,15 +45,15 @@ public class ScheduleService {
 
     @Transactional
     public ScheduleEventInfoDto addScheduleEvent(long userId, long meetScheduleId,
-            ScheduleEventDateDto scheduleEventDateDto) {
+            DateRangeDto dateRangeDto) {
         MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: ID = " + userId));
         checkUserAccessMeetSchedule(userId, meetSchedule);
 
         ScheduleEvent newScheduleEvent = scheduleEventRepository.save(ScheduleEvent.builder()
-                .startDate(scheduleEventDateDto.getStartDate())
-                .endDate(scheduleEventDateDto.getEndDate())
+                .startDate(dateRangeDto.getStartDate())
+                .endDate(dateRangeDto.getEndDate())
                 .meetSchedule(meetSchedule)
                 .owner(user)
                 .build());
@@ -77,14 +77,14 @@ public class ScheduleService {
 
     @Transactional
     public ScheduleEventInfoDto updateScheduleEvent(long userId, long meetScheduleId, long scheduleEventId,
-            ScheduleEventDateDto scheduleEventDateDto) {
+            DateRangeDto dateRangeDto) {
         MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
         ScheduleEvent scheduleEvent = getScheduleEvent(meetScheduleId, scheduleEventId);
         checkUserAccessMeetSchedule(userId, meetSchedule);
         checkUserAccessModifyOrDeleteEvent(userId, scheduleEvent);
 
-        scheduleEvent.setStartDate(scheduleEventDateDto.getStartDate());
-        scheduleEvent.setEndDate(scheduleEventDateDto.getEndDate());
+        scheduleEvent.setStartDate(dateRangeDto.getStartDate());
+        scheduleEvent.setEndDate(dateRangeDto.getEndDate());
         ScheduleEvent savedScheduleEvent = scheduleEventRepository.save(scheduleEvent);
         return ScheduleEventInfoDto.from(savedScheduleEvent);
     }

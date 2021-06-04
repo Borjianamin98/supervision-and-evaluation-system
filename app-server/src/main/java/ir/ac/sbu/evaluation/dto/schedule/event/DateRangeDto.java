@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ScheduleEventDateDto {
+public class DateRangeDto {
 
     @NotNull
     private Instant startDate;
@@ -16,11 +16,11 @@ public class ScheduleEventDateDto {
     @NotNull
     private Instant endDate;
 
-    public ScheduleEventDateDto() {
+    public DateRangeDto() {
     }
 
     @Builder
-    public ScheduleEventDateDto(Instant startDate, Instant endDate) {
+    public DateRangeDto(Instant startDate, Instant endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
     }
