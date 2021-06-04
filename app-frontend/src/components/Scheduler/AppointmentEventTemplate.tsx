@@ -34,6 +34,9 @@ const AppointmentEventTemplate = (props: AppointmentEventTemplateProps) => {
     const {syncfusionEvent, onDelete} = props;
 
     const appointmentClick: BoxProps["onClick"] = (event) => {
+        if (syncfusionEvent.readonly) {
+            return;
+        }
         event.stopPropagation(); // Suppress scheduler events
         setIsBackdrop(prevState => !prevState);
     }

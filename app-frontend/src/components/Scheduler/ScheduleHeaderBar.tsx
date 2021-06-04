@@ -5,20 +5,21 @@ import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import moment from "jalali-moment";
 import React from 'react';
+import DateUtils from "../../utility/DateUtils";
 
 interface ScheduleHeaderBarProps {
     totalDaysInView: number,
     startDate: Date,
     minimumDate: Date,
     maximumDate: Date,
-    onDateChange: (newDate: Date) => void,
+    onDateChange: (startDate: Date) => void,
 }
 
 const ScheduleHeaderBar: React.FunctionComponent<ScheduleHeaderBarProps> = (props) => {
     const {totalDaysInView, startDate, minimumDate, maximumDate, onDateChange} = props;
 
     const startDateMoment = moment(startDate).locale("fa");
-    const endDateMoment = moment(startDateMoment).add(totalDaysInView - 1, "days").locale("fa");
+    const endDateMoment = moment(DateUtils.addDays(moment(startDateMoment), totalDaysInView - 1)).locale("fa");
 
     const startDateMonth = startDateMoment.format("MMMM");
     const endDateMonth = endDateMoment.format("MMMM");
@@ -39,7 +40,7 @@ const ScheduleHeaderBar: React.FunctionComponent<ScheduleHeaderBarProps> = (prop
     const isBeyondMaxRange = startDateMoment.add(totalDaysInView, "days").isAfter(maximumDate);
     const isBeforeMinRange = startDateMoment.add(-1, "days").isBefore(minimumDate);
     const changeIntervalOnClick = (days: number) => {
-        onDateChange(moment(startDate).add(days, "days").toDate())
+        onDateChange(DateUtils.addDays(startDate, days))
     }
 
     return (
