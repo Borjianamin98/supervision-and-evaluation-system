@@ -18,6 +18,6 @@ export interface SyncfusionSchedulerEvent {
     startDate: Date,
     endDate: Date,
     isAllDay: boolean,
-    isReadonly?: boolean,
+    readonly?: boolean,
     ownerId: number,
 }

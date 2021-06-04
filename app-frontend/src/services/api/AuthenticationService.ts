@@ -63,6 +63,10 @@ class AuthenticationService {
         return apiAxios.get<AuthResponse>(API_AUTHENTICATION_CHECK_PATH)
     }
 
+    static getJwtPayloadUserId() {
+        return AuthenticationService.getJwtPayload()?.userId;
+    }
+
     static getJwtPayloadRole() {
         return AuthenticationService.getJwtPayload()?.role;
     }
