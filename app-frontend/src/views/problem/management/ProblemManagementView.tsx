@@ -225,98 +225,94 @@ const ProblemManagementView: React.FunctionComponent = () => {
                 <Grid container item direction="column" xs={12} sm={12} md={12} lg={4} xl={4}
                       className={classes.column}>
                     <Grid item>
-                        <Box marginBottom={1}>
-                            <Paper className={classes.columnContent}>
-                                <Typography variant="h6" paragraph>
-                                    داورها
-                                </Typography>
-                                {
-                                    referees && [...Array(2)].map((e, index) => {
-                                        const orderString = NumberUtils.mapNumberToPersianOrderName(index + 1);
-                                        let content: React.ReactNode;
-                                        if (index < referees.length && referees[index] != null) {
-                                            content = <ProfileInfoCard
-                                                user={referees[index]}
-                                                subheader={`داور ${orderString} پایان‌نامه (پروژه)`}
-                                                hasEdit={jwtPayloadRole === Role.MASTER}
-                                                hasDelete={jwtPayloadRole === Role.MASTER}
-                                                onEdit={() => {
-                                                    setSelectedRefereeDialog(index);
-                                                    setRefereeDialogOpen(true);
-                                                }}
-                                                onDelete={() => {
-                                                    const copyReferees = [...referees];
-                                                    copyReferees.splice(index, 1);
-                                                    updateReferees.mutate([+problemId, copyReferees])
-                                                }}
-                                            />;
-                                        } else {
-                                            let buttonContent: string;
-                                            switch (jwtPayloadRole) {
-                                                case Role.STUDENT:
-                                                    buttonContent = `داور ${orderString} مشخص نشده است.`;
-                                                    break;
-                                                case Role.MASTER:
-                                                case Role.ADMIN:
-                                                    buttonContent = `تایین داور ${orderString}`;
-                                                    break;
-                                            }
-                                            content = (
-                                                <Button
-                                                    fullWidth
-                                                    startIcon={jwtPayloadRole !== Role.STUDENT &&
-                                                    <PersonAddIcon style={{fontSize: 40}}/>}
-                                                    className={classes.refereeSelectionButton}
-                                                    onClick={() => {
-                                                        setSelectedRefereeDialog(-1);
-                                                        setRefereeDialogOpen(true);
-                                                    }}
-                                                    disabled={jwtPayloadRole === Role.STUDENT}
-                                                >
-                                                    {buttonContent}
-                                                </Button>
-                                            )
-                                        }
-                                        return <Box key={index} my={1}>
-                                            {content}
-                                        </Box>;
-                                    })
-                                }
-                            </Paper>
+                        <Box component={Paper} padding={1} marginBottom={1}>
+                            <Typography className={classes.centerAlign}>
+                                داورها
+                            </Typography>
                         </Box>
+                        {
+                            referees && [...Array(2)].map((e, index) => {
+                                const orderString = NumberUtils.mapNumberToPersianOrderName(index + 1);
+                                let content: React.ReactNode;
+                                if (index < referees.length && referees[index] != null) {
+                                    content = <ProfileInfoCard
+                                        user={referees[index]}
+                                        subheader={`داور ${orderString} پایان‌نامه (پروژه)`}
+                                        hasEdit={jwtPayloadRole === Role.MASTER}
+                                        hasDelete={jwtPayloadRole === Role.MASTER}
+                                        onEdit={() => {
+                                            setSelectedRefereeDialog(index);
+                                            setRefereeDialogOpen(true);
+                                        }}
+                                        onDelete={() => {
+                                            const copyReferees = [...referees];
+                                            copyReferees.splice(index, 1);
+                                            updateReferees.mutate([+problemId, copyReferees])
+                                        }}
+                                    />;
+                                } else {
+                                    let buttonContent: string;
+                                    switch (jwtPayloadRole) {
+                                        case Role.STUDENT:
+                                            buttonContent = `داور ${orderString} مشخص نشده است.`;
+                                            break;
+                                        case Role.MASTER:
+                                        case Role.ADMIN:
+                                            buttonContent = `تایین داور ${orderString}`;
+                                            break;
+                                    }
+                                    content = (
+                                        <Button
+                                            fullWidth
+                                            startIcon={jwtPayloadRole !== Role.STUDENT ?
+                                                (<PersonAddIcon style={{fontSize: 40}}/>) : undefined}
+                                            className={classes.refereeSelectionButton}
+                                            onClick={() => {
+                                                setSelectedRefereeDialog(-1);
+                                                setRefereeDialogOpen(true);
+                                            }}
+                                            disabled={jwtPayloadRole === Role.STUDENT}
+                                        >
+                                            {buttonContent}
+                                        </Button>
+                                    )
+                                }
+                                return <Box key={index} marginBottom={1}>
+                                    {content}
+                                </Box>;
+                            })
+                        }
                     </Grid>
                     <Grid item>
-                        <Paper>
-                            <Box px={4}>
-                                <Grid container spacing={1} className={classes.columnContent}>
-                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                        <Typography variant="h6" className={classes.centerAlign} paragraph>
-                                            عملیات
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                        <Button
-                                            fullWidth
-                                            variant="contained"
-                                            color="secondary"
-                                            startIcon={<ScheduleIcon/>}
-                                        >
-                                            زمان‌بندی دفاع
-                                        </Button>
-                                    </Grid>
-                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                        <Button
-                                            fullWidth
-                                            variant="contained"
-                                            color="secondary"
-                                            startIcon={<GradeIcon/>}
-                                        >
-                                            نمره‌دهی
-                                        </Button>
-                                    </Grid>
+                        <Box component={Paper} px={4} marginTop={1}>
+                            <Grid container spacing={1} className={classes.columnContent}>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <Typography variant="h6" className={classes.centerAlign} paragraph>
+                                        عملیات
+                                    </Typography>
                                 </Grid>
-                            </Box>
-                        </Paper>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <Button
+                                        fullWidth
+                                        variant="contained"
+                                        color="secondary"
+                                        startIcon={<ScheduleIcon/>}
+                                    >
+                                        زمان‌بندی دفاع
+                                    </Button>
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <Button
+                                        fullWidth
+                                        variant="contained"
+                                        color="secondary"
+                                        startIcon={<GradeIcon/>}
+                                    >
+                                        نمره‌دهی
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </Box>
                     </Grid>
                 </Grid>
                 <div aria-label={"dialogs"}>
