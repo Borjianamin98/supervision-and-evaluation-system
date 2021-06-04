@@ -35,6 +35,7 @@ interface CustomSchedulerProps extends Omit<ScheduleModel, "cellClick"> {
     selectedDate: Date,
     onDateChange: (startDate: Date) => void,
 
+    scheduleEvents?: SyncfusionSchedulerEvent[],
     participants: Participant[],
 
     onCellClick: (scheduler: ScheduleComponent, cellInfo: DateRange) => void,
@@ -49,12 +50,19 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
         totalDaysInView,
         selectedDate,
         onDateChange,
+        scheduleEvents,
         participants,
         onCellClick,
         onEventChange,
         onEventDelete,
         ...rest
     } = props;
+
+    React.useEffect(() => {
+        if (scheduleComponentRef.current) {
+            scheduleComponentRef.current.eventSettings.dataSource = scheduleEvents;
+        }
+    }, [scheduleEvents])
 
     React.useEffect(() => {
         /**
@@ -202,6 +210,16 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
             endHour="20:00"
             workHours={{
                 highlight: true, start: '09:00', end: '18:00'
+            }}
+            eventSettings={{
+                fields: {
+                    id: 'id',
+                    subject: {name: 'subject'},
+                    isAllDay: {name: 'isAllDay'},
+                    startTime: {name: 'startDate'},
+                    endTime: {name: 'endDate'},
+                    isReadonly: 'readonly'
+                }
             }}
             {...rest}
         >

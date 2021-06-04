@@ -31,9 +31,7 @@ const SettingsView: React.FunctionComponent = () => {
     const queryClient = useQueryClient();
     const {data: scheduleEventsInfo, ...scheduleEventsInfoQuery} = useQuery(
         ["meetSchedule", meetScheduleId, 'events', startDate, endDate],
-        () => ScheduleService.retrieveMeetScheduleEvents(meetScheduleId, startDate, endDate), {
-            keepPreviousData: true,
-        });
+        () => ScheduleService.retrieveMeetScheduleEvents(meetScheduleId, startDate, endDate));
 
     const scheduleEventToSyncfusionSchedulerEvent = (event: ScheduleEventInfo): SyncfusionSchedulerEvent => {
         return {
@@ -81,7 +79,7 @@ const SettingsView: React.FunctionComponent = () => {
                 totalDaysInView={totalDaysInView}
                 selectedDate={startDate}
                 onDateChange={onDateChange}
-                // scheduleEvents={}
+                scheduleEvents={scheduleEventsInfo?.map(scheduleEventToSyncfusionSchedulerEvent)}
                 participants={[
                     {id: 1, name: 'Nancy', color: theme.palette.primary.main},
                     {id: 2, name: 'Steven', color: theme.palette.secondary.main},
@@ -90,17 +88,6 @@ const SettingsView: React.FunctionComponent = () => {
                 onCellClick={onCellClick}
                 onEventDelete={onEventDelete}
                 onEventChange={onEventChange}
-                eventSettings={{
-                    dataSource: scheduleEventsInfo?.map(scheduleEventToSyncfusionSchedulerEvent),
-                    fields: {
-                        id: 'id',
-                        subject: {name: 'subject'},
-                        isAllDay: {name: 'isAllDay'},
-                        startTime: {name: 'startDate'},
-                        endTime: {name: 'endDate'},
-                        isReadonly: 'readonly'
-                    }
-                }}
             />
         </ThemeProvider>
     )
