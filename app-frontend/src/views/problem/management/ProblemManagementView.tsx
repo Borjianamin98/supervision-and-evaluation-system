@@ -25,7 +25,7 @@ import ProblemAuthenticatedService from "../../../services/api/problem/ProblemAu
 import ProblemMasterService from "../../../services/api/problem/ProblemMasterService";
 import MasterService from "../../../services/api/user/MasterService";
 import NumberUtils from "../../../utility/NumberUtils";
-import {DASHBOARD_VIEW_PATH} from "../../ViewPaths";
+import {DASHBOARD_VIEW_PATH, PROBLEM_SCHEDULE_VIEW_PATH} from "../../ViewPaths";
 import ProblemEventsList from "../ProblemEventsList";
 import ProblemAddEvent from "./PorblemAddEvent";
 import ProfileInfoCard from "./ProfileInfoCard";
@@ -134,6 +134,10 @@ const ProblemManagementView: React.FunctionComponent = () => {
             }
         }
         setRefereeDialogOpen(false);
+    }
+
+    const onScheduleClick = () => {
+        browserHistory.push(`${PROBLEM_SCHEDULE_VIEW_PATH}/${problemId}`);
     }
 
     if (isProblemLoading || isProblemLoadingFailed) {
@@ -297,6 +301,7 @@ const ProblemManagementView: React.FunctionComponent = () => {
                                         variant="contained"
                                         color="secondary"
                                         startIcon={<ScheduleIcon/>}
+                                        onClick={onScheduleClick}
                                     >
                                         زمان‌بندی دفاع
                                     </Button>

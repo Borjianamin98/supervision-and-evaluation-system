@@ -10,9 +10,11 @@ export const DASHBOARD_VIEW_PATH = "/dashboard";
 export const PROFILE_VIEW_PATH = "/profile";
 
 // Problem Views
-export const PROBLEM_LIST_VIEW_PATH = "/problem/list";
-export const PROBLEM_EDIT_VIEW_PATH = "/problem/edit";
-export const PROBLEM_MANAGEMENT_VIEW_PATH = "/problem/management";
+export const PROBLEM_VIEW_PATH = "/problem";
+export const PROBLEM_LIST_VIEW_PATH = `${PROBLEM_VIEW_PATH}/list`;
+export const PROBLEM_EDIT_VIEW_PATH = `${PROBLEM_VIEW_PATH}/edit`;
+export const PROBLEM_MANAGEMENT_VIEW_PATH = `${PROBLEM_VIEW_PATH}/management`;
+export const PROBLEM_SCHEDULE_VIEW_PATH = `${PROBLEM_VIEW_PATH}/schedule`;
 
 // University Views
 export const UNIVERSITY_LIST_VIEW_PATH = "/university/list";

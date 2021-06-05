@@ -13,8 +13,9 @@ import {Role} from "../../model/enum/role";
 import AuthenticationService from "../../services/api/AuthenticationService";
 import DashboardView from "../dashboard/DashboardView";
 import ProblemEdit from "../problem/edit/ProblemEdit";
-import ProblemListView from "../problem/PorblemListView";
 import ProblemManagementView from "../problem/management/ProblemManagementView";
+import ProblemListView from "../problem/PorblemListView";
+import ProblemScheduleView from "../problem/schedule/ProblemScheduleView";
 import ProfileView from "../ProfileView";
 import SettingsView from "../SettingsView";
 import FacultyListView from "../university/faculty/FacultyListView";
@@ -25,6 +26,7 @@ import {
     PROBLEM_EDIT_VIEW_PATH,
     PROBLEM_LIST_VIEW_PATH,
     PROBLEM_MANAGEMENT_VIEW_PATH,
+    PROBLEM_SCHEDULE_VIEW_PATH,
     PROFILE_VIEW_PATH,
     SETTINGS_VIEW_PATH,
     UNIVERSITY_LIST_VIEW_PATH
@@ -69,6 +71,12 @@ const problemRoutesInfo: navBarRouteInfo[] = [
         name: "مدیریت پایان‌نامه‌ (پروژه)",
         roles: [Role.STUDENT, Role.MASTER],
         component: ProblemManagementView,
+    },
+    {
+        path: PROBLEM_SCHEDULE_VIEW_PATH + "/:problemId",
+        name: "زمان‌بندی پایان‌نامه‌ (پروژه)",
+        roles: [Role.STUDENT, Role.MASTER],
+        component: ProblemScheduleView,
     },
 ]
 
