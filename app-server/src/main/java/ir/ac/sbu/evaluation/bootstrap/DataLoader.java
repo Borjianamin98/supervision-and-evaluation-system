@@ -92,6 +92,7 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws ParseException {
         prepareUniversities();
 
+        MeetSchedule meetSchedule1 = meetScheduleRepository.save(MeetSchedule.builder().build());
         Problem problem1 = problemRepository.save(Problem.builder()
                 .education(Education.BACHELOR)
                 .title("سامانه ارزیابی و نظارت یکپارچه")
@@ -102,7 +103,12 @@ public class DataLoader implements CommandLineRunner {
                 .history("بیشینه مسئله")
                 .considerations("برای پیاده‌سازی در محیط عملیاتی، نیازمند سرور و تجهیزات شبکه‌ای مربوطه می‌باشد.")
                 .state(ProblemState.CREATED)
+                .meetSchedule(meetSchedule1)
                 .build());
+        meetSchedule1.setProblem(problem1);
+        problem1 = problemRepository.save(problem1);
+
+        MeetSchedule meetSchedule2 = meetScheduleRepository.save(MeetSchedule.builder().build());
         Problem problem2 = problemRepository.save(Problem.builder()
                 .education(Education.BACHELOR)
                 .title("سامانه مدیریت خرید و فروش رستوران")
@@ -113,7 +119,12 @@ public class DataLoader implements CommandLineRunner {
                 .history("بیشینه مسئله")
                 .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
                 .state(ProblemState.CREATED)
+                .meetSchedule(meetSchedule2)
                 .build());
+        meetSchedule2.setProblem(problem2);
+        problem2 = problemRepository.save(problem2);
+
+        MeetSchedule meetSchedule3 = meetScheduleRepository.save(MeetSchedule.builder().build());
         Problem problem3 = problemRepository.save(Problem.builder()
                 .education(Education.BACHELOR)
                 .title("نقشه تعاملی سامانه‌های نرم‌افزاری یک شرکت")
@@ -123,7 +134,12 @@ public class DataLoader implements CommandLineRunner {
                 .history("بیشینه مسئله")
                 .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
                 .state(ProblemState.IN_PROGRESS)
+                .meetSchedule(meetSchedule3)
                 .build());
+        meetSchedule3.setProblem(problem3);
+        problem3 = problemRepository.save(problem3);
+
+        MeetSchedule meetSchedule4 = meetScheduleRepository.save(MeetSchedule.builder().build());
         Problem problem4 = problemRepository.save(Problem.builder()
                 .education(Education.BACHELOR)
                 .title("طراحی و پیاده سازی بستر ارسال پیامک انبوه")
@@ -133,7 +149,10 @@ public class DataLoader implements CommandLineRunner {
                 .history("بیشینه مسئله")
                 .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
                 .state(ProblemState.IN_PROGRESS)
+                .meetSchedule(meetSchedule4)
                 .build());
+        meetSchedule4.setProblem(problem4);
+        problem4 = problemRepository.save(problem4);
 
         PersonalInfo master1PersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
                 .gender(Gender.MALE)
@@ -297,17 +316,17 @@ public class DataLoader implements CommandLineRunner {
                 .endDate(dateFormat.parse(String.format("%s 14:00", todayDate)).toInstant())
                 .owner(problem3.getSupervisor())
                 .build());
-        MeetSchedule meetSchedule1 = meetScheduleRepository.save(MeetSchedule.builder()
-                .problem(problem3)
-                .scheduleEvents(new HashSet<>(Arrays.asList(scheduleEvent1, scheduleEvent2, scheduleEvent3)))
-                .build());
-        scheduleEvent1.setMeetSchedule(meetSchedule1);
+        meetSchedule3.setScheduleEvents(new HashSet<>(Arrays.asList(scheduleEvent1, scheduleEvent2, scheduleEvent3)));
+        meetSchedule3 = meetScheduleRepository.save(meetSchedule3);
+
+        scheduleEvent1.setMeetSchedule(meetSchedule3);
         scheduleEvent1 = scheduleEventRepository.save(scheduleEvent1);
-        scheduleEvent2.setMeetSchedule(meetSchedule1);
+        scheduleEvent2.setMeetSchedule(meetSchedule3);
         scheduleEvent2 = scheduleEventRepository.save(scheduleEvent2);
-        scheduleEvent3.setMeetSchedule(meetSchedule1);
+        scheduleEvent3.setMeetSchedule(meetSchedule3);
         scheduleEvent3 = scheduleEventRepository.save(scheduleEvent3);
-        problem3.setMeetSchedule(meetSchedule1);
+
+        problem3.setMeetSchedule(meetSchedule3);
         problem3 = problemRepository.save(problem3);
 
         Admin admin1 = adminRepository.save(Admin.builder()

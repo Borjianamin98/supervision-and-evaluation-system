@@ -9,10 +9,12 @@ import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
 import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
+import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.Student;
 import ir.ac.sbu.evaluation.repository.problem.ProblemEventRepository;
 import ir.ac.sbu.evaluation.repository.problem.ProblemRepository;
+import ir.ac.sbu.evaluation.repository.schedule.MeetScheduleRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
 import java.util.List;
@@ -26,19 +28,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ProblemService {
 
-    private final ProblemEventRepository problemEventRepository;
-
     private final StudentRepository studentRepository;
     private final MasterRepository masterRepository;
     private final ProblemRepository problemRepository;
 
-    public ProblemService(ProblemEventRepository problemEventRepository,
-            StudentRepository studentRepository,
-            MasterRepository masterRepository, ProblemRepository problemRepository) {
-        this.problemEventRepository = problemEventRepository;
+    private final ProblemEventRepository problemEventRepository;
+    private final MeetScheduleRepository meetScheduleRepository;
+
+    public ProblemService(StudentRepository studentRepository,
+            MasterRepository masterRepository, ProblemRepository problemRepository,
+            ProblemEventRepository problemEventRepository,
+            MeetScheduleRepository meetScheduleRepository) {
         this.studentRepository = studentRepository;
         this.masterRepository = masterRepository;
         this.problemRepository = problemRepository;
+        this.problemEventRepository = problemEventRepository;
+        this.meetScheduleRepository = meetScheduleRepository;
     }
 
     @Transactional
@@ -55,7 +60,14 @@ public class ProblemService {
         problem.setState(ProblemState.CREATED);
         problem.getEvents().add(problemEventRepository.save(
                 ProblemEvent.builder().message("پایان‌نامه (پروژه) تعریف شد.").build()));
-        return ProblemDto.from(problemRepository.save(problem));
+        Problem savedProblem = problemRepository.save(problem);
+
+        MeetSchedule meetSchedule = meetScheduleRepository.save(MeetSchedule.builder()
+                .problem(savedProblem)
+                .build());
+        savedProblem.setMeetSchedule(meetSchedule);
+        savedProblem = problemRepository.save(savedProblem);
+        return ProblemDto.from(savedProblem);
     }
 
     @Transactional

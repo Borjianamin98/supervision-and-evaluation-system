@@ -2,6 +2,7 @@ package ir.ac.sbu.evaluation.dto.problem;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleDto;
 import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
 import ir.ac.sbu.evaluation.dto.user.student.StudentDto;
 import ir.ac.sbu.evaluation.enumeration.Education;
@@ -63,6 +64,9 @@ public class ProblemDto {
     @NotNull
     private Set<MasterDto> referees;
 
+    @NotNull
+    private MeetScheduleDto meetSchedule;
+
     public ProblemDto() {
     }
 
@@ -72,7 +76,8 @@ public class ProblemDto {
             String title, String englishTitle, Set<String> keywords,
             String definition, String history, String considerations,
             ProblemState state,
-            StudentDto student, MasterDto supervisor, Set<MasterDto> referees) {
+            StudentDto student, MasterDto supervisor, Set<MasterDto> referees,
+            MeetScheduleDto meetSchedule) {
         this.id = id;
         this.education = education;
         this.title = title;
@@ -85,6 +90,7 @@ public class ProblemDto {
         this.student = student;
         this.supervisor = supervisor;
         this.referees = referees;
+        this.meetSchedule = meetSchedule;
     }
 
     public static ProblemDto from(Problem problem) {
@@ -99,6 +105,7 @@ public class ProblemDto {
                 .student(StudentDto.from(problem.getStudent()))
                 .supervisor(MasterDto.from(problem.getSupervisor()))
                 .referees(problem.getReferees().stream().map(MasterDto::from).collect(Collectors.toSet()))
+                .meetSchedule(MeetScheduleDto.from(problem.getMeetSchedule()))
                 .build();
     }
 
