@@ -7,10 +7,15 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import ir.ac.sbu.evaluation.dto.user.PersonalInfoDto;
 import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.model.user.Student;
+import java.util.Objects;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @JsonInclude(Include.NON_NULL)
 public class StudentDto extends UserDto {
 
@@ -62,27 +67,24 @@ public class StudentDto extends UserDto {
                 .build();
     }
 
-    public String getStudentNumber() {
-        return studentNumber;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        StudentDto that = (StudentDto) o;
+        return Objects.equals(studentNumber, that.studentNumber) && Objects
+                .equals(universityName, that.universityName) && Objects.equals(facultyName, that.facultyName);
     }
 
-    public void setStudentNumber(String studentNumber) {
-        this.studentNumber = studentNumber;
-    }
-
-    public String getUniversityName() {
-        return universityName;
-    }
-
-    public void setUniversityName(String universityName) {
-        this.universityName = universityName;
-    }
-
-    public String getFacultyName() {
-        return facultyName;
-    }
-
-    public void setFacultyName(String facultyName) {
-        this.facultyName = facultyName;
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), studentNumber, universityName, facultyName);
     }
 }

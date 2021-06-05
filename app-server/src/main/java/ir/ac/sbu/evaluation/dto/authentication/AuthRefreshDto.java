@@ -1,8 +1,13 @@
 package ir.ac.sbu.evaluation.dto.authentication;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Objects;
 import javax.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class AuthRefreshDto {
 
     @NotBlank
@@ -16,14 +21,20 @@ public class AuthRefreshDto {
         this.refreshToken = refreshToken;
     }
 
-    public String getRefreshToken() {
-        return refreshToken;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        AuthRefreshDto that = (AuthRefreshDto) o;
+        return Objects.equals(refreshToken, that.refreshToken);
     }
 
     @Override
-    public String toString() {
-        return "AuthRefreshDto{" +
-                "refreshToken='" + refreshToken + '\'' +
-                '}';
+    public int hashCode() {
+        return Objects.hash(refreshToken);
     }
 }

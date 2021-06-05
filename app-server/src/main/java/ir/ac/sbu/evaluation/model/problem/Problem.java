@@ -24,6 +24,7 @@ import javax.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -103,5 +104,19 @@ public class Problem extends BaseEntity {
         this.referees = referees == null ? new HashSet<>() : referees;
         this.events = events == null ? new HashSet<>() : events;
         this.meetSchedule = meetSchedule;
+    }
+
+    @Override
+    public String toString() {
+        return "Problem{" +
+                "education=" + education +
+                ", title='" + title + '\'' +
+                ", englishTitle='" + englishTitle + '\'' +
+                ", keywords=" + keywords +
+                ", definition='" + definition + '\'' +
+                ", history='" + history + '\'' +
+                ", considerations='" + considerations + '\'' +
+                ", state=" + state +
+                '}';
     }
 }

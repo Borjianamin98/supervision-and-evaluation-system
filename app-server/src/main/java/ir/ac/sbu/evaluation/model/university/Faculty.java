@@ -12,8 +12,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "faculty")
 public class Faculty extends BaseEntity {
 
@@ -45,45 +49,5 @@ public class Faculty extends BaseEntity {
         this.university = university;
         this.students = students != null ? students : new HashSet<>();
         this.masters = masters != null ? masters : new HashSet<>();;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getWebAddress() {
-        return webAddress;
-    }
-
-    public void setWebAddress(String webAddress) {
-        this.webAddress = webAddress;
-    }
-
-    public University getUniversity() {
-        return university;
-    }
-
-    public void setUniversity(University university) {
-        this.university = university;
-    }
-
-    public Set<Student> getStudents() {
-        return students;
-    }
-
-    public void setStudents(Set<Student> students) {
-        this.students = students;
-    }
-
-    public Set<Master> getMasters() {
-        return masters;
-    }
-
-    public void setMasters(Set<Master> masters) {
-        this.masters = masters;
     }
 }

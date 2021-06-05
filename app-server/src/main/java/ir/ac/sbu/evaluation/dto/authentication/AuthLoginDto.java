@@ -1,7 +1,13 @@
 package ir.ac.sbu.evaluation.dto.authentication;
 
+import java.util.Objects;
 import javax.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
+@Getter
+@Setter
 public class AuthLoginDto {
 
     @NotNull
@@ -17,27 +23,20 @@ public class AuthLoginDto {
         this.password = password;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        AuthLoginDto that = (AuthLoginDto) o;
+        return Objects.equals(username, that.username) && Objects.equals(password, that.password);
     }
 
     @Override
-    public String toString() {
-        return "AuthLoginDto{" +
-                "username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+    public int hashCode() {
+        return Objects.hash(username, password);
     }
 }

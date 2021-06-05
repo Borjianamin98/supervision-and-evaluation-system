@@ -7,6 +7,7 @@ import ir.ac.sbu.evaluation.dto.user.student.StudentDto;
 import ir.ac.sbu.evaluation.enumeration.Education;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.model.problem.Problem;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotBlank;
@@ -111,5 +112,30 @@ public class ProblemDto {
                 .state(state)
                 .considerations(considerations)
                 .build();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ProblemDto that = (ProblemDto) o;
+        return id == that.id
+                && education == that.education
+                && Objects.equals(title, that.title)
+                && Objects.equals(englishTitle, that.englishTitle)
+                && Objects.equals(keywords, that.keywords)
+                && Objects.equals(definition, that.definition)
+                && Objects.equals(history, that.history)
+                && Objects.equals(considerations, that.considerations)
+                && state == that.state;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, education, title, englishTitle, keywords, definition, history, considerations, state);
     }
 }

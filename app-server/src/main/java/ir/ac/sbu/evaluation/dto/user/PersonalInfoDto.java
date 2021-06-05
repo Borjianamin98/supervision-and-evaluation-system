@@ -4,11 +4,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import ir.ac.sbu.evaluation.enumeration.Gender;
 import ir.ac.sbu.evaluation.model.user.PersonalInfo;
+import java.util.Objects;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class PersonalInfoDto {
 
     private final static String EMAIL_REGEX_PATTERN = "^(([^<>()\\[\\]\\\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
@@ -56,35 +61,21 @@ public class PersonalInfoDto {
                 .build();
     }
 
-    public long getId() {
-        return id;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        PersonalInfoDto that = (PersonalInfoDto) o;
+        return id == that.id && gender == that.gender && Objects.equals(telephoneNumber, that.telephoneNumber)
+                && Objects.equals(email, that.email);
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public Gender getGender() {
-        return gender;
-    }
-
-    public void setGender(Gender gender) {
-        this.gender = gender;
-    }
-
-    public String getTelephoneNumber() {
-        return telephoneNumber;
-    }
-
-    public void setTelephoneNumber(String telephoneNumber) {
-        this.telephoneNumber = telephoneNumber;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, gender, telephoneNumber, email);
     }
 }

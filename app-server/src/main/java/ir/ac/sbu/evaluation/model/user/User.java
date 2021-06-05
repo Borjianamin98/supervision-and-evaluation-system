@@ -1,7 +1,6 @@
 package ir.ac.sbu.evaluation.model.user;
 
 import ir.ac.sbu.evaluation.model.BaseEntity;
-import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
@@ -41,7 +40,7 @@ public class User extends BaseEntity {
     private PersonalInfo personalInfo;
 
     @Lob
-    Byte[] profilePicture;
+    private Byte[] profilePicture;
 
     public User() {
     }
@@ -64,22 +63,14 @@ public class User extends BaseEntity {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        User user = (User) o;
-        return Objects.equals(getId(), user.getId()) &&
-                Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName)
-                && Objects.equals(username, user.username) && Objects.equals(password, user.password)
-                && Objects.equals(role, user.role);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), firstName, lastName, username, password, role);
+    public String toString() {
+        return "User{" +
+                "super=" + super.toString() +
+                ", lastName='" + lastName + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
+                ", personalInfo=" + personalInfo +
+                "}";
     }
 }

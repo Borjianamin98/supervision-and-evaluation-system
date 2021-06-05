@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -49,5 +50,14 @@ public class Master extends User {
         this.problemsSupervisor = problemsSupervisor == null ? new HashSet<>() : problemsSupervisor;
         this.problemsReferee = problemsReferee == null ? new HashSet<>() : problemsReferee;
         this.faculty = faculty;
+    }
+
+    @Override
+    public String toString() {
+        return "Master{" +
+                "super=" + super.toString() +
+                ", degree='" + degree + '\'' +
+                ", faculty=" + faculty +
+                "}";
     }
 }

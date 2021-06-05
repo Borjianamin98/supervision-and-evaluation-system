@@ -4,8 +4,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import java.util.Objects;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @JsonInclude(Include.NON_NULL)
 public class AuthResponseDto {
 
@@ -32,34 +37,22 @@ public class AuthResponseDto {
         this.error = error;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public String getError() {
-        return error;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        AuthResponseDto that = (AuthResponseDto) o;
+        return Objects.equals(username, that.username) && Objects.equals(password, that.password)
+                && Objects.equals(accessToken, that.accessToken) && Objects
+                .equals(refreshToken, that.refreshToken);
     }
 
     @Override
-    public String toString() {
-        return "AuthResponseDto{" +
-                "username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", accessToken='" + accessToken + '\'' +
-                ", refreshToken='" + refreshToken + '\'' +
-                ", error='" + error + '\'' +
-                '}';
+    public int hashCode() {
+        return Objects.hash(username, password, accessToken, refreshToken);
     }
 }

@@ -5,9 +5,14 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import ir.ac.sbu.evaluation.model.university.University;
+import java.util.Objects;
 import javax.validation.constraints.NotBlank;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @JsonInclude(Include.NON_NULL)
 public class UniversityDto {
 
@@ -59,43 +64,21 @@ public class UniversityDto {
                 .build();
     }
 
-    public long getId() {
-        return id;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UniversityDto that = (UniversityDto) o;
+        return id == that.id && Objects.equals(name, that.name) && Objects
+                .equals(location, that.location) && Objects.equals(webAddress, that.webAddress);
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public String getWebAddress() {
-        return webAddress;
-    }
-
-    public void setWebAddress(String webAddress) {
-        this.webAddress = webAddress;
-    }
-
-    public Long getFacultiesCount() {
-        return facultiesCount;
-    }
-
-    public void setFacultiesCount(Long facultiesCount) {
-        this.facultiesCount = facultiesCount;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, location, webAddress);
     }
 }

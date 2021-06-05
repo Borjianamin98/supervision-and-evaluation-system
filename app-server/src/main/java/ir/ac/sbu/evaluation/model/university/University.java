@@ -8,8 +8,12 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "university")
 public class University extends BaseEntity {
 
@@ -36,37 +40,5 @@ public class University extends BaseEntity {
         this.location = location;
         this.webAddress = webAddress;
         this.faculties = faculties != null ? faculties : new ArrayList<>();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public String getWebAddress() {
-        return webAddress;
-    }
-
-    public void setWebAddress(String webAddress) {
-        this.webAddress = webAddress;
-    }
-
-    public List<Faculty> getFaculties() {
-        return faculties;
-    }
-
-    public void setFaculties(List<Faculty> faculties) {
-        this.faculties = faculties;
     }
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import ir.ac.sbu.evaluation.dto.schedule.event.ScheduleEventInfoDto;
 import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Builder;
@@ -44,5 +45,22 @@ public class MeetScheduleDto {
                 .scheduleEvents(scheduleEvents != null ? scheduleEvents.stream()
                         .map(ScheduleEventInfoDto::toScheduleEvent).collect(Collectors.toSet()) : new HashSet<>())
                 .build();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        MeetScheduleDto that = (MeetScheduleDto) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

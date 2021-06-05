@@ -1,7 +1,12 @@
 package ir.ac.sbu.evaluation.dto.user;
 
+import java.util.Objects;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class UserCheckDto {
 
     private String username;
@@ -17,19 +22,20 @@ public class UserCheckDto {
         this.isAvailable = isAvailable;
     }
 
-    public String getUsername() {
-        return username;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UserCheckDto that = (UserCheckDto) o;
+        return isAvailable == that.isAvailable && Objects.equals(username, that.username);
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public boolean isAvailable() {
-        return isAvailable;
-    }
-
-    public void setAvailable(boolean available) {
-        isAvailable = available;
+    @Override
+    public int hashCode() {
+        return Objects.hash(username, isAvailable);
     }
 }

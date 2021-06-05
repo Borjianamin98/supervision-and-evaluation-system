@@ -4,7 +4,12 @@ import ir.ac.sbu.evaluation.dto.user.PersonalInfoDto;
 import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.model.user.Admin;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class AdminDto extends UserDto {
 
     public AdminDto() {

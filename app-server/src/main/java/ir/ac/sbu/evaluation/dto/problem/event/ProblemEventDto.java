@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import ir.ac.sbu.evaluation.dto.AuditableDto;
 import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
 import java.time.Instant;
+import java.util.Objects;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import lombok.Builder;
@@ -47,5 +48,22 @@ public class ProblemEventDto extends AuditableDto {
                 .id(id)
                 .message(message)
                 .build();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ProblemEventDto that = (ProblemEventDto) o;
+        return id == that.id && Objects.equals(message, that.message);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, message);
     }
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import ir.ac.sbu.evaluation.model.user.User;
+import java.util.Objects;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -86,5 +87,26 @@ public class UserDto {
                 .role(role)
                 .personalInfo(personalInfo != null ? personalInfo.toPersonalInfo() : null)
                 .build();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UserDto userDto = (UserDto) o;
+        return id == userDto.id && Objects.equals(firstName, userDto.firstName) && Objects
+                .equals(lastName, userDto.lastName) && Objects.equals(fullName, userDto.fullName)
+                && Objects.equals(username, userDto.username) && Objects
+                .equals(password, userDto.password) && Objects.equals(role, userDto.role) && Objects
+                .equals(personalInfo, userDto.personalInfo);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstName, lastName, fullName, username, password, role, personalInfo);
     }
 }

@@ -46,22 +46,4 @@ public class ScheduleEvent extends BaseEntity {
         this.owner = owner;
         this.meetSchedule = meetSchedule;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ScheduleEvent that = (ScheduleEvent) o;
-        return Objects.equals(getId(), that.getId()) &&
-                Objects.equals(startDate, that.startDate) && Objects.equals(endDate, that.endDate);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), startDate, endDate);
-    }
 }

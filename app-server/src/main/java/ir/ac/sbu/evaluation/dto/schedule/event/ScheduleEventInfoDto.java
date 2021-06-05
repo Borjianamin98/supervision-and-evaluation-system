@@ -3,6 +3,7 @@ package ir.ac.sbu.evaluation.dto.schedule.event;
 import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.model.schedule.ScheduleEvent;
 import java.time.Instant;
+import java.util.Objects;
 import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,5 +48,23 @@ public class ScheduleEventInfoDto {
                 .id(id)
                 .startDate(startDate).endDate(endDate)
                 .build();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ScheduleEventInfoDto that = (ScheduleEventInfoDto) o;
+        return id == that.id && Objects.equals(startDate, that.startDate) && Objects
+                .equals(endDate, that.endDate) && Objects.equals(owner, that.owner);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, startDate, endDate, owner);
     }
 }

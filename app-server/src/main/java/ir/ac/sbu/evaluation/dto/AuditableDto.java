@@ -3,6 +3,7 @@ package ir.ac.sbu.evaluation.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.time.Instant;
+import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,5 +29,23 @@ public class AuditableDto {
         this.createdBy = createdBy;
         this.createdByRole = createdByRole;
         this.createdDate = createdDate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        AuditableDto that = (AuditableDto) o;
+        return Objects.equals(createdBy, that.createdBy) && Objects
+                .equals(createdByRole, that.createdByRole) && Objects.equals(createdDate, that.createdDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(createdBy, createdByRole, createdDate);
     }
 }

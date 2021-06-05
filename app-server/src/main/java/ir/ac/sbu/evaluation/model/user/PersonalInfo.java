@@ -8,8 +8,12 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "personal_info")
 public class PersonalInfo extends BaseEntity {
 
@@ -34,27 +38,12 @@ public class PersonalInfo extends BaseEntity {
         this.email = email;
     }
 
-    public Gender getGender() {
-        return gender;
-    }
-
-    public void setGender(Gender gender) {
-        this.gender = gender;
-    }
-
-    public String getTelephoneNumber() {
-        return telephoneNumber;
-    }
-
-    public void setTelephoneNumber(String telephoneNumber) {
-        this.telephoneNumber = telephoneNumber;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
+    @Override
+    public String toString() {
+        return "PersonalInfo{" +
+                ", gender=" + gender +
+                ", telephoneNumber='" + telephoneNumber + '\'' +
+                ", email='" + email + '\'' +
+                "} " + super.toString();
     }
 }

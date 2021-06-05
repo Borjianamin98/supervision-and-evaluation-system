@@ -5,9 +5,14 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import ir.ac.sbu.evaluation.model.university.Faculty;
+import java.util.Objects;
 import javax.validation.constraints.NotBlank;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @JsonInclude(Include.NON_NULL)
 public class FacultyDto {
 
@@ -59,43 +64,21 @@ public class FacultyDto {
                 .build();
     }
 
-    public long getId() {
-        return id;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        FacultyDto that = (FacultyDto) o;
+        return id == that.id && Objects.equals(name, that.name) && Objects
+                .equals(webAddress, that.webAddress);
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getWebAddress() {
-        return webAddress;
-    }
-
-    public void setWebAddress(String webAddress) {
-        this.webAddress = webAddress;
-    }
-
-    public Long getStudentsCount() {
-        return studentsCount;
-    }
-
-    public void setStudentsCount(Long studentsCount) {
-        this.studentsCount = studentsCount;
-    }
-
-    public Long getMastersCount() {
-        return mastersCount;
-    }
-
-    public void setMastersCount(Long mastersCount) {
-        this.mastersCount = mastersCount;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, webAddress);
     }
 }

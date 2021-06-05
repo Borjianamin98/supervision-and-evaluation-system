@@ -7,9 +7,14 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import ir.ac.sbu.evaluation.dto.user.PersonalInfoDto;
 import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.model.user.Master;
+import java.util.Objects;
 import javax.validation.constraints.NotBlank;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @JsonInclude(Include.NON_NULL)
 public class MasterDto extends UserDto {
 
@@ -59,27 +64,25 @@ public class MasterDto extends UserDto {
                 .build();
     }
 
-    public String getDegree() {
-        return degree;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        MasterDto masterDto = (MasterDto) o;
+        return Objects.equals(degree, masterDto.degree) && Objects
+                .equals(universityName, masterDto.universityName) && Objects
+                .equals(facultyName, masterDto.facultyName);
     }
 
-    public void setDegree(String degree) {
-        this.degree = degree;
-    }
-
-    public String getUniversityName() {
-        return universityName;
-    }
-
-    public void setUniversityName(String universityName) {
-        this.universityName = universityName;
-    }
-
-    public String getFacultyName() {
-        return facultyName;
-    }
-
-    public void setFacultyName(String facultyName) {
-        this.facultyName = facultyName;
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), degree, universityName, facultyName);
     }
 }

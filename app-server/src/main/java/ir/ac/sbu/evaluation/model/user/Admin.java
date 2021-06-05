@@ -4,8 +4,12 @@ import ir.ac.sbu.evaluation.security.SecurityRoles;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "admin")
 public class Admin extends User {
 
