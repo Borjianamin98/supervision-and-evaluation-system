@@ -18,15 +18,14 @@ import {generalErrorHandler} from "../../../config/axios-config";
 import browserHistory from "../../../config/browserHistory";
 import {educationMapToPersian} from "../../../model/enum/education";
 import {Role} from "../../../model/enum/role";
-import {ProblemState} from "../../../model/problem/problemState";
 import {Master} from "../../../model/user/master";
 import AuthenticationService from "../../../services/api/AuthenticationService";
-import ProblemAuthenticatedService from "../../../services/api/problem/ProblemAuthenticatedService";
 import ProblemMasterService from "../../../services/api/problem/ProblemMasterService";
 import MasterService from "../../../services/api/user/MasterService";
 import NumberUtils from "../../../utility/NumberUtils";
-import {DASHBOARD_VIEW_PATH, PROBLEM_SCHEDULE_VIEW_PATH} from "../../ViewPaths";
+import {PROBLEM_SCHEDULE_VIEW_PATH} from "../../ViewPaths";
 import ProblemEventsList from "../ProblemEventsList";
+import ProblemSharedFunctions from "../ProblemSharedFunctions";
 import ProblemAddEvent from "./PorblemAddEvent";
 import ProfileInfoCard from "./ProfileInfoCard";
 
@@ -58,16 +57,9 @@ const ProblemManagementView: React.FunctionComponent = () => {
     const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar();
 
-    function illegalAccessHandler(message?: string) {
-        // Access illegal problem by user
-        enqueueSnackbar(message ?? `دسترسی به مسئله مربوطه با توجه به سطح دسترسی شما امکان‌پذیر نمی‌باشد.`,
-            {variant: "error"});
-        browserHistory.push(DASHBOARD_VIEW_PATH);
-    }
-
     const {problemId} = useParams<{ problemId: string }>();
     if (!(+problemId)) {
-        illegalAccessHandler();
+        ProblemSharedFunctions.illegalAccessHandler(enqueueSnackbar);
     }
 
     const queryClient = useQueryClient();
@@ -76,25 +68,7 @@ const ProblemManagementView: React.FunctionComponent = () => {
         isLoading: isProblemLoading,
         isError: isProblemLoadingFailed
     } = useQuery(['problem', +problemId],
-        () => {
-            return ProblemAuthenticatedService.retrieveProblem(+problemId)
-                .then(problem => {
-                    if (problem.state !== ProblemState.IN_PROGRESS && problem.state !== ProblemState.COMPLETED) {
-                        illegalAccessHandler("دسترسی به مسئله مربوطه با توجه به نوع مسئله امکان‌پذیر نمی‌باشد.");
-                    }
-                    return Promise.resolve(problem);
-                })
-                .catch(error => {
-                    if (error.response) {
-                        if (error.response.status === 403) {
-                            illegalAccessHandler();
-                        } else if (error.response.status === 404) {
-                            illegalAccessHandler("مسئله مربوطه یافت نشد.")
-                        }
-                    }
-                    return Promise.reject(error);
-                })
-        }, {
+        () => ProblemSharedFunctions.retrieveProblemForView(enqueueSnackbar, +problemId), {
             keepPreviousData: true
         });
     const referees = problem?.referees;
