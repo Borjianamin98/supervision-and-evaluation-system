@@ -3,6 +3,7 @@ package ir.ac.sbu.evaluation.controller.problem;
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_PROBLEM_STUDENT_ROOT_PATH;
 
 import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
+import ir.ac.sbu.evaluation.dto.problem.ProblemSaveDto;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.service.problem.ProblemService;
@@ -45,15 +46,15 @@ public class ProblemStudentController {
     @ResponseStatus(HttpStatus.CREATED)
     public ProblemDto createProblem(
             @ModelAttribute AuthUserDetail authUserDetail,
-            @Valid @RequestBody ProblemDto problemDto) {
-        return problemService.addProblem(authUserDetail.getUserId(), problemDto);
+            @Valid @RequestBody ProblemSaveDto problemSaveDto) {
+        return problemService.addProblem(authUserDetail.getUserId(), problemSaveDto);
     }
 
     @PutMapping(path = "/{problemId}")
     public ProblemDto update(
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long problemId,
-            @Valid @RequestBody ProblemDto problemDto) {
-        return problemService.updateStudentProblem(authUserDetail.getUserId(), problemId, problemDto);
+            @Valid @RequestBody ProblemSaveDto problemSaveDto) {
+        return problemService.updateProblem(authUserDetail.getUserId(), problemId, problemSaveDto);
     }
 }

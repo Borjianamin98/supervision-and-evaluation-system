@@ -1,6 +1,7 @@
 package ir.ac.sbu.evaluation.service.problem;
 
 import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
+import ir.ac.sbu.evaluation.dto.problem.ProblemSaveDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventCreateDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventDto;
 import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleDto;
@@ -47,14 +48,14 @@ public class ProblemService {
     }
 
     @Transactional
-    public ProblemDto addProblem(long studentUserId, ProblemDto problemDto) {
+    public ProblemDto addProblem(long studentUserId, ProblemSaveDto problemSaveDto) {
         Student student = studentRepository.findById(studentUserId)
-                .orElseThrow(() -> new IllegalArgumentException("Student with given ID not found: " + studentUserId));
-        Master supervisor = masterRepository.findByUsername(problemDto.getSupervisor().getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Master with given username not found: "
-                        + problemDto.getSupervisor().getUsername()));
+                .orElseThrow(() -> new IllegalArgumentException("Student not found: ID = " + studentUserId));
+        Master supervisor = masterRepository.findById(problemSaveDto.getSupervisorId())
+                .orElseThrow(() -> new IllegalArgumentException("Master not found: ID = "
+                        + problemSaveDto.getSupervisorId()));
 
-        Problem problem = problemDto.toProblem();
+        Problem problem = problemSaveDto.toProblem();
         problem.setStudent(student);
         problem.setSupervisor(supervisor);
         problem.setState(ProblemState.CREATED);
@@ -71,19 +72,19 @@ public class ProblemService {
     }
 
     @Transactional
-    public ProblemDto updateStudentProblem(long studentId, long problemId, ProblemDto problemDto) {
+    public ProblemDto updateProblem(long studentId, long problemId, ProblemSaveDto problemSaveDto) {
         Problem problem = getProblem(problemId);
         if (problem.getStudent().getId() != studentId) {
             throw new IllegalResourceAccessException("Problem is not belong to student: " + studentId);
         }
 
-        problem.setEducation(problemDto.getEducation());
-        problem.setTitle(problemDto.getTitle());
-        problem.setEnglishTitle(problemDto.getEnglishTitle());
-        problem.setKeywords(problemDto.getKeywords());
-        problem.setDefinition(problemDto.getDefinition());
-        problem.setHistory(problemDto.getHistory());
-        problem.setConsiderations(problemDto.getConsiderations());
+        problem.setEducation(problemSaveDto.getEducation());
+        problem.setTitle(problemSaveDto.getTitle());
+        problem.setEnglishTitle(problemSaveDto.getEnglishTitle());
+        problem.setKeywords(problemSaveDto.getKeywords());
+        problem.setDefinition(problemSaveDto.getDefinition());
+        problem.setHistory(problemSaveDto.getHistory());
+        problem.setConsiderations(problemSaveDto.getConsiderations());
         problem.getEvents().add(problemEventRepository.save(
                 ProblemEvent.builder().message("اطلاعات مربوط به مسئله ویرایش شد.").build()));
         return ProblemDto.from(problemRepository.save(problem));

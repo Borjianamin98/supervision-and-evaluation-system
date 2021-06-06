@@ -1,47 +1,58 @@
 package ir.ac.sbu.evaluation.dto.problem;
 
-import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleDto;
-import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
-import ir.ac.sbu.evaluation.dto.user.student.StudentDto;
 import ir.ac.sbu.evaluation.enumeration.Education;
-import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.model.problem.Problem;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ProblemDto {
+public class ProblemSaveDto {
 
-    private long id;
+    @NotNull
     private Education education;
+
+    @NotBlank
+    @Size(max = 70)
     private String title;
+
+    @NotBlank
+    @Size(max = 70)
     private String englishTitle;
-    private Set<String> keywords;
+
+    @NotNull
+    @Size(min = 2, max = 5)
+    private Set<@Size(min = 2) String> keywords;
+
+    @NotBlank
+    @Size(max = 1000)
     private String definition;
+
+    @NotNull
+    @Size(max = 1000)
     private String history;
+
+    @NotBlank
+    @Size(max = 1000)
     private String considerations;
-    private ProblemState state;
 
-    private StudentDto student;
-    private MasterDto supervisor;
-    private Set<MasterDto> referees;
+    private Long supervisorId;
 
-    private MeetScheduleDto meetSchedule;
+    public ProblemSaveDto() {
+    }
 
     @Builder
-    public ProblemDto(long id,
-            Education education,
-            String title, String englishTitle, Set<String> keywords,
+    public ProblemSaveDto(Education education,
+            String title, String englishTitle,
+            Set<String> keywords,
             String definition, String history, String considerations,
-            ProblemState state,
-            StudentDto student, MasterDto supervisor, Set<MasterDto> referees,
-            MeetScheduleDto meetSchedule) {
-        this.id = id;
+            Long supervisorId) {
         this.education = education;
         this.title = title;
         this.englishTitle = englishTitle;
@@ -49,26 +60,27 @@ public class ProblemDto {
         this.definition = definition;
         this.history = history;
         this.considerations = considerations;
-        this.state = state;
-        this.student = student;
-        this.supervisor = supervisor;
-        this.referees = referees;
-        this.meetSchedule = meetSchedule;
+        this.supervisorId = supervisorId;
     }
 
-    public static ProblemDto from(Problem problem) {
-        return ProblemDto.builder()
-                .id(problem.getId())
+    public static ProblemSaveDto from(Problem problem) {
+        return ProblemSaveDto.builder()
                 .education(problem.getEducation())
                 .title(problem.getTitle()).englishTitle(problem.getEnglishTitle())
                 .keywords(problem.getKeywords())
                 .definition(problem.getDefinition()).history(problem.getHistory())
                 .considerations(problem.getConsiderations())
-                .state(problem.getState())
-                .student(StudentDto.from(problem.getStudent()))
-                .supervisor(MasterDto.from(problem.getSupervisor()))
-                .referees(problem.getReferees().stream().map(MasterDto::from).collect(Collectors.toSet()))
-                .meetSchedule(MeetScheduleDto.from(problem.getMeetSchedule()))
+                .supervisorId(problem.getSupervisor().getId())
+                .build();
+    }
+
+    public Problem toProblem() {
+        return Problem.builder()
+                .education(education)
+                .title(title).englishTitle(englishTitle)
+                .keywords(keywords)
+                .definition(definition).history(history)
+                .considerations(considerations)
                 .build();
     }
 
@@ -80,20 +92,20 @@ public class ProblemDto {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ProblemDto that = (ProblemDto) o;
-        return id == that.id
-                && education == that.education
+        ProblemSaveDto that = (ProblemSaveDto) o;
+        return education == that.education
                 && Objects.equals(title, that.title)
                 && Objects.equals(englishTitle, that.englishTitle)
                 && Objects.equals(keywords, that.keywords)
                 && Objects.equals(definition, that.definition)
                 && Objects.equals(history, that.history)
                 && Objects.equals(considerations, that.considerations)
-                && state == that.state;
+                && Objects.equals(supervisorId, that.supervisorId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, education, title, englishTitle, keywords, definition, history, considerations, state);
+        return Objects.hash(education, title, englishTitle, keywords, definition, history, considerations,
+                supervisorId);
     }
 }
