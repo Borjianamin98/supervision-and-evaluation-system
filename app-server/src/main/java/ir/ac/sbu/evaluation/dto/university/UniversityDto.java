@@ -2,11 +2,8 @@ package ir.ac.sbu.evaluation.dto.university;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import ir.ac.sbu.evaluation.model.university.University;
 import java.util.Objects;
-import javax.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,17 +13,11 @@ import lombok.Setter;
 @JsonInclude(Include.NON_NULL)
 public class UniversityDto {
 
-    @JsonProperty(access = Access.READ_ONLY)
     private long id;
-
-    @NotBlank
     private String name;
-
     private String location;
-
     private String webAddress;
 
-    @JsonProperty(access = Access.READ_ONLY)
     private Long facultiesCount;
 
     public UniversityDto() {
@@ -53,15 +44,6 @@ public class UniversityDto {
 
     public static UniversityDto from(University university) {
         return from(university, true);
-    }
-
-    public University toUniversity() {
-        return University.builder()
-                .id(id)
-                .name(name)
-                .location(location)
-                .webAddress(webAddress)
-                .build();
     }
 
     @Override

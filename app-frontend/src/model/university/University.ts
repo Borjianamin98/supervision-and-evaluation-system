@@ -1,7 +1,8 @@
 export interface University {
-    id?: number,
+    id: number,
     name: string,
     location: string,
     webAddress: string,
+
     facultiesCount?: number
 }

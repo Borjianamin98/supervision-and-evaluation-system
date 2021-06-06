@@ -1,6 +1,7 @@
 package ir.ac.sbu.evaluation.service.university;
 
 import ir.ac.sbu.evaluation.dto.university.UniversityDto;
+import ir.ac.sbu.evaluation.dto.university.UniversitySaveDto;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
 import ir.ac.sbu.evaluation.model.university.University;
 import ir.ac.sbu.evaluation.repository.university.UniversityRepository;
@@ -21,22 +22,18 @@ public class UniversityService {
         return universityRepository.findByNameContains(nameQuery, pageable).map(UniversityDto::from);
     }
 
-    public UniversityDto register(UniversityDto universityDto) {
-        University university = universityDto.toUniversity();
+    public UniversityDto register(UniversitySaveDto universitySaveDto) {
+        University university = universitySaveDto.toUniversity();
         return UniversityDto.from(universityRepository.save(university));
     }
 
-    public UniversityDto update(long universityId, UniversityDto universityDto) {
+    public UniversityDto update(long universityId, UniversitySaveDto universitySaveDto) {
         University university = universityRepository.findById(universityId)
                 .orElseThrow(() -> new ResourceNotFoundException("University not found: ID = " + universityId));
 
-        university.setName(universityDto.getName());
-        if (universityDto.getLocation() != null) {
-            university.setLocation(universityDto.getLocation());
-        }
-        if (universityDto.getWebAddress() != null) {
-            university.setWebAddress(universityDto.getWebAddress());
-        }
+        university.setName(universitySaveDto.getName());
+        university.setLocation(universitySaveDto.getLocation() == null ? "" : universitySaveDto.getLocation());
+        university.setWebAddress(universitySaveDto.getWebAddress() == null ? "" : universitySaveDto.getWebAddress());
         return UniversityDto.from(universityRepository.save(university));
     }
 

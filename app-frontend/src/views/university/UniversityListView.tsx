@@ -17,7 +17,8 @@ import StatelessPaginationTable from "../../components/Table/StatelessPagination
 import CustomTextField, {CustomTextFieldProps} from "../../components/Text/CustomTextField";
 import {generalErrorHandler} from "../../config/axios-config";
 import {toLoadingState} from "../../model/enum/loadingState";
-import {University} from "../../model/university/university";
+import {University} from "../../model/university/University";
+import {UniversitySave} from "../../model/university/UniversitySave";
 import UniversityService from "../../services/api/university/UniversityService";
 
 const useStyles = makeStyles((theme) => ({
@@ -39,9 +40,10 @@ const UniversityListView: React.FunctionComponent = () => {
     const [errorChecking, setErrorChecking] = React.useState(false);
 
     // University used to create a new one
-    const [newUniversity, setNewUniversity] = React.useState<University>(UniversityService.createInitialUniversity());
+    const [newUniversity, setNewUniversity] = React.useState(UniversityService.createInitialUniversitySave());
     // University used to be in dialog and modified
-    const [modifyUniversity, setModifyUniversity] = React.useState<University>(UniversityService.createInitialUniversity());
+    const [modifyUniversityId, setModifyUniversityId] = React.useState<number>();
+    const [modifyUniversity, setModifyUniversity] = React.useState(UniversityService.createInitialUniversitySave());
 
     const queryClient = useQueryClient();
     const {data: universities, ...universitiesQuery} = useQuery(['universities', rowsPerPage, page],
@@ -49,12 +51,12 @@ const UniversityListView: React.FunctionComponent = () => {
             keepPreviousData: true
         });
     const registerUniversity = useMutation(
-        (university: University) => UniversityService.registerUniversity(university),
+        (universitySave: UniversitySave) => UniversityService.registerUniversity(universitySave),
         {
             onSuccess: data => queryClient.invalidateQueries(['universities', rowsPerPage, page]).then(() => {
                 enqueueSnackbar(`دانشگاه ${data.name} با موفقیت اضافه شد.`, {variant: "success"});
                 setErrorChecking(false);
-                setNewUniversity(UniversityService.createInitialUniversity());
+                setNewUniversity(UniversityService.createInitialUniversitySave());
             }),
             onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
@@ -84,12 +86,13 @@ const UniversityListView: React.FunctionComponent = () => {
 
     const [updateDialogOpen, setUpdateDialogOpen] = React.useState(false);
     const handleUpdateDialogOpen = (university: University) => {
+        setModifyUniversityId(university.id);
         setModifyUniversity(university);
         setUpdateDialogOpen(true);
     };
     const handleUpdateDialogClose = (shouldUpdate: boolean) => {
         if (shouldUpdate) {
-            updateUniversity.mutate([modifyUniversity.id!, modifyUniversity]);
+            updateUniversity.mutate([modifyUniversityId!, modifyUniversity]);
         }
         setUpdateDialogOpen(false);
     };

@@ -6,7 +6,7 @@ import ComboBox from "../../../components/ComboBox/ComboBox";
 import {VirtualizedListBoxComponent, VirtualizedListBoxStyles} from "../../../components/ComboBox/VirtualizedComboBox";
 import CustomTextField from "../../../components/Text/CustomTextField";
 import {Role, roleMapToEnglish, roleMapToPersian} from "../../../model/enum/role";
-import {University} from "../../../model/university/university";
+import {University} from "../../../model/university/University";
 import FacultyService from "../../../services/api/university/faculty/FacultyService";
 import UniversityService from "../../../services/api/university/UniversityService";
 import StudentService from "../../../services/api/user/StudentService";
@@ -14,7 +14,7 @@ import {SignUpSectionsProps} from "./SignUpView";
 
 const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (props) => {
     const {commonClasses, extraUserInfo, setExtraUserInfo, faculty, updateFaculty, errorChecking} = props;
-    const [university, setUniversity] = useState<University>(UniversityService.createInitialUniversity());
+    const [university, setUniversity] = useState<University>();
 
     function retrieveUniversities(inputValue: string) {
         return UniversityService.retrieveUniversities(100, 0, inputValue)
@@ -22,7 +22,7 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
     }
 
     function retrieveUniversityFaculties(inputValue: string) {
-        return FacultyService.retrieveUniversityFaculties(university.id!, 100, 0, inputValue)
+        return FacultyService.retrieveUniversityFaculties(university!.id, 100, 0, inputValue)
             .then(value => value.content)
     }
 
@@ -49,10 +49,12 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
                 loadingFunction={retrieveUniversities}
                 textFieldInputProps={{
                     label: "دانشگاه",
-                    helperText: (isBlank(university.name) ? "دانشگاه مربوطه باید انتخاب شود." : ""),
-                    error: isBlank(university.name),
+                    helperText: (isBlank(university?.name) ? "دانشگاه مربوطه باید انتخاب شود." : ""),
+                    error: isBlank(university?.name),
                 }}
-                value={university}
+                // Initial value is necessary for comboBox to become controlled component.
+                // More info: https://stackoverflow.com/a/37427596/3739748
+                value={university ?? {id: 0, name: "", location: "", webAddress: ""}}
                 onChange={(e, newValue) => {
                     setUniversity(newValue);
                     updateFaculty(undefined);
@@ -75,7 +77,7 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
                 // More info: https://stackoverflow.com/a/37427596/3739748
                 value={faculty ?? {id: 0, name: "", webAddress: ""}}
                 onChange={(e, newValue) => updateFaculty(newValue)}
-                disabled={university.name.length === 0}
+                disabled={university === undefined}
             />
             <CustomAlert severity="info">
                 در صورت وجود تعداد زیادی نتیجه، تنها بخشی از آن نمایش داده می‌شود. برای یافتن سریع‌تر، جستجوی خود را

@@ -1,6 +1,7 @@
 import apiAxios from "../../../config/axios-config";
 import {Pageable} from "../../../model/pageable";
-import {University} from "../../../model/university/university";
+import {University} from "../../../model/university/University";
+import {UniversitySave} from "../../../model/university/UniversitySave";
 
 class UniversityService {
 
@@ -10,7 +11,7 @@ class UniversityService {
     private constructor() {
     }
 
-    static createInitialUniversity(): University {
+    static createInitialUniversitySave(): UniversitySave {
         return {
             name: "",
             location: "",
@@ -29,14 +30,14 @@ class UniversityService {
             }).then(response => response.data)
     }
 
-    static registerUniversity(university: University) {
-        return apiAxios.post<University>(UniversityService.API_UNIVERSITY_REGISTER_PATH, university)
+    static registerUniversity(universitySave: UniversitySave) {
+        return apiAxios.post<University>(UniversityService.API_UNIVERSITY_REGISTER_PATH, universitySave)
             .then(response => response.data)
     }
 
-    static updateUniversity(universityId: number, university: University) {
+    static updateUniversity(universityId: number, universitySave: UniversitySave) {
         return apiAxios.put<University>(`${UniversityService.API_UNIVERSITY_ROOT_PATH}/${universityId}`,
-            university).then(response => response.data)
+            universitySave).then(response => response.data)
     }
 
     static deleteUniversity(universityId: number) {
@@ -44,8 +45,8 @@ class UniversityService {
             .then(response => response.data)
     }
 
-    static isUniversityValid(university: University) {
-        return university.name.length > 0;
+    static isUniversityValid(universitySave: UniversitySave) {
+        return universitySave.name.length > 0;
     }
 }
 

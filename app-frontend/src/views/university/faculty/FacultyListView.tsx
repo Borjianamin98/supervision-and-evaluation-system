@@ -21,7 +21,7 @@ import CustomTextField, {CustomTextFieldProps} from "../../../components/Text/Cu
 import {generalErrorHandler} from "../../../config/axios-config";
 import {toLoadingState} from "../../../model/enum/loadingState";
 import {Faculty} from "../../../model/university/faculty/faculty";
-import {University} from "../../../model/university/university";
+import {University} from "../../../model/university/University";
 import FacultyService from "../../../services/api/university/faculty/FacultyService";
 import UniversityService from "../../../services/api/university/UniversityService";
 
@@ -160,7 +160,7 @@ const FacultyListView: React.FunctionComponent = () => {
                             }}
                             // Initial value is necessary for comboBox to become controlled component.
                             // More info: https://stackoverflow.com/a/37427596/3739748
-                            value={selectedUniversity ?? {name: "", location: "", webAddress: ""}}
+                            value={selectedUniversity ?? {id: 0, name: "", location: "", webAddress: ""}}
                             onChange={(e, newValue) => {
                                 setSelectedUniversity(newValue);
                                 setNewFaculty(FacultyService.createInitialFacultySave());

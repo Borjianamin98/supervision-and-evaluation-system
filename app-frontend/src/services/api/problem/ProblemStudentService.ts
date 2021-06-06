@@ -3,7 +3,6 @@ import {Education, ENGLISH_EDUCATIONS} from "../../../model/enum/education";
 import {Pageable} from "../../../model/pageable";
 import {Problem, ProblemSave} from "../../../model/problem/problem";
 import {ProblemState} from "../../../model/problem/problemState";
-import {University} from "../../../model/university/university";
 import {API_PROBLEM_ROOT_PATH} from "../../ApiPaths";
 
 class ProblemStudentService {
@@ -45,7 +44,7 @@ class ProblemStudentService {
     }
 
     static updateProblem(problemId: number, problemSave: ProblemSave) {
-        return apiAxios.put<University>(`${ProblemStudentService.API_PROBLEM_STUDENT_ROOT_PATH}/${problemId}`,
+        return apiAxios.put<Problem>(`${ProblemStudentService.API_PROBLEM_STUDENT_ROOT_PATH}/${problemId}`,
             problemSave).then(response => response.data);
     }
 

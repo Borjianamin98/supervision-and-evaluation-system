@@ -3,6 +3,7 @@ package ir.ac.sbu.evaluation.controller.university;
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_UNIVERSITY_ROOT_PATH;
 
 import ir.ac.sbu.evaluation.dto.university.UniversityDto;
+import ir.ac.sbu.evaluation.dto.university.UniversitySaveDto;
 import ir.ac.sbu.evaluation.service.university.UniversityService;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -45,13 +46,13 @@ public class UniversityController {
         return universityService.delete(universityId);
     }
 
-    @PutMapping(path = "/{universityId}")
-    public UniversityDto update(@PathVariable long universityId, @Valid @RequestBody UniversityDto universityDto) {
-        return universityService.update(universityId, universityDto);
+    @PostMapping(path = API_UNIVERSITY_REGISTER_PATH)
+    public UniversityDto register(@Valid @RequestBody UniversitySaveDto universitySaveDto) {
+        return universityService.register(universitySaveDto);
     }
 
-    @PostMapping(path = API_UNIVERSITY_REGISTER_PATH)
-    public UniversityDto register(@Valid @RequestBody UniversityDto universityDto) {
-        return universityService.register(universityDto);
+    @PutMapping(path = "/{universityId}")
+    public UniversityDto update(@PathVariable long universityId, @Valid @RequestBody UniversitySaveDto universitySaveDto) {
+        return universityService.update(universityId, universitySaveDto);
     }
 }
