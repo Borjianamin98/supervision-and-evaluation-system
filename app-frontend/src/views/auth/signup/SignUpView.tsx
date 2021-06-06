@@ -14,11 +14,10 @@ import ButtonLink from "../../../components/Button/ButtonLink";
 import {generalErrorHandler} from "../../../config/axios-config";
 import browserHistory from "../../../config/browserHistory";
 import {ENGLISH_ROLES, Role} from "../../../model/enum/role";
-import {Faculty} from "../../../model/university/faculty";
+import {Faculty} from "../../../model/university/faculty/faculty";
 import {MasterSpecialInfo} from "../../../model/user/master";
 import {StudentSpecialInfo} from "../../../model/user/student";
 import {User} from "../../../model/user/user";
-import FacultyService from "../../../services/api/university/faculty/FacultyService";
 import MasterService from "../../../services/api/user/MasterService";
 import StudentService from "../../../services/api/user/StudentService";
 import UserService from "../../../services/api/user/UserService";
@@ -58,22 +57,23 @@ export interface SignUpSectionsProps {
     commonClasses: ClassNameMap,
     user: User,
     setUser: React.Dispatch<React.SetStateAction<User>>,
-    faculty: Faculty,
-    setFaculty: React.Dispatch<React.SetStateAction<Faculty>>,
+    faculty?: Faculty,
+    updateFaculty: (faculty?: Faculty) => void,
     extraUserInfo: ExtraUserInfo,
     setExtraUserInfo: React.Dispatch<React.SetStateAction<ExtraUserInfo>>,
     errorChecking: boolean,
 }
 
-const SignUpView: React.FunctionComponent = (props) => {
+const SignUpView: React.FunctionComponent = () => {
     const classes = useStyles();
     const commonClasses = useCommonStyles();
+    const {enqueueSnackbar} = useSnackbar();
+    const [errorChecking, setErrorChecking] = React.useState(false);
+
     const [user, setUser] = useState<User>(UserService.createInitialUser());
-    const [faculty, setFaculty] = useState<Faculty>(FacultyService.createInitialFaculty());
     const [extraUserInfo, setExtraUserInfo] = useState<ExtraUserInfo>(
         {degree: "", studentNumber: "", role: ENGLISH_ROLES[0]});
-    const [errorChecking, setErrorChecking] = React.useState(false);
-    const {enqueueSnackbar} = useSnackbar();
+    const [faculty, setFaculty] = useState<Faculty>();
 
     const sectionProps: SignUpSectionsProps = {
         commonClasses,
@@ -81,7 +81,7 @@ const SignUpView: React.FunctionComponent = (props) => {
         setUser,
         user,
         faculty,
-        setFaculty,
+        updateFaculty: faculty => setFaculty(faculty),
         extraUserInfo,
         setExtraUserInfo
     }
@@ -93,7 +93,7 @@ const SignUpView: React.FunctionComponent = (props) => {
 
     const formSubmitHandler: FormEventHandler = (event) => {
         event.preventDefault();
-        if (!UserService.isUserValid(user)) {
+        if (!UserService.isUserValid(user) || !faculty) {
             setErrorChecking(true);
             return;
         }
@@ -103,7 +103,7 @@ const SignUpView: React.FunctionComponent = (props) => {
                     ...user,
                     studentNumber: extraUserInfo.studentNumber,
                 },
-                facultyId: faculty.id!
+                facultyId: faculty.id
             }).then(value => handleSuccessSubmit()).catch(error => generalErrorHandler(error, enqueueSnackbar))
         } else if (extraUserInfo.role === Role.MASTER && extraUserInfo.degree.length > 1) {
             MasterService.registerMaster({
@@ -111,7 +111,7 @@ const SignUpView: React.FunctionComponent = (props) => {
                     ...user,
                     degree: extraUserInfo.degree,
                 },
-                facultyId: faculty.id!
+                facultyId: faculty.id
             }).then(value => handleSuccessSubmit()).catch(error => generalErrorHandler(error, enqueueSnackbar))
         } else {
             setErrorChecking(true);

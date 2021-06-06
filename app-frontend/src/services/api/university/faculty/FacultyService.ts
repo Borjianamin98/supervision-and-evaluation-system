@@ -1,6 +1,7 @@
 import apiAxios from "../../../../config/axios-config";
 import {Pageable} from "../../../../model/pageable";
-import {Faculty} from "../../../../model/university/faculty";
+import {Faculty} from "../../../../model/university/faculty/faculty";
+import {FacultySave} from "../../../../model/university/faculty/facultySave";
 
 class FacultyService {
 
@@ -10,7 +11,7 @@ class FacultyService {
     private constructor() {
     }
 
-    static createInitialFaculty(): Faculty {
+    static createInitialFacultySave(): FacultySave {
         return {
             name: "",
             webAddress: "",
@@ -29,9 +30,9 @@ class FacultyService {
             }).then(response => response.data);
     }
 
-    static registerFaculty(universityId: number, faculty: Faculty) {
+    static registerFaculty(universityId: number, facultySave: FacultySave) {
         return apiAxios.post<Faculty>(FacultyService.API_FACULTY_REGISTER_PATH,
-            faculty,
+            facultySave,
             {
                 params: {
                     universityId: universityId,
@@ -39,8 +40,8 @@ class FacultyService {
             }).then(response => response.data);
     }
 
-    static updateFaculty(facultyId: number, faculty: Faculty) {
-        return apiAxios.put<Faculty>(`${FacultyService.API_FACULTY_ROOT_PATH}/${facultyId}`, faculty)
+    static updateFaculty(facultyId: number, facultySave: FacultySave) {
+        return apiAxios.put<Faculty>(`${FacultyService.API_FACULTY_ROOT_PATH}/${facultyId}`, facultySave)
             .then(response => response.data);
     }
 
@@ -49,8 +50,8 @@ class FacultyService {
             .then(response => response.data);
     }
 
-    static isFacultyValid(faculty: Faculty) {
-        return faculty.name.length > 0;
+    static isFacultyValid(facultySave: FacultySave) {
+        return facultySave.name.length > 0;
     }
 }
 

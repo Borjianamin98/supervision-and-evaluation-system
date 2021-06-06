@@ -63,17 +63,6 @@ public class ProblemSaveDto {
         this.supervisorId = supervisorId;
     }
 
-    public static ProblemSaveDto from(Problem problem) {
-        return ProblemSaveDto.builder()
-                .education(problem.getEducation())
-                .title(problem.getTitle()).englishTitle(problem.getEnglishTitle())
-                .keywords(problem.getKeywords())
-                .definition(problem.getDefinition()).history(problem.getHistory())
-                .considerations(problem.getConsiderations())
-                .supervisorId(problem.getSupervisor().getId())
-                .build();
-    }
-
     public Problem toProblem() {
         return Problem.builder()
                 .education(education)

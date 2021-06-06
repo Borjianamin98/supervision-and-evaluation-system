@@ -1,5 +1,5 @@
 export interface Faculty {
-    id?: number,
+    id: number,
     name: string,
     webAddress: string,
 

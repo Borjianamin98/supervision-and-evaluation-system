@@ -20,7 +20,7 @@ import StatelessPaginationTable from "../../../components/Table/StatelessPaginat
 import CustomTextField, {CustomTextFieldProps} from "../../../components/Text/CustomTextField";
 import {generalErrorHandler} from "../../../config/axios-config";
 import {toLoadingState} from "../../../model/enum/loadingState";
-import {Faculty} from "../../../model/university/faculty";
+import {Faculty} from "../../../model/university/faculty/faculty";
 import {University} from "../../../model/university/university";
 import FacultyService from "../../../services/api/university/faculty/FacultyService";
 import UniversityService from "../../../services/api/university/UniversityService";
@@ -42,26 +42,27 @@ const FacultyListView: React.FunctionComponent = () => {
     const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar();
 
-    const [selectedUniversity, setSelectedUniversity] = useState<University>();
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [noDataMessage, setNoDataMessage] = React.useState("دانشکده‌ای تعریف نشده است.");
     const [errorChecking, setErrorChecking] = React.useState(false);
 
+    const [selectedUniversity, setSelectedUniversity] = useState<University>();
     // Faculty used to create a new one
-    const [newFaculty, setNewFaculty] = React.useState<Faculty>(FacultyService.createInitialFaculty());
+    const [newFaculty, setNewFaculty] = React.useState(FacultyService.createInitialFacultySave());
     // Faculty used to be in dialog and modified
-    const [modifyFaculty, setModifyFaculty] = React.useState<Faculty>(FacultyService.createInitialFaculty());
+    const [modifyFacultyId, setModifyFacultyId] = React.useState<number>();
+    const [modifyFaculty, setModifyFaculty] = React.useState(FacultyService.createInitialFacultySave());
 
     const queryClient = useQueryClient();
     const {data: faculties, ...facultiesQuery} = useQuery(['faculties', selectedUniversity, rowsPerPage, page],
         () => {
-            if (!selectedUniversity) {
+            if (!selectedUniversity?.id) {
                 setNoDataMessage("دانشگاهی انتخاب نشده است.");
                 return;
             }
             setNoDataMessage("دانشکده‌ای تعریف نشده است.");
-            return FacultyService.retrieveUniversityFaculties(selectedUniversity.id!, rowsPerPage, page);
+            return FacultyService.retrieveUniversityFaculties(selectedUniversity.id, rowsPerPage, page);
         }, {
             keepPreviousData: true
         });
@@ -69,45 +70,46 @@ const FacultyListView: React.FunctionComponent = () => {
     const registerFaculty = useMutation(
         (data: Parameters<typeof FacultyService.registerFaculty>) => FacultyService.registerFaculty(data[0], data[1]),
         {
-            onSuccess: data => queryClient.invalidateQueries(['faculties', selectedUniversity, rowsPerPage, page]).then(() => {
+            onSuccess: (data, variables) => queryClient.invalidateQueries(['faculties', variables[0], rowsPerPage, page]).then(() => {
                 enqueueSnackbar(`دانشکده ${data.name} با موفقیت اضافه شد.`, {variant: "success"});
                 setErrorChecking(false);
-                setNewFaculty(FacultyService.createInitialFaculty());
+                setNewFaculty(FacultyService.createInitialFacultySave());
             }),
             onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
     const updateFaculty = useMutation(
         (data: Parameters<typeof FacultyService.updateFaculty>) => FacultyService.updateFaculty(...data),
         {
-            onSuccess: data => queryClient.invalidateQueries(['faculties', selectedUniversity, rowsPerPage, page])
+            onSuccess: data => queryClient.invalidateQueries(['faculties', selectedUniversity!.id!, rowsPerPage, page])
                 .then(() => enqueueSnackbar(`دانشکده ${data.name} با موفقیت ویرایش شد.`, {variant: "success"})),
             onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
     const deleteFaculty = useMutation(
         (facultyId: number) => FacultyService.deleteFaculty(facultyId),
         {
-            onSuccess: data => queryClient.invalidateQueries(['faculties', selectedUniversity])
+            onSuccess: data => queryClient.invalidateQueries(['faculties', selectedUniversity!.id!])
                 .then(() => enqueueSnackbar(`دانشکده ${data.name} با موفقیت حذف شد.`, {variant: "success"})),
             onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
 
     const registerHandler: React.MouseEventHandler<HTMLButtonElement> = (event) => {
         event.preventDefault();
-        if (!selectedUniversity || !FacultyService.isFacultyValid(newFaculty)) {
+        if (!selectedUniversity?.id || !FacultyService.isFacultyValid(newFaculty)) {
             setErrorChecking(true);
             return;
         }
-        registerFaculty.mutate([selectedUniversity.id!, newFaculty]);
+        registerFaculty.mutate([selectedUniversity.id, newFaculty]);
     }
 
     const [updateDialogOpen, setUpdateDialogOpen] = React.useState(false);
     const handleUpdateDialogOpen = (faculty: Faculty) => {
+        setModifyFacultyId(faculty.id);
         setModifyFaculty(faculty);
         setUpdateDialogOpen(true);
     };
     const handleDialogClose = (shouldUpdate: boolean) => {
         if (shouldUpdate) {
-            updateFaculty.mutate([modifyFaculty.id!, modifyFaculty]);
+            updateFaculty.mutate([modifyFacultyId!, modifyFaculty]);
         }
         setUpdateDialogOpen(false);
     };
@@ -156,10 +158,12 @@ const FacultyListView: React.FunctionComponent = () => {
                                 helperText: (isBlank(selectedUniversity?.name) ? "دانشگاه مربوطه باید انتخاب شود." : ""),
                                 error: isBlank(selectedUniversity?.name),
                             }}
-                            value={selectedUniversity}
+                            // Initial value is necessary for comboBox to become controlled component.
+                            // More info: https://stackoverflow.com/a/37427596/3739748
+                            value={selectedUniversity ?? {name: "", location: "", webAddress: ""}}
                             onChange={(e, newValue) => {
                                 setSelectedUniversity(newValue);
-                                setNewFaculty(FacultyService.createInitialFaculty());
+                                setNewFaculty(FacultyService.createInitialFacultySave());
                             }}
                         />
                     </Grid>

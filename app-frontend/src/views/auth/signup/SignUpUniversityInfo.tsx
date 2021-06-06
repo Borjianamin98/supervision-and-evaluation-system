@@ -13,7 +13,7 @@ import StudentService from "../../../services/api/user/StudentService";
 import {SignUpSectionsProps} from "./SignUpView";
 
 const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (props) => {
-    const {commonClasses, extraUserInfo, setExtraUserInfo, faculty, setFaculty, errorChecking} = props;
+    const {commonClasses, extraUserInfo, setExtraUserInfo, faculty, updateFaculty, errorChecking} = props;
     const [university, setUniversity] = useState<University>(UniversityService.createInitialUniversity());
 
     function retrieveUniversities(inputValue: string) {
@@ -32,7 +32,7 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
     }
 
     const isStudentNumberValid = (c: string) => !errorChecking || StudentService.isStudentNumberValid(c);
-    const isNotBlank = (c: string) => !errorChecking || c.length > 0;
+    const isBlank = (c?: string) => errorChecking && (!c || c.length === 0);
 
     return (
         <React.Fragment>
@@ -49,13 +49,13 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
                 loadingFunction={retrieveUniversities}
                 textFieldInputProps={{
                     label: "دانشگاه",
-                    helperText: (isNotBlank(university.name) ? "" : "دانشگاه مربوطه باید انتخاب شود."),
-                    error: !isNotBlank(university.name),
+                    helperText: (isBlank(university.name) ? "دانشگاه مربوطه باید انتخاب شود." : ""),
+                    error: isBlank(university.name),
                 }}
                 value={university}
                 onChange={(e, newValue) => {
                     setUniversity(newValue);
-                    setFaculty(FacultyService.createInitialFaculty());
+                    updateFaculty(undefined);
                 }}
             />
             <AsynchronousComboBox
@@ -68,11 +68,13 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
                 loadingFunction={retrieveUniversityFaculties}
                 textFieldInputProps={{
                     label: "دانشکده",
-                    helperText: (isNotBlank(faculty.name) ? "" : "دانشکده مربوطه باید انتخاب شود."),
-                    error: !isNotBlank(faculty.name),
+                    helperText: (isBlank(faculty?.name) ? "دانشکده مربوطه باید انتخاب شود." : ""),
+                    error: isBlank(faculty?.name),
                 }}
-                value={faculty}
-                onChange={(e, newValue) => setFaculty(newValue)}
+                // Initial value is necessary for comboBox to become controlled component.
+                // More info: https://stackoverflow.com/a/37427596/3739748
+                value={faculty ?? {id: 0, name: "", webAddress: ""}}
+                onChange={(e, newValue) => updateFaculty(newValue)}
                 disabled={university.name.length === 0}
             />
             <CustomAlert severity="info">
@@ -86,8 +88,8 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
                     setExtraUserInfo({...extraUserInfo, role: roleMapToEnglish(newValue)})}
                 textFieldInputProps={{
                     label: "نوع کاربری",
-                    helperText: (isNotBlank(extraUserInfo.role) ? "" : "نوع کاربری باید انتخاب شود."),
-                    error: !isNotBlank(extraUserInfo.role),
+                    helperText: (isBlank(extraUserInfo.role) ? "نوع کاربری باید انتخاب شود." : ""),
+                    error: isBlank(extraUserInfo.role),
                 }}
             />
             {extraUserInfo.role === Role.MASTER ? <CustomTextField
@@ -96,8 +98,8 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
                 value={extraUserInfo.degree}
                 onChange={(e) =>
                     setExtraUserInfo({...extraUserInfo, degree: e.target.value})}
-                helperText={isNotBlank(extraUserInfo.degree) ? "" : "مدرک تصحیلی را باید مشخص کنید."}
-                error={!isNotBlank(extraUserInfo.degree)}
+                helperText={isBlank(extraUserInfo.degree) ? "مدرک تصحیلی را باید مشخص کنید." : ""}
+                error={isBlank(extraUserInfo.degree)}
                 maxLength={40}
             /> : undefined}
             {extraUserInfo.role === Role.STUDENT ? <CustomTextField

@@ -2,7 +2,8 @@ package ir.ac.sbu.evaluation.controller.university;
 
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_FACULTY_ROOT_PATH;
 
-import ir.ac.sbu.evaluation.dto.university.FacultyDto;
+import ir.ac.sbu.evaluation.dto.university.faculty.FacultyDto;
+import ir.ac.sbu.evaluation.dto.university.faculty.FacultySaveDto;
 import ir.ac.sbu.evaluation.service.university.FacultyService;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -47,13 +48,13 @@ public class FacultyController {
     }
 
     @PutMapping(path = "/{facultyId}")
-    public FacultyDto update(@PathVariable long facultyId, @Valid @RequestBody FacultyDto facultyDto) {
-        return facultyService.update(facultyId, facultyDto);
+    public FacultyDto update(@PathVariable long facultyId, @Valid @RequestBody FacultySaveDto facultySaveDto) {
+        return facultyService.update(facultyId, facultySaveDto);
     }
 
     @PostMapping(path = API_FACULTY_REGISTER_PATH)
     public FacultyDto register(@RequestParam(name = "universityId") long universityId,
-            @Valid @RequestBody FacultyDto facultyDto) {
-        return facultyService.register(universityId, facultyDto);
+            @Valid @RequestBody FacultySaveDto facultySaveDto) {
+        return facultyService.register(universityId, facultySaveDto);
     }
 }
