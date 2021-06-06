@@ -1,4 +1,4 @@
-import {Badge, MenuItem, MenuList, Paper} from "@material-ui/core";
+import {Badge, MenuItem, MenuList} from "@material-ui/core";
 import Divider from '@material-ui/core/Divider';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -46,47 +46,43 @@ const MainViewAppBar: React.FunctionComponent = () => {
                     </Badge>
                 }>
                 {
-                    popperClose => <Paper>
-                        <MenuList>
-                            <MenuItem
-                                className={classes.dropdownItem}
-                                onClick={() => popperClose()}
-                            >
-                                پیامی وجود ندارد.
-                            </MenuItem>
-                        </MenuList>
-                    </Paper>
+                    ({menuListProps, popperClose}) => <MenuList {...menuListProps}>
+                        <MenuItem
+                            className={classes.dropdownItem}
+                            onClick={popperClose}
+                        >
+                            پیامی وجود ندارد.
+                        </MenuItem>
+                    </MenuList>
                 }
             </PopperIconButton>
             <PopperIconButton icon={<PersonIcon/>}>
                 {
-                    popperClose => <Paper>
-                        <MenuList>
-                            <MenuItem
-                                component={Link}
-                                to={PROFILE_VIEW_PATH}
-                                className={classes.dropdownItem}
-                                onClick={() => popperClose()}
-                            >
-                                حساب کاربری
-                            </MenuItem>
-                            <MenuItem
-                                component={Link}
-                                to={SETTINGS_VIEW_PATH}
-                                className={classes.dropdownItem}
-                                onClick={() => popperClose()}
-                            >
-                                تنظیمات
-                            </MenuItem>
-                            <Divider/>
-                            <MenuItem
-                                onClick={() => AuthenticationService.logout()}
-                                className={classes.dropdownItem}
-                            >
-                                خروج
-                            </MenuItem>
-                        </MenuList>
-                    </Paper>
+                    ({menuListProps, popperClose}) => <MenuList {...menuListProps}>
+                        <MenuItem
+                            component={Link}
+                            to={PROFILE_VIEW_PATH}
+                            className={classes.dropdownItem}
+                            onClick={popperClose}
+                        >
+                            حساب کاربری
+                        </MenuItem>
+                        <MenuItem
+                            component={Link}
+                            to={SETTINGS_VIEW_PATH}
+                            className={classes.dropdownItem}
+                            onClick={popperClose}
+                        >
+                            تنظیمات
+                        </MenuItem>
+                        <Divider/>
+                        <MenuItem
+                            onClick={() => AuthenticationService.logout()}
+                            className={classes.dropdownItem}
+                        >
+                            خروج
+                        </MenuItem>
+                    </MenuList>
                 }
             </PopperIconButton>
         </>

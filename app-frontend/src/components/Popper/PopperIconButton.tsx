@@ -1,48 +1,69 @@
-import {ClickAwayListener, Fade, IconButtonProps, Popper} from "@material-ui/core";
+import {ClickAwayListener, Grow, IconButtonProps, MenuListProps, Paper, Popper} from "@material-ui/core";
 import IconButton from '@material-ui/core/IconButton';
 import React from 'react';
 
-type PopperIconButtonProps = Omit<IconButtonProps, "aria-owns" | "aria-haspopup" | "onClick"> & {
+type PopperIconButtonChildren = {
+    menuListProps: MenuListProps,
+    popperClose: (event: React.MouseEvent<EventTarget>) => void,
+}
+
+type PopperIconButtonProps = Omit<IconButtonProps, "aria-controls" | "aria-haspopup" | "onClick"> & {
     icon: React.ReactNode,
-    children: (popperClose: () => void) => React.ReactNode,
+    children: (props: PopperIconButtonChildren) => React.ReactNode,
 };
 
 const PopperIconButton: React.FunctionComponent<PopperIconButtonProps> = (props) => {
     const {icon, ...rest} = props;
 
-    const [buttonAnchorEl, setButtonAnchorEl] = React.useState<null | HTMLElement>(null);
-    const openPopperId = Boolean(buttonAnchorEl) ? 'transitions-popper' : undefined;
-    const handlePopperClose = () => {
-        setButtonAnchorEl(null);
+    const [open, setOpen] = React.useState(false);
+    const anchorRef = React.useRef<HTMLButtonElement>(null);
+
+    const handleToggle = () => {
+        setOpen((prevOpen) => !prevOpen);
     };
-    const handleClickButton = (event: React.MouseEvent<HTMLElement>) => {
-        setButtonAnchorEl(buttonAnchorEl ? null : event.currentTarget);
+    const handleClose = (event: React.MouseEvent<EventTarget>) => {
+        if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
+            return;
+        }
+        setOpen(false);
     };
 
     return (
         <div>
             <IconButton
                 color="inherit"
-                aria-owns={openPopperId}
+                ref={anchorRef}
+                aria-controls={open ? 'menu-list-grow' : undefined}
                 aria-haspopup="true"
-                onClick={handleClickButton}
+                onClick={handleToggle}
                 {...rest}
             >
                 {icon}
             </IconButton>
             <Popper
-                id={openPopperId}
-                open={Boolean(buttonAnchorEl)}
-                anchorEl={buttonAnchorEl}
+                open={open}
+                anchorEl={anchorRef.current}
+                role={undefined}
                 transition
                 disablePortal
             >
-                {({TransitionProps}) => (
-                    <Fade {...TransitionProps} timeout={350}>
-                        <ClickAwayListener onClickAway={handlePopperClose}>
-                            {props.children(handlePopperClose)}
-                        </ClickAwayListener>
-                    </Fade>
+                {({TransitionProps, placement}) => (
+                    <Grow
+                        {...TransitionProps}
+                        style={{transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom'}}
+                    >
+                        <Paper>
+                            <ClickAwayListener onClickAway={handleClose}>
+                                {props.children({
+                                    menuListProps: {
+                                        id: "menu-list-grow",
+                                        autoFocusItem: open,
+                                    },
+                                    popperClose: handleClose,
+                                })}
+                            </ClickAwayListener>
+                        </Paper>
+                    </Grow>
                 )}
             </Popper>
         </div>
