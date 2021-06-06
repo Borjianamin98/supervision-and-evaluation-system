@@ -45,7 +45,7 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
                 getOptionLabel={(option) => option.name}
                 renderOption={(option) => <Typography noWrap>{option.name}</Typography>}
                 extraClasses={VirtualizedListBoxStyles()}
-                ListboxComponent={VirtualizedListBoxComponent as React.ComponentType<React.HTMLAttributes<HTMLElement>>}
+                ListboxComponent={VirtualizedListBoxComponent}
                 loadingFunction={retrieveUniversities}
                 textFieldInputProps={{
                     label: "دانشگاه",
@@ -64,7 +64,7 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
                 getOptionLabel={(option) => option.name}
                 renderOption={(option) => <Typography noWrap>{option.name}</Typography>}
                 extraClasses={VirtualizedListBoxStyles()}
-                ListboxComponent={VirtualizedListBoxComponent as React.ComponentType<React.HTMLAttributes<HTMLElement>>}
+                ListboxComponent={VirtualizedListBoxComponent}
                 loadingFunction={retrieveUniversityFaculties}
                 textFieldInputProps={{
                     label: "دانشکده",

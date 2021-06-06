@@ -104,7 +104,7 @@ const ProblemEditGeneralInfo: React.FunctionComponent<ProblemEditSectionsProps> 
                 getOptionLabel={(option) => option.fullName!}
                 renderOption={(option) => <Typography noWrap>{option.fullName!}</Typography>}
                 extraClasses={VirtualizedListBoxStyles()}
-                ListboxComponent={VirtualizedListBoxComponent as React.ComponentType<React.HTMLAttributes<HTMLElement>>}
+                ListboxComponent={VirtualizedListBoxComponent}
                 loadingFunction={retrieveMasters}
                 textFieldInputProps={{
                     label: "استاد راهنما",

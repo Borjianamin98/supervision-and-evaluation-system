@@ -38,7 +38,7 @@ function useResetCache(data: any) {
 }
 
 // Adapter for react-window
-export const VirtualizedListBoxComponent = React.forwardRef<HTMLDivElement>(function ListboxComponent(props, ref) {
+const VirtualizedListBox = React.forwardRef<HTMLDivElement>(function ListboxComponent(props, ref) {
     const {children, ...other} = props;
     const itemData = React.Children.toArray(children);
     const theme = useTheme();
@@ -83,6 +83,7 @@ export const VirtualizedListBoxComponent = React.forwardRef<HTMLDivElement>(func
         </div>
     );
 });
+export const VirtualizedListBoxComponent = VirtualizedListBox as React.ComponentType<React.HTMLAttributes<HTMLElement>>;
 
 export const VirtualizedListBoxStyles = makeStyles({
     listbox: {

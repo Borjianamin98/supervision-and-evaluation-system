@@ -151,7 +151,7 @@ const FacultyListView: React.FunctionComponent = () => {
                             getOptionLabel={(option) => option.name}
                             renderOption={(option) => <Typography noWrap>{option.name}</Typography>}
                             extraClasses={VirtualizedListBoxStyles()}
-                            ListboxComponent={VirtualizedListBoxComponent as React.ComponentType<React.HTMLAttributes<HTMLElement>>}
+                            ListboxComponent={VirtualizedListBoxComponent}
                             loadingFunction={inputValue => retrieveUniversities(inputValue)}
                             textFieldInputProps={{
                                 label: "دانشگاه",
