@@ -11,6 +11,6 @@ export interface ProblemEvent extends Auditable {
     message: string,
 }
 
-export interface ProblemEventCreate {
+export interface ProblemEventSave {
     message: string,
 }

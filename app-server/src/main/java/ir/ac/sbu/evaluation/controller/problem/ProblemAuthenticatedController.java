@@ -3,7 +3,7 @@ package ir.ac.sbu.evaluation.controller.problem;
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_PROBLEM_ROOT_PATH;
 
 import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
-import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventCreateDto;
+import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventSaveDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventDto;
 import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleDto;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
@@ -47,8 +47,8 @@ public class ProblemAuthenticatedController {
     public ProblemEventDto addProblemEvent(
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long problemId,
-            @Valid @RequestBody ProblemEventCreateDto problemEventCreateDto) {
-        return problemService.addProblemEvent(authUserDetail.getUserId(), problemId, problemEventCreateDto);
+            @Valid @RequestBody ProblemEventSaveDto problemEventSaveDto) {
+        return problemService.addProblemEvent(authUserDetail.getUserId(), problemId, problemEventSaveDto);
     }
 
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.STUDENT_ROLE_NAME, @SecurityRoles.MASTER_ROLE_NAME)")

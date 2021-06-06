@@ -1,7 +1,7 @@
 import apiAxios from "../../../config/axios-config";
 import {Pageable} from "../../../model/pageable";
 import {Problem} from "../../../model/problem/problem";
-import {ProblemEvent, ProblemEventCreate} from "../../../model/problem/problemEvent";
+import {ProblemEvent, ProblemEventSave} from "../../../model/problem/problemEvent";
 import {ProblemState} from "../../../model/problem/problemState";
 import {Master} from "../../../model/user/master";
 import {API_PROBLEM_ROOT_PATH} from "../../ApiPaths";
@@ -24,9 +24,9 @@ class ProblemMasterService {
             }).then(response => response.data);
     }
 
-    static addProblemEvent(problemId: number, problemEventCreate: ProblemEventCreate) {
+    static addProblemEvent(problemId: number, problemEventSave: ProblemEventSave) {
         return apiAxios.post<ProblemEvent>(`${API_PROBLEM_ROOT_PATH}/${problemId}/events`,
-            problemEventCreate).then(response => response.data);
+            problemEventSave).then(response => response.data);
     }
 
     static initialApprovalOfProblem(problemId: number) {

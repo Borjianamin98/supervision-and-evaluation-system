@@ -2,7 +2,7 @@ package ir.ac.sbu.evaluation.service.problem;
 
 import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
 import ir.ac.sbu.evaluation.dto.problem.ProblemSaveDto;
-import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventCreateDto;
+import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventSaveDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventDto;
 import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleDto;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
@@ -139,11 +139,11 @@ public class ProblemService {
     }
 
     @Transactional
-    public ProblemEventDto addProblemEvent(long userId, long problemId, ProblemEventCreateDto problemEventCreateDto) {
+    public ProblemEventDto addProblemEvent(long userId, long problemId, ProblemEventSaveDto problemEventSaveDto) {
         Problem problem = getProblem(problemId);
         checkUserAccessProblem(userId, problem);
 
-        ProblemEvent problemEvent = problemEventCreateDto.toProblemEvent();
+        ProblemEvent problemEvent = problemEventSaveDto.toProblemEvent();
         problemEvent.setProblem(problem);
         ProblemEvent savedProblemEvent = problemEventRepository.save(problemEvent);
         problem.getEvents().add(savedProblemEvent);

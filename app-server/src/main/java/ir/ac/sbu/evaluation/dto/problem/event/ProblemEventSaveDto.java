@@ -10,17 +10,17 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ProblemEventCreateDto {
+public class ProblemEventSaveDto {
 
     @NotBlank
     @Size(max = 1000)
     private String message;
 
-    public ProblemEventCreateDto() {
+    public ProblemEventSaveDto() {
     }
 
     @Builder
-    public ProblemEventCreateDto(String message) {
+    public ProblemEventSaveDto(String message) {
         this.message = message;
     }
 
@@ -38,7 +38,7 @@ public class ProblemEventCreateDto {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ProblemEventCreateDto that = (ProblemEventCreateDto) o;
+        ProblemEventSaveDto that = (ProblemEventSaveDto) o;
         return Objects.equals(message, that.message);
     }
 
