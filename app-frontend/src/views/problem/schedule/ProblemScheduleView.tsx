@@ -28,7 +28,7 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
     const smallScreenMatches = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
     const totalDaysInView = mobileMatches ? 3 : (smallScreenMatches ? 5 : 7);
 
-    const meetScheduleId = problem.meetSchedule!.id;
+    const meetScheduleId = problem.meetSchedule.id;
     const jwtPayloadUserId = AuthenticationService.getJwtPayloadUserId();
 
     const [startDate, setStartDate] = React.useState(DateUtils.getCurrentDate());

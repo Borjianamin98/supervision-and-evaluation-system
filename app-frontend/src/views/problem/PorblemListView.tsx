@@ -35,6 +35,7 @@ import ProblemAuthenticatedService from "../../services/api/problem/ProblemAuthe
 import ProblemMasterService from "../../services/api/problem/ProblemMasterService";
 import ProblemStudentService from "../../services/api/problem/ProblemStudentService";
 import {PROBLEM_EDIT_VIEW_PATH, PROBLEM_MANAGEMENT_VIEW_PATH} from "../ViewPaths";
+import {ProblemEditLocationState} from "./edit/ProblemEdit";
 import ProblemAddEvent from "./management/PorblemAddEvent";
 import ProblemEventsList from "./ProblemEventsList";
 
@@ -99,7 +100,11 @@ const ProblemListView: React.FunctionComponent = () => {
     const onEditClick = (problem: Problem) => {
         browserHistory.push({
             pathname: PROBLEM_EDIT_VIEW_PATH,
-            state: problem
+            state: {
+                problemId: problem.id,
+                problemSave: {...problem, supervisorId: problem.supervisor.id},
+                problemSupervisor: problem.supervisor,
+            } as ProblemEditLocationState
         })
     }
 

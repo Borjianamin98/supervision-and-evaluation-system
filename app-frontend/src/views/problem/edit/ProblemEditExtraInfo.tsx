@@ -5,7 +5,7 @@ import ProblemStudentService from "../../../services/api/problem/ProblemStudentS
 import {ProblemEditSectionsProps} from "./ProblemEdit";
 
 const ProblemEditExtraInfo: React.FunctionComponent<ProblemEditSectionsProps> = (props) => {
-    const {commonClasses, problem, updateProblem, errorChecking} = props;
+    const {commonClasses, problemSave, updateProblemSave, errorChecking} = props;
 
     const isDefinitionValid = (definition: string) =>
         !errorChecking || ProblemStudentService.isDefinitionValid(definition);
@@ -22,17 +22,17 @@ const ProblemEditExtraInfo: React.FunctionComponent<ProblemEditSectionsProps> = 
                 maxLength={ProblemStudentService.MAX_LONG_STRING_LENGTH}
                 multiline={true}
                 rows={4}
-                value={problem.definition}
-                onChange={event => updateProblem({...problem, definition: event.target.value})}
-                helperText={isDefinitionValid(problem.definition) ? "" : "تعریف مسئله در حداقل 15 کلمه توضیح داده شود."}
-                error={!isDefinitionValid(problem.definition)}
+                value={problemSave.definition}
+                onChange={event => updateProblemSave({...problemSave, definition: event.target.value})}
+                helperText={isDefinitionValid(problemSave.definition) ? "" : "تعریف مسئله در حداقل 15 کلمه توضیح داده شود."}
+                error={!isDefinitionValid(problemSave.definition)}
             />
             <CustomTextField
                 label="پیشینه مسئله"
                 multiline={true}
                 rows={4}
-                value={problem.history}
-                onChange={event => updateProblem({...problem, history: event.target.value})}
+                value={problemSave.history}
+                onChange={event => updateProblemSave({...problemSave, history: event.target.value})}
                 maxLength={ProblemStudentService.MAX_LONG_STRING_LENGTH}
             />
             <CustomTextField
@@ -41,10 +41,10 @@ const ProblemEditExtraInfo: React.FunctionComponent<ProblemEditSectionsProps> = 
                 maxLength={ProblemStudentService.MAX_LONG_STRING_LENGTH}
                 multiline={true}
                 rows={4}
-                value={problem.considerations}
-                onChange={event => updateProblem({...problem, considerations: event.target.value})}
-                helperText={isBlank(problem.considerations) ? "ملاحضات مسئله باید ذکر شود." : ""}
-                error={isBlank(problem.considerations)}
+                value={problemSave.considerations}
+                onChange={event => updateProblemSave({...problemSave, considerations: event.target.value})}
+                helperText={isBlank(problemSave.considerations) ? "ملاحضات مسئله باید ذکر شود." : ""}
+                error={isBlank(problemSave.considerations)}
             />
         </React.Fragment>
     );

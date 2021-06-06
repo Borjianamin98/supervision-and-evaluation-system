@@ -15,7 +15,8 @@ import {useLocation} from "react-router-dom";
 import {rtlTheme} from '../../../App';
 import {generalErrorHandler} from "../../../config/axios-config";
 import browserHistory from "../../../config/browserHistory";
-import {Problem} from "../../../model/problem/problem";
+import {ProblemSave} from "../../../model/problem/problem";
+import {Master} from "../../../model/user/master";
 import ProblemStudentService from "../../../services/api/problem/ProblemStudentService";
 import {PROBLEM_LIST_VIEW_PATH} from "../../ViewPaths";
 import ProblemEditExtraInfo from "./ProblemEditExtraInfo";
@@ -50,8 +51,10 @@ const useCommonStyles = makeStyles((theme) => ({
 export interface ProblemEditSectionsProps {
     commonClasses: ClassNameMap,
     editState: EditState,
-    problem: Problem,
-    updateProblem: (problem: Problem) => void
+    problemSave: ProblemSave,
+    updateProblemSave: (problemSave: ProblemSave) => void,
+    selectedSupervisor?: Master,
+    updateSelectedSupervisor: (supervisor: Master) => void,
     errorChecking: boolean,
 }
 
@@ -61,21 +64,24 @@ export enum EditState {
     REVIEW
 }
 
+export interface ProblemEditLocationState {
+    problemId: number,
+    problemSave: ProblemSave,
+    problemSupervisor: Master
+}
+
 const ProblemEdit: React.FunctionComponent = () => {
     const classes = useStyles();
     const commonClasses = useCommonStyles();
-    const location = useLocation<Problem | null>();
+    const {state: locationState} = useLocation<ProblemEditLocationState | null>();
 
     const [errorChecking, setErrorChecking] = React.useState(false);
     const {enqueueSnackbar} = useSnackbar();
 
-    let initialProblem = ProblemStudentService.createInitialProblem();
-    let initialEditState = EditState.ADD;
-    if (location.state) {
-        initialProblem = location.state;
-        initialEditState = EditState.EDIT;
-    }
-    const [problem, setProblem] = useState<Problem>(initialProblem);
+    const initialProblemSave = locationState ? locationState.problemSave : ProblemStudentService.createInitialProblemSave();
+    const initialEditState = locationState ? EditState.EDIT : EditState.ADD;
+    const [problemSave, setProblemSave] = useState<ProblemSave>(initialProblemSave);
+    const [selectedSupervisor, setSelectedSupervisor] = React.useState(locationState?.problemSupervisor);
     const [editState, setEditState] = useState<EditState>(initialEditState);
     const [oldEditState, setOldEditState] = useState<EditState>(initialEditState);
 
@@ -83,8 +89,13 @@ const ProblemEdit: React.FunctionComponent = () => {
         commonClasses,
         editState,
         errorChecking,
-        problem,
-        updateProblem: newProblem => setProblem(newProblem),
+        problemSave,
+        updateProblemSave: updatedProblemSave => setProblemSave(updatedProblemSave),
+        selectedSupervisor,
+        updateSelectedSupervisor: supervisor => {
+            setSelectedSupervisor(supervisor);
+            setProblemSave({...problemSave, supervisorId: supervisor.id})
+        },
     }
 
     const avatarIcon = (editState: EditState) => {
@@ -162,7 +173,7 @@ const ProblemEdit: React.FunctionComponent = () => {
         switch (editState) {
             case EditState.ADD:
             case EditState.EDIT:
-                if (!ProblemStudentService.isValidProblem(problem)) {
+                if (!ProblemStudentService.isValidProblem(problemSave)) {
                     setErrorChecking(true);
                     return;
                 }
@@ -171,11 +182,11 @@ const ProblemEdit: React.FunctionComponent = () => {
                 break;
             case EditState.REVIEW:
                 if (oldEditState === EditState.ADD) {
-                    ProblemStudentService.createProblem(problem)
+                    ProblemStudentService.createProblem(problemSave)
                         .then(() => handleSuccessSubmit(oldEditState))
                         .catch((error) => generalErrorHandler(error, enqueueSnackbar));
                 } else if (oldEditState === EditState.EDIT) {
-                    ProblemStudentService.updateProblem(problem.id!, problem)
+                    ProblemStudentService.updateProblem(locationState!.problemId, problemSave)
                         .then(() => handleSuccessSubmit(oldEditState))
                         .catch((error) => generalErrorHandler(error, enqueueSnackbar));
                 }

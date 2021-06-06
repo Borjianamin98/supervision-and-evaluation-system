@@ -14,7 +14,15 @@ import MasterService from "../../../services/api/user/MasterService";
 import {EditState, ProblemEditSectionsProps} from "./ProblemEdit";
 
 const ProblemEditGeneralInfo: React.FunctionComponent<ProblemEditSectionsProps> = (props) => {
-    const {commonClasses, editState, problem, updateProblem, errorChecking} = props;
+    const {
+        commonClasses,
+        editState,
+        problemSave,
+        updateProblemSave,
+        selectedSupervisor,
+        updateSelectedSupervisor,
+        errorChecking
+    } = props;
 
     const isKeywordsValid = (definition: string[]) =>
         !errorChecking || ProblemStudentService.isKeywordsValid(definition);
@@ -33,9 +41,9 @@ const ProblemEditGeneralInfo: React.FunctionComponent<ProblemEditSectionsProps> 
             </Typography>
             <ComboBox
                 options={PERSIAN_EDUCATIONS}
-                value={educationMapToPersian(problem.education)}
+                value={educationMapToPersian(problemSave.education)}
                 onChange={(e, newValue) =>
-                    updateProblem({...problem, education: educationMapToEnglish(newValue)})
+                    updateProblemSave({...problemSave, education: educationMapToEnglish(newValue)})
                 }
                 textFieldInputProps={{
                     label: "دوره تحصیلی",
@@ -45,20 +53,20 @@ const ProblemEditGeneralInfo: React.FunctionComponent<ProblemEditSectionsProps> 
                 required
                 label="عنوان فارسی"
                 maxLength={70}
-                value={problem.title}
-                onChange={event => updateProblem({...problem, title: event.target.value})}
-                helperText={isBlank(problem.title) ? "عنوان مسئله باید ذکر شود." : ""}
-                error={isBlank(problem.title)}
+                value={problemSave.title}
+                onChange={event => updateProblemSave({...problemSave, title: event.target.value})}
+                helperText={isBlank(problemSave.title) ? "عنوان مسئله باید ذکر شود." : ""}
+                error={isBlank(problemSave.title)}
             />
             <CustomTextField
                 required
                 label="عنوان انگلیسی"
                 textDir="ltr"
                 maxLength={70}
-                value={problem.englishTitle}
-                onChange={event => updateProblem({...problem, englishTitle: event.target.value})}
-                helperText={isBlank(problem.englishTitle) ? "عنوان انگلیسی مسئله باید ذکر شود." : ""}
-                error={isBlank(problem.englishTitle)}
+                value={problemSave.englishTitle}
+                onChange={event => updateProblemSave({...problemSave, englishTitle: event.target.value})}
+                helperText={isBlank(problemSave.englishTitle) ? "عنوان انگلیسی مسئله باید ذکر شود." : ""}
+                error={isBlank(problemSave.englishTitle)}
             />
             <Autocomplete
                 multiple
@@ -66,10 +74,8 @@ const ProblemEditGeneralInfo: React.FunctionComponent<ProblemEditSectionsProps> 
                 limitTags={3}
                 id="tags"
                 freeSolo
-                value={problem.keywords}
-                onChange={(event, newValue) => {
-                    updateProblem({...problem, keywords: newValue});
-                }}
+                value={problemSave.keywords}
+                onChange={(event, newValue) => updateProblemSave({...problemSave, keywords: newValue})}
                 renderTags={(values: string[], getTagProps) =>
                     values.map((option: string, index: number) => (
                         <Chip key={index}
@@ -84,9 +90,9 @@ const ProblemEditGeneralInfo: React.FunctionComponent<ProblemEditSectionsProps> 
                         {...params}
                         extraInputProps={{autoComplete: 'new-password'}}
                         label="کلیدواژه"
-                        helperText={isKeywordsValid(problem.keywords)
+                        helperText={isKeywordsValid(problemSave.keywords)
                             ? "" : "تعداد کلیدواژه‌ها باید بین 2 الی 5 مورد باشد. همچنین هر کلیدواژه حداقل 2 حرف می‌باشد."}
-                        error={!isKeywordsValid(problem.keywords)}
+                        error={!isKeywordsValid(problemSave.keywords)}
                     />
                 )}
             />
@@ -95,22 +101,19 @@ const ProblemEditGeneralInfo: React.FunctionComponent<ProblemEditSectionsProps> 
             </Typography>
             <AsynchronousComboBox
                 disableListWrap
-                getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
-                renderOption={(option) =>
-                    <Typography noWrap>{`${option.firstName} ${option.lastName}`}</Typography>}
+                getOptionLabel={(option) => option.fullName!}
+                renderOption={(option) => <Typography noWrap>{option.fullName!}</Typography>}
                 extraClasses={VirtualizedListBoxStyles()}
                 ListboxComponent={VirtualizedListBoxComponent as React.ComponentType<React.HTMLAttributes<HTMLElement>>}
                 loadingFunction={retrieveMasters}
                 textFieldInputProps={{
                     label: "استاد راهنما",
                     required: true,
-                    helperText: (isNull(problem.supervisor) ? "استاد راهنمای مربوطه باید انتخاب شود." : ""),
-                    error: isNull(problem.supervisor),
+                    helperText: (isNull(selectedSupervisor) ? "استاد راهنمای مربوطه باید انتخاب شود." : ""),
+                    error: isNull(selectedSupervisor),
                 }}
-                value={problem.supervisor}
-                onChange={(e, newValue) => {
-                    updateProblem({...problem, supervisor: newValue});
-                }}
+                value={selectedSupervisor}
+                onChange={(e, newValue) => updateSelectedSupervisor(newValue)}
                 disabled={editState === EditState.EDIT}
             />
             <CustomAlert severity="info">

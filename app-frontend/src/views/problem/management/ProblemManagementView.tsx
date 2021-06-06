@@ -59,10 +59,10 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
     const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar();
     const {problem} = props;
-    const problemId = problem.id!;
+    const problemId = problem.id;
 
     const queryClient = useQueryClient();
-    const referees = problem?.referees;
+    const referees = problem.referees;
     const updateReferees = useMutation(
         (data: Parameters<typeof ProblemMasterService.updateReferees>) => ProblemMasterService.updateReferees(data[0], data[1]),
         {
@@ -78,7 +78,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
     const [selectedRefereeDialog, setSelectedRefereeDialog] = React.useState(0);
     const [refereeDialogOpen, setRefereeDialogOpen] = React.useState(false);
     const onRefereeSelect = (master?: Master) => {
-        if (master && referees) {
+        if (master) {
             if (referees.some(value => value.id! === master.id!)) {
                 enqueueSnackbar(
                     "داور انتخاب‌شده در لیست داورهای از قبل انتخاب شده می‌باشد. امکان انتخاب یک داور برای بیش از یک بار وجود ندارد.",
@@ -193,7 +193,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                             </Typography>
                         </Box>
                         {
-                            referees && [...Array(2)].map((e, index) => {
+                            [...Array(2)].map((e, index) => {
                                 const orderString = NumberUtils.mapNumberToPersianOrderName(index + 1);
                                 let content: React.ReactNode;
                                 if (index < referees.length && referees[index] != null) {

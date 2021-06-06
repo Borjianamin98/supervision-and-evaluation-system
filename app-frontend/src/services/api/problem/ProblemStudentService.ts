@@ -1,7 +1,7 @@
 import apiAxios from "../../../config/axios-config";
 import {Education, ENGLISH_EDUCATIONS} from "../../../model/enum/education";
 import {Pageable} from "../../../model/pageable";
-import {Problem} from "../../../model/problem/problem";
+import {Problem, ProblemSave} from "../../../model/problem/problem";
 import {ProblemState} from "../../../model/problem/problemState";
 import {University} from "../../../model/university/university";
 import {API_PROBLEM_ROOT_PATH} from "../../ApiPaths";
@@ -14,7 +14,7 @@ class ProblemStudentService {
     private constructor() {
     }
 
-    static createInitialProblem(): Problem {
+    static createInitialProblemSave(): ProblemSave {
         return {
             education: Education.BACHELOR,
             title: "",
@@ -23,14 +23,12 @@ class ProblemStudentService {
             definition: "",
             history: "",
             considerations: "",
-            state: ProblemState.CREATED,
-            referees: [],
         }
     }
 
-    static createProblem(problem: Problem) {
+    static createProblem(problemSave: ProblemSave) {
         return apiAxios.post(ProblemStudentService.API_PROBLEM_STUDENT_ROOT_PATH,
-            problem, {
+            problemSave, {
                 validateStatus: status => status === 201
             }).then(response => response.data);
     }
@@ -46,20 +44,22 @@ class ProblemStudentService {
             }).then(response => response.data);
     }
 
-    static updateProblem(problemId: number, problem: Problem) {
+    static updateProblem(problemId: number, problemSave: ProblemSave) {
         return apiAxios.put<University>(`${ProblemStudentService.API_PROBLEM_STUDENT_ROOT_PATH}/${problemId}`,
-            problem).then(response => response.data);
+            problemSave).then(response => response.data);
     }
 
-    static isValidProblem(problem: Problem) {
-        return ENGLISH_EDUCATIONS.includes(problem.education) &&
-            problem.title.length > 0 && problem.title.length <= 70 &&
-            problem.englishTitle.length > 0 && problem.englishTitle.length <= 70 &&
-            ProblemStudentService.isKeywordsValid(problem.keywords) &&
-            ProblemStudentService.isDefinitionValid(problem.definition) &&
-            problem.considerations.length > 0 && problem.considerations.length <= ProblemStudentService.MAX_LONG_STRING_LENGTH &&
-            problem.history.length <= ProblemStudentService.MAX_LONG_STRING_LENGTH &&
-            problem.supervisor
+    static isValidProblem(problemSave: ProblemSave) {
+        return ENGLISH_EDUCATIONS.includes(problemSave.education)
+            && problemSave.title.length > 0
+            && problemSave.title.length <= 70
+            && problemSave.englishTitle.length > 0 && problemSave.englishTitle.length <= 70
+            && ProblemStudentService.isKeywordsValid(problemSave.keywords)
+            && ProblemStudentService.isDefinitionValid(problemSave.definition)
+            && problemSave.considerations.length > 0
+            && problemSave.considerations.length <= ProblemStudentService.MAX_LONG_STRING_LENGTH
+            && problemSave.history.length <= ProblemStudentService.MAX_LONG_STRING_LENGTH
+            && problemSave.supervisorId;
     }
 
     static isDefinitionValid(definition: string) {

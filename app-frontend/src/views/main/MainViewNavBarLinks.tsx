@@ -62,19 +62,19 @@ const problemRoutesInfo: navBarRouteInfo[] = [
     },
     {
         path: PROBLEM_EDIT_VIEW_PATH,
-        name: "ایجاد پایان‌نامه‌ (پروژه)",
+        name: "پایان‌نامه‌ (پروژه)",
         roles: [Role.STUDENT],
         component: ProblemEdit,
         icon: NoteAddIcon,
     },
     {
-        path: PROBLEM_MANAGEMENT_VIEW_PATH + "/:problemId",
+        path: PROBLEM_MANAGEMENT_VIEW_PATH,
         name: "مدیریت پایان‌نامه‌ (پروژه)",
         roles: [Role.STUDENT, Role.MASTER],
         component: ProblemRequiredEntryPoint(ProblemManagementView),
     },
     {
-        path: PROBLEM_SCHEDULE_VIEW_PATH + "/:problemId",
+        path: PROBLEM_SCHEDULE_VIEW_PATH,
         name: "زمان‌بندی پایان‌نامه‌ (پروژه)",
         roles: [Role.STUDENT, Role.MASTER],
         component: ProblemRequiredEntryPoint(ProblemScheduleView),

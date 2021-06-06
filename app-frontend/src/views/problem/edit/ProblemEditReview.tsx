@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
 
 const ProblemEditReview: React.FunctionComponent<ProblemEditSectionsProps> = (props) => {
     const classes = useStyles();
-    const {commonClasses, problem} = props;
+    const {commonClasses, problemSave, selectedSupervisor} = props;
 
     return (
         <React.Fragment>
@@ -28,14 +28,14 @@ const ProblemEditReview: React.FunctionComponent<ProblemEditSectionsProps> = (pr
                             <Typography variant="h6">دوره تحصیلی:</Typography>
                         </Grid>
                         <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
-                            <Typography>{educationMapToPersian(problem.education)}</Typography>
+                            <Typography>{educationMapToPersian(problemSave.education)}</Typography>
                         </Grid>
                         <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
                             <Typography variant="h6">عنوان فارسی:</Typography>
                         </Grid>
                         <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
                             <Typography>
-                                {problem.title.length === 0 ? "عنوانی مشخص نشده است." : problem.title}
+                                {problemSave.title.length === 0 ? "عنوانی مشخص نشده است." : problemSave.title}
                             </Typography>
                         </Grid>
                         <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
@@ -43,14 +43,14 @@ const ProblemEditReview: React.FunctionComponent<ProblemEditSectionsProps> = (pr
                         </Grid>
                         <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
                             <Typography>
-                                {problem.englishTitle.length === 0 ? "عنوانی مشخص نشده است." : problem.englishTitle}
+                                {problemSave.englishTitle.length === 0 ? "عنوانی مشخص نشده است." : problemSave.englishTitle}
                             </Typography>
                         </Grid>
                         <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
                             <Typography variant="h6">کلیدواژه‌ها:</Typography>
                         </Grid>
                         <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
-                            <KeywordsList keywords={problem.keywords} marginDir="left">
+                            <KeywordsList keywords={problemSave.keywords} marginDir="left">
                                 کلیدواژه‌ای ارائه نشده است.
                             </KeywordsList>
                         </Grid>
@@ -59,8 +59,7 @@ const ProblemEditReview: React.FunctionComponent<ProblemEditSectionsProps> = (pr
                         </Grid>
                         <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
                             <Typography>
-                                {problem.supervisor ?
-                                    `${problem.supervisor.firstName} ${problem.supervisor.lastName}` : "استاد راهنما مشخص نشده است."}
+                                {selectedSupervisor ? selectedSupervisor.fullName : "استاد راهنما مشخص نشده است."}
                             </Typography>
                         </Grid>
                     </Grid>
@@ -71,17 +70,17 @@ const ProblemEditReview: React.FunctionComponent<ProblemEditSectionsProps> = (pr
                     </Typography>
                     <Typography className={classes.gridItem} variant="h6">تعریف مسئله و نیازمندی</Typography>
                     <Typography className={classes.gridItem}>
-                        {problem.definition.length === 0 ? "تعریف مسئله مشخص نشده است." : problem.englishTitle}
+                        {problemSave.definition.length === 0 ? "تعریف مسئله مشخص نشده است." : problemSave.englishTitle}
                     </Typography>
                     <Typography className={classes.gridItem} variant="h6">پیشینه مسئله</Typography>
                     <Typography className={classes.gridItem}>
-                        {problem.history && problem.history?.length > 0 ?
-                            problem.history : "بیشینه ارائه نشده است."}
+                        {problemSave.history && problemSave.history?.length > 0 ?
+                            problemSave.history : "بیشینه ارائه نشده است."}
                     </Typography>
                     <Typography className={classes.gridItem} variant="h6">ملاحظات</Typography>
                     <Typography className={classes.gridItem}>
-                        {problem.considerations && problem.considerations?.length > 0 ?
-                            problem.considerations : "ملاحظات ارائه نشده است."}
+                        {problemSave.considerations && problemSave.considerations?.length > 0 ?
+                            problemSave.considerations : "ملاحظات ارائه نشده است."}
                     </Typography>
                 </Grid>
             </Grid>
