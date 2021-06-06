@@ -8,7 +8,7 @@ import ComboBox from "../../../components/ComboBox/ComboBox";
 import {VirtualizedListBoxComponent, VirtualizedListBoxStyles} from "../../../components/ComboBox/VirtualizedComboBox";
 import CustomTextField from "../../../components/Text/CustomTextField";
 import {educationMapToEnglish, educationMapToPersian, PERSIAN_EDUCATIONS} from "../../../model/enum/education";
-import {Master} from "../../../model/user/master";
+import {Master} from "../../../model/user/master/Master";
 import ProblemStudentService from "../../../services/api/problem/ProblemStudentService";
 import MasterService from "../../../services/api/user/MasterService";
 import {EditState, ProblemEditSectionsProps} from "./ProblemEdit";
@@ -101,8 +101,8 @@ const ProblemEditGeneralInfo: React.FunctionComponent<ProblemEditSectionsProps> 
             </Typography>
             <AsynchronousComboBox
                 disableListWrap
-                getOptionLabel={(option) => option.fullName!}
-                renderOption={(option) => <Typography noWrap>{option.fullName!}</Typography>}
+                getOptionLabel={(option) => option.fullName}
+                renderOption={(option) => <Typography noWrap>{option.fullName}</Typography>}
                 extraClasses={VirtualizedListBoxStyles()}
                 ListboxComponent={VirtualizedListBoxComponent}
                 loadingFunction={retrieveMasters}

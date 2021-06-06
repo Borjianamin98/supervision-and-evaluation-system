@@ -17,7 +17,7 @@ import browserHistory from "../../../config/browserHistory";
 import {educationMapToPersian} from "../../../model/enum/education";
 import {Role} from "../../../model/enum/role";
 import {Problem} from "../../../model/problem/problem";
-import {Master} from "../../../model/user/master";
+import {Master} from "../../../model/user/master/Master";
 import AuthenticationService from "../../../services/api/AuthenticationService";
 import ProblemMasterService from "../../../services/api/problem/ProblemMasterService";
 import MasterService from "../../../services/api/user/MasterService";
@@ -79,12 +79,12 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
     const [refereeDialogOpen, setRefereeDialogOpen] = React.useState(false);
     const onRefereeSelect = (master?: Master) => {
         if (master) {
-            if (referees.some(value => value.id! === master.id!)) {
+            if (referees.some(value => value.id === master.id)) {
                 enqueueSnackbar(
                     "داور انتخاب‌شده در لیست داورهای از قبل انتخاب شده می‌باشد. امکان انتخاب یک داور برای بیش از یک بار وجود ندارد.",
                     {variant: "error"})
                 return;
-            } else if (master.id === problem!.supervisor?.id) {
+            } else if (master.id === problem!.supervisor.id) {
                 enqueueSnackbar(
                     "داور انتخاب‌شده نمی‌تواند استاد راهنمای مسئله باشد.",
                     {variant: "error"})
@@ -116,7 +116,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                     <Grid item>
                         <Box marginBottom={1}>
                             <ProfileInfoCard
-                                user={problem ? problem.student : undefined}
+                                user={problem.student}
                                 onEdit={() => undefined}
                                 onDelete={() => undefined}
                                 subheader="دانشجوی پایان‌نامه (پروژه)"
@@ -154,7 +154,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                     <Grid item>
                         <Box marginBottom={1}>
                             <ProfileInfoCard
-                                user={problem ? problem.supervisor : undefined}
+                                user={problem.supervisor}
                                 onEdit={() => undefined}
                                 onDelete={() => undefined}
                                 subheader="استاد راهنمای پایان‌نامه (پروژه)"

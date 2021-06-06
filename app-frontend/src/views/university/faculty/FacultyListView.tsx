@@ -80,14 +80,14 @@ const FacultyListView: React.FunctionComponent = () => {
     const updateFaculty = useMutation(
         (data: Parameters<typeof FacultyService.updateFaculty>) => FacultyService.updateFaculty(...data),
         {
-            onSuccess: data => queryClient.invalidateQueries(['faculties', selectedUniversity!.id!, rowsPerPage, page])
+            onSuccess: data => queryClient.invalidateQueries(['faculties', selectedUniversity!.id, rowsPerPage, page])
                 .then(() => enqueueSnackbar(`دانشکده ${data.name} با موفقیت ویرایش شد.`, {variant: "success"})),
             onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
     const deleteFaculty = useMutation(
         (facultyId: number) => FacultyService.deleteFaculty(facultyId),
         {
-            onSuccess: data => queryClient.invalidateQueries(['faculties', selectedUniversity!.id!])
+            onSuccess: data => queryClient.invalidateQueries(['faculties', selectedUniversity!.id])
                 .then(() => enqueueSnackbar(`دانشکده ${data.name} با موفقیت حذف شد.`, {variant: "success"})),
             onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
@@ -226,20 +226,20 @@ const FacultyListView: React.FunctionComponent = () => {
                         const cells: OptionalTableCellProps[] = [
                             {content: row.name},
                             {content: row.webAddress, smOptional: true, dir: "ltr"},
-                            {content: row.studentsCount!, xsOptional: true},
-                            {content: row.mastersCount!, xsOptional: true},
+                            {content: row.studentsCount, xsOptional: true},
+                            {content: row.mastersCount, xsOptional: true},
                             {content: actions},
                         ];
                         return <ExtendedTableRow key={row.id!} cells={cells}/>;
                     }}
                     noDataMessage={noDataMessage}
                     hasDelete={row => true}
-                    onDeleteRow={row => deleteFaculty.mutate(row.id!)}
-                    isDeletable={row => row.mastersCount! === 0 && row.studentsCount! === 0}
+                    onDeleteRow={row => deleteFaculty.mutate(row.id)}
+                    isDeletable={row => row.mastersCount === 0 && row.studentsCount === 0}
                     hasEdit={row => true}
                     isEditable={row => true}
                     onEditRow={handleUpdateDialogOpen}
-                    onRetryClick={() => queryClient.invalidateQueries(["faculties", selectedUniversity, rowsPerPage, page])}
+                    onRetryClick={() => queryClient.invalidateQueries(["faculties", selectedUniversity?.id, rowsPerPage, page])}
                 />
                 <Dialog dir="rtl" open={updateDialogOpen} onClose={() => handleDialogClose(false)}>
                     <DialogTitle>ویرایش دانشگاه</DialogTitle>

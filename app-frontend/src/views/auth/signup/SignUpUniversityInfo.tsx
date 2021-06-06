@@ -13,7 +13,7 @@ import StudentService from "../../../services/api/user/StudentService";
 import {SignUpSectionsProps} from "./SignUpView";
 
 const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (props) => {
-    const {commonClasses, extraUserInfo, setExtraUserInfo, faculty, updateFaculty, errorChecking} = props;
+    const {commonClasses, extraUserSaveInfo, updateExtraUserSaveInfo, faculty, updateFaculty, errorChecking} = props;
     const [university, setUniversity] = useState<University>();
 
     function retrieveUniversities(inputValue: string) {
@@ -28,7 +28,7 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
 
     const handleStudentNumberChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
         const onlyNumbers = event.target.value.replace(/[^0-9]/g, '');
-        setExtraUserInfo({...extraUserInfo, studentNumber: onlyNumbers})
+        updateExtraUserSaveInfo({...extraUserSaveInfo, studentNumber: onlyNumbers})
     }
 
     const isStudentNumberValid = (c: string) => !errorChecking || StudentService.isStudentNumberValid(c);
@@ -85,32 +85,34 @@ const SignUpUniversityInfo: React.FunctionComponent<SignUpSectionsProps> = (prop
             </CustomAlert>
             <ComboBox
                 options={[Role.STUDENT, Role.MASTER].map(role => roleMapToPersian(role))}
-                value={roleMapToPersian(extraUserInfo.role)}
-                onChange={(e, newValue) =>
-                    setExtraUserInfo({...extraUserInfo, role: roleMapToEnglish(newValue)})}
+                value={roleMapToPersian(extraUserSaveInfo.role)}
+                onChange={(e, newValue) => updateExtraUserSaveInfo({
+                    ...extraUserSaveInfo,
+                    role: roleMapToEnglish(newValue)
+                })}
                 textFieldInputProps={{
                     label: "نوع کاربری",
-                    helperText: (isBlank(extraUserInfo.role) ? "نوع کاربری باید انتخاب شود." : ""),
-                    error: isBlank(extraUserInfo.role),
+                    helperText: (isBlank(extraUserSaveInfo.role) ? "نوع کاربری باید انتخاب شود." : ""),
+                    error: isBlank(extraUserSaveInfo.role),
                 }}
             />
-            {extraUserInfo.role === Role.MASTER ? <CustomTextField
+            {extraUserSaveInfo.role === Role.MASTER ? <CustomTextField
                 required
                 label="مدرک"
-                value={extraUserInfo.degree}
+                value={extraUserSaveInfo.degree}
                 onChange={(e) =>
-                    setExtraUserInfo({...extraUserInfo, degree: e.target.value})}
-                helperText={isBlank(extraUserInfo.degree) ? "مدرک تصحیلی را باید مشخص کنید." : ""}
-                error={isBlank(extraUserInfo.degree)}
+                    updateExtraUserSaveInfo({...extraUserSaveInfo, degree: e.target.value})}
+                helperText={isBlank(extraUserSaveInfo.degree) ? "مدرک تصحیلی را باید مشخص کنید." : ""}
+                error={isBlank(extraUserSaveInfo.degree)}
                 maxLength={40}
             /> : undefined}
-            {extraUserInfo.role === Role.STUDENT ? <CustomTextField
+            {extraUserSaveInfo.role === Role.STUDENT ? <CustomTextField
                 required
                 label="شماره دانشجویی"
-                value={extraUserInfo.studentNumber}
+                value={extraUserSaveInfo.studentNumber}
                 onChange={handleStudentNumberChange}
-                helperText={isStudentNumberValid(extraUserInfo.studentNumber) ? "" : "شماره دانشجویی را باید مشخص کنید."}
-                error={!isStudentNumberValid(extraUserInfo.studentNumber)}
+                helperText={isStudentNumberValid(extraUserSaveInfo.studentNumber) ? "" : "شماره دانشجویی را باید مشخص کنید."}
+                error={!isStudentNumberValid(extraUserSaveInfo.studentNumber)}
                 maxLength={20}
             /> : undefined}
         </React.Fragment>

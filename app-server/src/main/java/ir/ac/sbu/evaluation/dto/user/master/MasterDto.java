@@ -2,13 +2,12 @@ package ir.ac.sbu.evaluation.dto.user.master;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import ir.ac.sbu.evaluation.dto.university.UniversityDto;
+import ir.ac.sbu.evaluation.dto.university.faculty.FacultyDto;
 import ir.ac.sbu.evaluation.dto.user.PersonalInfoDto;
 import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.model.user.Master;
 import java.util.Objects;
-import javax.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,49 +17,35 @@ import lombok.Setter;
 @JsonInclude(Include.NON_NULL)
 public class MasterDto extends UserDto {
 
-    @NotBlank
     private String degree;
 
-    @JsonProperty(access = Access.READ_ONLY)
-    private String universityName;
-
-    @JsonProperty(access = Access.READ_ONLY)
-    private String facultyName;
+    private UniversityDto university;
+    private FacultyDto faculty;
 
     public MasterDto() {
     }
 
     @Builder
-    public MasterDto(long id,
-            String firstName, String lastName, String fullName,
-            String username, String password, String role,
-            PersonalInfoDto personalInfo, String degree, String universityName, String facultyName) {
-        super(id, firstName, lastName, fullName, username, password, role, personalInfo);
+    public MasterDto(long id, String firstName, String lastName, String fullName, String username, String role,
+            PersonalInfoDto personalInfo, String degree, UniversityDto university,
+            FacultyDto faculty) {
+        super(id, firstName, lastName, fullName, username, role, personalInfo);
         this.degree = degree;
-        this.universityName = universityName;
-        this.facultyName = facultyName;
+        this.university = university;
+        this.faculty = faculty;
     }
 
     public static MasterDto from(Master master) {
         return builder()
                 .id(master.getId())
-                .username(master.getUsername()).password(master.getPassword())
+                .username(master.getUsername())
                 .firstName(master.getFirstName()).lastName(master.getLastName())
-                .fullName(master.getFirstName() + " " + master.getLastName())
+                .fullName(master.getFullName())
                 .role(master.getRole())
-                .personalInfo(master.getPersonalInfo() != null ? PersonalInfoDto.from(master.getPersonalInfo()) : null)
+                .personalInfo(PersonalInfoDto.from(master.getPersonalInfo()))
                 .degree(master.getDegree())
-                .universityName(master.getFaculty() != null ? master.getFaculty().getUniversity().getName() : null)
-                .facultyName(master.getFaculty() != null ? master.getFaculty().getName() : null)
-                .build();
-    }
-
-    public Master toMaster() {
-        return Master.builder()
-                .firstName(getFirstName()).lastName(getLastName())
-                .username(getUsername()).password(getPassword())
-                .personalInfo(getPersonalInfo() != null ? getPersonalInfo().toPersonalInfo() : null)
-                .degree(degree)
+                .university(UniversityDto.from(master.getFaculty().getUniversity()))
+                .faculty(FacultyDto.from(master.getFaculty()))
                 .build();
     }
 
@@ -76,13 +61,11 @@ public class MasterDto extends UserDto {
             return false;
         }
         MasterDto masterDto = (MasterDto) o;
-        return Objects.equals(degree, masterDto.degree) && Objects
-                .equals(universityName, masterDto.universityName) && Objects
-                .equals(facultyName, masterDto.facultyName);
+        return Objects.equals(degree, masterDto.degree);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), degree, universityName, facultyName);
+        return Objects.hash(super.hashCode(), degree);
     }
 }

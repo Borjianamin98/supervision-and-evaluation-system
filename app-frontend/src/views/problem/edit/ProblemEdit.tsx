@@ -16,7 +16,7 @@ import {rtlTheme} from '../../../App';
 import {generalErrorHandler} from "../../../config/axios-config";
 import browserHistory from "../../../config/browserHistory";
 import {ProblemSave} from "../../../model/problem/problem";
-import {Master} from "../../../model/user/master";
+import {Master} from "../../../model/user/master/Master";
 import ProblemStudentService from "../../../services/api/problem/ProblemStudentService";
 import {PROBLEM_LIST_VIEW_PATH} from "../../ViewPaths";
 import ProblemEditExtraInfo from "./ProblemEditExtraInfo";

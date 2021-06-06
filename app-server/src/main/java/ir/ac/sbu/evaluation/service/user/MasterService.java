@@ -1,7 +1,7 @@
 package ir.ac.sbu.evaluation.service.user;
 
-import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
+import ir.ac.sbu.evaluation.dto.user.master.MasterSaveDto;
 import ir.ac.sbu.evaluation.model.university.Faculty;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.PersonalInfo;
@@ -9,8 +9,6 @@ import ir.ac.sbu.evaluation.repository.university.FacultyRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.PersonalInfoRepository;
 import ir.ac.sbu.evaluation.repository.user.UserRepository;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,33 +37,27 @@ public class MasterService {
         this.facultyRepository = facultyRepository;
     }
 
-    public List<UserDto> listAsUser() {
-        return masterRepository.findAll().stream()
-                .map(master -> UserDto.from(master))
-                .collect(Collectors.toList());
-    }
-
     public Page<MasterDto> retrieveMasters(String nameQuery, Pageable pageable) {
         return masterRepository.findByFirstNameContainsOrLastNameContains(nameQuery, nameQuery, pageable)
                 .map(MasterDto::from);
     }
 
     @Transactional
-    public MasterDto save(MasterDto masterDto, long facultyId) {
-        if (userRepository.findByUsername(masterDto.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("Username exists: ID = " + masterDto.getUsername());
+    public MasterDto save(MasterSaveDto masterSaveDto) {
+        if (userRepository.findByUsername(masterSaveDto.getUsername()).isPresent()) {
+            throw new IllegalArgumentException("Username exists: ID = " + masterSaveDto.getUsername());
         }
-        Faculty faculty = facultyRepository.findById(facultyId)
-                .orElseThrow(() -> new IllegalArgumentException("Faculty not found: ID = " + facultyId));
+        Faculty faculty = facultyRepository.findById(masterSaveDto.getFacultyId())
+                .orElseThrow(() -> new IllegalArgumentException("Faculty not found: ID = "
+                        + masterSaveDto.getFacultyId()));
 
-        Master master = masterDto.toMaster();
+        Master master = masterSaveDto.toMaster();
         master.setPassword(passwordEncoder.encode(master.getPassword()));
         master.setFaculty(faculty);
 
-        if (master.getPersonalInfo() != null) {
-            PersonalInfo savedInfo = personalInfoRepository.save(master.getPersonalInfo());
-            master.setPersonalInfo(savedInfo);
-        }
+        PersonalInfo savedInfo = personalInfoRepository.save(master.getPersonalInfo());
+        master.setPersonalInfo(savedInfo);
+
         return MasterDto.from(masterRepository.save(master));
     }
 

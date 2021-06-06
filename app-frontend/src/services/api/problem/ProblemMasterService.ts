@@ -3,7 +3,7 @@ import {Pageable} from "../../../model/pageable";
 import {Problem} from "../../../model/problem/problem";
 import {ProblemEvent, ProblemEventSave} from "../../../model/problem/problemEvent";
 import {ProblemState} from "../../../model/problem/problemState";
-import {Master} from "../../../model/user/master";
+import {Master} from "../../../model/user/master/Master";
 import {API_PROBLEM_ROOT_PATH} from "../../ApiPaths";
 
 class ProblemMasterService {

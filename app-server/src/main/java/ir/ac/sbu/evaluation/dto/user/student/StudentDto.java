@@ -2,14 +2,12 @@ package ir.ac.sbu.evaluation.dto.user.student;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import ir.ac.sbu.evaluation.dto.university.UniversityDto;
+import ir.ac.sbu.evaluation.dto.university.faculty.FacultyDto;
 import ir.ac.sbu.evaluation.dto.user.PersonalInfoDto;
 import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.model.user.Student;
 import java.util.Objects;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,51 +17,35 @@ import lombok.Setter;
 @JsonInclude(Include.NON_NULL)
 public class StudentDto extends UserDto {
 
-    @NotBlank
-    @Pattern(regexp = "[0-9]+")
     private String studentNumber;
 
-    @JsonProperty(access = Access.READ_ONLY)
-    private String universityName;
-
-    @JsonProperty(access = Access.READ_ONLY)
-    private String facultyName;
+    private UniversityDto university;
+    private FacultyDto faculty;
 
     public StudentDto() {
     }
 
     @Builder
-    public StudentDto(long id,
-            String firstName, String lastName, String fullName,
-            String username, String password, String role,
-            PersonalInfoDto personalInfo, String studentNumber, String universityName, String facultyName) {
-        super(id, firstName, lastName, fullName, username, password, role, personalInfo);
+    public StudentDto(long id, String firstName, String lastName, String fullName, String username, String role,
+            PersonalInfoDto personalInfo, String studentNumber,
+            UniversityDto university, FacultyDto faculty) {
+        super(id, firstName, lastName, fullName, username, role, personalInfo);
         this.studentNumber = studentNumber;
-        this.universityName = universityName;
-        this.facultyName = facultyName;
+        this.university = university;
+        this.faculty = faculty;
     }
 
     public static StudentDto from(Student student) {
         return builder()
                 .id(student.getId())
-                .username(student.getUsername()).password(student.getPassword())
+                .username(student.getUsername())
                 .firstName(student.getFirstName()).lastName(student.getLastName())
-                .fullName(student.getFirstName() + " " + student.getLastName())
+                .fullName(student.getFullName())
                 .role(student.getRole())
-                .personalInfo(
-                        student.getPersonalInfo() != null ? PersonalInfoDto.from(student.getPersonalInfo()) : null)
+                .personalInfo(PersonalInfoDto.from(student.getPersonalInfo()))
                 .studentNumber(student.getStudentNumber())
-                .universityName(student.getFaculty().getUniversity().getName())
-                .facultyName(student.getFaculty().getName())
-                .build();
-    }
-
-    public Student toStudent() {
-        return Student.builder()
-                .firstName(getFirstName()).lastName(getLastName())
-                .username(getUsername()).password(getPassword())
-                .personalInfo(getPersonalInfo() != null ? getPersonalInfo().toPersonalInfo() : null)
-                .studentNumber(studentNumber)
+                .university(UniversityDto.from(student.getFaculty().getUniversity()))
+                .faculty(FacultyDto.from(student.getFaculty()))
                 .build();
     }
 
@@ -79,12 +61,11 @@ public class StudentDto extends UserDto {
             return false;
         }
         StudentDto that = (StudentDto) o;
-        return Objects.equals(studentNumber, that.studentNumber) && Objects
-                .equals(universityName, that.universityName) && Objects.equals(facultyName, that.facultyName);
+        return Objects.equals(studentNumber, that.studentNumber);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), studentNumber, universityName, facultyName);
+        return Objects.hash(super.hashCode(), studentNumber);
     }
 }

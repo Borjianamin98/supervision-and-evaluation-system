@@ -1,6 +1,7 @@
 import apiAxios from "../../../config/axios-config";
 import {Pageable} from "../../../model/pageable";
-import {Master, MasterRegister} from "../../../model/user/master";
+import {Master} from "../../../model/user/master/Master";
+import {MasterSave} from "../../../model/user/master/MasterSave";
 
 class MasterService {
 
@@ -11,8 +12,9 @@ class MasterService {
     private constructor() {
     }
 
-    static registerMaster(masterRegister: MasterRegister) {
-        return apiAxios.post<Master>(MasterService.API_MASTER_REGISTER_PATH, masterRegister)
+    static register(masterSave: MasterSave) {
+        return apiAxios.post<Master>(MasterService.API_MASTER_REGISTER_PATH, masterSave)
+            .then(response => response.data);
     }
 
     static retrieveMasters(pageSize: number, page: number, nameQuery?: string) {
@@ -29,6 +31,7 @@ class MasterService {
     static retrieveMasterInfo() {
         // Returns info based on authenticated user.
         return apiAxios.get<Master>(MasterService.API_MASTER_INFO_PATH)
+            .then(response => response.data);
     }
 }
 

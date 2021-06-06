@@ -15,9 +15,9 @@ import {generalErrorHandler} from "../../../config/axios-config";
 import browserHistory from "../../../config/browserHistory";
 import {ENGLISH_ROLES, Role} from "../../../model/enum/role";
 import {Faculty} from "../../../model/university/faculty/faculty";
-import {MasterSpecialInfo} from "../../../model/user/master";
-import {StudentSpecialInfo} from "../../../model/user/student";
-import {User} from "../../../model/user/user";
+import {MasterSaveSpecialInfo} from "../../../model/user/master/MasterSave";
+import {StudentSaveSpecialInfo} from "../../../model/user/student/StudentSave";
+import {UserSave} from "../../../model/user/UserSave";
 import MasterService from "../../../services/api/user/MasterService";
 import StudentService from "../../../services/api/user/StudentService";
 import UserService from "../../../services/api/user/UserService";
@@ -51,16 +51,16 @@ const useCommonStyles = makeStyles((theme) => ({
     }
 }));
 
-type ExtraUserInfo = MasterSpecialInfo & StudentSpecialInfo & { role: Role };
+type ExtraUserSaveInfo = MasterSaveSpecialInfo & StudentSaveSpecialInfo & { role: Role };
 
 export interface SignUpSectionsProps {
     commonClasses: ClassNameMap,
-    user: User,
-    setUser: React.Dispatch<React.SetStateAction<User>>,
+    userSave: UserSave,
+    updateUser: (user: UserSave) => void,
     faculty?: Faculty,
     updateFaculty: (faculty?: Faculty) => void,
-    extraUserInfo: ExtraUserInfo,
-    setExtraUserInfo: React.Dispatch<React.SetStateAction<ExtraUserInfo>>,
+    extraUserSaveInfo: ExtraUserSaveInfo,
+    updateExtraUserSaveInfo: (extraUserSaveInfo: ExtraUserSaveInfo) => void,
     errorChecking: boolean,
 }
 
@@ -70,20 +70,20 @@ const SignUpView: React.FunctionComponent = () => {
     const {enqueueSnackbar} = useSnackbar();
     const [errorChecking, setErrorChecking] = React.useState(false);
 
-    const [user, setUser] = useState<User>(UserService.createInitialUser());
-    const [extraUserInfo, setExtraUserInfo] = useState<ExtraUserInfo>(
-        {degree: "", studentNumber: "", role: ENGLISH_ROLES[0]});
+    const [userSave, setUserSave] = useState<UserSave>(UserService.createInitialUserSave());
+    const [extraUserSaveInfo, setExtraUserSaveInfo] = useState<ExtraUserSaveInfo>(
+        {degree: "", studentNumber: "", facultyId: 0 /* Not Used */, role: ENGLISH_ROLES[0]});
     const [faculty, setFaculty] = useState<Faculty>();
 
     const sectionProps: SignUpSectionsProps = {
         commonClasses,
         errorChecking,
-        setUser,
-        user,
+        userSave,
+        updateUser: userSave => setUserSave(userSave),
         faculty,
         updateFaculty: faculty => setFaculty(faculty),
-        extraUserInfo,
-        setExtraUserInfo
+        extraUserSaveInfo,
+        updateExtraUserSaveInfo: extraUserSaveInfo => setExtraUserSaveInfo(extraUserSaveInfo),
     }
 
     const handleSuccessSubmit = () => {
@@ -93,26 +93,27 @@ const SignUpView: React.FunctionComponent = () => {
 
     const formSubmitHandler: FormEventHandler = (event) => {
         event.preventDefault();
-        if (!UserService.isUserValid(user) || !faculty) {
+        if (!UserService.isUserValid(userSave) || !faculty) {
             setErrorChecking(true);
             return;
         }
-        if (extraUserInfo.role === Role.STUDENT && StudentService.isStudentNumberValid(extraUserInfo.studentNumber)) {
-            StudentService.registerStudent({
-                student: {
-                    ...user,
-                    studentNumber: extraUserInfo.studentNumber,
-                },
+        if (extraUserSaveInfo.role === Role.STUDENT
+            && StudentService.isStudentNumberValid(extraUserSaveInfo.studentNumber)) {
+            StudentService.register({
+                ...userSave,
+                studentNumber: extraUserSaveInfo.studentNumber,
                 facultyId: faculty.id
-            }).then(value => handleSuccessSubmit()).catch(error => generalErrorHandler(error, enqueueSnackbar))
-        } else if (extraUserInfo.role === Role.MASTER && extraUserInfo.degree.length > 1) {
-            MasterService.registerMaster({
-                master: {
-                    ...user,
-                    degree: extraUserInfo.degree,
-                },
+            })
+                .then(() => handleSuccessSubmit())
+                .catch(error => generalErrorHandler(error, enqueueSnackbar))
+        } else if (extraUserSaveInfo.role === Role.MASTER && extraUserSaveInfo.degree.length !== 0) {
+            MasterService.register({
+                ...userSave,
+                degree: extraUserSaveInfo.degree,
                 facultyId: faculty.id
-            }).then(value => handleSuccessSubmit()).catch(error => generalErrorHandler(error, enqueueSnackbar))
+            })
+                .then(() => handleSuccessSubmit())
+                .catch(error => generalErrorHandler(error, enqueueSnackbar))
         } else {
             setErrorChecking(true);
         }

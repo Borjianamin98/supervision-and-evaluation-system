@@ -1,5 +1,5 @@
 import apiAxios from "../../../config/axios-config";
-import {Admin} from "../../../model/user/admin";
+import {Admin} from "../../../model/user/admin/Admin";
 
 class AdminService {
 
@@ -12,6 +12,7 @@ class AdminService {
     static retrieveAdminInfo() {
         // Returns info based on authenticated user.
         return apiAxios.get<Admin>(AdminService.API_ADMIN_INFO_PATH)
+            .then(response => response.data);
     }
 }
 

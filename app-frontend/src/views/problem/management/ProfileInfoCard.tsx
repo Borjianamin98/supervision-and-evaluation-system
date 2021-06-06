@@ -5,7 +5,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import React from 'react';
 import CenterBox from "../../../components/Grid/CenterBox";
-import {User, userRoleInfo} from "../../../model/user/user";
+import {User, userRoleInfo} from "../../../model/user/User";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({

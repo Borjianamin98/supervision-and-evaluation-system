@@ -1,5 +1,6 @@
 import apiAxios from "../../../config/axios-config";
-import {Student, StudentRegister} from "../../../model/user/student";
+import {Student} from "../../../model/user/student/Student";
+import {StudentSave} from "../../../model/user/student/StudentSave";
 
 class StudentService {
 
@@ -10,13 +11,14 @@ class StudentService {
     private constructor() {
     }
 
-    static registerStudent(studentRegister: StudentRegister) {
-        return apiAxios.post<Student>(StudentService.API_STUDENT_REGISTER_PATH, studentRegister)
+    static register(studentSave: StudentSave) {
+        return apiAxios.post<Student>(StudentService.API_STUDENT_REGISTER_PATH, studentSave)
     }
 
     static retrieveStudentInfo() {
         // Returns info based on authenticated user.
         return apiAxios.get<Student>(StudentService.API_STUDENT_INFO_PATH)
+            .then(response => response.data);
     }
 
     static isStudentNumberValid(studentNumber: string) {

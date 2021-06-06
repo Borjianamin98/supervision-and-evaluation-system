@@ -10,7 +10,7 @@ import UserService from "../../../services/api/user/UserService";
 import {SignUpSectionsProps} from "./SignUpView";
 
 const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) => {
-    const {commonClasses, user, setUser, errorChecking} = props;
+    const {commonClasses, userSave, updateUser, errorChecking} = props;
 
     const [usernameError, setUsernameError] = React.useState("");
 
@@ -18,17 +18,17 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
     const isEmailValid = (email: string) => !errorChecking || UserService.isEmailValid(email);
     const isTelephoneNumberValid = (telephoneNumber: string) =>
         !errorChecking || UserService.isTelephoneNumberValid(telephoneNumber);
-    const isNotBlank = (c: string) => !errorChecking || c.length > 0;
+    const isBlank = (c?: string) => errorChecking && (!c || c.length === 0);
 
     const handlePhoneNumberChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
         const onlyNumbers = event.target.value.replace(/[^0-9]/g, '');
         if (onlyNumbers.length <= 10) {
-            setUser(UserService.updatePhoneNumber(user, onlyNumbers));
+            updateUser(UserService.updatePhoneNumber(userSave, onlyNumbers));
         }
     }
 
     const isUsernameBlank = () => {
-        if (user.username.length === 0) {
+        if (userSave.username.length === 0) {
             setUsernameError("نام کاربری نمی‌تواند خالی باشد.");
             return true;
         }
@@ -39,15 +39,14 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
         if (isUsernameBlank()) {
             return;
         }
-        UserService.checkAvailableSignInNames(user.username)
+        UserService.checkAvailableSignInNames(userSave.username)
             .then(value => {
                 if (!value.data.available) {
                     setUsernameError("نام کاربری توسط کاربر دیگری انتخاب شده است.");
                 } else {
                     setUsernameError("");
                 }
-            })
-            .catch(reason => setUsernameError("ارتباط با سرور برای بررسی حساب کاربری برقرار نمی‌باشد."))
+            }).catch(() => setUsernameError("ارتباط با سرور برای بررسی حساب کاربری برقرار نمی‌باشد."))
     }
 
     return (
@@ -58,26 +57,24 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
             <CustomTextField
                 required
                 label="نام"
-                value={user.firstName}
-                onChange={(e) =>
-                    setUser({...user, firstName: e.target.value})}
-                helperText={!isNotBlank(user.firstName) ? "نام کاربر نمی‌تواند خالی باشد." : ""}
-                error={!isNotBlank(user.firstName)}
+                value={userSave.firstName}
+                onChange={(e) => updateUser({...userSave, firstName: e.target.value})}
+                helperText={isBlank(userSave.firstName) ? "نام کاربر نمی‌تواند خالی باشد." : ""}
+                error={isBlank(userSave.firstName)}
             />
             <CustomTextField
                 required
                 label="نام خانوادگی"
-                value={user.lastName}
-                onChange={(e) =>
-                    setUser({...user, lastName: e.target.value})}
-                helperText={!isNotBlank(user.lastName) ? "نام خانوادگی نمی‌تواند خالی باشد." : ""}
-                error={!isNotBlank(user.lastName)}
+                value={userSave.lastName}
+                onChange={(e) => updateUser({...userSave, lastName: e.target.value})}
+                helperText={isBlank(userSave.lastName) ? "نام خانوادگی نمی‌تواند خالی باشد." : ""}
+                error={isBlank(userSave.lastName)}
             />
             <ComboBox
                 options={PERSIAN_GENDERS}
-                value={genderMapToPersian(user.personalInfo!.gender)}
+                value={genderMapToPersian(userSave.personalInfo.gender)}
                 onChange={(e, newValue) =>
-                    setUser(update(user, {
+                    updateUser(update(userSave, {
                         personalInfo: {
                             gender: () => genderMapToEnglish(newValue),
                         }
@@ -91,28 +88,28 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
                 textDir="ltr"
                 required
                 label="شماره تلفن"
-                value={UserService.getPhoneNumberRepresentation(user.personalInfo!.telephoneNumber)}
+                value={UserService.getPhoneNumberRepresentation(userSave.personalInfo.telephoneNumber)}
                 onChange={(e) => handlePhoneNumberChange(e)}
                 InputProps={{
                     endAdornment: <InputAdornment position="end">98+</InputAdornment>,
                 }}
-                helperText={!isTelephoneNumberValid(user.personalInfo!.telephoneNumber) ? "شماره تلفن معتبر نمی‌باشد." : ""}
-                error={!isTelephoneNumberValid(user.personalInfo!.telephoneNumber)}
+                helperText={!isTelephoneNumberValid(userSave.personalInfo.telephoneNumber) ? "شماره تلفن معتبر نمی‌باشد." : ""}
+                error={!isTelephoneNumberValid(userSave.personalInfo.telephoneNumber)}
             />
             <CustomTextField
                 textDir="ltr"
                 required
                 label="آدرس ایمیل"
-                value={user.personalInfo!.email}
+                value={userSave.personalInfo.email}
                 onChange={(e) =>
-                    setUser(update(user, {
+                    updateUser(update(userSave, {
                         personalInfo: {
                             email: () => e.target.value,
                         }
                     }))
                 }
-                helperText={!isEmailValid(user.personalInfo!.email) ? "آدرس ایمیل معتبر نمی‌باشد." : ""}
-                error={!isEmailValid(user.personalInfo!.email)}
+                helperText={!isEmailValid(userSave.personalInfo.email) ? "آدرس ایمیل معتبر نمی‌باشد." : ""}
+                error={!isEmailValid(userSave.personalInfo.email)}
             />
             <Typography className={commonClasses.title} variant="h6">
                 حساب کاربری
@@ -122,9 +119,8 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
                 textDir="ltr"
                 label="نام کاربری"
                 autoComplete="username"
-                value={user.username}
-                onChange={(e) =>
-                    setUser({...user, username: e.target.value})}
+                value={userSave.username}
+                onChange={(e) => updateUser({...userSave, username: e.target.value})}
                 helperText={errorChecking ? usernameError : ""}
                 error={errorChecking && (usernameError.length > 0 || isUsernameBlank())}
                 onBlur={() => isUsernameValid()}
@@ -138,11 +134,10 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
                 required
                 fullWidth
                 label="رمز عبور"
-                value={user.password}
-                onChange={(e) =>
-                    setUser({...user, password: e.target.value})}
-                helperText={!isPasswordValid(user.password!) ? "رمز عبور حساب کاربری معتبر نمی‌باشد. (رمز عبور حداقل 8 حرف می‌باشد.)" : ""}
-                error={!isPasswordValid(user.password!)}
+                value={userSave.password}
+                onChange={(e) => updateUser({...userSave, password: e.target.value})}
+                helperText={!isPasswordValid(userSave.password) ? "رمز عبور حساب کاربری معتبر نمی‌باشد. (رمز عبور حداقل 8 حرف می‌باشد.)" : ""}
+                error={!isPasswordValid(userSave.password)}
             />
         </React.Fragment>
     );

@@ -1,6 +1,7 @@
 package ir.ac.sbu.evaluation.dto.user;
 
 import java.util.Objects;
+import javax.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,6 +10,7 @@ import lombok.Setter;
 @Setter
 public class UserCheckDto {
 
+    @NotBlank
     private String username;
 
     private boolean isAvailable;

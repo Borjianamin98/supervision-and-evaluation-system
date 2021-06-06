@@ -14,7 +14,7 @@ import {getGeneralErrorMessage} from "../config/axios-config";
 import browserHistory from "../config/browserHistory";
 import {genderMapToPersian} from "../model/enum/gender";
 import {Role} from "../model/enum/role";
-import {User, userRoleInfo} from "../model/user/user";
+import {User, userRoleInfo} from "../model/user/User";
 import AuthenticationService from "../services/api/AuthenticationService";
 import AdminService from "../services/api/user/AdminService";
 import MasterService from "../services/api/user/MasterService";
@@ -69,7 +69,7 @@ const ProfileView: React.FunctionComponent = () => {
                     throw new Error("Unexpected user role: " + jwtPayloadRole)
                 }
             })
-            .then(value => setUser(value.data))
+            .then(value => setUser(value))
             .catch(reason => {
                 // Invalid JWT token provided for authentication
                 AuthenticationService.logout();

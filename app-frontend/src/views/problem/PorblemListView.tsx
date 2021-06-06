@@ -109,7 +109,7 @@ const ProblemListView: React.FunctionComponent = () => {
     }
 
     const onManageProblem = (problem: Problem) => {
-        browserHistory.push(`${PROBLEM_MANAGEMENT_VIEW_PATH}/${problem.id!}`);
+        browserHistory.push(`${PROBLEM_MANAGEMENT_VIEW_PATH}/${problem.id}`);
     }
 
     const getExtraActions = (): StatelessPaginationListAction<Problem>[] => {

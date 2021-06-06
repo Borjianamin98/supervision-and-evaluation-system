@@ -2,9 +2,8 @@ package ir.ac.sbu.evaluation.controller.user;
 
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_STUDENT_ROOT_PATH;
 
-import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.dto.user.student.StudentDto;
-import ir.ac.sbu.evaluation.dto.user.student.StudentRegisterDto;
+import ir.ac.sbu.evaluation.dto.user.student.StudentSaveDto;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.service.user.StudentService;
 import java.util.List;
@@ -36,8 +35,8 @@ public class StudentController {
     }
 
     @GetMapping(path = {"", "/"})
-    public List<UserDto> list() {
-        return studentService.listAsUser();
+    public List<StudentDto> list() {
+        return studentService.list();
     }
 
     @GetMapping(path = API_STUDENT_INFO_PATH)
@@ -46,7 +45,7 @@ public class StudentController {
     }
 
     @PostMapping(path = API_STUDENT_REGISTER_PATH)
-    public StudentDto register(@Valid @RequestBody StudentRegisterDto studentRegisterDto) {
-        return studentService.save(studentRegisterDto.getStudent(), studentRegisterDto.getFacultyId());
+    public StudentDto register(@Valid @RequestBody StudentSaveDto studentSaveDto) {
+        return studentService.save(studentSaveDto);
     }
 }

@@ -26,7 +26,7 @@ class ProblemStudentService {
     }
 
     static createProblem(problemSave: ProblemSave) {
-        return apiAxios.post(ProblemStudentService.API_PROBLEM_STUDENT_ROOT_PATH,
+        return apiAxios.post<Problem>(ProblemStudentService.API_PROBLEM_STUDENT_ROOT_PATH,
             problemSave, {
                 validateStatus: status => status === 201
             }).then(response => response.data);

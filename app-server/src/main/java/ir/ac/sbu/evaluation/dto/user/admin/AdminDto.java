@@ -4,7 +4,6 @@ import ir.ac.sbu.evaluation.dto.user.PersonalInfoDto;
 import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.model.user.Admin;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,27 +15,19 @@ public class AdminDto extends UserDto {
     }
 
     @Builder
-    public AdminDto(long id, String firstName, String lastName, String fullName, String username, String password,
-            String role, PersonalInfoDto personalInfo) {
-        super(id, firstName, lastName, fullName, username, password, role, personalInfo);
+    public AdminDto(long id, String firstName, String lastName, String fullName, String username, String role,
+            PersonalInfoDto personalInfo) {
+        super(id, firstName, lastName, fullName, username, role, personalInfo);
     }
 
     public static AdminDto from(Admin admin) {
-        return builder()
+        return AdminDto.builder()
                 .id(admin.getId())
-                .username(admin.getUsername()).password(admin.getPassword())
+                .username(admin.getUsername())
                 .firstName(admin.getFirstName()).lastName(admin.getLastName())
-                .fullName(admin.getFirstName() + " " + admin.getLastName())
+                .fullName(admin.getFullName())
                 .role(admin.getRole())
-                .personalInfo(admin.getPersonalInfo() != null ? PersonalInfoDto.from(admin.getPersonalInfo()) : null)
-                .build();
-    }
-
-    public Admin toAdmin() {
-        return Admin.builder()
-                .firstName(getFirstName()).lastName(getLastName())
-                .username(getUsername()).password(getPassword())
-                .personalInfo(getPersonalInfo() != null ? getPersonalInfo().toPersonalInfo() : null)
+                .personalInfo(PersonalInfoDto.from(admin.getPersonalInfo()))
                 .build();
     }
 

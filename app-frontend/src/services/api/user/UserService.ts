@@ -1,7 +1,8 @@
 import update from "immutability-helper";
 import apiAxios from "../../../config/axios-config";
 import {Gender} from "../../../model/enum/gender";
-import {User, UserCheck} from "../../../model/user/user";
+import {UserCheck} from "../../../model/user/UserCheck";
+import {UserSave} from "../../../model/user/UserSave";
 import EmailUtils from "../../../utility/EmailUtils";
 
 class UserService {
@@ -14,7 +15,7 @@ class UserService {
     private constructor() {
     }
 
-    static createInitialUser(): User {
+    static createInitialUserSave(): UserSave {
         return {
             firstName: "",
             lastName: "",
@@ -47,14 +48,14 @@ class UserService {
         return apiAxios.post<FormData>(UserService.API_USER_PROFILE_PICTURE_PATH, formData)
     }
 
-    static isUserValid(user: User) {
-        return user.username.length > 0 &&
-            user.password && UserService.isPasswordValid(user.password) &&
-            user.firstName.length > 0 &&
-            user.lastName.length > 0 &&
-            user.personalInfo &&
-            UserService.isTelephoneNumberValid(user.personalInfo.telephoneNumber) &&
-            UserService.isEmailValid(user.personalInfo.email);
+    static isUserValid(userSave: UserSave) {
+        return userSave.username.length > 0 &&
+            userSave.password && UserService.isPasswordValid(userSave.password) &&
+            userSave.firstName.length > 0 &&
+            userSave.lastName.length > 0 &&
+            userSave.personalInfo &&
+            UserService.isTelephoneNumberValid(userSave.personalInfo.telephoneNumber) &&
+            UserService.isEmailValid(userSave.personalInfo.email);
     }
 
     static isPasswordValid(password: string) {
@@ -78,8 +79,8 @@ class UserService {
         }
     }
 
-    static updatePhoneNumber(user: User, telephoneNumber: string) {
-        return update(user, {personalInfo: {telephoneNumber: () => telephoneNumber}})
+    static updatePhoneNumber(userSave: UserSave, telephoneNumber: string) {
+        return update(userSave, {personalInfo: {telephoneNumber: () => telephoneNumber}})
     }
 
     static isEmailValid(email: string) {
