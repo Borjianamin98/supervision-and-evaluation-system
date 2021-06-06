@@ -64,7 +64,7 @@ export enum EditState {
 const ProblemEdit: React.FunctionComponent = () => {
     const classes = useStyles();
     const commonClasses = useCommonStyles();
-    const location = useLocation();
+    const location = useLocation<Problem | null>();
 
     const [errorChecking, setErrorChecking] = React.useState(false);
     const {enqueueSnackbar} = useSnackbar();
@@ -72,7 +72,7 @@ const ProblemEdit: React.FunctionComponent = () => {
     let initialProblem = ProblemStudentService.createInitialProblem();
     let initialEditState = EditState.ADD;
     if (location.state) {
-        initialProblem = location.state as Problem;
+        initialProblem = location.state;
         initialEditState = EditState.EDIT;
     }
     const [problem, setProblem] = useState<Problem>(initialProblem);

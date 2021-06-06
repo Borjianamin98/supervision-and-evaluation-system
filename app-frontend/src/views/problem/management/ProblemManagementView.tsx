@@ -111,7 +111,10 @@ const ProblemManagementView: React.FunctionComponent = () => {
     }
 
     const onScheduleClick = () => {
-        browserHistory.push(`${PROBLEM_SCHEDULE_VIEW_PATH}/${problemId}`);
+        browserHistory.push({
+            pathname: `${PROBLEM_SCHEDULE_VIEW_PATH}/${problemId}`,
+            state: problem
+        });
     }
 
     if (isProblemLoading || isProblemLoadingFailed) {
