@@ -1,7 +1,5 @@
 package ir.ac.sbu.evaluation.dto.schedule;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
 import java.util.Objects;
 import lombok.Builder;
@@ -12,7 +10,6 @@ import lombok.Setter;
 @Setter
 public class MeetScheduleDto {
 
-    @JsonProperty(access = Access.READ_ONLY)
     private long id;
 
     public MeetScheduleDto() {
@@ -26,12 +23,6 @@ public class MeetScheduleDto {
     public static MeetScheduleDto from(MeetSchedule schedule) {
         return MeetScheduleDto.builder()
                 .id(schedule.getId())
-                .build();
-    }
-
-    public MeetSchedule toMeetSchedule() {
-        return MeetSchedule.builder()
-                .id(id)
                 .build();
     }
 

@@ -4,49 +4,35 @@ import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.model.schedule.ScheduleEvent;
 import java.time.Instant;
 import java.util.Objects;
-import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ScheduleEventInfoDto {
+public class ScheduleEventDto {
 
     private long id;
-
-    @NotNull
     private Instant startDate;
-
-    @NotNull
     private Instant endDate;
-
-    @NotNull
     private UserDto owner;
 
-    public ScheduleEventInfoDto() {
+    public ScheduleEventDto() {
     }
 
     @Builder
-    public ScheduleEventInfoDto(long id, Instant startDate, Instant endDate, UserDto owner) {
+    public ScheduleEventDto(long id, Instant startDate, Instant endDate, UserDto owner) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
         this.owner = owner;
     }
 
-    public static ScheduleEventInfoDto from(ScheduleEvent scheduleEvent) {
-        return ScheduleEventInfoDto.builder()
+    public static ScheduleEventDto from(ScheduleEvent scheduleEvent) {
+        return ScheduleEventDto.builder()
                 .id(scheduleEvent.getId())
                 .startDate(scheduleEvent.getStartDate()).endDate(scheduleEvent.getEndDate())
                 .owner(UserDto.from(scheduleEvent.getOwner()))
-                .build();
-    }
-
-    public ScheduleEvent toScheduleEvent() {
-        return ScheduleEvent.builder()
-                .id(id)
-                .startDate(startDate).endDate(endDate)
                 .build();
     }
 
@@ -58,9 +44,10 @@ public class ScheduleEventInfoDto {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ScheduleEventInfoDto that = (ScheduleEventInfoDto) o;
-        return id == that.id && Objects.equals(startDate, that.startDate) && Objects
-                .equals(endDate, that.endDate) && Objects.equals(owner, that.owner);
+        ScheduleEventDto that = (ScheduleEventDto) o;
+        return id == that.id && Objects.equals(startDate, that.startDate)
+                && Objects.equals(endDate, that.endDate)
+                && Objects.equals(owner, that.owner);
     }
 
     @Override

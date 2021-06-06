@@ -1,6 +1,6 @@
 import {User} from "../user/user";
 
-export interface ScheduleEventInfo {
+export interface ScheduleEvent {
     id: number,
     startDate: Date,
     endDate: Date,

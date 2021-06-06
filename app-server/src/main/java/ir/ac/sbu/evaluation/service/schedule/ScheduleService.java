@@ -1,7 +1,7 @@
 package ir.ac.sbu.evaluation.service.schedule;
 
 import ir.ac.sbu.evaluation.dto.schedule.event.DateRangeDto;
-import ir.ac.sbu.evaluation.dto.schedule.event.ScheduleEventInfoDto;
+import ir.ac.sbu.evaluation.dto.schedule.event.ScheduleEventDto;
 import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
 import ir.ac.sbu.evaluation.model.problem.Problem;
@@ -33,18 +33,18 @@ public class ScheduleService {
         this.scheduleEventRepository = scheduleEventRepository;
     }
 
-    public List<ScheduleEventInfoDto> retrieveScheduleEvents(long userId, long meetScheduleId,
+    public List<ScheduleEventDto> retrieveScheduleEvents(long userId, long meetScheduleId,
             Instant startDate, Instant endDate) {
         MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
         checkUserAccessMeetSchedule(userId, meetSchedule);
         List<ScheduleEvent> scheduleEvents = scheduleEventRepository
                 .findAllByMeetScheduleIdAndStartDateGreaterThanEqualAndEndDateLessThanEqual(meetScheduleId, startDate,
                         endDate);
-        return scheduleEvents.stream().map(ScheduleEventInfoDto::from).collect(Collectors.toList());
+        return scheduleEvents.stream().map(ScheduleEventDto::from).collect(Collectors.toList());
     }
 
     @Transactional
-    public ScheduleEventInfoDto addScheduleEvent(long userId, long meetScheduleId,
+    public ScheduleEventDto addScheduleEvent(long userId, long meetScheduleId,
             DateRangeDto dateRangeDto) {
         MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
         User user = userRepository.findById(userId)
@@ -59,11 +59,11 @@ public class ScheduleService {
                 .build());
         meetSchedule.getScheduleEvents().add(newScheduleEvent);
         meetScheduleRepository.save(meetSchedule);
-        return ScheduleEventInfoDto.from(newScheduleEvent);
+        return ScheduleEventDto.from(newScheduleEvent);
     }
 
     @Transactional
-    public ScheduleEventInfoDto deleteScheduleEvent(long userId, long meetScheduleId, long scheduleEventId) {
+    public ScheduleEventDto deleteScheduleEvent(long userId, long meetScheduleId, long scheduleEventId) {
         MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
         ScheduleEvent scheduleEvent = getScheduleEvent(meetScheduleId, scheduleEventId);
         checkUserAccessMeetSchedule(userId, meetSchedule);
@@ -72,11 +72,11 @@ public class ScheduleService {
         scheduleEventRepository.delete(scheduleEvent);
         meetSchedule.getScheduleEvents().remove(scheduleEvent);
         meetScheduleRepository.save(meetSchedule);
-        return ScheduleEventInfoDto.from(scheduleEvent);
+        return ScheduleEventDto.from(scheduleEvent);
     }
 
     @Transactional
-    public ScheduleEventInfoDto updateScheduleEvent(long userId, long meetScheduleId, long scheduleEventId,
+    public ScheduleEventDto updateScheduleEvent(long userId, long meetScheduleId, long scheduleEventId,
             DateRangeDto dateRangeDto) {
         MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
         ScheduleEvent scheduleEvent = getScheduleEvent(meetScheduleId, scheduleEventId);
@@ -86,7 +86,7 @@ public class ScheduleService {
         scheduleEvent.setStartDate(dateRangeDto.getStartDate());
         scheduleEvent.setEndDate(dateRangeDto.getEndDate());
         ScheduleEvent savedScheduleEvent = scheduleEventRepository.save(scheduleEvent);
-        return ScheduleEventInfoDto.from(savedScheduleEvent);
+        return ScheduleEventDto.from(savedScheduleEvent);
     }
 
     private void checkUserAccessModifyOrDeleteEvent(long userId, ScheduleEvent scheduleEvent) {

@@ -10,7 +10,7 @@ import CustomScheduler from "../../../components/Scheduler/CustomScheduler";
 import {generalErrorHandler} from "../../../config/axios-config";
 import {Problem} from "../../../model/problem/problem";
 import {DateRange} from "../../../model/schedule/DateRange";
-import {ScheduleEventInfo, SyncfusionSchedulerEvent} from "../../../model/schedule/ScheduleEvent";
+import {ScheduleEvent, SyncfusionSchedulerEvent} from "../../../model/schedule/ScheduleEvent";
 import AuthenticationService from "../../../services/api/AuthenticationService";
 import ScheduleService from "../../../services/api/schedule/ScheduleService";
 import DateUtils from "../../../utility/DateUtils";
@@ -34,11 +34,11 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
     const [startDate, setStartDate] = React.useState(DateUtils.getCurrentDate());
     const endDate = DateUtils.addDays(startDate, totalDaysInView);
     const queryClient = useQueryClient();
-    const {data: scheduleEventsInfo, ...scheduleEventsInfoQuery} = useQuery(
+    const {data: problemScheduleEvents, ...problemScheduleEventsQuery} = useQuery(
         ["meetSchedule", meetScheduleId, 'events', startDate, endDate],
         () => ScheduleService.retrieveMeetScheduleEvents(meetScheduleId, startDate, endDate));
 
-    const scheduleEventToSyncfusionSchedulerEvent = (event: ScheduleEventInfo): SyncfusionSchedulerEvent => {
+    const scheduleEventToSyncfusionSchedulerEvent = (event: ScheduleEvent): SyncfusionSchedulerEvent => {
         return {
             id: event.id,
             subject: event.owner.fullName!,
@@ -84,7 +84,7 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                 totalDaysInView={totalDaysInView}
                 selectedDate={startDate}
                 onDateChange={onDateChange}
-                scheduleEvents={scheduleEventsInfo?.map(scheduleEventToSyncfusionSchedulerEvent)}
+                scheduleEvents={problemScheduleEvents?.map(scheduleEventToSyncfusionSchedulerEvent)}
                 participants={[
                     {id: 1, name: 'Nancy', color: theme.palette.primary.main},
                     {id: 2, name: 'Steven', color: theme.palette.secondary.main},

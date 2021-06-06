@@ -3,7 +3,7 @@ package ir.ac.sbu.evaluation.controller.schedule;
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_SCHEDULE_ROOT_PATH;
 
 import ir.ac.sbu.evaluation.dto.schedule.event.DateRangeDto;
-import ir.ac.sbu.evaluation.dto.schedule.event.ScheduleEventInfoDto;
+import ir.ac.sbu.evaluation.dto.schedule.event.ScheduleEventDto;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.service.schedule.ScheduleService;
 import java.time.Instant;
@@ -31,7 +31,7 @@ public class ScheduleController {
     }
 
     @GetMapping(path = "/{meetScheduleId}/events")
-    public List<ScheduleEventInfoDto> retrieveScheduleEvents(
+    public List<ScheduleEventDto> retrieveScheduleEvents(
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long meetScheduleId,
             @RequestParam(name = "startDate") Instant startDate,
@@ -41,7 +41,7 @@ public class ScheduleController {
 
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.STUDENT_ROLE_NAME, @SecurityRoles.MASTER_ROLE_NAME)")
     @PostMapping(path = "/{meetScheduleId}/event")
-    public ScheduleEventInfoDto addScheduleEvent(
+    public ScheduleEventDto addScheduleEvent(
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long meetScheduleId,
             @Valid @RequestBody DateRangeDto dateRangeDto) {
@@ -50,7 +50,7 @@ public class ScheduleController {
 
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.STUDENT_ROLE_NAME, @SecurityRoles.MASTER_ROLE_NAME)")
     @PostMapping(path = "/{meetScheduleId}/event/{scheduleEventId}")
-    public ScheduleEventInfoDto updateScheduleEvent(
+    public ScheduleEventDto updateScheduleEvent(
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long meetScheduleId,
             @PathVariable long scheduleEventId,
@@ -61,7 +61,7 @@ public class ScheduleController {
 
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.STUDENT_ROLE_NAME, @SecurityRoles.MASTER_ROLE_NAME)")
     @DeleteMapping(path = "/{meetScheduleId}/event/{scheduleEventId}")
-    public ScheduleEventInfoDto deleteScheduleEvent(
+    public ScheduleEventDto deleteScheduleEvent(
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long meetScheduleId,
             @PathVariable long scheduleEventId) {
