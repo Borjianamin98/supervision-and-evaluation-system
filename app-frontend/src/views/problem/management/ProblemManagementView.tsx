@@ -8,16 +8,15 @@ import ScheduleIcon from '@material-ui/icons/Schedule';
 import {AxiosError} from "axios";
 import {useSnackbar} from "notistack";
 import React from 'react';
-import {useMutation, useQuery, useQueryClient} from "react-query";
-import {useParams} from "react-router-dom";
+import {useMutation, useQueryClient} from "react-query";
 import {rtlTheme} from "../../../App";
 import KeywordsList from "../../../components/Chip/KeywordsList";
 import SearchableListDialog from "../../../components/Dialog/SearchableListDialog";
-import LoadingGrid from "../../../components/Grid/LoadingGrid";
 import {generalErrorHandler} from "../../../config/axios-config";
 import browserHistory from "../../../config/browserHistory";
 import {educationMapToPersian} from "../../../model/enum/education";
 import {Role} from "../../../model/enum/role";
+import {Problem} from "../../../model/problem/problem";
 import {Master} from "../../../model/user/master";
 import AuthenticationService from "../../../services/api/AuthenticationService";
 import ProblemMasterService from "../../../services/api/problem/ProblemMasterService";
@@ -25,7 +24,6 @@ import MasterService from "../../../services/api/user/MasterService";
 import NumberUtils from "../../../utility/NumberUtils";
 import {PROBLEM_SCHEDULE_VIEW_PATH} from "../../ViewPaths";
 import ProblemEventsList from "../ProblemEventsList";
-import ProblemSharedFunctions from "../ProblemSharedFunctions";
 import ProblemAddEvent from "./PorblemAddEvent";
 import ProfileInfoCard from "./ProfileInfoCard";
 
@@ -53,31 +51,24 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const ProblemManagementView: React.FunctionComponent = () => {
+interface ProblemManagementViewProps {
+    problem: Problem,
+}
+
+const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps> = (props) => {
     const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar();
-
-    const {problemId} = useParams<{ problemId: string }>();
-    if (!(+problemId)) {
-        ProblemSharedFunctions.illegalAccessHandler(enqueueSnackbar);
-    }
+    const {problem} = props;
+    const problemId = problem.id!;
 
     const queryClient = useQueryClient();
-    const {
-        data: problem,
-        isLoading: isProblemLoading,
-        isError: isProblemLoadingFailed
-    } = useQuery(['problem', +problemId],
-        () => ProblemSharedFunctions.retrieveProblemForView(enqueueSnackbar, +problemId), {
-            keepPreviousData: true
-        });
     const referees = problem?.referees;
     const updateReferees = useMutation(
         (data: Parameters<typeof ProblemMasterService.updateReferees>) => ProblemMasterService.updateReferees(data[0], data[1]),
         {
             onSuccess: async data => {
-                queryClient.setQueryData(['problem', +problemId], data);
-                await queryClient.invalidateQueries(['events', +problemId])
+                queryClient.setQueryData(['problem', problemId], data);
+                await queryClient.invalidateQueries(['events', problemId])
             },
             onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
@@ -100,11 +91,11 @@ const ProblemManagementView: React.FunctionComponent = () => {
                 return;
             }
             if (selectedRefereeDialog === -1) {
-                updateReferees.mutate([+problemId, [...referees, master]]);
+                updateReferees.mutate([problemId, [...referees, master]]);
             } else {
                 const copyReferees = [...referees];
                 copyReferees[selectedRefereeDialog] = master;
-                updateReferees.mutate([+problemId, copyReferees])
+                updateReferees.mutate([problemId, copyReferees])
             }
         }
         setRefereeDialogOpen(false);
@@ -115,16 +106,6 @@ const ProblemManagementView: React.FunctionComponent = () => {
             pathname: `${PROBLEM_SCHEDULE_VIEW_PATH}/${problemId}`,
             state: problem
         });
-    }
-
-    if (isProblemLoading || isProblemLoadingFailed) {
-        return <ThemeProvider theme={rtlTheme}>
-            <LoadingGrid
-                isLoading={isProblemLoading}
-                isError={isProblemLoadingFailed}
-                onRetryClick={() => queryClient.invalidateQueries(["problem", +problemId])}
-            />
-        </ThemeProvider>
     }
 
     return (

@@ -15,6 +15,7 @@ import DashboardView from "../dashboard/DashboardView";
 import ProblemEdit from "../problem/edit/ProblemEdit";
 import ProblemManagementView from "../problem/management/ProblemManagementView";
 import ProblemListView from "../problem/PorblemListView";
+import ProblemRequiredEntryPoint from "../problem/ProblemRequiredEntryPoint";
 import ProblemScheduleView from "../problem/schedule/ProblemScheduleView";
 import ProfileView from "../ProfileView";
 import SettingsView from "../SettingsView";
@@ -70,13 +71,13 @@ const problemRoutesInfo: navBarRouteInfo[] = [
         path: PROBLEM_MANAGEMENT_VIEW_PATH + "/:problemId",
         name: "مدیریت پایان‌نامه‌ (پروژه)",
         roles: [Role.STUDENT, Role.MASTER],
-        component: ProblemManagementView,
+        component: ProblemRequiredEntryPoint(ProblemManagementView),
     },
     {
         path: PROBLEM_SCHEDULE_VIEW_PATH + "/:problemId",
         name: "زمان‌بندی پایان‌نامه‌ (پروژه)",
         roles: [Role.STUDENT, Role.MASTER],
-        component: ProblemScheduleView,
+        component: ProblemRequiredEntryPoint(ProblemScheduleView),
     },
 ]
 

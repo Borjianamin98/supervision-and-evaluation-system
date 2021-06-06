@@ -5,38 +5,30 @@ import {AxiosError} from "axios";
 import {useSnackbar} from "notistack";
 import React from 'react';
 import {useQuery, useQueryClient} from "react-query";
-import {useLocation, useParams} from "react-router-dom";
 import {rtlTheme} from "../../../App";
 import CustomScheduler from "../../../components/Scheduler/CustomScheduler";
 import {generalErrorHandler} from "../../../config/axios-config";
-import browserHistory from "../../../config/browserHistory";
 import {Problem} from "../../../model/problem/problem";
 import {DateRange} from "../../../model/schedule/DateRange";
 import {ScheduleEventInfo, SyncfusionSchedulerEvent} from "../../../model/schedule/ScheduleEvent";
 import AuthenticationService from "../../../services/api/AuthenticationService";
 import ScheduleService from "../../../services/api/schedule/ScheduleService";
 import DateUtils from "../../../utility/DateUtils";
-import {DASHBOARD_VIEW_PATH} from "../../ViewPaths";
-import ProblemSharedFunctions from "../ProblemSharedFunctions";
 
-const ProblemScheduleView: React.FunctionComponent = () => {
+interface ProblemScheduleViewProps {
+    problem: Problem,
+}
+
+const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (props) => {
     const theme = useTheme();
     const {enqueueSnackbar} = useSnackbar();
-    const location = useLocation<Problem | undefined>();
+    const {problem} = props;
 
     const mobileMatches = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
     const smallScreenMatches = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
     const totalDaysInView = mobileMatches ? 3 : (smallScreenMatches ? 5 : 7);
 
-    const {problemId} = useParams<{ problemId: string }>();
-    if (!(+problemId)) {
-        ProblemSharedFunctions.illegalAccessHandler(enqueueSnackbar);
-    }
-    const problem = location.state;
-    if (!problem || problem.id !== +problemId) {
-        browserHistory.push(DASHBOARD_VIEW_PATH);
-    }
-    const meetScheduleId = problem!.meetSchedule!.id;
+    const meetScheduleId = problem.meetSchedule!.id;
     const jwtPayloadUserId = AuthenticationService.getJwtPayloadUserId();
 
     const [startDate, setStartDate] = React.useState(DateUtils.getCurrentDate());
