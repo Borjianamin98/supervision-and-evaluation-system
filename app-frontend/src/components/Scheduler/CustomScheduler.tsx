@@ -19,6 +19,7 @@ import moment from "jalali-moment";
 import React from 'react';
 import {DateRange} from '../../model/schedule/DateRange';
 import {SyncfusionSchedulerEvent} from "../../model/schedule/ScheduleEvent";
+import DateUtils from "../../utility/DateUtils";
 import CenterBox from "../Grid/CenterBox";
 import AppointmentEventTemplate from "./AppointmentEventTemplate";
 import ScheduleHeaderBar from "./ScheduleHeaderBar";
@@ -105,6 +106,7 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
      * Disable touch mode (scroll to left/right to navigate) of scheduler view
      */
     const onDataBound = () => {
+        // Based on issue: https://www.syncfusion.com/support/directtrac/incidents/329117
         if (scheduleComponentRef.current?.scheduleTouchModule) {
             // @ts-ignore
             scheduleComponentRef.current.scheduleTouchModule.touchObj.destroy();
@@ -174,11 +176,10 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
     return <>
         <ScheduleHeaderBar
             totalDaysInView={totalDaysInView}
-            startDate={selectedDate}
             minimumDate={minimumDate}
             maximumDate={maximumDate}
             onDateChange={startDate => {
-                // scheduleComponentRef.current?.changeDate(startDate);
+                scheduleComponentRef.current?.changeDate(startDate);
                 onDateChange(startDate);
             }}
         />
@@ -203,7 +204,7 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
             popupOpen={onPopupOpen}
             height="550px"
             enableRtl={true}
-            selectedDate={selectedDate}
+            selectedDate={DateUtils.getCurrentDate()}
             minDate={minimumDate}
             maxDate={maximumDate}
             startHour="07:00"

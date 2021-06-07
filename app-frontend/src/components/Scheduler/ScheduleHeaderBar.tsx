@@ -9,15 +9,15 @@ import DateUtils from "../../utility/DateUtils";
 
 interface ScheduleHeaderBarProps {
     totalDaysInView: number,
-    startDate: Date,
     minimumDate: Date,
     maximumDate: Date,
     onDateChange: (startDate: Date) => void,
 }
 
 const ScheduleHeaderBar: React.FunctionComponent<ScheduleHeaderBarProps> = (props) => {
-    const {totalDaysInView, startDate, minimumDate, maximumDate, onDateChange} = props;
+    const {totalDaysInView, minimumDate, maximumDate, onDateChange} = props;
 
+    const [startDate, setStartDate] = React.useState(DateUtils.getCurrentDate());
     const startDateMoment = moment(startDate).locale("fa");
     const endDateMoment = moment(DateUtils.addDays(moment(startDateMoment), totalDaysInView - 1)).locale("fa");
 
@@ -40,7 +40,9 @@ const ScheduleHeaderBar: React.FunctionComponent<ScheduleHeaderBarProps> = (prop
     const isBeyondMaxRange = startDateMoment.add(totalDaysInView, "days").isAfter(maximumDate);
     const isBeforeMinRange = startDateMoment.add(-1, "days").isBefore(minimumDate);
     const changeIntervalOnClick = (days: number) => {
-        onDateChange(DateUtils.addDays(startDate, days))
+        const targetDate = DateUtils.addDays(startDate, days);
+        setStartDate(targetDate);
+        onDateChange(targetDate);
     }
 
     return (

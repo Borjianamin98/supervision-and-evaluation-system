@@ -15,6 +15,18 @@ import AuthenticationService from "../../../services/api/AuthenticationService";
 import ScheduleService from "../../../services/api/schedule/ScheduleService";
 import DateUtils from "../../../utility/DateUtils";
 
+function scheduleEventToSyncfusionSchedulerEvent(event: ScheduleEvent, userId: number): SyncfusionSchedulerEvent {
+    return {
+        id: event.id,
+        subject: event.owner.fullName,
+        startDate: event.startDate,
+        endDate: event.endDate,
+        isAllDay: false,
+        ownerId: event.owner.id,
+        readonly: event.owner.id !== userId,
+    }
+}
+
 interface ProblemScheduleViewProps {
     problem: Problem,
 }
@@ -28,54 +40,44 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
     const smallScreenMatches = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
     const totalDaysInView = mobileMatches ? 3 : (smallScreenMatches ? 5 : 7);
 
-    const meetScheduleId = problem.meetSchedule.id;
-    const jwtPayloadUserId = AuthenticationService.getJwtPayloadUserId();
 
     const [startDate, setStartDate] = React.useState(DateUtils.getCurrentDate());
-    const endDate = DateUtils.addDays(startDate, totalDaysInView);
     const queryClient = useQueryClient();
     const {data: problemScheduleEvents, ...problemScheduleEventsQuery} = useQuery(
-        ["meetScheduleEvents", meetScheduleId, startDate, endDate],
-        () => ScheduleService.retrieveMeetScheduleEvents(meetScheduleId, startDate, endDate)
-            .then(events => events.map(scheduleEventToSyncfusionSchedulerEvent))
-    );
-
-    const scheduleEventToSyncfusionSchedulerEvent = (event: ScheduleEvent): SyncfusionSchedulerEvent => {
-        return {
-            id: event.id,
-            subject: event.owner.fullName,
-            startDate: event.startDate,
-            endDate: event.endDate,
-            isAllDay: false,
-            ownerId: event.owner.id,
-            readonly: event.owner.id !== jwtPayloadUserId!,
+        ["meetScheduleEvents", problem.meetSchedule.id, startDate, totalDaysInView],
+        () => {
+            const jwtPayloadUserId = AuthenticationService.getJwtPayloadUserId()!;
+            const endDate = DateUtils.addDays(startDate, totalDaysInView);
+            return ScheduleService.retrieveMeetScheduleEvents(problem.meetSchedule.id, startDate, endDate)
+                .then(events => events.map(event => scheduleEventToSyncfusionSchedulerEvent(event, jwtPayloadUserId)))
         }
-    }
+    );
 
     const onDateChange = (startDate: Date) => {
         setStartDate(startDate);
     }
 
     const onCellClick = (scheduler: ScheduleComponent, scheduleEventDate: DateRange) => {
-        ScheduleService.addMeetScheduleEvent(meetScheduleId, {
+        const jwtPayloadUserId = AuthenticationService.getJwtPayloadUserId()!;
+        ScheduleService.addMeetScheduleEvent(problem.meetSchedule.id, {
             startDate: scheduleEventDate.startDate,
             endDate: scheduleEventDate.endDate,
         })
-            .then(data => scheduler.addEvent(scheduleEventToSyncfusionSchedulerEvent(data)))
+            .then(data => scheduler.addEvent(scheduleEventToSyncfusionSchedulerEvent(data, jwtPayloadUserId)))
             .catch((error: AxiosError) => {
                 generalErrorHandler(error, enqueueSnackbar);
             })
     }
 
     const onEventChange = (scheduler: ScheduleComponent, syncfusionEvent: SyncfusionSchedulerEvent) => {
-        ScheduleService.updateMeetScheduleEvent(meetScheduleId, syncfusionEvent.id, {
+        ScheduleService.updateMeetScheduleEvent(problem.meetSchedule.id, syncfusionEvent.id, {
             startDate: syncfusionEvent.startDate,
             endDate: syncfusionEvent.endDate,
         }).catch(error => generalErrorHandler(error, enqueueSnackbar))
     }
 
     const onEventDelete = (scheduler: ScheduleComponent, syncfusionEvent: SyncfusionSchedulerEvent) => {
-        ScheduleService.deleteMeetScheduleEvent(meetScheduleId, syncfusionEvent.id)
+        ScheduleService.deleteMeetScheduleEvent(problem.meetSchedule.id, syncfusionEvent.id)
             .then(() => scheduler.deleteEvent(syncfusionEvent))
             .catch(error => generalErrorHandler(error, enqueueSnackbar))
     }

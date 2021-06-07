@@ -27,7 +27,7 @@ function ProblemRequiredEntryPoint(Component: React.FunctionComponent<{ problem:
             data: problem,
             isLoading: isProblemLoading,
             isError: isProblemLoadingFailed
-        } = useQuery(['problem', +problemId],
+        } = useQuery(['problem', problemId /* Should be string to avoid creating new object each time */],
             () => ProblemAuthenticatedService.retrieveProblem(+problemId)
                 .then(problem => {
                     if (problem.state !== ProblemState.IN_PROGRESS && problem.state !== ProblemState.COMPLETED) {
@@ -47,9 +47,7 @@ function ProblemRequiredEntryPoint(Component: React.FunctionComponent<{ problem:
                         }
                     }
                     return Promise.reject(error);
-                }), {
-                keepPreviousData: true
-            });
+                }));
 
         if (!(+problemId)) {
             return <HomeRedirect message="دسترسی به صفحه مربوطه امکان‌پذیر نمی‌باشد."/>
