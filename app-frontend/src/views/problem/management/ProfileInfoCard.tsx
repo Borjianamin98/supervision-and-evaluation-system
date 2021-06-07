@@ -32,8 +32,10 @@ const ProfileInfoCard: React.FunctionComponent<ProfileInfoCardProps> = (params) 
     const classes = useStyles();
     const {user, subheader, hasEdit, onEdit, hasDelete, onDelete} = params;
 
+    const hasButtons = (hasEdit ?? false) || (hasDelete ?? false);
+
     return (
-        <Box component={Paper} display="flex" padding={1} flexDirection="column">
+        <Box component={Paper} display="flex" padding={2} flexDirection="column">
             <CenterBox marginRight={1}>
                 <Avatar src={""} className={classes.avatar}/>
             </CenterBox>
@@ -44,12 +46,12 @@ const ProfileInfoCard: React.FunctionComponent<ProfileInfoCardProps> = (params) 
                 </Typography>
                 {
                     subheader ? (
-                        <Typography variant="subtitle1" color="textSecondary" paragraph>
+                        <Typography variant="subtitle1" color="textSecondary">
                             {subheader}
                         </Typography>
                     ) : undefined
                 }
-                <Box marginTop={1} display={(hasEdit ?? false) || (hasDelete ?? false) ? undefined : "none"}>
+                <Box marginTop={hasButtons ? 1 : undefined} display={hasButtons ? undefined : "none"}>
                     <Grid container alignItems="center" justify="center" spacing={1}>
                         <Grid item>
                             <Button

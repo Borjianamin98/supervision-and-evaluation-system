@@ -14,7 +14,7 @@ public interface ProblemRepository extends PagingAndSortingRepository<Problem, L
 
     Page<Problem> findAllByStudentIdAndState(long studentId, ProblemState state, Pageable pageable);
 
-    @Query("select u from Problem u left join u.referees r "
+    @Query("select distinct u from Problem u left join u.referees r "
             + "where (u.supervisor.id = :masterId or r.id = :masterId) and u.state = :state")
     Page<Problem> findAllAssignedForMasterAndState(
             @Param("masterId") long masterId,

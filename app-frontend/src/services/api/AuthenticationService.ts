@@ -71,7 +71,7 @@ class AuthenticationService {
         return AuthenticationService.getJwtPayload()?.role;
     }
 
-    private static getJwtPayload() {
+    public static getJwtPayload() {
         const accessToken = AuthenticationService.getAccessToken();
         if (accessToken) {
             return jwtDecode<CustomJwtPayload>(accessToken);

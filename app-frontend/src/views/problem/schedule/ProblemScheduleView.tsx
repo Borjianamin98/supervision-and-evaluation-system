@@ -35,18 +35,20 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
     const endDate = DateUtils.addDays(startDate, totalDaysInView);
     const queryClient = useQueryClient();
     const {data: problemScheduleEvents, ...problemScheduleEventsQuery} = useQuery(
-        ["meetSchedule", meetScheduleId, 'events', startDate, endDate],
-        () => ScheduleService.retrieveMeetScheduleEvents(meetScheduleId, startDate, endDate));
+        ["meetScheduleEvents", meetScheduleId, startDate, endDate],
+        () => ScheduleService.retrieveMeetScheduleEvents(meetScheduleId, startDate, endDate)
+            .then(events => events.map(scheduleEventToSyncfusionSchedulerEvent))
+    );
 
     const scheduleEventToSyncfusionSchedulerEvent = (event: ScheduleEvent): SyncfusionSchedulerEvent => {
         return {
             id: event.id,
-            subject: event.owner.fullName!,
+            subject: event.owner.fullName,
             startDate: event.startDate,
             endDate: event.endDate,
             isAllDay: false,
-            ownerId: event.owner.id!,
-            readonly: event.owner.id! !== jwtPayloadUserId!,
+            ownerId: event.owner.id,
+            readonly: event.owner.id !== jwtPayloadUserId!,
         }
     }
 
@@ -84,7 +86,7 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                 totalDaysInView={totalDaysInView}
                 selectedDate={startDate}
                 onDateChange={onDateChange}
-                scheduleEvents={problemScheduleEvents?.map(scheduleEventToSyncfusionSchedulerEvent)}
+                scheduleEvents={problemScheduleEvents}
                 participants={[
                     {id: 1, name: 'Nancy', color: theme.palette.primary.main},
                     {id: 2, name: 'Steven', color: theme.palette.secondary.main},

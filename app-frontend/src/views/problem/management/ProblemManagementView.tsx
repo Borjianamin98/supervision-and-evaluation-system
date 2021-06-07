@@ -15,7 +15,6 @@ import SearchableListDialog from "../../../components/Dialog/SearchableListDialo
 import {generalErrorHandler} from "../../../config/axios-config";
 import browserHistory from "../../../config/browserHistory";
 import {educationMapToPersian} from "../../../model/enum/education";
-import {Role} from "../../../model/enum/role";
 import {Problem} from "../../../model/problem/problem";
 import {Master} from "../../../model/user/master/Master";
 import AuthenticationService from "../../../services/api/AuthenticationService";
@@ -73,7 +72,9 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
             onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
 
-    const jwtPayloadRole = AuthenticationService.getJwtPayloadRole()!;
+    const jwtPayload = AuthenticationService.getJwtPayload()!;
+    const currentUserIsSupervisor = problem.supervisor.id === jwtPayload.userId;
+
     const [commentDialogOpen, setCommentDialogOpen] = React.useState(false);
     const [selectedRefereeDialog, setSelectedRefereeDialog] = React.useState(0);
     const [refereeDialogOpen, setRefereeDialogOpen] = React.useState(false);
@@ -200,8 +201,8 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                                     content = <ProfileInfoCard
                                         user={referees[index]}
                                         subheader={`داور ${orderString} پایان‌نامه (پروژه)`}
-                                        hasEdit={jwtPayloadRole === Role.MASTER}
-                                        hasDelete={jwtPayloadRole === Role.MASTER}
+                                        hasEdit={currentUserIsSupervisor}
+                                        hasDelete={currentUserIsSupervisor}
                                         onEdit={() => {
                                             setSelectedRefereeDialog(index);
                                             setRefereeDialogOpen(true);
@@ -213,27 +214,20 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                                         }}
                                     />;
                                 } else {
-                                    let buttonContent: string;
-                                    switch (jwtPayloadRole) {
-                                        case Role.STUDENT:
-                                            buttonContent = `داور ${orderString} مشخص نشده است.`;
-                                            break;
-                                        case Role.MASTER:
-                                        case Role.ADMIN:
-                                            buttonContent = `تایین داور ${orderString}`;
-                                            break;
-                                    }
+                                    const buttonContent = currentUserIsSupervisor ?
+                                        `تایین داور ${orderString}` :
+                                        `داور ${orderString} مشخص نشده است.`;
                                     content = (
                                         <Button
                                             fullWidth
-                                            startIcon={jwtPayloadRole !== Role.STUDENT ?
+                                            startIcon={currentUserIsSupervisor ?
                                                 (<PersonAddIcon style={{fontSize: 40}}/>) : undefined}
                                             className={classes.refereeSelectionButton}
                                             onClick={() => {
                                                 setSelectedRefereeDialog(-1);
                                                 setRefereeDialogOpen(true);
                                             }}
-                                            disabled={jwtPayloadRole === Role.STUDENT}
+                                            disabled={!currentUserIsSupervisor}
                                         >
                                             {buttonContent}
                                         </Button>

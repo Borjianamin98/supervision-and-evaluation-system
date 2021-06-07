@@ -178,7 +178,7 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
             minimumDate={minimumDate}
             maximumDate={maximumDate}
             onDateChange={startDate => {
-                scheduleComponentRef.current?.changeDate(startDate);
+                // scheduleComponentRef.current?.changeDate(startDate);
                 onDateChange(startDate);
             }}
         />
