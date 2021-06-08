@@ -25,7 +25,8 @@ interface SearchableListDialogProps<T> {
     open: boolean,
     title: string,
     description: string,
-    getItems: (searchQuery: string) => [queryKey: string[], items: Promise<T[]>],
+    itemsQueryKey: (searchQuery: string) => string[],
+    getItems: (searchQuery: string) => Promise<T[]>,
     getItemLabel: (item: T) => string,
     getItemKey: (index: number, item: T) => number,
     onSelect: (item?: T) => void,
@@ -34,7 +35,7 @@ interface SearchableListDialogProps<T> {
 function SearchableListDialog<T>(props: SearchableListDialogProps<T>) {
     const classes = useStyles();
     const theme = useTheme();
-    const {open, title, description, getItems, getItemLabel, getItemKey, onSelect, ...rest} = props;
+    const {open, title, description, itemsQueryKey, getItems, getItemLabel, getItemKey, onSelect, ...rest} = props;
 
     const [searchContent, setSearchContent] = React.useState("");
     const [checkedIndex, setCheckedIndex] = React.useState(-1);
@@ -46,10 +47,10 @@ function SearchableListDialog<T>(props: SearchableListDialogProps<T>) {
         setCheckedIndex(-1);
     }, [searchContent])
 
-    const [queryKey, items] = getItems(searchContent);
-    const {data: calculatedItems, isLoading, isError} = useQuery(queryKey,
-        () => items, {
-            keepPreviousData: true
+    console.log(open)
+    const {data: calculatedItems, isLoading, isError} = useQuery(itemsQueryKey(searchContent),
+        () => getItems(searchContent), {
+            enabled: open
         });
 
     const onDialogClose = (shouldUpdate: boolean) => {
@@ -87,13 +88,15 @@ function SearchableListDialog<T>(props: SearchableListDialogProps<T>) {
         viewContent =
             <Typography style={{width: viewWidth}}>در بارگزاری اطلاعات خطا رخ داده است. دوباره تلاش نمایید.</Typography>
     } else {
-        viewContent = calculatedItems?.length !== 0 ? (<FixedSizeList
-            direction={theme.direction}
-            itemSize={48} itemCount={calculatedItems!.length}
-            height={Math.min(calculatedItems!.length * 48, 200)} width={viewWidth}
-        >
-            {renderRow}
-        </FixedSizeList>) : <Typography style={{width: viewWidth}}>نتیجه‌ای یافت نشد.</Typography>;
+        viewContent = calculatedItems && calculatedItems.length !== 0 ? (
+            <FixedSizeList
+                direction={theme.direction}
+                itemSize={48} itemCount={calculatedItems!.length}
+                height={Math.min(calculatedItems!.length * 48, 200)} width={viewWidth}
+            >
+                {renderRow}
+            </FixedSizeList>
+        ) : <Typography style={{width: viewWidth}}>نتیجه‌ای یافت نشد.</Typography>;
     }
 
     return (

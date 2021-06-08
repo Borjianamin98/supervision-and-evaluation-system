@@ -62,8 +62,17 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
 
     const queryClient = useQueryClient();
     const referees = problem.referees;
-    const updateReferees = useMutation(
-        (data: Parameters<typeof ProblemMasterService.updateReferees>) => ProblemMasterService.updateReferees(data[0], data[1]),
+    const addReferee = useMutation(
+        (data: Parameters<typeof ProblemMasterService.addReferee>) => ProblemMasterService.addReferee(...data),
+        {
+            onSuccess: async data => {
+                queryClient.setQueryData(['problem', problemId], data);
+                await queryClient.invalidateQueries(['events', problemId])
+            },
+            onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
+        });
+    const removeReferee = useMutation(
+        (data: Parameters<typeof ProblemMasterService.removeReferee>) => ProblemMasterService.removeReferee(...data),
         {
             onSuccess: async data => {
                 queryClient.setQueryData(['problem', problemId], data);
@@ -76,7 +85,6 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
     const currentUserIsSupervisor = problem.supervisor.id === jwtPayload.userId;
 
     const [commentDialogOpen, setCommentDialogOpen] = React.useState(false);
-    const [selectedRefereeDialog, setSelectedRefereeDialog] = React.useState(0);
     const [refereeDialogOpen, setRefereeDialogOpen] = React.useState(false);
     const onRefereeSelect = (master?: Master) => {
         if (master) {
@@ -85,19 +93,13 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                     "داور انتخاب‌شده در لیست داورهای از قبل انتخاب شده می‌باشد. امکان انتخاب یک داور برای بیش از یک بار وجود ندارد.",
                     {variant: "error"})
                 return;
-            } else if (master.id === problem!.supervisor.id) {
+            } else if (master.id === problem.supervisor.id) {
                 enqueueSnackbar(
                     "داور انتخاب‌شده نمی‌تواند استاد راهنمای مسئله باشد.",
                     {variant: "error"})
                 return;
             }
-            if (selectedRefereeDialog === -1) {
-                updateReferees.mutate([problemId, [...referees, master]]);
-            } else {
-                const copyReferees = [...referees];
-                copyReferees[selectedRefereeDialog] = master;
-                updateReferees.mutate([problemId, copyReferees])
-            }
+            addReferee.mutate([problemId, master.id]);
         }
         setRefereeDialogOpen(false);
     }
@@ -118,7 +120,6 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                         <Box marginBottom={1}>
                             <ProfileInfoCard
                                 user={problem.student}
-                                onEdit={() => undefined}
                                 onDelete={() => undefined}
                                 subheader="دانشجوی پایان‌نامه (پروژه)"
                             />
@@ -156,7 +157,6 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                         <Box marginBottom={1}>
                             <ProfileInfoCard
                                 user={problem.supervisor}
-                                onEdit={() => undefined}
                                 onDelete={() => undefined}
                                 subheader="استاد راهنمای پایان‌نامه (پروژه)"
                             />
@@ -201,17 +201,8 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                                     content = <ProfileInfoCard
                                         user={referees[index]}
                                         subheader={`داور ${orderString} پایان‌نامه (پروژه)`}
-                                        hasEdit={currentUserIsSupervisor}
                                         hasDelete={currentUserIsSupervisor}
-                                        onEdit={() => {
-                                            setSelectedRefereeDialog(index);
-                                            setRefereeDialogOpen(true);
-                                        }}
-                                        onDelete={() => {
-                                            const copyReferees = [...referees];
-                                            copyReferees.splice(index, 1);
-                                            updateReferees.mutate([+problemId, copyReferees])
-                                        }}
+                                        onDelete={() => removeReferee.mutate([problemId, referees[index].id])}
                                     />;
                                 } else {
                                     const buttonContent = currentUserIsSupervisor ?
@@ -223,10 +214,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                                             startIcon={currentUserIsSupervisor ?
                                                 (<PersonAddIcon style={{fontSize: 40}}/>) : undefined}
                                             className={classes.refereeSelectionButton}
-                                            onClick={() => {
-                                                setSelectedRefereeDialog(-1);
-                                                setRefereeDialogOpen(true);
-                                            }}
+                                            onClick={() => setRefereeDialogOpen(true)}
                                             disabled={!currentUserIsSupervisor}
                                         >
                                             {buttonContent}
@@ -275,20 +263,19 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                 <div aria-label={"dialogs"}>
                     <ProblemAddEvent
                         open={commentDialogOpen}
-                        problemId={+problemId}
-                        problemTitle={problem ? problem.title : ""}
+                        problemId={problemId}
+                        problemTitle={problem.title}
                         onClose={() => setCommentDialogOpen(false)}
                     />
                     <SearchableListDialog
-                        title={`انتخاب استاد داور ${NumberUtils.mapNumberToPersianOrderName(selectedRefereeDialog + 1)}`}
+                        title={"انتخاب استاد داور"}
                         description={"استاد مربوطه را مشخص نمایید."}
                         open={refereeDialogOpen}
-                        getItems={searchQuery => [
-                            ['masters', searchQuery],
-                            MasterService.retrieveMasters(100, 0, searchQuery).then(value => value.content)
-                        ]}
-                        getItemLabel={(item: Master) => item.fullName!}
-                        getItemKey={(index, item) => item.id!}
+                        itemsQueryKey={searchQuery => ['masters', searchQuery]}
+                        getItems={searchQuery =>
+                            MasterService.retrieveMasters(100, 0, searchQuery).then(value => value.content)}
+                        getItemLabel={(item: Master) => item.fullName}
+                        getItemKey={(index, item) => item.id}
                         onSelect={onRefereeSelect}
                     />
                 </div>

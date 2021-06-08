@@ -2,8 +2,8 @@ package ir.ac.sbu.evaluation.service.problem;
 
 import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
 import ir.ac.sbu.evaluation.dto.problem.ProblemSaveDto;
-import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventSaveDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventDto;
+import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventSaveDto;
 import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleDto;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
@@ -18,9 +18,11 @@ import ir.ac.sbu.evaluation.repository.problem.ProblemRepository;
 import ir.ac.sbu.evaluation.repository.schedule.MeetScheduleRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
+import ir.ac.sbu.evaluation.security.SecurityRoles;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -168,28 +170,58 @@ public class ProblemService {
     }
 
     @Transactional
-    public ProblemDto updateReferees(long userId, long problemId, Set<Long> refereeIds) {
+    public ProblemDto addReferee(long userId, long problemId, long refereeId) {
         Problem problem = getProblem(problemId);
-        checkUserAccessProblem(userId, problem);
-
-        Set<Master> referees = refereeIds.stream()
-                .map(id -> masterRepository.findById(id)
-                        .orElseThrow(() -> new ResourceNotFoundException("Master not found: ID = " + id)))
-                .collect(Collectors.toSet());
-
-        problem.setReferees(referees);
-        Problem savedProblem = problemRepository.save(problem);
-        for (Master referee : referees) {
-            referee.getProblemsReferee().add(savedProblem);
-            masterRepository.save(referee);
+        checkUserAccessProblem(userId, problem, Collections.singletonList(SecurityRoles.MASTER_ROLE_NAME));
+        if (problem.getSupervisor().getId() != userId) {
+            throw new IllegalResourceAccessException("Delete referee of problem is only available for supervisor: "
+                    + "problem ID = " + problemId);
         }
 
-        List<String> refereeNames = referees.stream()
-                .map(master -> master.getFirstName() + " " + master.getLastName())
-                .collect(Collectors.toList());
-        String message = refereeNames.isEmpty() ?
-                "داورهای مسئله حذف شدند." :
-                String.format("لیست داورهای مسئله به «%s» تغییر یافت.", String.join("، ", refereeNames));
+        Master referee = masterRepository.findById(refereeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Master not found: ID = " + refereeId));
+        if (problem.getReferees().contains(referee)) {
+            throw new IllegalArgumentException("Problem already contains user as referee: "
+                    + "problem ID = " + problemId + " referee ID = " + refereeId);
+        }
+
+        problem.getReferees().add(referee);
+        Problem savedProblem = problemRepository.save(problem);
+        referee.getProblemsReferee().add(savedProblem);
+        masterRepository.save(referee);
+
+        String message = String.format("استاد «%s» به لیست داورهای مسئله اضافه شد.", referee.getFullName());
+        ProblemEvent savedProblemEvent = problemEventRepository.save(ProblemEvent.builder()
+                .message(message).problem(problem).build());
+        problem.getEvents().add(savedProblemEvent);
+
+        return ProblemDto.from(savedProblem);
+    }
+
+    @Transactional
+    public ProblemDto deleteReferee(long userId, long problemId, long refereeId) {
+        Problem problem = getProblem(problemId);
+        checkUserAccessProblem(userId, problem, Collections.singletonList(SecurityRoles.MASTER_ROLE_NAME));
+        if (problem.getSupervisor().getId() != userId) {
+            throw new IllegalResourceAccessException("Delete referee of problem is only available for supervisor: "
+                    + "problem ID = " + problemId);
+        }
+
+        Optional<Master> refereeToRemove = problem.getReferees().stream()
+                .filter(master -> master.getId() == refereeId)
+                .findFirst();
+        if (!refereeToRemove.isPresent()) {
+            throw new ResourceNotFoundException("Referee not found or not belong to problem: "
+                    + "problem ID = " + problemId + " referee ID = " + refereeId);
+        }
+
+        Master referee = refereeToRemove.get();
+        problem.getReferees().remove(referee);
+        Problem savedProblem = problemRepository.save(problem);
+        referee.getProblemsReferee().removeIf(p -> p.getId().equals(savedProblem.getId()));
+        masterRepository.save(referee);
+
+        String message = String.format("استاد داور «%s» حذف شد.", referee.getFullName());
         ProblemEvent savedProblemEvent = problemEventRepository.save(ProblemEvent.builder()
                 .message(message).problem(problem).build());
         problem.getEvents().add(savedProblemEvent);
@@ -198,11 +230,21 @@ public class ProblemService {
     }
 
     private void checkUserAccessProblem(long userId, Problem problem) {
-        if (problem.getStudent().getId() != userId && problem.getSupervisor().getId() != userId
-                && problem.getReferees().stream().noneMatch(master -> master.getId() == userId)) {
-            throw new IllegalResourceAccessException(
-                    "Problem is not owned or controlled by user: ID = " + userId + " Problem ID = " + problem.getId());
+        checkUserAccessProblem(userId, problem,
+                Arrays.asList(SecurityRoles.STUDENT_ROLE_NAME, SecurityRoles.MASTER_ROLE_NAME));
+    }
+
+    private void checkUserAccessProblem(long userId, Problem problem, List<String> accessibleRoles) {
+        if (accessibleRoles.contains(SecurityRoles.STUDENT_ROLE_NAME) &&
+                problem.getStudent().getId() == userId) {
+            return;
+        } else if (accessibleRoles.contains(SecurityRoles.MASTER_ROLE_NAME)
+                && (problem.getSupervisor().getId() == userId
+                || problem.getReferees().stream().anyMatch(master -> master.getId() == userId))) {
+            return;
         }
+        throw new IllegalResourceAccessException(
+                "Problem is not accessible by user: ID = " + userId + " Problem ID = " + problem.getId());
     }
 
     private Problem getProblem(long problemId) {

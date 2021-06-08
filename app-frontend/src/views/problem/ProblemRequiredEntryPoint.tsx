@@ -27,7 +27,7 @@ function ProblemRequiredEntryPoint(Component: React.FunctionComponent<{ problem:
             data: problem,
             isLoading: isProblemLoading,
             isError: isProblemLoadingFailed
-        } = useQuery(['problem', problemId /* Should be string to avoid creating new object each time */],
+        } = useQuery(['problem', +problemId],
             () => ProblemAuthenticatedService.retrieveProblem(+problemId)
                 .then(problem => {
                     if (problem.state !== ProblemState.IN_PROGRESS && problem.state !== ProblemState.COMPLETED) {

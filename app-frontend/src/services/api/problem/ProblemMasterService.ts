@@ -3,7 +3,6 @@ import {Pageable} from "../../../model/pageable";
 import {Problem} from "../../../model/problem/problem";
 import {ProblemEvent, ProblemEventSave} from "../../../model/problem/problemEvent";
 import {ProblemState} from "../../../model/problem/problemState";
-import {Master} from "../../../model/user/master/Master";
 import {API_PROBLEM_ROOT_PATH} from "../../ApiPaths";
 
 class ProblemMasterService {
@@ -34,9 +33,16 @@ class ProblemMasterService {
             .then(response => response.data);
     }
 
-    static updateReferees(problemId: number, referees: Master[]) {
-        return apiAxios.post<Problem>(`${ProblemMasterService.API_PROBLEM_MASTER_ROOT_PATH}/${problemId}/referees`,
-            referees.map(referee => referee.id!)).then(response => response.data);
+    static addReferee(problemId: number, refereeId: number) {
+        return apiAxios.post<Problem>(
+            `${ProblemMasterService.API_PROBLEM_MASTER_ROOT_PATH}/${problemId}/referee/${refereeId}`)
+            .then(response => response.data);
+    }
+
+    static removeReferee(problemId: number, refereeId: number) {
+        return apiAxios.delete<Problem>(
+            `${ProblemMasterService.API_PROBLEM_MASTER_ROOT_PATH}/${problemId}/referee/${refereeId}`)
+            .then(response => response.data);
     }
 }
 

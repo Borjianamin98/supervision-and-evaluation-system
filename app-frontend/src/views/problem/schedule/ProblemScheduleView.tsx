@@ -4,7 +4,7 @@ import deepOrange from '@material-ui/core/colors/deepOrange';
 import indigo from '@material-ui/core/colors/indigo';
 import purple from '@material-ui/core/colors/purple';
 import teal from '@material-ui/core/colors/teal';
-import {Theme, ThemeProvider, useTheme} from "@material-ui/core/styles";
+import {Theme, ThemeProvider} from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery/useMediaQuery";
 import {ScheduleComponent} from '@syncfusion/ej2-react-schedule'
 import {AxiosError} from "axios";
@@ -38,7 +38,6 @@ interface ProblemScheduleViewProps {
 }
 
 const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (props) => {
-    const theme = useTheme();
     const {enqueueSnackbar} = useSnackbar();
     const {problem} = props;
 

@@ -2,7 +2,6 @@ import {Avatar, Box, Button, Grid, Paper} from "@material-ui/core";
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
 import React from 'react';
 import CenterBox from "../../../components/Grid/CenterBox";
 import {User, userRoleInfo} from "../../../model/user/User";
@@ -22,17 +21,14 @@ const useStyles = makeStyles((theme: Theme) =>
 interface ProfileInfoCardProps {
     user?: User,
     subheader?: string,
-    hasEdit?: boolean,
-    onEdit: () => void,
     hasDelete?: boolean,
     onDelete: () => void,
 }
 
 const ProfileInfoCard: React.FunctionComponent<ProfileInfoCardProps> = (params) => {
     const classes = useStyles();
-    const {user, subheader, hasEdit, onEdit, hasDelete, onDelete} = params;
-
-    const hasButtons = (hasEdit ?? false) || (hasDelete ?? false);
+    const {user, subheader, hasDelete, onDelete} = params;
+    const hasButtons = hasDelete;
 
     return (
         <Box component={Paper} display="flex" padding={2} flexDirection="column">
@@ -57,20 +53,10 @@ const ProfileInfoCard: React.FunctionComponent<ProfileInfoCardProps> = (params) 
                             <Button
                                 variant="contained"
                                 color="secondary"
-                                startIcon={<EditIcon/>}
-                                onClick={() => onEdit()}
-                            >
-                                ویرایش
-                            </Button>
-                        </Grid>
-                        <Grid item>
-                            <Button
-                                variant="contained"
-                                color="secondary"
                                 startIcon={<DeleteIcon/>}
                                 onClick={() => onDelete()}
                             >
-                                حذف
+                                حذف داور
                             </Button>
                         </Grid>
                     </Grid>
