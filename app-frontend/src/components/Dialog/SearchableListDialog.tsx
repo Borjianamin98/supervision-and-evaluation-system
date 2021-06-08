@@ -47,7 +47,6 @@ function SearchableListDialog<T>(props: SearchableListDialogProps<T>) {
         setCheckedIndex(-1);
     }, [searchContent])
 
-    console.log(open)
     const {data: calculatedItems, isLoading, isError} = useQuery(itemsQueryKey(searchContent),
         () => getItems(searchContent), {
             enabled: open

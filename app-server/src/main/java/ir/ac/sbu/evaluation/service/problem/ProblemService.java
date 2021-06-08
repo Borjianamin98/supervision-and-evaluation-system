@@ -7,15 +7,18 @@ import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventSaveDto;
 import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleDto;
 import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
+import ir.ac.sbu.evaluation.exception.ResourceConflictException;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
 import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
 import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
+import ir.ac.sbu.evaluation.model.schedule.ScheduleEvent;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.Student;
 import ir.ac.sbu.evaluation.repository.problem.ProblemEventRepository;
 import ir.ac.sbu.evaluation.repository.problem.ProblemRepository;
 import ir.ac.sbu.evaluation.repository.schedule.MeetScheduleRepository;
+import ir.ac.sbu.evaluation.repository.schedule.ScheduleEventRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
 import ir.ac.sbu.evaluation.security.SecurityRoles;
@@ -37,16 +40,19 @@ public class ProblemService {
 
     private final ProblemEventRepository problemEventRepository;
     private final MeetScheduleRepository meetScheduleRepository;
+    private final ScheduleEventRepository scheduleEventRepository;
 
     public ProblemService(StudentRepository studentRepository,
             MasterRepository masterRepository, ProblemRepository problemRepository,
             ProblemEventRepository problemEventRepository,
-            MeetScheduleRepository meetScheduleRepository) {
+            MeetScheduleRepository meetScheduleRepository,
+            ScheduleEventRepository scheduleEventRepository) {
         this.studentRepository = studentRepository;
         this.masterRepository = masterRepository;
         this.problemRepository = problemRepository;
         this.problemEventRepository = problemEventRepository;
         this.meetScheduleRepository = meetScheduleRepository;
+        this.scheduleEventRepository = scheduleEventRepository;
     }
 
     @Transactional
@@ -213,6 +219,13 @@ public class ProblemService {
         if (!refereeToRemove.isPresent()) {
             throw new ResourceNotFoundException("Referee not found or not belong to problem: "
                     + "problem ID = " + problemId + " referee ID = " + refereeId);
+        }
+
+        List<ScheduleEvent> problemScheduleEventsByReferee = scheduleEventRepository
+                .findAllByOwnerIdAndMeetSchedule_Problem_Id(refereeId, problemId);
+        if (!problemScheduleEventsByReferee.isEmpty()) {
+            throw new ResourceConflictException("Unable to remove referee because of some schedule event dependencies: "
+                    + "schedule events count = " + problemScheduleEventsByReferee.size());
         }
 
         Master referee = refereeToRemove.get();
