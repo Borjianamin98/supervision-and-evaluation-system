@@ -1,3 +1,9 @@
+import blue from '@material-ui/core/colors/blue';
+import brown from '@material-ui/core/colors/brown';
+import deepOrange from '@material-ui/core/colors/deepOrange';
+import indigo from '@material-ui/core/colors/indigo';
+import purple from '@material-ui/core/colors/purple';
+import teal from '@material-ui/core/colors/teal';
 import {Theme, ThemeProvider, useTheme} from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery/useMediaQuery";
 import {ScheduleComponent} from '@syncfusion/ej2-react-schedule'
@@ -82,6 +88,27 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
             .catch(error => generalErrorHandler(error, enqueueSnackbar))
     }
 
+    const candidateColors = [blue[500], purple[500], teal[500], indigo[500]]
+    const participants = [
+        {
+            id: problem.student.id,
+            name: problem.student.fullName,
+            color: deepOrange[500],
+        },
+        {
+            id: problem.supervisor.id,
+            name: problem.supervisor.fullName,
+            color: brown[500],
+        },
+        ...problem.referees.map((referee, i) => {
+            return {
+                id: referee.id,
+                name: referee.fullName,
+                color: candidateColors[i],
+            }
+        }),
+    ]
+
     return (
         <ThemeProvider theme={rtlTheme}>
             <CustomScheduler
@@ -89,11 +116,7 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                 selectedDate={startDate}
                 onDateChange={onDateChange}
                 scheduleEvents={problemScheduleEvents}
-                participants={[
-                    {id: 1, name: 'Nancy', color: theme.palette.primary.main},
-                    {id: 2, name: 'Steven', color: theme.palette.secondary.main},
-                    {id: 3, name: 'Michael', color: '#7499e1'}
-                ]}
+                participants={participants}
                 onCellClick={onCellClick}
                 onEventDelete={onEventDelete}
                 onEventChange={onEventChange}
