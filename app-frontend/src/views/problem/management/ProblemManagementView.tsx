@@ -11,6 +11,7 @@ import React from 'react';
 import {useMutation, useQueryClient} from "react-query";
 import {rtlTheme} from "../../../App";
 import KeywordsList from "../../../components/Chip/KeywordsList";
+import ConfirmDialog from "../../../components/Dialog/ConfirmDialog";
 import SearchableListDialog from "../../../components/Dialog/SearchableListDialog";
 import {generalErrorHandler} from "../../../config/axios-config";
 import browserHistory from "../../../config/browserHistory";
@@ -58,27 +59,34 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
     const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar();
     const {problem} = props;
-    const problemId = problem.id;
 
+    const [refereeToRemoveConfirm, setRefereeToRemoveConfirm] = React.useState<Master | null>(null);
     const queryClient = useQueryClient();
-    const referees = problem.referees;
     const addReferee = useMutation(
-        (data: Parameters<typeof ProblemMasterService.addReferee>) => ProblemMasterService.addReferee(...data),
+        (data: { problemId: number, refereeId: number }) =>
+            ProblemMasterService.addReferee(data.problemId, data.refereeId),
         {
-            onSuccess: async data => {
+            onSuccess: async (data, {problemId}) => {
                 queryClient.setQueryData(['problem', problemId], data);
                 await queryClient.invalidateQueries(['events', problemId])
             },
             onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
     const removeReferee = useMutation(
-        (data: Parameters<typeof ProblemMasterService.removeReferee>) => ProblemMasterService.removeReferee(...data),
+        (data: { problemId: number, referee: Master, force: boolean }) =>
+            ProblemMasterService.removeReferee(data.problemId, data.referee.id, data.force),
         {
-            onSuccess: async data => {
+            onSuccess: async (data, {problemId}) => {
                 queryClient.setQueryData(['problem', problemId], data);
                 await queryClient.invalidateQueries(['events', problemId])
             },
-            onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
+            onError: (error: AxiosError, {referee}) => {
+                if (error.response && error.response.status === 409 /* Conflict */) {
+                    setRefereeToRemoveConfirm(referee);
+                } else {
+                    generalErrorHandler(error, enqueueSnackbar);
+                }
+            },
         });
 
     const jwtPayload = AuthenticationService.getJwtPayload()!;
@@ -88,7 +96,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
     const [refereeDialogOpen, setRefereeDialogOpen] = React.useState(false);
     const onRefereeSelect = (master?: Master) => {
         if (master) {
-            if (referees.some(value => value.id === master.id)) {
+            if (problem.referees.some(value => value.id === master.id)) {
                 enqueueSnackbar(
                     "داور انتخاب‌شده در لیست داورهای از قبل انتخاب شده می‌باشد. امکان انتخاب یک داور برای بیش از یک بار وجود ندارد.",
                     {variant: "error"})
@@ -99,14 +107,14 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                     {variant: "error"})
                 return;
             }
-            addReferee.mutate([problemId, master.id]);
+            addReferee.mutate({problemId: problem.id, refereeId: master.id});
         }
         setRefereeDialogOpen(false);
     }
 
     const onScheduleClick = () => {
         browserHistory.push({
-            pathname: `${PROBLEM_SCHEDULE_VIEW_PATH}/${problemId}`,
+            pathname: `${PROBLEM_SCHEDULE_VIEW_PATH}/${problem.id}`,
             state: problem
         });
     }
@@ -197,12 +205,17 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                             [...Array(2)].map((e, index) => {
                                 const orderString = NumberUtils.mapNumberToPersianOrderName(index + 1);
                                 let content: React.ReactNode;
-                                if (index < referees.length && referees[index] != null) {
+                                if (index < problem.referees.length) {
                                     content = <ProfileInfoCard
-                                        user={referees[index]}
+                                        user={problem.referees[index]}
                                         subheader={`داور ${orderString} پایان‌نامه (پروژه)`}
                                         hasDelete={currentUserIsSupervisor}
-                                        onDelete={() => removeReferee.mutate([problemId, referees[index].id])}
+                                        onDelete={() =>
+                                            removeReferee.mutate({
+                                                problemId: problem.id,
+                                                referee: problem.referees[index],
+                                                force: false
+                                            })}
                                     />;
                                 } else {
                                     const buttonContent = currentUserIsSupervisor ?
@@ -263,7 +276,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                 <div aria-label={"dialogs"}>
                     <ProblemAddEvent
                         open={commentDialogOpen}
-                        problemId={problemId}
+                        problemId={problem.id}
                         problemTitle={problem.title}
                         onClose={() => setCommentDialogOpen(false)}
                     />
@@ -277,6 +290,21 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                         getItemLabel={(item: Master) => item.fullName}
                         getItemKey={(index, item) => item.id}
                         onSelect={onRefereeSelect}
+                    />
+                    <ConfirmDialog
+                        open={refereeToRemoveConfirm !== null}
+                        onDialogOpenClose={confirmed => {
+                            if (confirmed && refereeToRemoveConfirm) {
+                                removeReferee.mutate({
+                                    problemId: problem.id,
+                                    referee: refereeToRemoveConfirm,
+                                    force: true
+                                })
+                            }
+                            setRefereeToRemoveConfirm(null);
+                        }}
+                        title={"حذف داور"}
+                        description={"داور انتخاب شده در زمان‌بندی دفاع پایان‌نامه (پروژه) مشارکت داشته هست. حذف او قابل بازگشت نمی‌باشد. آیا نسبت به این کار مطمئن هستید؟"}
                     />
                 </div>
             </Grid>

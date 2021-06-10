@@ -205,7 +205,7 @@ public class ProblemService {
     }
 
     @Transactional
-    public ProblemDto deleteReferee(long userId, long problemId, long refereeId) {
+    public ProblemDto deleteReferee(long userId, long problemId, long refereeId, boolean forceToRemove) {
         Problem problem = getProblem(problemId);
         checkUserAccessProblem(userId, problem, Collections.singletonList(SecurityRoles.MASTER_ROLE_NAME));
         if (problem.getSupervisor().getId() != userId) {
@@ -223,9 +223,11 @@ public class ProblemService {
 
         List<ScheduleEvent> problemScheduleEventsByReferee = scheduleEventRepository
                 .findAllByOwnerIdAndMeetSchedule_Problem_Id(refereeId, problemId);
-        if (!problemScheduleEventsByReferee.isEmpty()) {
+        if (!forceToRemove && !problemScheduleEventsByReferee.isEmpty()) {
             throw new ResourceConflictException("Unable to remove referee because of some schedule event dependencies: "
                     + "schedule events count = " + problemScheduleEventsByReferee.size());
+        } else {
+            problemScheduleEventsByReferee.forEach(scheduleEventRepository::delete);
         }
 
         Master referee = refereeToRemove.get();

@@ -39,9 +39,14 @@ class ProblemMasterService {
             .then(response => response.data);
     }
 
-    static removeReferee(problemId: number, refereeId: number) {
+    static removeReferee(problemId: number, refereeId: number, force: boolean) {
         return apiAxios.delete<Problem>(
-            `${ProblemMasterService.API_PROBLEM_MASTER_ROOT_PATH}/${problemId}/referee/${refereeId}`)
+            `${ProblemMasterService.API_PROBLEM_MASTER_ROOT_PATH}/${problemId}/referee/${refereeId}`,
+            {
+                params: {
+                    force: force,
+                }
+            })
             .then(response => response.data);
     }
 }

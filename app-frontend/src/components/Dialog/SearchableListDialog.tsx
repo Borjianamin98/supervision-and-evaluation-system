@@ -65,7 +65,7 @@ function SearchableListDialog<T>(props: SearchableListDialogProps<T>) {
         const item = calculatedItems![index];
         return (
             <ListItem role={undefined} button style={style} key={getItemKey(index, item)}
-                      onClick={event => setCheckedIndex(index)}>
+                      onClick={() => setCheckedIndex(index)}>
                 <ListItemIcon>
                     <Checkbox
                         edge="start"
@@ -90,8 +90,8 @@ function SearchableListDialog<T>(props: SearchableListDialogProps<T>) {
         viewContent = calculatedItems && calculatedItems.length !== 0 ? (
             <FixedSizeList
                 direction={theme.direction}
-                itemSize={48} itemCount={calculatedItems!.length}
-                height={Math.min(calculatedItems!.length * 48, 200)} width={viewWidth}
+                itemSize={48} itemCount={calculatedItems.length}
+                height={Math.min(calculatedItems.length * 48, 200)} width={viewWidth}
             >
                 {renderRow}
             </FixedSizeList>
@@ -126,13 +126,13 @@ function SearchableListDialog<T>(props: SearchableListDialogProps<T>) {
             </DialogContent>
             <DialogActions>
                 <Button
-                    onClick={event => onDialogClose(false)}
+                    onClick={() => onDialogClose(false)}
                     color="primary"
                 >
                     انصراف
                 </Button>
                 <Button
-                    onClick={event => onDialogClose(true)}
+                    onClick={() => onDialogClose(true)}
                     color="primary" autoFocus disabled={checkedIndex === -1}
                 >
                     تایید

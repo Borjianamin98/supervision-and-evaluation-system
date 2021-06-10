@@ -58,7 +58,8 @@ public class ProblemMasterController {
     public ProblemDto deleteReferee(
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long problemId,
-            @PathVariable long refereeId) {
-        return problemService.deleteReferee(authUserDetail.getUserId(), problemId, refereeId);
+            @PathVariable long refereeId,
+            @RequestParam(name = "force") boolean forceToRemove) {
+        return problemService.deleteReferee(authUserDetail.getUserId(), problemId, refereeId, forceToRemove);
     }
 }
