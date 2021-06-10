@@ -1,3 +1,4 @@
+import {ThemeProvider} from '@material-ui/core';
 import {EmitType} from '@syncfusion/ej2-base'
 import {
     ActionEventArgs,
@@ -17,15 +18,17 @@ import {
 } from '@syncfusion/ej2-react-schedule'
 import moment from "jalali-moment";
 import React from 'react';
+import {rtlTheme} from "../../App";
 import {DateRange} from '../../model/schedule/DateRange';
 import {SyncfusionSchedulerEvent} from "../../model/schedule/ScheduleEvent";
 import DateUtils from "../../utility/DateUtils";
 import CenterBox from "../Grid/CenterBox";
 import AppointmentEventTemplate from "./AppointmentEventTemplate";
+import ParticipantsColorInfo from "./ParticipantsColorInfo";
 import ScheduleHeaderBar from "./ScheduleHeaderBar";
 import "./scheduler.css"
 
-interface Participant {
+export interface Participant {
     id: number,
     name: string,
     color: string,
@@ -175,7 +178,7 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
     const minimumDate = new Date(new Date().getFullYear() - 1, 0, 1);
     const maximumDate = new Date(new Date().getFullYear() + 2, 0, 1);
 
-    return <>
+    return <ThemeProvider theme={rtlTheme}>
         <ScheduleHeaderBar
             totalDaysInView={totalDaysInView}
             minimumDate={minimumDate}
@@ -185,6 +188,7 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
                 onDateChange(startDate);
             }}
         />
+        <ParticipantsColorInfo participants={participants}/>
         <ScheduleComponent
             ref={scheduleComponentRef}
             actionBegin={onActionBegin}
@@ -257,7 +261,7 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
             </ResourcesDirective>
             <Inject services={[Day, TimelineViews, DragAndDrop, Resize]}/>
         </ScheduleComponent>
-    </>
+    </ThemeProvider>
 }
 
 export default CustomScheduler;

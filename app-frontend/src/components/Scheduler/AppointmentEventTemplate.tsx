@@ -1,6 +1,5 @@
 import {Box, BoxProps, Grow, IconButton} from "@material-ui/core";
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
 import React from 'react';
 import {SyncfusionSchedulerEvent} from "../../model/schedule/ScheduleEvent";
@@ -43,9 +42,10 @@ const AppointmentEventTemplate = (props: AppointmentEventTemplateProps) => {
 
     return (
         <Box dir="rtl" padding={1} style={{height: "100%"}} onClick={appointmentClick}>
-            <Typography variant="body2" className={classes.appointment}>
-                {syncfusionEvent.subject}
-            </Typography>
+            {/* Disable it if you want to show owner name */}
+            {/*<Typography variant="body2" className={classes.appointment}>*/}
+            {/*    {syncfusionEvent.subject}*/}
+            {/*</Typography>*/}
             <Grow in={isBackdrop}>
                 <CenterBox className={classes.backdrop}>
                     <IconButton aria-label="delete" color="inherit" onClick={() => onDelete(syncfusionEvent)}>

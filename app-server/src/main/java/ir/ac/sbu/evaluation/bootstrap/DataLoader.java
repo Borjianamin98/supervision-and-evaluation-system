@@ -316,18 +316,18 @@ public class DataLoader implements CommandLineRunner {
                 calendar.get(Calendar.MONTH) + 1,
                 calendar.get(Calendar.DAY_OF_MONTH));
         ScheduleEvent scheduleEvent1 = scheduleEventRepository.save(ScheduleEvent.builder()
-                .startDate(dateFormat.parse(String.format("%s 07:00", todayDate)).toInstant())
-                .endDate(dateFormat.parse(String.format("%s 08:00", todayDate)).toInstant())
+                .startDate(dateFormat.parse(String.format("%s 09:00", todayDate)).toInstant())
+                .endDate(dateFormat.parse(String.format("%s 10:00", todayDate)).toInstant())
                 .owner(problem3.getReferees().iterator().next())
                 .build());
         ScheduleEvent scheduleEvent2 = scheduleEventRepository.save(ScheduleEvent.builder()
-                .startDate(dateFormat.parse(String.format("%s 09:00", todayDate)).toInstant())
-                .endDate(dateFormat.parse(String.format("%s 10:00", todayDate)).toInstant())
+                .startDate(dateFormat.parse(String.format("%s 11:00", todayDate)).toInstant())
+                .endDate(dateFormat.parse(String.format("%s 12:00", todayDate)).toInstant())
                 .owner(problem3.getStudent())
                 .build());
         ScheduleEvent scheduleEvent3 = scheduleEventRepository.save(ScheduleEvent.builder()
-                .startDate(dateFormat.parse(String.format("%s 12:00", todayDate)).toInstant())
-                .endDate(dateFormat.parse(String.format("%s 14:00", todayDate)).toInstant())
+                .startDate(dateFormat.parse(String.format("%s 13:00", todayDate)).toInstant())
+                .endDate(dateFormat.parse(String.format("%s 15:00", todayDate)).toInstant())
                 .owner(problem3.getSupervisor())
                 .build());
         meetSchedule3.setScheduleEvents(new HashSet<>(Arrays.asList(scheduleEvent1, scheduleEvent2, scheduleEvent3)));

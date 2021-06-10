@@ -23,6 +23,7 @@ import ir.ac.sbu.evaluation.repository.schedule.ScheduleEventRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
 import ir.ac.sbu.evaluation.security.SecurityRoles;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -73,6 +74,9 @@ public class ProblemService {
         Problem savedProblem = problemRepository.save(problem);
 
         MeetSchedule meetSchedule = meetScheduleRepository.save(MeetSchedule.builder()
+                .durationMinutes(30L)
+                .minimumDate(Instant.now())
+                .maximumDate(Instant.now())
                 .scheduleState(ScheduleState.CREATED)
                 .problem(savedProblem)
                 .build());

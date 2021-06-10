@@ -42,7 +42,7 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
     const {problem} = props;
 
     const mobileMatches = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
-    const smallScreenMatches = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'));
+    const smallScreenMatches = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
     const totalDaysInView = mobileMatches ? 3 : (smallScreenMatches ? 5 : 7);
 
     const [startDate, setStartDate] = React.useState(DateUtils.getCurrentDate());
