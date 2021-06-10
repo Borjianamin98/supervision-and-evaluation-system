@@ -42,9 +42,8 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
     const {problem} = props;
 
     const mobileMatches = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
-    const smallScreenMatches = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
+    const smallScreenMatches = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'));
     const totalDaysInView = mobileMatches ? 3 : (smallScreenMatches ? 5 : 7);
-
 
     const [startDate, setStartDate] = React.useState(DateUtils.getCurrentDate());
     const queryClient = useQueryClient();
@@ -111,6 +110,7 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
     return (
         <ThemeProvider theme={rtlTheme}>
             <CustomScheduler
+                minimumDurationMinutes={30}
                 totalDaysInView={totalDaysInView}
                 selectedDate={startDate}
                 onDateChange={onDateChange}

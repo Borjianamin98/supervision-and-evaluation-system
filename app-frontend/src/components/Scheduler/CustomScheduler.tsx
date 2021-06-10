@@ -32,6 +32,7 @@ interface Participant {
 }
 
 interface CustomSchedulerProps extends Omit<ScheduleModel, "cellClick"> {
+    minimumDurationMinutes: number,
     totalDaysInView: number,
     selectedDate: Date,
     onDateChange: (startDate: Date) => void,
@@ -48,6 +49,7 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
     const scheduleComponentRef = React.useRef<ScheduleComponent>(null);
 
     const {
+        minimumDurationMinutes,
         totalDaysInView,
         selectedDate,
         onDateChange,
@@ -207,10 +209,10 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
             selectedDate={DateUtils.getCurrentDate()}
             minDate={minimumDate}
             maxDate={maximumDate}
-            startHour="07:00"
-            endHour="20:00"
+            startHour="09:00"
+            endHour="19:00"
             workHours={{
-                highlight: true, start: '09:00', end: '18:00'
+                highlight: true, start: '10:00', end: '18:00'
             }}
             eventSettings={{
                 fields: {
@@ -221,6 +223,11 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
                     endTime: {name: 'endDate'},
                     isReadonly: 'readonly'
                 }
+            }}
+            timeScale={{
+                enable: true,
+                interval: minimumDurationMinutes * 2,
+                slotCount: 2
             }}
             {...rest}
         >
