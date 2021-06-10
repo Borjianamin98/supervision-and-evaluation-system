@@ -1,4 +1,4 @@
-package ir.ac.sbu.evaluation.enumeration;
+package ir.ac.sbu.evaluation.model.problem;
 
 public enum ProblemState {
     CREATED,

@@ -2,11 +2,12 @@ package ir.ac.sbu.evaluation.bootstrap;
 
 import ir.ac.sbu.evaluation.enumeration.Education;
 import ir.ac.sbu.evaluation.enumeration.Gender;
-import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
+import ir.ac.sbu.evaluation.model.problem.ProblemState;
 import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
 import ir.ac.sbu.evaluation.model.schedule.ScheduleEvent;
+import ir.ac.sbu.evaluation.model.schedule.ScheduleState;
 import ir.ac.sbu.evaluation.model.university.Faculty;
 import ir.ac.sbu.evaluation.model.university.University;
 import ir.ac.sbu.evaluation.model.user.Admin;
@@ -27,6 +28,8 @@ import ir.ac.sbu.evaluation.repository.user.StudentRepository;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -92,7 +95,9 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws ParseException {
         prepareUniversities();
 
-        MeetSchedule meetSchedule1 = meetScheduleRepository.save(MeetSchedule.builder().build());
+        MeetSchedule meetSchedule1 = meetScheduleRepository.save(MeetSchedule.builder()
+                .scheduleState(ScheduleState.CREATED)
+                .build());
         Problem problem1 = problemRepository.save(Problem.builder()
                 .education(Education.BACHELOR)
                 .title("سامانه ارزیابی و نظارت یکپارچه")
@@ -108,7 +113,9 @@ public class DataLoader implements CommandLineRunner {
         meetSchedule1.setProblem(problem1);
         problem1 = problemRepository.save(problem1);
 
-        MeetSchedule meetSchedule2 = meetScheduleRepository.save(MeetSchedule.builder().build());
+        MeetSchedule meetSchedule2 = meetScheduleRepository.save(MeetSchedule.builder()
+                .scheduleState(ScheduleState.CREATED)
+                .build());
         Problem problem2 = problemRepository.save(Problem.builder()
                 .education(Education.BACHELOR)
                 .title("سامانه مدیریت خرید و فروش رستوران")
@@ -124,7 +131,12 @@ public class DataLoader implements CommandLineRunner {
         meetSchedule2.setProblem(problem2);
         problem2 = problemRepository.save(problem2);
 
-        MeetSchedule meetSchedule3 = meetScheduleRepository.save(MeetSchedule.builder().build());
+        MeetSchedule meetSchedule3 = meetScheduleRepository.save(MeetSchedule.builder()
+                .durationMinutes(30L)
+                .minimumDate(Instant.now().minus(5, ChronoUnit.DAYS))
+                .maximumDate(Instant.now().minus(10, ChronoUnit.DAYS))
+                .scheduleState(ScheduleState.STARTED)
+                .build());
         Problem problem3 = problemRepository.save(Problem.builder()
                 .education(Education.BACHELOR)
                 .title("نقشه تعاملی سامانه‌های نرم‌افزاری یک شرکت")
@@ -139,7 +151,9 @@ public class DataLoader implements CommandLineRunner {
         meetSchedule3.setProblem(problem3);
         problem3 = problemRepository.save(problem3);
 
-        MeetSchedule meetSchedule4 = meetScheduleRepository.save(MeetSchedule.builder().build());
+        MeetSchedule meetSchedule4 = meetScheduleRepository.save(MeetSchedule.builder()
+                .scheduleState(ScheduleState.CREATED)
+                .build());
         Problem problem4 = problemRepository.save(Problem.builder()
                 .education(Education.BACHELOR)
                 .title("طراحی و پیاده سازی بستر ارسال پیامک انبوه")
@@ -317,6 +331,8 @@ public class DataLoader implements CommandLineRunner {
                 .owner(problem3.getSupervisor())
                 .build());
         meetSchedule3.setScheduleEvents(new HashSet<>(Arrays.asList(scheduleEvent1, scheduleEvent2, scheduleEvent3)));
+        meetSchedule3.setVerifiedUsers(new HashSet<>(Arrays.asList(scheduleEvent1.getOwner().getId(),
+                scheduleEvent2.getOwner().getId(), scheduleEvent3.getOwner().getId())));
         meetSchedule3 = meetScheduleRepository.save(meetSchedule3);
 
         scheduleEvent1.setMeetSchedule(meetSchedule3);

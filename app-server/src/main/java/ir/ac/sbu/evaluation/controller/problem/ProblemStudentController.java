@@ -4,7 +4,7 @@ import static ir.ac.sbu.evaluation.controller.ApiPaths.API_PROBLEM_STUDENT_ROOT_
 
 import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
 import ir.ac.sbu.evaluation.dto.problem.ProblemSaveDto;
-import ir.ac.sbu.evaluation.enumeration.ProblemState;
+import ir.ac.sbu.evaluation.model.problem.ProblemState;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.service.problem.ProblemService;
 import javax.validation.Valid;

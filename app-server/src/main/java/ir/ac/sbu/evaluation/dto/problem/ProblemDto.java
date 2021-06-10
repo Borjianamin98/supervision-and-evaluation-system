@@ -4,7 +4,7 @@ import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleDto;
 import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
 import ir.ac.sbu.evaluation.dto.user.student.StudentDto;
 import ir.ac.sbu.evaluation.enumeration.Education;
-import ir.ac.sbu.evaluation.enumeration.ProblemState;
+import ir.ac.sbu.evaluation.model.problem.ProblemState;
 import ir.ac.sbu.evaluation.model.problem.Problem;
 import java.util.Objects;
 import java.util.Set;

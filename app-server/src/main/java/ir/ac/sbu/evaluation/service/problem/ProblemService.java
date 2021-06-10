@@ -5,14 +5,15 @@ import ir.ac.sbu.evaluation.dto.problem.ProblemSaveDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventSaveDto;
 import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleDto;
-import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
 import ir.ac.sbu.evaluation.exception.ResourceConflictException;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
 import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
+import ir.ac.sbu.evaluation.model.problem.ProblemState;
 import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
 import ir.ac.sbu.evaluation.model.schedule.ScheduleEvent;
+import ir.ac.sbu.evaluation.model.schedule.ScheduleState;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.Student;
 import ir.ac.sbu.evaluation.repository.problem.ProblemEventRepository;
@@ -72,6 +73,7 @@ public class ProblemService {
         Problem savedProblem = problemRepository.save(problem);
 
         MeetSchedule meetSchedule = meetScheduleRepository.save(MeetSchedule.builder()
+                .scheduleState(ScheduleState.CREATED)
                 .problem(savedProblem)
                 .build());
         savedProblem.setMeetSchedule(meetSchedule);
@@ -227,6 +229,8 @@ public class ProblemService {
             throw new ResourceConflictException("Unable to remove referee because of some schedule event dependencies: "
                     + "schedule events count = " + problemScheduleEventsByReferee.size());
         } else {
+            problem.getMeetSchedule().removeVerifyUser(refereeId);
+            problem.setMeetSchedule(meetScheduleRepository.save(problem.getMeetSchedule()));
             problemScheduleEventsByReferee.forEach(scheduleEventRepository::delete);
         }
 

@@ -1,7 +1,6 @@
 package ir.ac.sbu.evaluation.model.problem;
 
 import ir.ac.sbu.evaluation.enumeration.Education;
-import ir.ac.sbu.evaluation.enumeration.ProblemState;
 import ir.ac.sbu.evaluation.model.BaseEntity;
 import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
 import ir.ac.sbu.evaluation.model.user.Master;
@@ -24,7 +23,6 @@ import javax.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
