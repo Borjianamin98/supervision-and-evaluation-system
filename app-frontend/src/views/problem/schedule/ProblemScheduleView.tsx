@@ -1,17 +1,23 @@
+import Button from '@material-ui/core/Button';
 import blue from '@material-ui/core/colors/blue';
 import brown from '@material-ui/core/colors/brown';
 import deepOrange from '@material-ui/core/colors/deepOrange';
 import indigo from '@material-ui/core/colors/indigo';
 import purple from '@material-ui/core/colors/purple';
 import teal from '@material-ui/core/colors/teal';
-import {Theme, ThemeProvider} from "@material-ui/core/styles";
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import {makeStyles, Theme, ThemeProvider} from "@material-ui/core/styles";
+import Typography from '@material-ui/core/Typography';
 import useMediaQuery from "@material-ui/core/useMediaQuery/useMediaQuery";
 import {ScheduleComponent} from '@syncfusion/ej2-react-schedule'
 import {AxiosError} from "axios";
 import {useSnackbar} from "notistack";
 import React from 'react';
 import {useQuery, useQueryClient} from "react-query";
-import {rtlTheme} from "../../../App";
+import {rtlTheme} from '../../../App';
+import ComboBox from "../../../components/ComboBox/ComboBox";
+import CustomDatePicker from "../../../components/DatePicker/CustomDatePicker";
 import CustomScheduler from "../../../components/Scheduler/CustomScheduler";
 import {generalErrorHandler} from "../../../config/axios-config";
 import {Problem} from "../../../model/problem/problem";
@@ -33,11 +39,22 @@ function scheduleEventToSyncfusionSchedulerEvent(event: ScheduleEvent, userId: n
     }
 }
 
+const useStyles = makeStyles((theme) => ({
+    topGrid: {
+        margin: theme.spacing(1, 0),
+        padding: theme.spacing(2),
+    },
+    gridItem: {
+        padding: theme.spacing(0, 1),
+    },
+}));
+
 interface ProblemScheduleViewProps {
     problem: Problem,
 }
 
 const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (props) => {
+    const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar();
     const {problem} = props;
 
@@ -109,17 +126,66 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
 
     return (
         <ThemeProvider theme={rtlTheme}>
-            <CustomScheduler
-                minimumDurationMinutes={30}
-                totalDaysInView={totalDaysInView}
-                selectedDate={startDate}
-                onDateChange={onDateChange}
-                scheduleEvents={problemScheduleEvents}
-                participants={participants}
-                onCellClick={onCellClick}
-                onEventDelete={onEventDelete}
-                onEventChange={onEventChange}
-            />
+            <Grid container direction="column">
+                <Grid container dir="rtl"
+                      component={Paper}
+                      elevation={4}
+                      className={classes.topGrid}
+                >
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Typography variant="h6" gutterBottom>
+                            اطلاعات زمان‌بندی
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={6} lg={4} xl={4} className={classes.gridItem}>
+                        <ComboBox
+                            options={["نیم ساعت", "یک ساعت"]}
+                            // value={"یک ساعت"}
+                            filterOptions={(options) => options} // do not filter values
+                            onChange={(e, newValue) =>
+                                undefined
+                            }
+                            textFieldInputProps={{
+                                label: "مدت‌زمان",
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={6} lg={4} xl={4} className={classes.gridItem}>
+                        <CustomDatePicker/>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={4} xl={4} className={classes.gridItem}>
+                        {/*<CustomTextField*/}
+                        {/*    {...UniversityAddressTextFieldProps}*/}
+                        {/*    value={newUniversity.webAddress}*/}
+                        {/*    onChange={(e) =>*/}
+                        {/*        setNewUniversity({...newUniversity, webAddress: e.target.value})}*/}
+                        {/*/>*/}
+                    </Grid>
+                    <Grid container justify={"center"}>
+                        <Grid item>
+                            <Button
+                                // onClick={registerHandler}
+                                variant="contained"
+                                color="primary"
+                            >
+                                افزودن دانشگاه
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <CustomScheduler
+                    height="550px"
+                    minimumDurationMinutes={30}
+                    totalDaysInView={totalDaysInView}
+                    selectedDate={startDate}
+                    onDateChange={onDateChange}
+                    scheduleEvents={problemScheduleEvents}
+                    participants={participants}
+                    onCellClick={onCellClick}
+                    onEventDelete={onEventDelete}
+                    onEventChange={onEventChange}
+                />
+            </Grid>
         </ThemeProvider>
     )
 }

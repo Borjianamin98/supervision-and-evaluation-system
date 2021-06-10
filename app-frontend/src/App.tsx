@@ -98,5 +98,6 @@ const App: React.FunctionComponent = () => {
 }
 
 export const rtlTheme = (theme: Theme) => createMuiTheme({...theme, direction: "rtl"});
+export const ltrTheme = (theme: Theme) => createMuiTheme({...theme, direction: "ltr"});
 
 export default App;

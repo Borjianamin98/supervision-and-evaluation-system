@@ -1,0 +1,3 @@
+PACKAGES NOTE
+
+1) @material-ui/pickers v3.x works only with @date-io/jalaali version 1.x

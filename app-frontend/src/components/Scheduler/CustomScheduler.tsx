@@ -208,7 +208,6 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
             dateHeaderTemplate={dateHeaderTemplate}
             dataBound={onDataBound}
             popupOpen={onPopupOpen}
-            height="550px"
             enableRtl={true}
             selectedDate={DateUtils.getCurrentDate()}
             minDate={minimumDate}
