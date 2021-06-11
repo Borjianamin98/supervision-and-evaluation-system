@@ -8,6 +8,7 @@ import {
     Inject,
     PopupOpenEventArgs,
     Resize,
+    ResizeEventArgs,
     ResourceDirective,
     ResourcesDirective,
     ScheduleComponent,
@@ -35,10 +36,12 @@ export interface Participant {
 }
 
 interface CustomSchedulerProps extends Omit<ScheduleModel, "cellClick"> {
-    minimumDurationMinutes: number,
     totalDaysInView: number,
     selectedDate: Date,
     onDateChange: (startDate: Date) => void,
+
+    timeScaleInterval: number,
+    minimumDurationMinutes: number,
 
     scheduleEvents?: SyncfusionSchedulerEvent[],
     participants: Participant[],
@@ -52,10 +55,11 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
     const scheduleComponentRef = React.useRef<ScheduleComponent>(null);
 
     const {
-        minimumDurationMinutes,
         totalDaysInView,
         selectedDate,
         onDateChange,
+        timeScaleInterval,
+        minimumDurationMinutes,
         scheduleEvents,
         participants,
         onCellClick,
@@ -63,6 +67,9 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
         onEventDelete,
         ...rest
     } = props;
+
+    const scheduleStartHour = 8;
+    const scheduleEndHour = 20;
 
     React.useEffect(() => {
         if (scheduleComponentRef.current) {
@@ -130,10 +137,21 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
                 args.cancel = true; // Disable all day events
             } else {
                 if (scheduleComponentRef.current) {
-                    onCellClick(scheduleComponentRef.current, {
-                        startDate: args.startTime,
-                        endDate: args.endTime,
-                    });
+                    /**
+                     * Do not allow less than minimum duration for each event by check end time
+                     * of created event. Also pass correct minimum end time as parameter to user
+                     * of component.
+                     */
+                    const legalEndTime = moment(args.startTime).add(minimumDurationMinutes, "minutes");
+                    const legalEndTimeMinutesOfDay = legalEndTime.second()
+                        + 60 * legalEndTime.minutes()
+                        + 3600 * legalEndTime.hours();
+                    if (legalEndTimeMinutesOfDay <= scheduleEndHour * 3600) {
+                        onCellClick(scheduleComponentRef.current, {
+                            startDate: args.startTime,
+                            endDate: legalEndTime.toDate(),
+                        });
+                    }
                 }
             }
         }
@@ -145,6 +163,23 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
     const cellDoubleClickHandler: EmitType<CellClickEventArgs> = (args) => {
         if (args) {
             args.cancel = true;
+        }
+    }
+
+    /**
+     * Add feature to force minimum duration for each event.
+     */
+    const onResizeStop = (resizeEventArgs?: ResizeEventArgs) => {
+        if (resizeEventArgs) {
+            const event = resizeEventArgs.data as SyncfusionSchedulerEvent;
+            const startDate = event.startDate;
+            const endDate = event.endDate;
+            if (endDate && startDate) {
+                const durationMinutes = moment.duration(moment(endDate).diff(startDate)).asMinutes();
+                if (durationMinutes < minimumDurationMinutes) {
+                    resizeEventArgs.cancel = true;
+                }
+            }
         }
     }
 
@@ -208,12 +243,13 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
             dateHeaderTemplate={dateHeaderTemplate}
             dataBound={onDataBound}
             popupOpen={onPopupOpen}
+            resizeStop={onResizeStop}
             enableRtl={true}
             selectedDate={DateUtils.getCurrentDate()}
             minDate={minimumDate}
             maxDate={maximumDate}
-            startHour="09:00"
-            endHour="19:00"
+            startHour={`${scheduleStartHour.toString().padStart(2, '0')}:00`}
+            endHour={`${scheduleEndHour.toString().padStart(2, '0')}:00`}
             workHours={{
                 highlight: true, start: '10:00', end: '18:00'
             }}
@@ -229,7 +265,7 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
             }}
             timeScale={{
                 enable: true,
-                interval: minimumDurationMinutes * 2,
+                interval: timeScaleInterval * 2,
                 slotCount: 2
             }}
             {...rest}

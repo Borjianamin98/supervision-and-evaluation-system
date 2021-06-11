@@ -1,5 +1,5 @@
 import JalaliUtils from "@date-io/jalaali";
-import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
+import {ThemeProvider} from "@material-ui/core/styles";
 import {DatePicker, MuiPickersUtilsProvider} from '@material-ui/pickers';
 import moment from "moment";
 import jMoment from "moment-jalaali";
@@ -8,25 +8,22 @@ import {ltrTheme, rtlTheme} from "../../App";
 import DateUtils from "../../utility/DateUtils";
 import CustomTextField from "../Text/CustomTextField";
 
-const useStyles = makeStyles((theme) => ({
-    topGrid: {
-        margin: theme.spacing(1, 0),
-        padding: theme.spacing(2),
-    },
-    gridItem: {
-        padding: theme.spacing(0, 1),
-    },
-}));
-
 jMoment.loadPersian({dialect: "persian-modern", usePersianDigits: true});
 
-const CustomDatePicker: React.FunctionComponent = () => {
-    const classes = useStyles();
+interface CustomDatePickerProps {
+    label: string,
+    selectedDate: moment.Moment,
+    onDateChange: (moment: moment.Moment) => void,
+    autoSelect: boolean,
+}
 
-    const [selectedDate, setSelectedDate] = React.useState<moment.Moment | null>(moment());
+const CustomDatePicker: React.FunctionComponent<CustomDatePickerProps> = (props) => {
+    const {label, selectedDate, onDateChange, autoSelect} = props;
 
     const handleDateChange = (date: moment.Moment | null) => {
-        setSelectedDate(date);
+        if (date) {
+            onDateChange(date);
+        }
     };
 
     return (
@@ -44,14 +41,14 @@ const CustomDatePicker: React.FunctionComponent = () => {
                         <ThemeProvider theme={rtlTheme}>
                             <CustomTextField
                                 {...props}
-                                label="زمان شروع"
+                                label={label}
                             />
                         </ThemeProvider>
                     }
-                    autoOk={true}
-                    okLabel=""
-                    cancelLabel=""
-                    labelFunc={(date) => (date ? date.format("jYYYY/jMM/jDD") : "")}
+                    autoOk={autoSelect ?? true}
+                    okLabel={autoSelect ? "" : "تأیید"}
+                    cancelLabel={autoSelect ? "" : "لغو"}
+                    labelFunc={(date) => (date ? date.format("ddd، jD jMMMM jYYYY") : "")}
                     value={selectedDate}
                     onChange={handleDateChange}
                 />
