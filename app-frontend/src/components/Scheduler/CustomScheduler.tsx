@@ -23,8 +23,8 @@ import moment from "jalali-moment";
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {rtlTheme} from "../../App";
-import {DateRange} from '../../model/schedule/DateRange';
-import {SyncfusionSchedulerEvent} from "../../model/schedule/ScheduleEvent";
+import {DateRange} from '../../model/schedule/event/DateRange';
+import {SyncfusionSchedulerEvent} from "../../model/schedule/event/ScheduleEvent";
 import CenterBox from "../Grid/CenterBox";
 import AppointmentEventTemplate from "./AppointmentEventTemplate";
 import ParticipantsColorInfo from "./ParticipantsColorInfo";
@@ -167,6 +167,13 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
             } else {
                 if (scheduleComponentRef.current) {
                     /**
+                     * Do not allow creating events beyond maximum date and before minimum date.
+                     */
+                    if (args.startTime < new Date(minimumDate) || args.startTime > new Date(maximumDate)) {
+                        args.cancel = true;
+                        return;
+                    }
+                    /**
                      * Do not allow less than minimum duration for each event by check end time
                      * of created event. Also pass correct minimum end time as parameter to user
                      * of component.
@@ -180,6 +187,8 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
                             startDate: args.startTime,
                             endDate: legalEndTime.toDate(),
                         });
+                    } else {
+                        args.cancel = true;
                     }
                 }
             }

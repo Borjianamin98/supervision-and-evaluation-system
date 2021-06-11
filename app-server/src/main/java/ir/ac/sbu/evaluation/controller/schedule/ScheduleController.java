@@ -2,6 +2,8 @@ package ir.ac.sbu.evaluation.controller.schedule;
 
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_SCHEDULE_ROOT_PATH;
 
+import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleDto;
+import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleSaveDto;
 import ir.ac.sbu.evaluation.dto.schedule.event.DateRangeDto;
 import ir.ac.sbu.evaluation.dto.schedule.event.ScheduleEventDto;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
@@ -28,6 +30,15 @@ public class ScheduleController {
 
     public ScheduleController(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
+    }
+
+    @PreAuthorize("hasAnyAuthority(@SecurityRoles.MASTER_ROLE_NAME)")
+    @PostMapping(path = "/{meetScheduleId}")
+    public MeetScheduleDto updateMeetSchedule(
+            @ModelAttribute AuthUserDetail authUserDetail,
+            @PathVariable long meetScheduleId,
+            @Valid @RequestBody MeetScheduleSaveDto meetScheduleSaveDto) {
+        return scheduleService.saveMeetSchedule(authUserDetail.getUserId(), meetScheduleId, meetScheduleSaveDto);
     }
 
     @GetMapping(path = "/{meetScheduleId}/events")

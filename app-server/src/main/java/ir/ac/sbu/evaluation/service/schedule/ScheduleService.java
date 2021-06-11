@@ -1,5 +1,7 @@
 package ir.ac.sbu.evaluation.service.schedule;
 
+import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleDto;
+import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleSaveDto;
 import ir.ac.sbu.evaluation.dto.schedule.event.DateRangeDto;
 import ir.ac.sbu.evaluation.dto.schedule.event.ScheduleEventDto;
 import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
@@ -87,6 +89,25 @@ public class ScheduleService {
         scheduleEvent.setEndDate(dateRangeDto.getEndDate());
         ScheduleEvent savedScheduleEvent = scheduleEventRepository.save(scheduleEvent);
         return ScheduleEventDto.from(savedScheduleEvent);
+    }
+
+
+    public MeetScheduleDto saveMeetSchedule(long userId, long meetScheduleId, MeetScheduleSaveDto meetScheduleSaveDto) {
+        MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
+        checkUserAccessMeetSchedule(userId, meetSchedule);
+
+        Problem scheduleProblem = meetSchedule.getProblem();
+        if (scheduleProblem.getSupervisor().getId() != userId) {
+            throw new IllegalResourceAccessException(
+                    "Meet schedule info can only controlled by supervisor: ID = " + userId
+                            + " Schedule ID = " + meetSchedule.getId());
+        }
+
+        meetSchedule.setDurationMinutes(meetScheduleSaveDto.getDurationMinutes());
+        meetSchedule.setMinimumDate(meetScheduleSaveDto.getMinimumDate());
+        meetSchedule.setMaximumDate(meetScheduleSaveDto.getMaximumDate());
+        meetSchedule.setFinalizedDate(meetScheduleSaveDto.getFinalizedDate());
+        return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
     }
 
     private void checkUserAccessModifyOrDeleteEvent(long userId, ScheduleEvent scheduleEvent) {

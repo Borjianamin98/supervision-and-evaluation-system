@@ -12,23 +12,24 @@ import Typography from '@material-ui/core/Typography';
 import useMediaQuery from "@material-ui/core/useMediaQuery/useMediaQuery";
 import {ScheduleComponent} from '@syncfusion/ej2-react-schedule'
 import {AxiosError} from "axios";
+import moment from 'moment';
 import {useSnackbar} from "notistack";
 import React from 'react';
-import {useQuery} from "react-query";
+import {useMutation, useQuery, useQueryClient} from "react-query";
 import {rtlTheme} from '../../../App';
 import ComboBox from "../../../components/ComboBox/ComboBox";
 import CustomDatePicker from "../../../components/DatePicker/CustomDatePicker";
 import CustomScheduler from "../../../components/Scheduler/CustomScheduler";
 import {generalErrorHandler} from "../../../config/axios-config";
 import {Problem} from "../../../model/problem/problem";
-import {DateRange} from "../../../model/schedule/DateRange";
+import {DateRange} from "../../../model/schedule/event/DateRange";
+import {ScheduleEvent, SyncfusionSchedulerEvent} from "../../../model/schedule/event/ScheduleEvent";
+import {MeetScheduleSave} from '../../../model/schedule/MeetScheduleSave';
 import {
     PERSIAN_SCHEDULE_DURATIONS,
-    ScheduleDuration,
     scheduleDurationMapToEnglish,
     scheduleDurationMapToPersian
 } from "../../../model/schedule/ScheduleDuration";
-import {ScheduleEvent, SyncfusionSchedulerEvent} from "../../../model/schedule/ScheduleEvent";
 import AuthenticationService from "../../../services/api/AuthenticationService";
 import ScheduleService from "../../../services/api/schedule/ScheduleService";
 import DateUtils from "../../../utility/DateUtils";
@@ -69,7 +70,7 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
     const totalDaysInView = mobileMatches ? 3 : (smallScreenMatches ? 5 : 7);
 
     const [startDate, setStartDate] = React.useState(DateUtils.getCurrentDate());
-    // const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
     const {data: problemScheduleEvents} = useQuery(
         ["meetScheduleEvents", problem.meetSchedule.id, startDate, totalDaysInView],
         () => {
@@ -79,6 +80,15 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                 .then(events => events.map(event => scheduleEventToSyncfusionSchedulerEvent(event, jwtPayloadUserId)))
         }
     );
+    const updateMeetSchedule = useMutation(
+        (data: { meetScheduleId: number, meetScheduleSave: MeetScheduleSave }) =>
+            ScheduleService.saveMeetSchedule(data.meetScheduleId, data.meetScheduleSave),
+        {
+            onSuccess: async (data) => {
+                queryClient.setQueryData<Problem>(["problem", problem.id], {...problem, meetSchedule: data});
+            },
+            onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
+        });
 
     const onCellClick = (scheduler: ScheduleComponent, scheduleEventDate: DateRange) => {
         const jwtPayloadUserId = AuthenticationService.getJwtPayloadUserId()!;
@@ -104,10 +114,6 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
             .then(() => scheduler.deleteEvent(syncfusionEvent))
             .catch(error => generalErrorHandler(error, enqueueSnackbar))
     }
-
-    const [meetScheduleDuration, setMeetScheduleDuration] = React.useState(ScheduleDuration.THIRTY_MINUTES);
-    const [meetScheduleMinDate, setMeetScheduleMinDate] = React.useState(DateUtils.getCurrentDate());
-    const [meetScheduleMaxDate, setMeetScheduleMaxDate] = React.useState(DateUtils.getCurrentDate());
 
     const candidateColors = [blue[500], purple[500], teal[500], indigo[500]]
     const participants = [
@@ -146,9 +152,15 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                     <Grid item xs={12} sm={12} md={6} lg={4} xl={4} className={classes.gridItem}>
                         <ComboBox
                             options={PERSIAN_SCHEDULE_DURATIONS}
-                            value={scheduleDurationMapToPersian(meetScheduleDuration)}
+                            value={scheduleDurationMapToPersian(Math.floor(problem.meetSchedule.durationMinutes / 30) * 30)}
                             filterOptions={(options) => options} // do not filter values
-                            onChange={(e, newValue) => setMeetScheduleDuration(scheduleDurationMapToEnglish(newValue))}
+                            onChange={(e, newValue) => updateMeetSchedule.mutate({
+                                meetScheduleId: problem.meetSchedule.id,
+                                meetScheduleSave: {
+                                    ...problem.meetSchedule,
+                                    durationMinutes: scheduleDurationMapToEnglish(newValue),
+                                }
+                            })}
                             textFieldInputProps={{
                                 label: "مدت‌زمان",
                             }}
@@ -157,21 +169,34 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                     <Grid item xs={12} sm={12} md={6} lg={4} xl={4} className={classes.gridItem}>
                         <CustomDatePicker
                             label={"زمان شروع"}
-                            selectedDate={meetScheduleMinDate}
-                            onDateChange={date => setMeetScheduleMinDate(date)}
+                            selectedDate={moment(problem.meetSchedule.minimumDate)}
+                            onDateChange={newValue => updateMeetSchedule.mutate({
+                                meetScheduleId: problem.meetSchedule.id,
+                                meetScheduleSave: {
+                                    ...problem.meetSchedule,
+                                    minimumDate: newValue.set({hour: 0, minute: 0, second: 0, millisecond: 0}).toDate(),
+                                }
+                            })}
                             autoSelect={true}
                             minDate={DateUtils.getCurrentDate(-10)}
-                            maxDate={DateUtils.getCurrentDate(+10)}
+                            maxDate={DateUtils.getCurrentDate(+30)}
                         />
                     </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={4} xl={4} className={classes.gridItem}>
                         <CustomDatePicker
                             label={"زمان پایان"}
-                            selectedDate={meetScheduleMaxDate}
-                            onDateChange={date => setMeetScheduleMaxDate(date)}
+                            selectedDate={moment(problem.meetSchedule.maximumDate)}
+                            onDateChange={newValue => updateMeetSchedule.mutate({
+                                meetScheduleId: problem.meetSchedule.id,
+                                meetScheduleSave: {
+                                    ...problem.meetSchedule,
+                                    maximumDate: newValue.set({hour: 23, minute: 59, second: 59, millisecond: 999})
+                                        .toDate(),
+                                }
+                            })}
                             autoSelect={true}
                             minDate={DateUtils.getCurrentDate(-10)}
-                            maxDate={DateUtils.getCurrentDate(+10)}
+                            maxDate={DateUtils.getCurrentDate(+30)}
                         />
                     </Grid>
                     <Grid container justify={"center"}>
@@ -188,10 +213,10 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                 </Grid>
                 <CustomScheduler
                     height="550px"
-                    minimumDate={meetScheduleMinDate}
-                    maximumDate={meetScheduleMaxDate}
+                    minimumDate={problem.meetSchedule.minimumDate}
+                    maximumDate={problem.meetSchedule.maximumDate}
                     timeScaleInterval={30}
-                    minimumDurationMinutes={meetScheduleDuration}
+                    minimumDurationMinutes={problem.meetSchedule.durationMinutes}
                     totalDaysInView={totalDaysInView}
                     onStartDateChange={date => setStartDate(date)}
                     scheduleEvents={problemScheduleEvents}

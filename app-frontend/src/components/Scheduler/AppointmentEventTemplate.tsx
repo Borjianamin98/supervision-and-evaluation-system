@@ -2,7 +2,7 @@ import {Box, BoxProps, Grow, IconButton} from "@material-ui/core";
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 import DeleteIcon from "@material-ui/icons/Delete";
 import React from 'react';
-import {SyncfusionSchedulerEvent} from "../../model/schedule/ScheduleEvent";
+import {SyncfusionSchedulerEvent} from "../../model/schedule/event/ScheduleEvent";
 import CenterBox from "../Grid/CenterBox";
 
 const useStyles = makeStyles((theme: Theme) =>

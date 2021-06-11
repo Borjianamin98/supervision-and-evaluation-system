@@ -1,12 +1,19 @@
 import apiAxios from "../../../config/axios-config";
-import {DateRange} from "../../../model/schedule/DateRange";
-import {ScheduleEvent} from "../../../model/schedule/ScheduleEvent";
+import {DateRange} from "../../../model/schedule/event/DateRange";
+import {ScheduleEvent} from "../../../model/schedule/event/ScheduleEvent";
+import {MeetSchedule} from "../../../model/schedule/MeetSchedule";
+import {MeetScheduleSave} from "../../../model/schedule/MeetScheduleSave";
 
 class ScheduleService {
 
     private static readonly API_SCHEDULE_ROOT_PATH = "/schedule"
 
     private constructor() {
+    }
+
+    static saveMeetSchedule(meetScheduleId: number, meetScheduleSave: MeetScheduleSave) {
+        return apiAxios.post<MeetSchedule>(`${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}`, meetScheduleSave)
+            .then(response => response.data)
     }
 
     static retrieveMeetScheduleEvents(meetScheduleId: number, startDate: Date, endDate: Date) {

@@ -1,0 +1,64 @@
+package ir.ac.sbu.evaluation.dto.schedule;
+
+import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
+import java.time.Instant;
+import java.util.Objects;
+import javax.validation.constraints.NotNull;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class MeetScheduleSaveDto {
+
+    private long durationMinutes;
+
+    @NotNull
+    private Instant minimumDate;
+
+    @NotNull
+    private Instant maximumDate;
+
+    private Instant finalizedDate;
+
+    public MeetScheduleSaveDto() {
+    }
+
+    @Builder
+    public MeetScheduleSaveDto(long durationMinutes, Instant minimumDate, Instant maximumDate,
+            Instant finalizedDate) {
+        this.durationMinutes = durationMinutes;
+        this.minimumDate = minimumDate;
+        this.maximumDate = maximumDate;
+        this.finalizedDate = finalizedDate;
+    }
+
+    public static MeetScheduleSaveDto from(MeetSchedule meetSchedule) {
+        return MeetScheduleSaveDto.builder()
+                .durationMinutes(meetSchedule.getDurationMinutes())
+                .minimumDate(meetSchedule.getMinimumDate())
+                .maximumDate(meetSchedule.getMaximumDate())
+                .finalizedDate(meetSchedule.getFinalizedDate())
+                .build();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        MeetScheduleSaveDto that = (MeetScheduleSaveDto) o;
+        return Objects.equals(durationMinutes, that.durationMinutes) && Objects
+                .equals(minimumDate, that.minimumDate) && Objects.equals(maximumDate, that.maximumDate)
+                && Objects.equals(finalizedDate, that.finalizedDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(durationMinutes, minimumDate, maximumDate, finalizedDate);
+    }
+}

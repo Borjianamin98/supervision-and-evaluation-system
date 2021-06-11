@@ -133,8 +133,8 @@ public class DataLoader implements CommandLineRunner {
 
         MeetSchedule meetSchedule3 = meetScheduleRepository.save(MeetSchedule.builder()
                 .durationMinutes(30L)
-                .minimumDate(Instant.now().minus(5, ChronoUnit.DAYS))
-                .maximumDate(Instant.now().minus(10, ChronoUnit.DAYS))
+                .minimumDate(Instant.now().minus(1, ChronoUnit.DAYS))
+                .maximumDate(Instant.now().plus(1, ChronoUnit.DAYS))
                 .scheduleState(ScheduleState.STARTED)
                 .build());
         Problem problem3 = problemRepository.save(Problem.builder()

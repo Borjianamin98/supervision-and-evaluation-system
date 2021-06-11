@@ -10,15 +10,15 @@ jMoment.loadPersian({dialect: "persian-modern", usePersianDigits: true});
 
 interface CustomDatePickerProps extends Omit<DatePickerProps, "onChange" | "value"> {
     label: string,
-    selectedDate: Date,
-    onDateChange: (date: Date) => void,
+    selectedDate: moment.Moment,
+    onDateChange: (date: moment.Moment) => void,
     autoSelect: boolean,
 }
 
 const CustomDatePicker: React.FunctionComponent<CustomDatePickerProps> = (props) => {
     const {label, selectedDate, onDateChange, autoSelect, ...rest} = props;
 
-    const handleDateChange = (date: Date | undefined) => {
+    const handleDateChange = (date: moment.Moment | null) => {
         if (date) {
             onDateChange(date);
         }
@@ -46,7 +46,7 @@ const CustomDatePicker: React.FunctionComponent<CustomDatePickerProps> = (props)
                     cancelLabel={autoSelect ? "" : "لغو"}
                     labelFunc={(date) => (date ? date.format("ddd، jD jMMMM jYYYY") : "")}
                     value={selectedDate}
-                    onChange={(date) => handleDateChange(date?.toDate())}
+                    onChange={handleDateChange}
                     {...rest}
                 />
             </MuiPickersUtilsProvider>
