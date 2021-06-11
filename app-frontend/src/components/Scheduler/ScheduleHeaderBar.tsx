@@ -37,13 +37,18 @@ const ScheduleHeaderBar: React.FunctionComponent<ScheduleHeaderBarProps> = (prop
             + endDateMoment.format("D MMMM YYYY")
     }
 
-    const isBeyondMaxRange = startDateMoment.add(totalDaysInView, "days").isAfter(maximumDate);
-    const isBeforeMinRange = startDateMoment.add(-1, "days").isBefore(minimumDate);
     const changeIntervalOnClick = (days: number) => {
         const targetDate = DateUtils.addDays(startDate, days);
         setStartDate(targetDate);
         onDateChange(targetDate);
     }
+
+    const [beyondMaxRange, setBeyondMaxRange] = React.useState(true);
+    const [beforeMinRange, setBeforeMinRange] = React.useState(true);
+    React.useEffect(() => {
+        setBeforeMinRange(startDateMoment.add(-1, "days").isBefore(minimumDate));
+        setBeyondMaxRange(startDateMoment.add(totalDaysInView, "days").isAfter(maximumDate));
+    }, [minimumDate, maximumDate, startDateMoment, totalDaysInView]);
 
     return (
         <Box dir="rtl" paddingY={1} className="e-schedule e-schedule-toolbar">
@@ -55,7 +60,7 @@ const ScheduleHeaderBar: React.FunctionComponent<ScheduleHeaderBarProps> = (prop
                     <IconButton
                         color="primary"
                         onClick={() => changeIntervalOnClick(-totalDaysInView)}
-                        disabled={isBeforeMinRange}
+                        disabled={beforeMinRange}
                     >
                         <KeyboardArrowRight/>
                     </IconButton>
@@ -69,7 +74,7 @@ const ScheduleHeaderBar: React.FunctionComponent<ScheduleHeaderBarProps> = (prop
                     <IconButton
                         color="primary"
                         onClick={() => changeIntervalOnClick(totalDaysInView)}
-                        disabled={isBeyondMaxRange}
+                        disabled={beyondMaxRange}
                     >
                         <KeyboardArrowLeft/>
                     </IconButton>

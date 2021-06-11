@@ -37,9 +37,10 @@ export interface Participant {
 
 interface CustomSchedulerProps extends Omit<ScheduleModel, "cellClick"> {
     totalDaysInView: number,
-    selectedDate: Date,
     onDateChange: (startDate: Date) => void,
 
+    minimumDate: Date,
+    maximumDate: Date,
     timeScaleInterval: number,
     minimumDurationMinutes: number,
 
@@ -56,8 +57,9 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
 
     const {
         totalDaysInView,
-        selectedDate,
         onDateChange,
+        minimumDate,
+        maximumDate,
         timeScaleInterval,
         minimumDurationMinutes,
         scheduleEvents,
@@ -210,9 +212,6 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
         }
     }
 
-    const minimumDate = new Date(new Date().getFullYear() - 1, 0, 1);
-    const maximumDate = new Date(new Date().getFullYear() + 2, 0, 1);
-
     return <ThemeProvider theme={rtlTheme}>
         <ScheduleHeaderBar
             totalDaysInView={totalDaysInView}
@@ -245,7 +244,7 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
             popupOpen={onPopupOpen}
             resizeStop={onResizeStop}
             enableRtl={true}
-            selectedDate={DateUtils.getCurrentDate()}
+            // selectedDate={DateUtils.getCurrentDate()}
             minDate={minimumDate}
             maxDate={maximumDate}
             startHour={`${scheduleStartHour.toString().padStart(2, '0')}:00`}

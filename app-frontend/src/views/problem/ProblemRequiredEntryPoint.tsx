@@ -47,7 +47,9 @@ function ProblemRequiredEntryPoint(Component: React.FunctionComponent<{ problem:
                         }
                     }
                     return Promise.reject(error);
-                }));
+                }), {
+                keepPreviousData: true
+            });
 
         if (!(+problemId)) {
             return <HomeRedirect message="دسترسی به صفحه مربوطه امکان‌پذیر نمی‌باشد."/>

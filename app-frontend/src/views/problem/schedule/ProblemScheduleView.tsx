@@ -22,6 +22,12 @@ import CustomScheduler from "../../../components/Scheduler/CustomScheduler";
 import {generalErrorHandler} from "../../../config/axios-config";
 import {Problem} from "../../../model/problem/problem";
 import {DateRange} from "../../../model/schedule/DateRange";
+import {
+    PERSIAN_SCHEDULE_DURATIONS,
+    ScheduleDuration,
+    scheduleDurationMapToEnglish,
+    scheduleDurationMapToPersian
+} from "../../../model/schedule/ScheduleDuration";
 import {ScheduleEvent, SyncfusionSchedulerEvent} from "../../../model/schedule/ScheduleEvent";
 import AuthenticationService from "../../../services/api/AuthenticationService";
 import ScheduleService from "../../../services/api/schedule/ScheduleService";
@@ -103,6 +109,10 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
             .catch(error => generalErrorHandler(error, enqueueSnackbar))
     }
 
+    const [meetScheduleDuration, setMeetScheduleDuration] = React.useState(ScheduleDuration.THIRTY_MINUTES);
+    const [meetScheduleMinDate, setMeetScheduleMinDate] = React.useState(DateUtils.getCurrentDate());
+    const [meetScheduleMaxDate, setMeetScheduleMaxDate] = React.useState(DateUtils.getCurrentDate());
+
     const candidateColors = [blue[500], purple[500], teal[500], indigo[500]]
     const participants = [
         {
@@ -139,27 +149,34 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={4} xl={4} className={classes.gridItem}>
                         <ComboBox
-                            options={["نیم ساعت", "یک ساعت"]}
-                            // value={"یک ساعت"}
+                            options={PERSIAN_SCHEDULE_DURATIONS}
+                            value={scheduleDurationMapToPersian(meetScheduleDuration)}
                             filterOptions={(options) => options} // do not filter values
-                            onChange={(e, newValue) =>
-                                undefined
-                            }
+                            onChange={(e, newValue) => setMeetScheduleDuration(scheduleDurationMapToEnglish(newValue))}
                             textFieldInputProps={{
                                 label: "مدت‌زمان",
                             }}
                         />
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={4} xl={4} className={classes.gridItem}>
-                        <CustomDatePicker/>
+                        <CustomDatePicker
+                            label={"زمان شروع"}
+                            selectedDate={meetScheduleMinDate}
+                            onDateChange={date => setMeetScheduleMinDate(date)}
+                            autoSelect={true}
+                            minDate={DateUtils.getCurrentDate(-10)}
+                            maxDate={DateUtils.getCurrentDate(+10)}
+                        />
                     </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={4} xl={4} className={classes.gridItem}>
-                        {/*<CustomTextField*/}
-                        {/*    {...UniversityAddressTextFieldProps}*/}
-                        {/*    value={newUniversity.webAddress}*/}
-                        {/*    onChange={(e) =>*/}
-                        {/*        setNewUniversity({...newUniversity, webAddress: e.target.value})}*/}
-                        {/*/>*/}
+                        <CustomDatePicker
+                            label={"زمان پایان"}
+                            selectedDate={meetScheduleMaxDate}
+                            onDateChange={date => setMeetScheduleMaxDate(date)}
+                            autoSelect={true}
+                            minDate={DateUtils.getCurrentDate(-10)}
+                            maxDate={DateUtils.getCurrentDate(+10)}
+                        />
                     </Grid>
                     <Grid container justify={"center"}>
                         <Grid item>
@@ -175,7 +192,10 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                 </Grid>
                 <CustomScheduler
                     height="550px"
-                    minimumDurationMinutes={30}
+                    minimumDate={meetScheduleMinDate}
+                    maximumDate={meetScheduleMaxDate}
+                    timeScaleInterval={30}
+                    minimumDurationMinutes={meetScheduleDuration}
                     totalDaysInView={totalDaysInView}
                     selectedDate={startDate}
                     onDateChange={onDateChange}
