@@ -1,5 +1,7 @@
 import {ThemeProvider} from '@material-ui/core';
+import Typography from "@material-ui/core/Typography";
 import {EmitType} from '@syncfusion/ej2-base'
+import {ItemModel} from '@syncfusion/ej2-navigations/src/toolbar/toolbar-model'
 import {
     ActionEventArgs,
     CellClickEventArgs,
@@ -19,15 +21,36 @@ import {
 } from '@syncfusion/ej2-react-schedule'
 import moment from "jalali-moment";
 import React from 'react';
+import ReactDOM from 'react-dom';
 import {rtlTheme} from "../../App";
 import {DateRange} from '../../model/schedule/DateRange';
 import {SyncfusionSchedulerEvent} from "../../model/schedule/ScheduleEvent";
-import DateUtils from "../../utility/DateUtils";
 import CenterBox from "../Grid/CenterBox";
 import AppointmentEventTemplate from "./AppointmentEventTemplate";
 import ParticipantsColorInfo from "./ParticipantsColorInfo";
-import ScheduleHeaderBar from "./ScheduleHeaderBar";
 import "./scheduler.css"
+
+function convertDateRangeToText(startDate: Date, rangeDays: number) {
+    const startDateMoment = moment(startDate).locale("fa");
+    const endDateMoment = moment(startDate).add(rangeDays - 1, "days").locale("fa");
+
+    const startDateMonth = startDateMoment.format("MMMM");
+    const endDateMonth = endDateMoment.format("MMMM");
+    const startDateYear = startDateMoment.format("YYYY");
+    const endDateYear = endDateMoment.format("YYYY");
+    let headerDate: string;
+    if (startDateYear !== endDateYear) {
+        headerDate = startDateMoment.format("D MMMM YYYY تا ")
+            + endDateMoment.format("D MMMM YYYY")
+    } else if (startDateMonth !== endDateMonth) {
+        headerDate = startDateMoment.format("D MMMM تا ")
+            + endDateMoment.format("D MMMM YYYY")
+    } else {
+        headerDate = startDateMoment.format("D تا ")
+            + endDateMoment.format("D MMMM YYYY")
+    }
+    return headerDate;
+}
 
 export interface Participant {
     id: number,
@@ -37,7 +60,7 @@ export interface Participant {
 
 interface CustomSchedulerProps extends Omit<ScheduleModel, "cellClick"> {
     totalDaysInView: number,
-    onDateChange: (startDate: Date) => void,
+    onStartDateChange: (startDate: Date) => void,
 
     minimumDate: Date,
     maximumDate: Date,
@@ -57,7 +80,7 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
 
     const {
         totalDaysInView,
-        onDateChange,
+        onStartDateChange,
         minimumDate,
         maximumDate,
         timeScaleInterval,
@@ -117,7 +140,8 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
     }
 
     /**
-     * Disable touch mode (scroll to left/right to navigate) of scheduler view
+     * Disable touch mode (scroll to left/right to navigate) of scheduler view.
+     * Also change the date range text on initial loading.
      */
     const onDataBound = () => {
         // Based on issue: https://www.syncfusion.com/support/directtrac/incidents/329117
@@ -127,6 +151,9 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
             // @ts-ignore
             scheduleComponentRef.current.scheduleTouchModule.touchObj = null;
         }
+        // Update the date range text in initial lode
+        // More info: https://www.syncfusion.com/kb/10948/how-to-customize-the-scheduler-toolbar
+        updateDateRangeText(totalDaysInView);
     }
 
     /**
@@ -199,9 +226,60 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
                 } else {
                     actionEventArgs.cancel = true;
                 }
+            } else if (actionEventArgs.requestType === 'toolbarItemRendering' && actionEventArgs.items) {
+                const items = actionEventArgs.items as ItemModel[];
+                const prevItem = items[0];
+                const nextItem = items[1];
+                nextItem.align = "Right";
+                const dateRangeText: ItemModel = {
+                    align: "Center",
+                    template: "",
+                    type: "Input",
+                    cssClass: 'e-custom-date-range'
+                };
+                actionEventArgs.items = [prevItem, dateRangeText, nextItem]
             }
         }
     }
+
+    /**
+     * Use action complete event to change the date range text on navigations.
+     * @param args
+     */
+    const onActionComplete = (args: ActionEventArgs) => {
+        if (args.requestType === 'dateNavigate') {
+            const startDate = updateDateRangeText(totalDaysInView);
+            if (startDate) {
+                onStartDateChange(startDate);
+            }
+        }
+    }
+
+    /**
+     * Function used to update header date.
+     */
+    const updateDateRangeText = (totalDaysInView: number): Date | void => {
+        if (scheduleComponentRef.current) {
+            const currentViewDates = scheduleComponentRef.current.getCurrentViewDates();
+            const customDateElement =
+                scheduleComponentRef.current.element.querySelector<HTMLElement>('.e-toolbar-item.e-custom-date-range');
+            if (customDateElement) {
+                const headerDate = convertDateRangeToText(currentViewDates[0], totalDaysInView);
+                ReactDOM.render(
+                    <Typography style={{fontFamily: "Vazir"}}>{headerDate}</Typography>,
+                    customDateElement
+                );
+            }
+            return currentViewDates[0];
+        }
+    }
+
+    /**
+     * Use react hook to update date header when interval of view changed.
+     */
+    React.useEffect(() => {
+        updateDateRangeText(totalDaysInView);
+    }, [totalDaysInView]);
 
     /**
      * Custom delete event handler used in event template
@@ -213,24 +291,15 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
     }
 
     return <ThemeProvider theme={rtlTheme}>
-        <ScheduleHeaderBar
-            totalDaysInView={totalDaysInView}
-            minimumDate={minimumDate}
-            maximumDate={maximumDate}
-            onDateChange={startDate => {
-                scheduleComponentRef.current?.changeDate(startDate);
-                onDateChange(startDate);
-            }}
-        />
         <ParticipantsColorInfo participants={participants}/>
         <ScheduleComponent
             ref={scheduleComponentRef}
             actionBegin={onActionBegin}
+            actionComplete={onActionComplete}
             width="100%"
-            cssClass="schedule-cell-dimension"
+            cssClass="custom-scheduler-style"
             allowDragAndDrop={true}
             allowResizing={true}
-            showHeaderBar={false}
             allowInline={false}
             showQuickInfo={false}
             showTimeIndicator={false}
@@ -244,7 +313,6 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
             popupOpen={onPopupOpen}
             resizeStop={onResizeStop}
             enableRtl={true}
-            // selectedDate={DateUtils.getCurrentDate()}
             minDate={minimumDate}
             maxDate={maximumDate}
             startHour={`${scheduleStartHour.toString().padStart(2, '0')}:00`}

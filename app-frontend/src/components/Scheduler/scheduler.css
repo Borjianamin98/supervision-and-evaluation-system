@@ -1,22 +1,32 @@
-.e-control {
+.custom-scheduler-style.e-control {
     font-family: "Vazir", serif !important;
 }
 
-.e-schedule .e-schedule-table > tbody > tr > th, .e-schedule .e-schedule-table > tbody > tr > td {
+.custom-scheduler-style.e-schedule .e-schedule-table > tbody > tr > th, .e-schedule .e-schedule-table > tbody > tr > td {
     white-space: normal;
+}
+
+/*
+Syncfusion scheduler add a margin right for center toolbar element which is not necessary
+ */
+.custom-scheduler-style.e-schedule .e-schedule-toolbar .e-toolbar-items.e-tbar-pos .e-toolbar-center {
+    margin-right: auto !important;
+}
+.custom-scheduler-style.e-schedule .e-custom-date-range {
+    cursor: initial !important;
 }
 
 /*
 More information on cell dimension customization:
 https://ej2.syncfusion.com/react/demos/#/material/schedule/cell-dimension
 */
-.schedule-cell-dimension.e-schedule .e-vertical-view .e-time-cells-wrap table td,
-.schedule-cell-dimension.e-schedule .e-vertical-view .e-work-cells {
+.custom-scheduler-style.e-schedule .e-vertical-view .e-time-cells-wrap table td,
+.custom-scheduler-style.e-schedule .e-vertical-view .e-work-cells {
     height: 36px /* Default is 36px */
 }
 
-.schedule-cell-dimension.e-schedule .e-vertical-view .e-day-wrapper .e-appointment .e-appointment-details,
-.schedule-cell-dimension.e-schedule .e-vertical-view .e-day-wrapper .e-appointment .e-appointment-details > :nth-child(1) {
+.custom-scheduler-style.e-schedule .e-vertical-view .e-day-wrapper .e-appointment .e-appointment-details,
+.custom-scheduler-style.e-schedule .e-vertical-view .e-day-wrapper .e-appointment .e-appointment-details > :nth-child(1) {
     height: 100%;
     padding: 0;
 }

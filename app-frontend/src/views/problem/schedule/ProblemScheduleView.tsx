@@ -14,7 +14,7 @@ import {ScheduleComponent} from '@syncfusion/ej2-react-schedule'
 import {AxiosError} from "axios";
 import {useSnackbar} from "notistack";
 import React from 'react';
-import {useQuery, useQueryClient} from "react-query";
+import {useQuery} from "react-query";
 import {rtlTheme} from '../../../App';
 import ComboBox from "../../../components/ComboBox/ComboBox";
 import CustomDatePicker from "../../../components/DatePicker/CustomDatePicker";
@@ -69,8 +69,8 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
     const totalDaysInView = mobileMatches ? 3 : (smallScreenMatches ? 5 : 7);
 
     const [startDate, setStartDate] = React.useState(DateUtils.getCurrentDate());
-    const queryClient = useQueryClient();
-    const {data: problemScheduleEvents, ...problemScheduleEventsQuery} = useQuery(
+    // const queryClient = useQueryClient();
+    const {data: problemScheduleEvents} = useQuery(
         ["meetScheduleEvents", problem.meetSchedule.id, startDate, totalDaysInView],
         () => {
             const jwtPayloadUserId = AuthenticationService.getJwtPayloadUserId()!;
@@ -79,10 +79,6 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                 .then(events => events.map(event => scheduleEventToSyncfusionSchedulerEvent(event, jwtPayloadUserId)))
         }
     );
-
-    const onDateChange = (startDate: Date) => {
-        setStartDate(startDate);
-    }
 
     const onCellClick = (scheduler: ScheduleComponent, scheduleEventDate: DateRange) => {
         const jwtPayloadUserId = AuthenticationService.getJwtPayloadUserId()!;
@@ -197,8 +193,7 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                     timeScaleInterval={30}
                     minimumDurationMinutes={meetScheduleDuration}
                     totalDaysInView={totalDaysInView}
-                    selectedDate={startDate}
-                    onDateChange={onDateChange}
+                    onStartDateChange={date => setStartDate(date)}
                     scheduleEvents={problemScheduleEvents}
                     participants={participants}
                     onCellClick={onCellClick}
