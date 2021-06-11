@@ -1,6 +1,5 @@
 import {ThemeProvider} from '@material-ui/core';
 import Typography from "@material-ui/core/Typography";
-import {EmitType} from '@syncfusion/ej2-base'
 import {ItemModel} from '@syncfusion/ej2-navigations/src/toolbar/toolbar-model'
 import {
     ActionEventArgs,
@@ -25,6 +24,7 @@ import ReactDOM from 'react-dom';
 import {rtlTheme} from "../../App";
 import {DateRange} from '../../model/schedule/event/DateRange';
 import {SyncfusionSchedulerEvent} from "../../model/schedule/event/ScheduleEvent";
+import DateUtils from "../../utility/DateUtils";
 import CenterBox from "../Grid/CenterBox";
 import AppointmentEventTemplate from "./AppointmentEventTemplate";
 import ParticipantsColorInfo from "./ParticipantsColorInfo";
@@ -98,7 +98,7 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
 
     React.useEffect(() => {
         if (scheduleComponentRef.current) {
-            scheduleComponentRef.current.eventSettings.dataSource = scheduleEvents;
+            // scheduleComponentRef.current.eventSettings.dataSource = scheduleEvents;
         }
     }, [scheduleEvents])
 
@@ -122,7 +122,7 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
     /**
      * Disable popup of scheduler completely
      */
-    const onPopupOpen: EmitType<PopupOpenEventArgs> = (args) => {
+    const onPopupOpen = (args?: PopupOpenEventArgs) => {
         if (args) {
             args.cancel = true;
         }
@@ -160,7 +160,7 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
      * Override cell click handler to allow custom handler beside disabling
      * all day events in scheduler.
      */
-    const cellClickHandler: EmitType<CellClickEventArgs> = (args) => {
+    const cellClickHandler = (args?: CellClickEventArgs) => {
         if (args) {
             if (args.isAllDay) {
                 args.cancel = true; // Disable all day events
@@ -198,7 +198,7 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
     /**
      * Disable double click on cell (open event editor by default)
      */
-    const cellDoubleClickHandler: EmitType<CellClickEventArgs> = (args) => {
+    const cellDoubleClickHandler = (args?: CellClickEventArgs) => {
         if (args) {
             args.cancel = true;
         }
@@ -225,7 +225,7 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
      * Override action begin handler to provide specific handler for different type of
      * events in scheduler.
      */
-    const onActionBegin: EmitType<ActionEventArgs> = (actionEventArgs) => {
+    const onActionBegin = (actionEventArgs?: ActionEventArgs) => {
         if (actionEventArgs) {
             if (actionEventArgs.requestType === "eventChange") {
                 const changedEvent = actionEventArgs.changedRecords
@@ -235,7 +235,7 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
                 } else {
                     actionEventArgs.cancel = true;
                 }
-            } else if (actionEventArgs.requestType === 'toolbarItemRendering' && actionEventArgs.items) {
+            } else if (actionEventArgs.requestType === 'toolbarItemRendering') {
                 const items = actionEventArgs.items as ItemModel[];
                 const prevItem = items[0];
                 const nextItem = items[1];
@@ -299,6 +299,18 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
         }
     }
 
+    /**
+     * Input values of schedule should be real instance of Date object.
+     */
+    const [scheduleMinDate, setScheduleMinDate] = React.useState(DateUtils.getCurrentDate(-2));
+    const [scheduleMaxDate, setScheduleMaxDate] = React.useState(DateUtils.getCurrentDate(2));
+    React.useEffect(() => {
+        console.log(new Date(minimumDate))
+        console.log(new Date(maximumDate))
+        setScheduleMinDate(DateUtils.getCurrentDate(-5))
+        setScheduleMaxDate(DateUtils.getCurrentDate(+5));
+    }, [minimumDate, maximumDate]);
+
     return <ThemeProvider theme={rtlTheme}>
         <ParticipantsColorInfo participants={participants}/>
         <ScheduleComponent
@@ -322,14 +334,43 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
             popupOpen={onPopupOpen}
             resizeStop={onResizeStop}
             enableRtl={true}
-            minDate={minimumDate}
-            maxDate={maximumDate}
+            // selectedDate={DateUtils.getCurrentDate()}
+            minDate={scheduleMinDate}
+            maxDate={scheduleMaxDate}
             startHour={`${scheduleStartHour.toString().padStart(2, '0')}:00`}
             endHour={`${scheduleEndHour.toString().padStart(2, '0')}:00`}
             workHours={{
                 highlight: true, start: '10:00', end: '18:00'
             }}
             eventSettings={{
+                dataSource: scheduleEvents,
+                // dataSource: [
+                //     {
+                //         id: 1,
+                //         subject: "صادق علی اکبری",
+                //         startDate: "2021-06-11T04:30:00Z",
+                //         endDate: "2021-06-11T05:30:00Z",
+                //         isAllDay: false,
+                //         ownerId: 1,
+                //         readonly: true
+                //     },
+                //     {
+                //         id: 2,
+                //         subject: "امین برجیان",
+                //         startDate: "2021-06-11T06:30:00Z",
+                //         endDate: "2021-06-11T07:30:00Z",
+                //         isAllDay: false,
+                //         ownerId: 5,
+                //         readonly: true
+                //     }, {
+                //         id: 3,
+                //         subject: "مجتبی وحیدی",
+                //         startDate: "2021-06-11T08:30:00Z",
+                //         endDate: "2021-06-11T10:30:00Z",
+                //         isAllDay: false,
+                //         ownerId: 2,
+                //         readonly: false
+                //     }],
                 fields: {
                     id: 'id',
                     subject: {name: 'subject'},

@@ -95,7 +95,13 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws ParseException {
         prepareUniversities();
 
+        Instant yesterday = Instant.now().minus(2, ChronoUnit.DAYS);
+        Instant tomorrow = Instant.now().plus(2, ChronoUnit.DAYS);
+
         MeetSchedule meetSchedule1 = meetScheduleRepository.save(MeetSchedule.builder()
+                .durationMinutes(30L)
+                .minimumDate(yesterday)
+                .maximumDate(tomorrow)
                 .scheduleState(ScheduleState.CREATED)
                 .build());
         Problem problem1 = problemRepository.save(Problem.builder()
@@ -114,6 +120,9 @@ public class DataLoader implements CommandLineRunner {
         problem1 = problemRepository.save(problem1);
 
         MeetSchedule meetSchedule2 = meetScheduleRepository.save(MeetSchedule.builder()
+                .durationMinutes(30L)
+                .minimumDate(yesterday)
+                .maximumDate(tomorrow)
                 .scheduleState(ScheduleState.CREATED)
                 .build());
         Problem problem2 = problemRepository.save(Problem.builder()
@@ -133,8 +142,8 @@ public class DataLoader implements CommandLineRunner {
 
         MeetSchedule meetSchedule3 = meetScheduleRepository.save(MeetSchedule.builder()
                 .durationMinutes(30L)
-                .minimumDate(Instant.now().minus(1, ChronoUnit.DAYS))
-                .maximumDate(Instant.now().plus(1, ChronoUnit.DAYS))
+                .minimumDate(yesterday)
+                .maximumDate(tomorrow)
                 .scheduleState(ScheduleState.STARTED)
                 .build());
         Problem problem3 = problemRepository.save(Problem.builder()
@@ -152,6 +161,9 @@ public class DataLoader implements CommandLineRunner {
         problem3 = problemRepository.save(problem3);
 
         MeetSchedule meetSchedule4 = meetScheduleRepository.save(MeetSchedule.builder()
+                .durationMinutes(30L)
+                .minimumDate(yesterday)
+                .maximumDate(tomorrow)
                 .scheduleState(ScheduleState.CREATED)
                 .build());
         Problem problem4 = problemRepository.save(Problem.builder()
