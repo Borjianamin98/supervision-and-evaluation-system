@@ -24,7 +24,6 @@ import ReactDOM from 'react-dom';
 import {rtlTheme} from "../../App";
 import {DateRange} from '../../model/schedule/event/DateRange';
 import {SyncfusionSchedulerEvent} from "../../model/schedule/event/ScheduleEvent";
-import DateUtils from "../../utility/DateUtils";
 import CenterBox from "../Grid/CenterBox";
 import AppointmentEventTemplate from "./AppointmentEventTemplate";
 import ParticipantsColorInfo from "./ParticipantsColorInfo";
@@ -95,12 +94,6 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
 
     const scheduleStartHour = 8;
     const scheduleEndHour = 20;
-
-    React.useEffect(() => {
-        if (scheduleComponentRef.current) {
-            // scheduleComponentRef.current.eventSettings.dataSource = scheduleEvents;
-        }
-    }, [scheduleEvents])
 
     React.useEffect(() => {
         /**
@@ -299,24 +292,10 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
         }
     }
 
-    /**
-     * Input values of schedule should be real instance of Date object.
-     */
-    const [scheduleMinDate, setScheduleMinDate] = React.useState(DateUtils.getCurrentDate(-2));
-    const [scheduleMaxDate, setScheduleMaxDate] = React.useState(DateUtils.getCurrentDate(2));
-    React.useEffect(() => {
-        console.log(new Date(minimumDate))
-        console.log(new Date(maximumDate))
-        setScheduleMinDate(DateUtils.getCurrentDate(-5))
-        setScheduleMaxDate(DateUtils.getCurrentDate(+5));
-    }, [minimumDate, maximumDate]);
-
     return <ThemeProvider theme={rtlTheme}>
         <ParticipantsColorInfo participants={participants}/>
         <ScheduleComponent
             ref={scheduleComponentRef}
-            actionBegin={onActionBegin}
-            actionComplete={onActionComplete}
             width="100%"
             cssClass="custom-scheduler-style"
             allowDragAndDrop={true}
@@ -327,16 +306,17 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
             allowMultiCellSelection={false}
             allowMultiDrag={false}
             allowMultiRowSelection={false}
+            enableRtl={true}
+            actionBegin={onActionBegin}
+            actionComplete={onActionComplete}
             cellClick={cellClickHandler}
             cellDoubleClick={cellDoubleClickHandler}
             dateHeaderTemplate={dateHeaderTemplate}
             dataBound={onDataBound}
             popupOpen={onPopupOpen}
             resizeStop={onResizeStop}
-            enableRtl={true}
-            // selectedDate={DateUtils.getCurrentDate()}
-            minDate={scheduleMinDate}
-            maxDate={scheduleMaxDate}
+            minDate={minimumDate}
+            maxDate={maximumDate}
             startHour={`${scheduleStartHour.toString().padStart(2, '0')}:00`}
             endHour={`${scheduleEndHour.toString().padStart(2, '0')}:00`}
             workHours={{
@@ -344,33 +324,6 @@ const CustomScheduler: React.FunctionComponent<CustomSchedulerProps> = (props) =
             }}
             eventSettings={{
                 dataSource: scheduleEvents,
-                // dataSource: [
-                //     {
-                //         id: 1,
-                //         subject: "صادق علی اکبری",
-                //         startDate: "2021-06-11T04:30:00Z",
-                //         endDate: "2021-06-11T05:30:00Z",
-                //         isAllDay: false,
-                //         ownerId: 1,
-                //         readonly: true
-                //     },
-                //     {
-                //         id: 2,
-                //         subject: "امین برجیان",
-                //         startDate: "2021-06-11T06:30:00Z",
-                //         endDate: "2021-06-11T07:30:00Z",
-                //         isAllDay: false,
-                //         ownerId: 5,
-                //         readonly: true
-                //     }, {
-                //         id: 3,
-                //         subject: "مجتبی وحیدی",
-                //         startDate: "2021-06-11T08:30:00Z",
-                //         endDate: "2021-06-11T10:30:00Z",
-                //         isAllDay: false,
-                //         ownerId: 2,
-                //         readonly: false
-                //     }],
                 fields: {
                     id: 'id',
                     subject: {name: 'subject'},

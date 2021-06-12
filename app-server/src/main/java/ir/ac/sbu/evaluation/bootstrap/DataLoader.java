@@ -26,6 +26,7 @@ import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.PersonalInfoRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
+import ir.ac.sbu.evaluation.utility.DateUtility;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -95,8 +96,8 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws ParseException {
         prepareUniversities();
 
-        Instant yesterday = Instant.now().minus(2, ChronoUnit.DAYS);
-        Instant tomorrow = Instant.now().plus(2, ChronoUnit.DAYS);
+        Instant yesterday = DateUtility.getStartOfDay(Instant.now().minus(2, ChronoUnit.DAYS));
+        Instant tomorrow = DateUtility.getStartOfDay(Instant.now().plus(2, ChronoUnit.DAYS));
 
         MeetSchedule meetSchedule1 = meetScheduleRepository.save(MeetSchedule.builder()
                 .durationMinutes(30L)
