@@ -48,7 +48,7 @@ public class UniversityController {
 
     @PostMapping(path = API_UNIVERSITY_REGISTER_PATH)
     public UniversityDto register(@Valid @RequestBody UniversitySaveDto universitySaveDto) {
-        return universityService.register(universitySaveDto);
+        return universityService.add(universitySaveDto);
     }
 
     @PutMapping(path = "/{universityId}")

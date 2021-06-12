@@ -55,6 +55,6 @@ public class FacultyController {
     @PostMapping(path = API_FACULTY_REGISTER_PATH)
     public FacultyDto register(@RequestParam(name = "universityId") long universityId,
             @Valid @RequestBody FacultySaveDto facultySaveDto) {
-        return facultyService.register(universityId, facultySaveDto);
+        return facultyService.add(universityId, facultySaveDto);
     }
 }

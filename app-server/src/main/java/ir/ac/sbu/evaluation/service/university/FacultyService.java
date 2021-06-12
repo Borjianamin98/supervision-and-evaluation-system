@@ -28,7 +28,7 @@ public class FacultyService {
                 .map(FacultyDto::from);
     }
 
-    public FacultyDto register(long universityId, FacultySaveDto facultySaveDto) {
+    public FacultyDto add(long universityId, FacultySaveDto facultySaveDto) {
         University university = universityRepository.findById(universityId)
                 .orElseThrow(() -> new ResourceNotFoundException("University not found: ID = " + universityId));
 

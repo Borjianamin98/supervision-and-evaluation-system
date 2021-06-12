@@ -1,31 +1,42 @@
 package ir.ac.sbu.evaluation.bootstrap;
 
+import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventSaveDto;
+import ir.ac.sbu.evaluation.dto.schedule.event.DateRangeDto;
+import ir.ac.sbu.evaluation.dto.schedule.event.ScheduleEventDto;
+import ir.ac.sbu.evaluation.dto.university.UniversityDto;
+import ir.ac.sbu.evaluation.dto.university.UniversitySaveDto;
+import ir.ac.sbu.evaluation.dto.university.faculty.FacultyDto;
+import ir.ac.sbu.evaluation.dto.university.faculty.FacultySaveDto;
+import ir.ac.sbu.evaluation.dto.user.PersonalInfoSaveDto;
+import ir.ac.sbu.evaluation.dto.user.UserDto;
+import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
+import ir.ac.sbu.evaluation.dto.user.master.MasterSaveDto;
+import ir.ac.sbu.evaluation.dto.user.student.StudentDto;
+import ir.ac.sbu.evaluation.dto.user.student.StudentSaveDto;
 import ir.ac.sbu.evaluation.enumeration.Education;
 import ir.ac.sbu.evaluation.enumeration.Gender;
 import ir.ac.sbu.evaluation.model.problem.Problem;
-import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
 import ir.ac.sbu.evaluation.model.problem.ProblemState;
 import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
-import ir.ac.sbu.evaluation.model.schedule.ScheduleEvent;
 import ir.ac.sbu.evaluation.model.schedule.ScheduleState;
-import ir.ac.sbu.evaluation.model.university.Faculty;
-import ir.ac.sbu.evaluation.model.university.University;
 import ir.ac.sbu.evaluation.model.user.Admin;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.PersonalInfo;
 import ir.ac.sbu.evaluation.model.user.Student;
-import ir.ac.sbu.evaluation.model.user.User;
-import ir.ac.sbu.evaluation.repository.problem.ProblemEventRepository;
 import ir.ac.sbu.evaluation.repository.problem.ProblemRepository;
 import ir.ac.sbu.evaluation.repository.schedule.MeetScheduleRepository;
 import ir.ac.sbu.evaluation.repository.schedule.ScheduleEventRepository;
-import ir.ac.sbu.evaluation.repository.university.FacultyRepository;
-import ir.ac.sbu.evaluation.repository.university.UniversityRepository;
 import ir.ac.sbu.evaluation.repository.user.AdminRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.PersonalInfoRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
+import ir.ac.sbu.evaluation.service.problem.ProblemService;
+import ir.ac.sbu.evaluation.service.schedule.ScheduleService;
+import ir.ac.sbu.evaluation.service.university.FacultyService;
+import ir.ac.sbu.evaluation.service.university.UniversityService;
+import ir.ac.sbu.evaluation.service.user.MasterService;
+import ir.ac.sbu.evaluation.service.user.StudentService;
 import ir.ac.sbu.evaluation.utility.DateUtility;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -50,11 +61,14 @@ public class DataLoader implements CommandLineRunner {
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-    private static List<University> universities;
-    private static Map<Long /* university ID */, List<Faculty>> faculties;
+    private static List<UniversityDto> universities;
+    private static Map<Long /* university ID */, List<FacultyDto>> faculties;
 
-    private final UniversityRepository universityRepository;
-    private final FacultyRepository facultyRepository;
+    private final UniversityService universityService;
+    private final FacultyService facultyService;
+
+    private final MasterService masterService;
+    private final StudentService studentService;
 
     private final PersonalInfoRepository personalInfoRepository;
     private final MasterRepository masterRepository;
@@ -63,38 +77,50 @@ public class DataLoader implements CommandLineRunner {
 
     private final MeetScheduleRepository meetScheduleRepository;
     private final ScheduleEventRepository scheduleEventRepository;
+    private final ScheduleService scheduleService;
 
+    private final ProblemService problemService;
     private final ProblemRepository problemRepository;
-    private final ProblemEventRepository problemEventRepository;
 
     private final PasswordEncoder passwordEncoder;
+    private MasterDto sadeghMaster;
+    private MasterDto mojtabaMaster;
+    private MasterDto mahmoudMaster;
+    private MasterDto hasanMaster;
+    private StudentDto aminStudent;
 
-    public DataLoader(UniversityRepository universityRepository,
-            FacultyRepository facultyRepository,
+    public DataLoader(UniversityService universityService,
+            FacultyService facultyService,
+            MasterService masterService,
+            StudentService studentService,
+            ProblemService problemService,
             PersonalInfoRepository personalInfoRepository,
             AdminRepository adminRepository, StudentRepository studentRepository,
             MasterRepository masterRepository,
             MeetScheduleRepository meetScheduleRepository,
             ScheduleEventRepository scheduleEventRepository,
-            ProblemRepository problemRepository,
-            ProblemEventRepository problemEventRepository,
+            ScheduleService scheduleService, ProblemRepository problemRepository,
             PasswordEncoder passwordEncoder) {
-        this.universityRepository = universityRepository;
-        this.facultyRepository = facultyRepository;
+        this.universityService = universityService;
+        this.facultyService = facultyService;
+        this.masterService = masterService;
+        this.studentService = studentService;
+        this.problemService = problemService;
         this.personalInfoRepository = personalInfoRepository;
         this.adminRepository = adminRepository;
         this.studentRepository = studentRepository;
         this.masterRepository = masterRepository;
         this.meetScheduleRepository = meetScheduleRepository;
         this.scheduleEventRepository = scheduleEventRepository;
+        this.scheduleService = scheduleService;
         this.problemRepository = problemRepository;
-        this.problemEventRepository = problemEventRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void run(String... args) throws ParseException {
         prepareUniversities();
+        prepareUsers();
 
         Instant yesterday = DateUtility.getStartOfDay(Instant.now().minus(2, ChronoUnit.DAYS));
         Instant tomorrow = DateUtility.getStartOfDay(Instant.now().plus(2, ChronoUnit.DAYS));
@@ -181,189 +207,147 @@ public class DataLoader implements CommandLineRunner {
         meetSchedule4.setProblem(problem4);
         problem4 = problemRepository.save(problem4);
 
-        PersonalInfo master1PersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
-                .gender(Gender.MALE)
-                .telephoneNumber("9131234567")
-                .email("sadegh.aliakbari@gmail.com")
-                .build());
-        PersonalInfo master2PersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
-                .gender(Gender.MALE)
-                .telephoneNumber("9137654321")
-                .email("mojtaba.vahidi@sbu.ac.ir")
-                .build());
-        PersonalInfo master3PersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
-                .gender(Gender.MALE)
-                .telephoneNumber("9137654123")
-                .email("master3@sbu.ac.ir")
-                .build());
-        PersonalInfo master4PersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
-                .gender(Gender.MALE)
-                .telephoneNumber("9137651234")
-                .email("master4@sbu.ac.ir")
-                .build());
-        PersonalInfo studentPersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
-                .gender(Gender.MALE)
-                .telephoneNumber("9137654321")
-                .email("student@gmail.com")
-                .build());
-        PersonalInfo adminPersonalInfo = personalInfoRepository.save(PersonalInfo.builder()
-                .gender(Gender.MALE)
-                .telephoneNumber("9137654321")
-                .email("admin@gmail.com")
-                .build());
-
-        Faculty computerEngineeringFaculty = faculties.get(universities.get(0).getId()).get(0);
-        Master master1 = masterRepository.save(Master.builder()
-                .firstName("صادق")
-                .lastName("علی اکبری")
-                .degree("استاد")
-                .username("master")
-                .password(passwordEncoder.encode("pass"))
-                .personalInfo(master1PersonalInfo)
-                .faculty(computerEngineeringFaculty)
-                .problemsSupervisor(new HashSet<>(Arrays.asList(problem1, problem2)))
-                .problemsReferee(Collections.singleton(problem3))
-                .build());
-
-        computerEngineeringFaculty.getMasters().add(master1);
-        facultyRepository.save(computerEngineeringFaculty);
-
-        problem1.setSupervisor(master1);
+        Master master = masterRepository.findById(sadeghMaster.getId()).get();
+        problem1.setSupervisor(master);
         problem1 = problemRepository.save(problem1);
-        problem2.setSupervisor(master1);
+        problem2.setSupervisor(master);
         problem2 = problemRepository.save(problem2);
-        problem3.getReferees().add(master1);
+
+        master = masterRepository.findById(mojtabaMaster.getId()).get();
+        problem3.setSupervisor(master);
         problem3 = problemRepository.save(problem3);
-
-        Master master2 = masterRepository.save(Master.builder()
-                .firstName("مجتبی")
-                .lastName("وحیدی")
-                .degree("استاد")
-                .username("mojtaba")
-                .password(passwordEncoder.encode("pass"))
-                .personalInfo(master2PersonalInfo)
-                .faculty(computerEngineeringFaculty)
-                .problemsSupervisor(new HashSet<>(Arrays.asList(problem3, problem4)))
-                .build());
-
-        computerEngineeringFaculty.getMasters().add(master2);
-        facultyRepository.save(computerEngineeringFaculty);
-
-        problem3.setSupervisor(master2);
-        problem3 = problemRepository.save(problem3);
-        problem4.setSupervisor(master2);
+        problem4.setSupervisor(master);
         problem4 = problemRepository.save(problem4);
 
-        Master master3 = masterRepository.save(Master.builder()
-                .firstName("محمود")
-                .lastName("نشاطی")
-                .degree("استاد")
-                .username("master3")
-                .password(passwordEncoder.encode("pass"))
-                .personalInfo(master3PersonalInfo)
-                .faculty(computerEngineeringFaculty)
-                .problemsReferee(new HashSet<>(Arrays.asList(problem3, problem4)))
-                .build());
-
-        computerEngineeringFaculty.getMasters().add(master3);
-        facultyRepository.save(computerEngineeringFaculty);
-
-        problem3.getReferees().add(master3);
-        problem3 = problemRepository.save(problem3);
-        problem4.getReferees().add(master3);
-        problem4 = problemRepository.save(problem4);
-
-        Master master4 = masterRepository.save(Master.builder()
-                .firstName("حسن")
-                .lastName("حقیقی")
-                .degree("استاد")
-                .username("master4")
-                .password(passwordEncoder.encode("pass"))
-                .personalInfo(master4PersonalInfo)
-                .faculty(computerEngineeringFaculty)
-                .build());
-
-        computerEngineeringFaculty.getMasters().add(master4);
-        facultyRepository.save(computerEngineeringFaculty);
-
-        Student student1 = studentRepository.save(Student.builder()
-                .firstName("امین")
-                .lastName("برجیان")
-                .studentNumber("96243012")
-                .username("student")
-                .password(passwordEncoder.encode("pass"))
-                .personalInfo(studentPersonalInfo)
-                .faculty(computerEngineeringFaculty)
-                .problems(new HashSet<>(Arrays.asList(problem1, problem2, problem3, problem4)))
-                .build());
-
-        computerEngineeringFaculty.getStudents().add(student1);
-        facultyRepository.save(computerEngineeringFaculty);
-
-        problem1.setStudent(student1);
+        Student student = studentRepository.findById(aminStudent.getId()).get();
+        problem1.setStudent(student);
         problem1 = problemRepository.save(problem1);
-        problem2.setStudent(student1);
+        problem2.setStudent(student);
         problem2 = problemRepository.save(problem2);
-        problem3.setStudent(student1);
+        problem3.setStudent(student);
         problem3 = problemRepository.save(problem3);
-        problem4.setStudent(student1);
+        problem4.setStudent(student);
         problem4 = problemRepository.save(problem4);
 
-        setSpringSecurityAuthentication(student1);
-        ProblemEvent problemEvent1 = problemEventRepository.save(ProblemEvent.builder()
+        setSpringSecurityAuthentication(mojtabaMaster);
+        problemService.addReferee(mojtabaMaster.getId(), problem3.getId(), sadeghMaster.getId());
+        problemService.addReferee(mojtabaMaster.getId(), problem3.getId(), mahmoudMaster.getId());
+        problemService.addReferee(mojtabaMaster.getId(), problem4.getId(), mahmoudMaster.getId());
+
+        setSpringSecurityAuthentication(aminStudent);
+        problemService.addProblemEvent(aminStudent.getId(), problem1.getId(), ProblemEventSaveDto.builder()
                 .message("پیشنهاد من برای این مسئله این است که تا حد امکان ویژگی‌های خیلی خوب را مستند کنیم.")
-                .problem(problem1)
                 .build());
-        setSpringSecurityAuthentication(master1);
-        ProblemEvent problemEvent2 = problemEventRepository.save(ProblemEvent.builder()
+        setSpringSecurityAuthentication(sadeghMaster);
+        problemService.addProblemEvent(sadeghMaster.getId(), problem1.getId(), ProblemEventSaveDto.builder()
                 .message(
                         "من با پیشنهاد شما موافق هستم ولی خیلی می‌تواند بهتر باشد اگر جوانب مختلف این تصمیم را پیش از رفتن به سمت آن بسنجیم تا از درستی آن تا حد خوبی اطمینان پیدا کنیم.")
-                .problem(problem1)
                 .build());
-        problem1.setEvents(new HashSet<>(Arrays.asList(problemEvent1, problemEvent2)));
-        problem1 = problemRepository.save(problem1);
 
         Calendar calendar = Calendar.getInstance();
         String todayDate = String.format("%04d-%02d-%02d",
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH) + 1,
                 calendar.get(Calendar.DAY_OF_MONTH));
-        ScheduleEvent scheduleEvent1 = scheduleEventRepository.save(ScheduleEvent.builder()
-                .startDate(dateFormat.parse(String.format("%s 09:00", todayDate)).toInstant())
-                .endDate(dateFormat.parse(String.format("%s 10:00", todayDate)).toInstant())
-                .owner(problem3.getReferees().iterator().next())
-                .build());
-        ScheduleEvent scheduleEvent2 = scheduleEventRepository.save(ScheduleEvent.builder()
-                .startDate(dateFormat.parse(String.format("%s 11:00", todayDate)).toInstant())
-                .endDate(dateFormat.parse(String.format("%s 12:00", todayDate)).toInstant())
-                .owner(problem3.getStudent())
-                .build());
-        ScheduleEvent scheduleEvent3 = scheduleEventRepository.save(ScheduleEvent.builder()
-                .startDate(dateFormat.parse(String.format("%s 13:00", todayDate)).toInstant())
-                .endDate(dateFormat.parse(String.format("%s 15:00", todayDate)).toInstant())
-                .owner(problem3.getSupervisor())
-                .build());
-        meetSchedule3.setScheduleEvents(new HashSet<>(Arrays.asList(scheduleEvent1, scheduleEvent2, scheduleEvent3)));
-        meetSchedule3.setVerifiedUsers(new HashSet<>(Arrays.asList(scheduleEvent1.getOwner().getId(),
-                scheduleEvent2.getOwner().getId(), scheduleEvent3.getOwner().getId())));
-        meetSchedule3 = meetScheduleRepository.save(meetSchedule3);
+        ScheduleEventDto scheduleEvent1 = scheduleService
+                .addScheduleEvent(sadeghMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
+                        .startDate(dateFormat.parse(String.format("%s 09:00", todayDate)).toInstant())
+                        .endDate(dateFormat.parse(String.format("%s 10:00", todayDate)).toInstant())
+                        .build());
+        ScheduleEventDto scheduleEvent2 = scheduleService
+                .addScheduleEvent(aminStudent.getId(), meetSchedule3.getId(), DateRangeDto.builder()
+                        .startDate(dateFormat.parse(String.format("%s 11:00", todayDate)).toInstant())
+                        .endDate(dateFormat.parse(String.format("%s 12:00", todayDate)).toInstant())
+                        .build());
+        ScheduleEventDto scheduleEvent3 = scheduleService
+                .addScheduleEvent(mojtabaMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
+                        .startDate(dateFormat.parse(String.format("%s 13:00", todayDate)).toInstant())
+                        .endDate(dateFormat.parse(String.format("%s 15:00", todayDate)).toInstant())
+                        .build());
+    }
 
-        scheduleEvent1.setMeetSchedule(meetSchedule3);
-        scheduleEvent1 = scheduleEventRepository.save(scheduleEvent1);
-        scheduleEvent2.setMeetSchedule(meetSchedule3);
-        scheduleEvent2 = scheduleEventRepository.save(scheduleEvent2);
-        scheduleEvent3.setMeetSchedule(meetSchedule3);
-        scheduleEvent3 = scheduleEventRepository.save(scheduleEvent3);
+    private void prepareUsers() {
+        FacultyDto computerEngineeringFaculty = faculties.get(universities.get(0).getId()).get(0);
+        sadeghMaster = masterService.save(MasterSaveDto.builder()
+                .firstName("صادق")
+                .lastName("علی اکبری")
+                .degree("استاد")
+                .username("master")
+                .password(passwordEncoder.encode("pass"))
+                .personalInfo(PersonalInfoSaveDto.builder()
+                        .gender(Gender.MALE)
+                        .telephoneNumber("9131234567")
+                        .email("sadegh.aliakbari@gmail.com")
+                        .build())
+                .facultyId(computerEngineeringFaculty.getId())
+                .build());
 
-        problem3.setMeetSchedule(meetSchedule3);
-        problem3 = problemRepository.save(problem3);
+        mojtabaMaster = masterService.save(MasterSaveDto.builder()
+                .firstName("مجتبی")
+                .lastName("وحیدی")
+                .degree("استاد")
+                .username("mojtaba")
+                .password(passwordEncoder.encode("pass"))
+                .personalInfo(PersonalInfoSaveDto.builder()
+                        .gender(Gender.MALE)
+                        .telephoneNumber("9137654321")
+                        .email("mojtaba.vahidi@sbu.ac.ir")
+                        .build())
+                .facultyId(computerEngineeringFaculty.getId())
+                .build());
+
+        mahmoudMaster = masterService.save(MasterSaveDto.builder()
+                .firstName("محمود")
+                .lastName("نشاطی")
+                .degree("استاد")
+                .username("master3")
+                .password(passwordEncoder.encode("pass"))
+                .personalInfo(PersonalInfoSaveDto.builder()
+                        .gender(Gender.MALE)
+                        .telephoneNumber("9137654123")
+                        .email("master3@sbu.ac.ir")
+                        .build())
+                .facultyId(computerEngineeringFaculty.getId())
+                .build());
+
+        hasanMaster = masterService.save(MasterSaveDto.builder()
+                .firstName("حسن")
+                .lastName("حقیقی")
+                .degree("استاد")
+                .username("master4")
+                .password(passwordEncoder.encode("pass"))
+                .personalInfo(PersonalInfoSaveDto.builder()
+                        .gender(Gender.MALE)
+                        .telephoneNumber("9137651234")
+                        .email("master4@sbu.ac.ir")
+                        .build())
+                .facultyId(computerEngineeringFaculty.getId())
+                .build());
+
+        aminStudent = studentService.save(StudentSaveDto.builder()
+                .firstName("امین")
+                .lastName("برجیان")
+                .studentNumber("96243012")
+                .username("student")
+                .password(passwordEncoder.encode("pass"))
+                .personalInfo(PersonalInfoSaveDto.builder()
+                        .gender(Gender.MALE)
+                        .telephoneNumber("9137654321")
+                        .email("student@gmail.com")
+                        .build())
+                .facultyId(computerEngineeringFaculty.getId())
+                .build());
 
         Admin admin1 = adminRepository.save(Admin.builder()
                 .firstName("مدیر")
                 .lastName("سامانه")
                 .username("admin")
                 .password(passwordEncoder.encode("pass"))
-                .personalInfo(adminPersonalInfo)
+                .personalInfo(personalInfoRepository.save(PersonalInfo.builder()
+                        .gender(Gender.MALE)
+                        .telephoneNumber("9137654321")
+                        .email("admin@gmail.com")
+                        .build()))
                 .build());
     }
 
@@ -371,97 +355,76 @@ public class DataLoader implements CommandLineRunner {
         universities = new ArrayList<>();
         faculties = new HashMap<>();
 
-        University shahidBeheshtiUniversity = universityRepository.save(University.builder()
+        UniversityDto shahidBeheshtiUniversity = universityService.add(UniversitySaveDto.builder()
                 .name("شهیدبهشتی")
                 .location("تهران").webAddress("https://www.sbu.ac.ir/")
                 .build());
-        Faculty computerEngineeringFaculty = facultyRepository.save(Faculty.builder()
-                .name("مهندسی کامپیوتر")
-                .webAddress("https://www.sbu.ac.ir/en/web/cse")
-                .university(shahidBeheshtiUniversity)
-                .build());
-        Faculty physicFaculty = facultyRepository.save(Faculty.builder()
+        FacultyDto computerEngineeringFaculty = facultyService
+                .add(shahidBeheshtiUniversity.getId(), FacultySaveDto.builder()
+                        .name("مهندسی کامپیوتر")
+                        .webAddress("https://www.sbu.ac.ir/en/web/cse")
+                        .build());
+        FacultyDto physicFaculty = facultyService.add(shahidBeheshtiUniversity.getId(), FacultySaveDto.builder()
                 .name("فیزیک")
                 .webAddress("https://www.sbu.ac.ir/en/web/physics")
-                .university(shahidBeheshtiUniversity)
                 .build());
-        shahidBeheshtiUniversity.getFaculties().add(computerEngineeringFaculty);
-        shahidBeheshtiUniversity.getFaculties().add(physicFaculty);
-        universityRepository.save(shahidBeheshtiUniversity);
         universities.add(shahidBeheshtiUniversity);
         faculties.put(shahidBeheshtiUniversity.getId(), new ArrayList<>());
         faculties.get(shahidBeheshtiUniversity.getId()).add(computerEngineeringFaculty);
         faculties.get(shahidBeheshtiUniversity.getId()).add(physicFaculty);
 
-        University tehranUniversity = universityRepository.save(University.builder()
+        UniversityDto tehranUniversity = universityService.add(UniversitySaveDto.builder()
                 .name("تهران")
                 .location("تهران").webAddress("https://ut.ac.ir/fa")
                 .build());
-        computerEngineeringFaculty = facultyRepository.save(Faculty.builder()
+        computerEngineeringFaculty = facultyService.add(tehranUniversity.getId(), FacultySaveDto.builder()
                 .name("مهندسی کامپیوتر")
-                .university(tehranUniversity)
                 .build());
-        Faculty mathematicsFaculty = facultyRepository.save(Faculty.builder()
+        FacultyDto mathematicsFaculty = facultyService.add(tehranUniversity.getId(), FacultySaveDto.builder()
                 .name("ریاضی")
-                .university(tehranUniversity)
                 .build());
-        tehranUniversity.getFaculties().add(computerEngineeringFaculty);
-        tehranUniversity.getFaculties().add(mathematicsFaculty);
-        universityRepository.save(tehranUniversity);
         universities.add(tehranUniversity);
         faculties.put(tehranUniversity.getId(), new ArrayList<>());
         faculties.get(tehranUniversity.getId()).add(computerEngineeringFaculty);
         faculties.get(tehranUniversity.getId()).add(mathematicsFaculty);
 
-        University amirKabirUniversity = universityRepository.save(University.builder()
+        UniversityDto amirKabirUniversity = universityService.add(UniversitySaveDto.builder()
                 .name("امیرکبیر")
                 .location("تهران").webAddress("https://aut.ac.ir/")
                 .build());
-        Faculty literatureFaculty = facultyRepository.save(Faculty.builder()
+        FacultyDto literatureFaculty = facultyService.add(amirKabirUniversity.getId(), FacultySaveDto.builder()
                 .name("ادبیات")
-                .university(amirKabirUniversity)
                 .build());
-        amirKabirUniversity.getFaculties().add(literatureFaculty);
-        universityRepository.save(amirKabirUniversity);
         universities.add(amirKabirUniversity);
         faculties.put(amirKabirUniversity.getId(), Collections.singletonList(literatureFaculty));
 
-        University sharifUniversity = universityRepository.save(University.builder()
+        UniversityDto sharifUniversity = universityService.add(UniversitySaveDto.builder()
                 .name("صنعتی شریف")
                 .location("تهران").webAddress("http://www.sharif.ir/")
                 .build());
-        literatureFaculty = facultyRepository.save(Faculty.builder()
+        literatureFaculty = facultyService.add(sharifUniversity.getId(), FacultySaveDto.builder()
                 .name("ادبیات")
-                .university(sharifUniversity)
                 .build());
-        sharifUniversity.getFaculties().add(literatureFaculty);
-        universityRepository.save(sharifUniversity);
         universities.add(sharifUniversity);
         faculties.put(sharifUniversity.getId(), Collections.singletonList(literatureFaculty));
 
-        University iustUniversity = universityRepository.save(University.builder()
+        UniversityDto iustUniversity = universityService.add(UniversitySaveDto.builder()
                 .name("علم و صنعت ایران")
                 .location("تهران").webAddress("http://iust.ac.ir")
                 .build());
-        Faculty chemistryFaculty = facultyRepository.save(Faculty.builder()
+        FacultyDto chemistryFaculty = facultyService.add(iustUniversity.getId(), FacultySaveDto.builder()
                 .name("شیمی")
-                .university(iustUniversity)
                 .build());
-        iustUniversity.getFaculties().add(chemistryFaculty);
-        universityRepository.save(iustUniversity);
         universities.add(iustUniversity);
         faculties.put(iustUniversity.getId(), Collections.singletonList(chemistryFaculty));
 
-        University atuUniversity = universityRepository.save(University.builder()
+        UniversityDto atuUniversity = universityService.add(UniversitySaveDto.builder()
                 .name("علامه طباطبایی")
                 .location("تهران").webAddress("http://atu.ac.ir")
                 .build());
-        chemistryFaculty = facultyRepository.save(Faculty.builder()
+        chemistryFaculty = facultyService.add(atuUniversity.getId(), FacultySaveDto.builder()
                 .name("شیمی")
-                .university(atuUniversity)
                 .build());
-        atuUniversity.getFaculties().add(chemistryFaculty);
-        universityRepository.save(atuUniversity);
         universities.add(atuUniversity);
         faculties.put(atuUniversity.getId(), Collections.singletonList(chemistryFaculty));
     }
@@ -470,7 +433,7 @@ public class DataLoader implements CommandLineRunner {
      * Copy-pasted function from {@link ir.ac.sbu.evaluation.security.JwtAuthenticationFilter} to provide mock username
      * in preparing initial data.
      */
-    private void setSpringSecurityAuthentication(User user) {
+    private void setSpringSecurityAuthentication(UserDto user) {
         AuthUserDetail authUserDetail = AuthUserDetail.builder()
                 .userId(user.getId())
                 .fullName(user.getFullName())

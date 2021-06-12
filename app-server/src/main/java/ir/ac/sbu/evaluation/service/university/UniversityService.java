@@ -22,7 +22,7 @@ public class UniversityService {
         return universityRepository.findByNameContains(nameQuery, pageable).map(UniversityDto::from);
     }
 
-    public UniversityDto register(UniversitySaveDto universitySaveDto) {
+    public UniversityDto add(UniversitySaveDto universitySaveDto) {
         University university = universitySaveDto.toUniversity();
         return UniversityDto.from(universityRepository.save(university));
     }
