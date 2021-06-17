@@ -16,7 +16,9 @@ import ir.ac.sbu.evaluation.repository.problem.ProblemEventRepository;
 import ir.ac.sbu.evaluation.repository.schedule.MeetScheduleRepository;
 import ir.ac.sbu.evaluation.repository.schedule.ScheduleEventRepository;
 import ir.ac.sbu.evaluation.repository.user.UserRepository;
+import ir.ac.sbu.evaluation.utility.DateUtility;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -46,9 +48,14 @@ public class ScheduleService {
             Instant endDate) {
         MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
         checkUserAccessMeetSchedule(userId, meetSchedule);
+
+        if (startDate.isBefore(meetSchedule.getMinimumDate()) && endDate.isAfter(meetSchedule.getMaximumDate())) {
+            return Collections.emptyList();
+        }
+        Instant start = startDate.isBefore(meetSchedule.getMinimumDate()) ? meetSchedule.getMinimumDate() : startDate;
+        Instant end = endDate.isAfter(meetSchedule.getMaximumDate()) ? meetSchedule.getMaximumDate() : endDate;
         List<ScheduleEvent> scheduleEvents = scheduleEventRepository
-                .findAllByMeetScheduleIdAndStartDateGreaterThanEqualAndEndDateLessThanEqual(meetScheduleId, startDate,
-                        endDate);
+                .findAllByMeetScheduleIdAndStartDateGreaterThanEqualAndEndDateLessThanEqual(meetScheduleId, start, end);
         return scheduleEvents.stream().map(ScheduleEventDto::from).collect(Collectors.toList());
     }
 
@@ -105,6 +112,11 @@ public class ScheduleService {
             throw new IllegalArgumentException(
                     "It is illegal to start an already started meet schedule: ID = " + meetScheduleId);
         }
+        long durationMinutes = meetScheduleSaveDto.getDurationMinutes();
+        if (durationMinutes % 30 != 0) {
+            throw new IllegalArgumentException("Invalid duration value for a meet schedule: ID = " + meetScheduleId
+                    + " duration = " + durationMinutes);
+        }
 
         problemEventRepository.save(ProblemEvent.builder()
                 .message(
@@ -112,9 +124,9 @@ public class ScheduleService {
                                 + "را برای برگزاری جلسه‌ی دفاع مشخص نمایند.")
                 .problem(scheduleProblem).build());
 
-        meetSchedule.setDurationMinutes(meetScheduleSaveDto.getDurationMinutes());
-        meetSchedule.setMinimumDate(meetScheduleSaveDto.getMinimumDate());
-        meetSchedule.setMaximumDate(meetScheduleSaveDto.getMaximumDate());
+        meetSchedule.setDurationMinutes(durationMinutes);
+        meetSchedule.setMinimumDate(DateUtility.getStartOfDay(meetScheduleSaveDto.getMinimumDate()));
+        meetSchedule.setMaximumDate(DateUtility.getEndOfDay(meetScheduleSaveDto.getMaximumDate()));
         meetSchedule.setScheduleState(ScheduleState.STARTED);
         return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
     }

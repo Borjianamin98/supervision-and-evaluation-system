@@ -3,6 +3,8 @@ package ir.ac.sbu.evaluation.dto.schedule;
 import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
 import java.time.Instant;
 import java.util.Objects;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,6 +14,8 @@ import lombok.Setter;
 @Setter
 public class MeetScheduleSaveDto {
 
+    @Min(value = 0)
+    @Max(value = 120)
     private long durationMinutes;
 
     @NotNull

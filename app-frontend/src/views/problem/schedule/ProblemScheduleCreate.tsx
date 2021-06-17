@@ -2,11 +2,11 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
+import {ThemeProvider} from "@material-ui/core/styles";
+import {ClassNameMap} from '@material-ui/core/styles/withStyles';
 import Typography from '@material-ui/core/Typography';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import {AxiosError} from 'axios';
-import moment from 'moment';
 import {useSnackbar} from 'notistack';
 import React from 'react';
 import {useMutation, useQueryClient} from 'react-query';
@@ -28,28 +28,18 @@ import ScheduleService from "../../../services/api/schedule/ScheduleService";
 import DateUtils from "../../../utility/DateUtils";
 import {SaveMeetScheduleMutation} from "./ProblemScheduleView";
 
-const useStyles = makeStyles((theme) => ({
-    topGrid: {
-        margin: theme.spacing(1, 0),
-        padding: theme.spacing(2),
-    },
-    gridItem: {
-        padding: theme.spacing(0, 1),
-    },
-}));
-
 interface ProblemScheduleCreateProps {
+    commonClasses: ClassNameMap,
     problem: Problem,
 }
 
 const ProblemScheduleCreate: React.FunctionComponent<ProblemScheduleCreateProps> = (props) => {
-    const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar();
-    const {problem} = props;
+    const {problem, commonClasses} = props;
 
     const [initialScheduleDuration, setInitialScheduleDuration] = React.useState(ScheduleDuration.THIRTY_MINUTES);
-    const [scheduleMinDate, setScheduleMinDate] = React.useState(moment(DateUtils.getCurrentDate()));
-    const [scheduleMaxDate, setScheduleMaxDate] = React.useState(moment(DateUtils.getCurrentDate()));
+    const [scheduleMinDate, setScheduleMinDate] = React.useState(DateUtils.firstOfDay(DateUtils.getCurrentDate()));
+    const [scheduleMaxDate, setScheduleMaxDate] = React.useState(DateUtils.endOfDay(DateUtils.getCurrentDate()));
 
     const queryClient = useQueryClient();
     const startMeetSchedule: SaveMeetScheduleMutation = useMutation(
@@ -70,9 +60,9 @@ const ProblemScheduleCreate: React.FunctionComponent<ProblemScheduleCreateProps>
                     container dir="rtl"
                     component={Paper}
                     elevation={4}
-                    className={classes.topGrid}
+                    className={commonClasses.topGrid}
                 >
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.gridItem}>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={commonClasses.gridItem}>
                         <Typography variant="h6" gutterBottom>
                             اطلاعات زمان‌بندی
                         </Typography>
@@ -91,7 +81,7 @@ const ProblemScheduleCreate: React.FunctionComponent<ProblemScheduleCreateProps>
                             به شروع فرآیند زمان‌بندی مطلع شوند.
                         </CustomTypography>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={6} lg={4} xl={4} className={classes.gridItem}>
+                    <Grid item xs={12} sm={12} md={6} lg={4} xl={4} className={commonClasses.gridItem}>
                         <ComboBox
                             options={PERSIAN_SCHEDULE_DURATIONS}
                             filterOptions={(options) => options} // do not filter values
@@ -102,29 +92,27 @@ const ProblemScheduleCreate: React.FunctionComponent<ProblemScheduleCreateProps>
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} sm={12} md={6} lg={4} xl={4} className={classes.gridItem}>
+                    <Grid item xs={12} sm={12} md={6} lg={4} xl={4} className={commonClasses.gridItem}>
                         <CustomDatePicker
                             label={"زمان شروع"}
                             selectedDate={scheduleMinDate}
-                            onDateChange={newValue =>
-                                setScheduleMinDate(newValue.set({hour: 0, minute: 0, second: 0, millisecond: 0}))}
+                            onDateChange={newValue => setScheduleMinDate(DateUtils.firstOfDay(newValue))}
                             autoSelect={true}
                             minDate={DateUtils.getCurrentDate()}
                             maxDate={scheduleMaxDate}
                         />
                     </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={4} xl={4} className={classes.gridItem}>
+                    <Grid item xs={12} sm={12} md={12} lg={4} xl={4} className={commonClasses.gridItem}>
                         <CustomDatePicker
                             label={"زمان پایان"}
                             selectedDate={scheduleMaxDate}
-                            onDateChange={newValue =>
-                                setScheduleMaxDate(newValue.set({hour: 23, minute: 59, second: 59, millisecond: 999}))}
+                            onDateChange={newValue => setScheduleMaxDate(DateUtils.endOfDay(newValue))}
                             autoSelect={true}
                             minDate={scheduleMinDate}
                             maxDate={DateUtils.getCurrentDate(+30)}
                         />
                     </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.gridItem}>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={commonClasses.gridItem}>
                         <CustomAlert
                             icon={<InfoOutlinedIcon/>}
                             severity="info"
@@ -136,7 +124,7 @@ const ProblemScheduleCreate: React.FunctionComponent<ProblemScheduleCreateProps>
                             </CustomTypography>
                         </CustomAlert>
                     </Grid>
-                    <Grid container item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.gridItem}
+                    <Grid container item xs={12} sm={12} md={12} lg={12} xl={12} className={commonClasses.gridItem}
                           justify={"center"}>
                         <Box marginTop={1}>
                             <Button
