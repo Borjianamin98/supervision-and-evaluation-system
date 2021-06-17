@@ -18,6 +18,13 @@ class ScheduleService {
             .then(response => response.data)
     }
 
+    static updateMeetScheduleDate(meetScheduleId: number, dateRange: DateRange) {
+        return apiAxios
+            .post<MeetSchedule>(`${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/updateDate`,
+                dateRange)
+            .then(response => response.data)
+    }
+
     static retrieveMeetScheduleEvents(meetScheduleId: number, startDate: Date, endDate: Date) {
         return apiAxios
             .get<ScheduleEvent[]>(`${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/events`,

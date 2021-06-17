@@ -26,7 +26,6 @@ import {
 } from "../../../model/schedule/ScheduleDuration";
 import ScheduleService from "../../../services/api/schedule/ScheduleService";
 import DateUtils from "../../../utility/DateUtils";
-import {SaveMeetScheduleMutation} from "./ProblemScheduleView";
 
 interface ProblemScheduleCreateProps {
     commonClasses: ClassNameMap,
@@ -42,7 +41,7 @@ const ProblemScheduleCreate: React.FunctionComponent<ProblemScheduleCreateProps>
     const [scheduleMaxDate, setScheduleMaxDate] = React.useState(DateUtils.endOfDay(DateUtils.getCurrentDate()));
 
     const queryClient = useQueryClient();
-    const startMeetSchedule: SaveMeetScheduleMutation = useMutation(
+    const startMeetSchedule = useMutation(
         (data: { meetScheduleId: number, meetScheduleSave: MeetScheduleSave }) =>
             ScheduleService.startMeetSchedule(data.meetScheduleId, data.meetScheduleSave),
         {
@@ -81,7 +80,7 @@ const ProblemScheduleCreate: React.FunctionComponent<ProblemScheduleCreateProps>
                             به شروع فرآیند زمان‌بندی مطلع شوند.
                         </CustomTypography>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={6} lg={4} xl={4} className={commonClasses.gridItem}>
+                    <Grid item xs={12} sm={12} md={12} lg={4} xl={4} className={commonClasses.gridItem}>
                         <ComboBox
                             options={PERSIAN_SCHEDULE_DURATIONS}
                             filterOptions={(options) => options} // do not filter values
@@ -102,7 +101,7 @@ const ProblemScheduleCreate: React.FunctionComponent<ProblemScheduleCreateProps>
                             maxDate={scheduleMaxDate}
                         />
                     </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={4} xl={4} className={commonClasses.gridItem}>
+                    <Grid item xs={12} sm={12} md={6} lg={4} xl={4} className={commonClasses.gridItem}>
                         <CustomDatePicker
                             label={"زمان پایان"}
                             selectedDate={scheduleMaxDate}

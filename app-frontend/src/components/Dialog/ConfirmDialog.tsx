@@ -29,7 +29,7 @@ const ConfirmDialog: React.FunctionComponent<ConfirmDialogProps> = (props) => {
         <Dialog
             dir={theme.direction}
             open={open}
-            onClose={event => onDialogOpenClose(false)}
+            onClose={() => onDialogOpenClose(false)}
             {...rest}
         >
             <DialogTitle id="dialog-title">{title}</DialogTitle>
@@ -37,12 +37,13 @@ const ConfirmDialog: React.FunctionComponent<ConfirmDialogProps> = (props) => {
                 <DialogContentText id="dialog-description" className={classes.justifyAlign}>
                     {description}
                 </DialogContentText>
+                {props.children}
             </DialogContent>
             <DialogActions>
-                <Button onClick={event => onDialogOpenClose(false)} color="primary">
+                <Button onClick={() => onDialogOpenClose(false)} color="primary">
                     انصراف
                 </Button>
-                <Button onClick={event => onDialogOpenClose(true)} color="primary" autoFocus>
+                <Button onClick={() => onDialogOpenClose(true)} color="primary" autoFocus>
                     تایید
                 </Button>
             </DialogActions>

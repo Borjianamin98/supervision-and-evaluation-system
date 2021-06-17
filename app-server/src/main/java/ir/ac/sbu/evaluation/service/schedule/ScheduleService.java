@@ -131,6 +131,28 @@ public class ScheduleService {
         return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
     }
 
+    public MeetScheduleDto updateMeetScheduleDate(long userId, long meetScheduleId, DateRangeDto dateRangeDto) {
+        MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
+
+        Problem scheduleProblem = meetSchedule.getProblem();
+        checkUserIsSupervisor(userId, scheduleProblem);
+        if (meetSchedule.getScheduleState() != ScheduleState.STARTED) {
+            throw new IllegalArgumentException(
+                    "Illegal to change date of meet schedule which is not in started state: ID = " + meetScheduleId);
+        }
+
+        problemEventRepository.save(ProblemEvent.builder()
+                .message(
+                        "زمان‌بندی دفاع پایان‌نامه (پروژه) به درخواست استاد راهنما تغییر یافته است. خواهشا تمامی "
+                                + "اعضای مربوطه زمان‌های حضور خود را برای برگزاری جلسه‌ی دفاع در زمان‌بندی جدید مشخص "
+                                + "نمایند.")
+                .problem(scheduleProblem).build());
+
+        meetSchedule.setMinimumDate(DateUtility.getStartOfDay(dateRangeDto.getStartDate()));
+        meetSchedule.setMaximumDate(DateUtility.getEndOfDay(dateRangeDto.getEndDate()));
+        return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
+    }
+
     private void checkUserAccessModifyOrDeleteEvent(long userId, ScheduleEvent scheduleEvent) {
         if (scheduleEvent.getOwner().getId() != userId) {
             throw new IllegalResourceAccessException(

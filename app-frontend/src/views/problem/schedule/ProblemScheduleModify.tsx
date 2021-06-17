@@ -1,4 +1,3 @@
-import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import blue from '@material-ui/core/colors/blue';
 import brown from '@material-ui/core/colors/brown';
@@ -12,16 +11,12 @@ import {Theme, ThemeProvider} from "@material-ui/core/styles";
 import {ClassNameMap} from '@material-ui/core/styles/withStyles';
 import Typography from '@material-ui/core/Typography';
 import useMediaQuery from "@material-ui/core/useMediaQuery/useMediaQuery";
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import {ScheduleComponent} from '@syncfusion/ej2-react-schedule'
 import {AxiosError} from "axios";
-import moment from 'moment';
 import {useSnackbar} from "notistack";
 import React from 'react';
 import {useQuery} from "react-query";
 import {rtlTheme} from '../../../App';
-import CustomAlert from "../../../components/Alert/CustomAlert";
-import CustomDatePicker from "../../../components/DatePicker/CustomDatePicker";
 import CustomScheduler from "../../../components/Scheduler/CustomScheduler";
 import CustomTypography from "../../../components/Typography/CustomTypography";
 import {generalErrorHandler} from "../../../config/axios-config";
@@ -31,7 +26,7 @@ import {ScheduleEvent, SyncfusionSchedulerEvent} from "../../../model/schedule/e
 import AuthenticationService from "../../../services/api/AuthenticationService";
 import ScheduleService from "../../../services/api/schedule/ScheduleService";
 import DateUtils from "../../../utility/DateUtils";
-import {SaveMeetScheduleMutation} from "./ProblemScheduleView";
+import ScheduleDateDialog from "./ScheduleDateDialog";
 
 function scheduleEventToSyncfusionSchedulerEvent(event: ScheduleEvent, userId: number): SyncfusionSchedulerEvent {
     return {
@@ -48,19 +43,15 @@ function scheduleEventToSyncfusionSchedulerEvent(event: ScheduleEvent, userId: n
 interface ProblemScheduleViewProps {
     commonClasses: ClassNameMap,
     problem: Problem,
-    saveMeetScheduleMutation: SaveMeetScheduleMutation,
 }
 
 const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (props) => {
     const {enqueueSnackbar} = useSnackbar();
-    const {problem, commonClasses, saveMeetScheduleMutation} = props;
+    const {problem, commonClasses} = props;
 
     const mobileMatches = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
     const smallScreenMatches = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
     const totalDaysInView = mobileMatches ? 3 : (smallScreenMatches ? 5 : 7);
-
-    const [scheduleMinDate, setScheduleMinDate] = React.useState(moment(problem.meetSchedule.minimumDate));
-    const [scheduleMaxDate, setScheduleMaxDate] = React.useState(moment(problem.meetSchedule.maximumDate));
 
     const [startDate, setStartDate] = React.useState(DateUtils.getCurrentDate());
     const {data: problemScheduleEvents} = useQuery(
@@ -72,6 +63,8 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                 .then(events => events.map(event => scheduleEventToSyncfusionSchedulerEvent(event, jwtPayloadUserId)))
         }
     );
+
+    const [scheduleDateDialogOpen, setScheduleDateDialogOpen] = React.useState(false);
 
     const onCellClick = (scheduler: ScheduleComponent, scheduleEventDate: DateRange) => {
         const jwtPayloadUserId = AuthenticationService.getJwtPayloadUserId()!;
@@ -137,74 +130,34 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                             ارائه‌ی دانشجو می‌باشد.
                             به این منظور لازم است که جلسه‌ای برای دفاع دانشجو از پایان‌نامه (پروژه) مشخص شود که در
                             آن تمامی اساتید داور، راهنما و دانشجو حضور داشته باشند.
-                            پیدا کردن زمانی مشترک که همه‌ی افراد در آن حضور داشته باشند لازمه‌ی اصلی تشکیل جلسه
-                            می‌باشد.
-                            در این قسمت شما پس از مشخص‌کردن مواردی از جمله مدت زمان جلسه و محدوده‌ی زمانی مجاز
-                            برای برگزاری آن، زمان‌های حضور خود را وارد می‌نمایید.
-                            در ادامه شما و دیگر اساتید و دانشجو باید بر اساس موارد مشخص‌کرده، زمان‌های حضور خود را
-                            اعلام نمایید.
-                            با شروع زمان‌بندی اطلاعیه‌ای برای تمامی افراد ذینفع در فرایند زمان‌بندی ارسال می‌شود تا نسبت
-                            به شروع فرآیند زمان‌بندی مطلع شوند.
+                            پیدا کردن زمانی مشترک که همه‌ی افراد در آن حضور داشته باشند لازمه‌ی اصلی تشکیل جلسه می‌باشد.
+                            در این قسمت شما در کنار دیگران، زمان‌های حضور خود را وارد می‌نمایید.
+                            بهتر است پس از آن که زمان‌بندی خود را به صورت کامل مشخص نمودید، نهایی‌شدن آن را اعلام نمایید
+                            تا تمامی افراد ذینفع در فرایند زمان‌بندی نسبت به آن مطلع شوند.
                         </CustomTypography>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={6} lg={4} xl={4} className={commonClasses.gridItem}>
-                        <CustomDatePicker
-                            label={"زمان شروع"}
-                            selectedDate={scheduleMinDate}
-                            onDateChange={newValue => setScheduleMinDate(DateUtils.firstOfDay(newValue))}
-                            autoSelect={true}
-                            minDate={DateUtils.getCurrentDate(+2)}
-                            maxDate={scheduleMaxDate}
-                            onError={(reason, value) => {
-                                console.log(`${reason ? reason : "2"} ${value}`)
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={4} xl={4} className={commonClasses.gridItem}>
-                        <CustomDatePicker
-                            label={"زمان پایان"}
-                            selectedDate={scheduleMaxDate}
-                            onDateChange={newValue => setScheduleMaxDate(DateUtils.endOfDay(newValue))}
-                            autoSelect={true}
-                            minDate={scheduleMinDate}
-                            maxDate={DateUtils.getCurrentDate(+30)}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={commonClasses.gridItem}>
-                        <CustomAlert
-                            icon={<InfoOutlinedIcon/>}
-                            severity="info"
-                            variant="outlined"
-                        >
-                            <CustomTypography lineHeight={2}>
-                                دقت شود که با شروع زمان‌بندی دفاع، امکان تغییر تنها زمان شروع و پایان دفاع امکان‌پذیر
-                                می‌باشد.
-                            </CustomTypography>
-                        </CustomAlert>
-                    </Grid>
                     <Grid container item xs={12} sm={12} md={12} lg={12} xl={12} className={commonClasses.gridItem}
-                          justify={"center"}>
-                        <Box marginTop={1}>
+                          justify={"center"} spacing={1} style={{marginTop: 8}}>
+                        <Grid item className={commonClasses.gridItem}>
                             <Button
-                                onClick={() => {
-                                    saveMeetScheduleMutation.mutate({
-                                        meetScheduleId: problem.meetSchedule.id,
-                                        meetScheduleSave: {
-                                            ...problem.meetSchedule,
-                                            minimumDate: scheduleMinDate.toDate(),
-                                            maximumDate: scheduleMaxDate.toDate(),
-                                        }
-                                    })
-                                }}
+                                onClick={() => setScheduleDateDialogOpen(true)}
                                 variant="contained"
                                 color="primary"
                             >
-                                شروع زمان‌بندی
+                                ویرایش بازه زمان‌بندی
                             </Button>
-                        </Box>
+                        </Grid>
+                        <Grid item className={commonClasses.gridItem}>
+                            <Button
+                                onClick={() => setScheduleDateDialogOpen(true)}
+                                variant="contained"
+                                color="primary"
+                            >
+                                اعلام زمان‌بندی
+                            </Button>
+                        </Grid>
                     </Grid>
                 </Grid>
-
                 <CustomScheduler
                     height="550px"
                     minimumDate={problem.meetSchedule.minimumDate}
@@ -219,6 +172,13 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                     onEventDelete={onEventDelete}
                     onEventChange={onEventChange}
                 />
+                <div aria-label={"dialogs"}>
+                    <ScheduleDateDialog
+                        problem={problem}
+                        open={scheduleDateDialogOpen}
+                        onDialogClose={() => setScheduleDateDialogOpen(false)}
+                    />
+                </div>
             </Grid>
         </ThemeProvider>
     )
