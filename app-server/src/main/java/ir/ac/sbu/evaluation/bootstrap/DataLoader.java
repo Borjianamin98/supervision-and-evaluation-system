@@ -9,6 +9,8 @@ import ir.ac.sbu.evaluation.dto.university.faculty.FacultyDto;
 import ir.ac.sbu.evaluation.dto.university.faculty.FacultySaveDto;
 import ir.ac.sbu.evaluation.dto.user.PersonalInfoSaveDto;
 import ir.ac.sbu.evaluation.dto.user.UserDto;
+import ir.ac.sbu.evaluation.dto.user.admin.AdminDto;
+import ir.ac.sbu.evaluation.dto.user.admin.AdminSaveDto;
 import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
 import ir.ac.sbu.evaluation.dto.user.master.MasterSaveDto;
 import ir.ac.sbu.evaluation.dto.user.student.StudentDto;
@@ -19,22 +21,18 @@ import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.problem.ProblemState;
 import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
 import ir.ac.sbu.evaluation.model.schedule.ScheduleState;
-import ir.ac.sbu.evaluation.model.user.Admin;
 import ir.ac.sbu.evaluation.model.user.Master;
-import ir.ac.sbu.evaluation.model.user.PersonalInfo;
 import ir.ac.sbu.evaluation.model.user.Student;
 import ir.ac.sbu.evaluation.repository.problem.ProblemRepository;
 import ir.ac.sbu.evaluation.repository.schedule.MeetScheduleRepository;
-import ir.ac.sbu.evaluation.repository.schedule.ScheduleEventRepository;
-import ir.ac.sbu.evaluation.repository.user.AdminRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
-import ir.ac.sbu.evaluation.repository.user.PersonalInfoRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.service.problem.ProblemService;
 import ir.ac.sbu.evaluation.service.schedule.ScheduleService;
 import ir.ac.sbu.evaluation.service.university.FacultyService;
 import ir.ac.sbu.evaluation.service.university.UniversityService;
+import ir.ac.sbu.evaluation.service.user.AdminService;
 import ir.ac.sbu.evaluation.service.user.MasterService;
 import ir.ac.sbu.evaluation.service.user.StudentService;
 import ir.ac.sbu.evaluation.utility.DateUtility;
@@ -53,7 +51,6 @@ import java.util.Map;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -67,22 +64,19 @@ public class DataLoader implements CommandLineRunner {
     private final UniversityService universityService;
     private final FacultyService facultyService;
 
+    private final AdminService adminService;
     private final MasterService masterService;
     private final StudentService studentService;
 
-    private final PersonalInfoRepository personalInfoRepository;
     private final MasterRepository masterRepository;
-    private final AdminRepository adminRepository;
     private final StudentRepository studentRepository;
 
     private final MeetScheduleRepository meetScheduleRepository;
-    private final ScheduleEventRepository scheduleEventRepository;
     private final ScheduleService scheduleService;
 
     private final ProblemService problemService;
     private final ProblemRepository problemRepository;
 
-    private final PasswordEncoder passwordEncoder;
     private MasterDto sadeghMaster;
     private MasterDto mojtabaMaster;
     private MasterDto mahmoudMaster;
@@ -91,30 +85,25 @@ public class DataLoader implements CommandLineRunner {
 
     public DataLoader(UniversityService universityService,
             FacultyService facultyService,
-            MasterService masterService,
+            AdminService adminService, MasterService masterService,
             StudentService studentService,
             ProblemService problemService,
-            PersonalInfoRepository personalInfoRepository,
-            AdminRepository adminRepository, StudentRepository studentRepository,
+            StudentRepository studentRepository,
             MasterRepository masterRepository,
             MeetScheduleRepository meetScheduleRepository,
-            ScheduleEventRepository scheduleEventRepository,
-            ScheduleService scheduleService, ProblemRepository problemRepository,
-            PasswordEncoder passwordEncoder) {
+            ScheduleService scheduleService,
+            ProblemRepository problemRepository) {
         this.universityService = universityService;
         this.facultyService = facultyService;
+        this.adminService = adminService;
         this.masterService = masterService;
         this.studentService = studentService;
         this.problemService = problemService;
-        this.personalInfoRepository = personalInfoRepository;
-        this.adminRepository = adminRepository;
         this.studentRepository = studentRepository;
         this.masterRepository = masterRepository;
         this.meetScheduleRepository = meetScheduleRepository;
-        this.scheduleEventRepository = scheduleEventRepository;
         this.scheduleService = scheduleService;
         this.problemRepository = problemRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -273,7 +262,7 @@ public class DataLoader implements CommandLineRunner {
                 .lastName("علی اکبری")
                 .degree("استاد")
                 .username("master")
-                .password(passwordEncoder.encode("pass"))
+                .password("pass")
                 .personalInfo(PersonalInfoSaveDto.builder()
                         .gender(Gender.MALE)
                         .telephoneNumber("9131234567")
@@ -287,7 +276,7 @@ public class DataLoader implements CommandLineRunner {
                 .lastName("وحیدی")
                 .degree("استاد")
                 .username("mojtaba")
-                .password(passwordEncoder.encode("pass"))
+                .password("pass")
                 .personalInfo(PersonalInfoSaveDto.builder()
                         .gender(Gender.MALE)
                         .telephoneNumber("9137654321")
@@ -301,7 +290,7 @@ public class DataLoader implements CommandLineRunner {
                 .lastName("نشاطی")
                 .degree("استاد")
                 .username("master3")
-                .password(passwordEncoder.encode("pass"))
+                .password("pass")
                 .personalInfo(PersonalInfoSaveDto.builder()
                         .gender(Gender.MALE)
                         .telephoneNumber("9137654123")
@@ -315,7 +304,7 @@ public class DataLoader implements CommandLineRunner {
                 .lastName("حقیقی")
                 .degree("استاد")
                 .username("master4")
-                .password(passwordEncoder.encode("pass"))
+                .password("pass")
                 .personalInfo(PersonalInfoSaveDto.builder()
                         .gender(Gender.MALE)
                         .telephoneNumber("9137651234")
@@ -329,7 +318,7 @@ public class DataLoader implements CommandLineRunner {
                 .lastName("برجیان")
                 .studentNumber("96243012")
                 .username("student")
-                .password(passwordEncoder.encode("pass"))
+                .password("pass")
                 .personalInfo(PersonalInfoSaveDto.builder()
                         .gender(Gender.MALE)
                         .telephoneNumber("9137654321")
@@ -338,16 +327,16 @@ public class DataLoader implements CommandLineRunner {
                 .facultyId(computerEngineeringFaculty.getId())
                 .build());
 
-        Admin admin1 = adminRepository.save(Admin.builder()
+        AdminDto admin = adminService.save(AdminSaveDto.builder()
                 .firstName("مدیر")
                 .lastName("سامانه")
                 .username("admin")
-                .password(passwordEncoder.encode("pass"))
-                .personalInfo(personalInfoRepository.save(PersonalInfo.builder()
+                .password("pass")
+                .personalInfo(PersonalInfoSaveDto.builder()
                         .gender(Gender.MALE)
                         .telephoneNumber("9137654321")
                         .email("admin@gmail.com")
-                        .build()))
+                        .build())
                 .build());
     }
 
