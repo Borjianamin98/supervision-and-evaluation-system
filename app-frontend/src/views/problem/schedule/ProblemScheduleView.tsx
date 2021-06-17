@@ -9,7 +9,9 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import {makeStyles, Theme, ThemeProvider} from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 import useMediaQuery from "@material-ui/core/useMediaQuery/useMediaQuery";
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import {ScheduleComponent} from '@syncfusion/ej2-react-schedule'
 import {AxiosError} from "axios";
 import moment from 'moment';
@@ -17,9 +19,11 @@ import {useSnackbar} from "notistack";
 import React from 'react';
 import {useMutation, useQuery, useQueryClient} from "react-query";
 import {rtlTheme} from '../../../App';
+import CustomAlert from "../../../components/Alert/CustomAlert";
 import ComboBox from "../../../components/ComboBox/ComboBox";
 import CustomDatePicker from "../../../components/DatePicker/CustomDatePicker";
 import CustomScheduler from "../../../components/Scheduler/CustomScheduler";
+import CustomTypography from "../../../components/Typography/CustomTypography";
 import {generalErrorHandler} from "../../../config/axios-config";
 import {Problem} from "../../../model/problem/problem";
 import {DateRange} from "../../../model/schedule/event/DateRange";
@@ -144,10 +148,24 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                       elevation={4}
                       className={classes.topGrid}
                 >
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.gridItem}>
                         <Typography variant="h6" gutterBottom>
                             اطلاعات زمان‌بندی
                         </Typography>
+                        <CustomTypography lineHeight={2}>
+                            برای جمع‌بندی و تحویل‌گرفتن نهایی پایان‌نامه (پروژه) دانشجو، نیاز به تشکیل جلسه‌ی دفاع و
+                            ارائه‌ی دانشجو می‌باشد.
+                            به این منظور لازم است که جلسه‌ای برای دفاع دانشجو از پایان‌نامه (پروژه) مشخص شود که در
+                            آن تمامی اساتید داور، راهنما و دانشجو حضور داشته باشند.
+                            پیدا کردن زمانی مشترک که همه‌ی افراد در آن حضور داشته باشند لازمه‌ی اصلی تشکیل جلسه
+                            می‌باشد.
+                            در این قسمت شما پس از مشخص‌کردن مواردی از جمله مدت زمان جلسه و محدوده‌ی زمانی مجاز
+                            برای برگزاری آن، زمان‌های حضور خود را وارد می‌نمایید.
+                            در ادامه شما و دیگر اساتید و دانشجو باید بر اساس موارد مشخص‌کرده، زمان‌های حضور خود را
+                            اعلام نمایید.
+                            با شروع زمان‌بندی اطلاعیه‌ای برای تمامی افراد ذینفع در فرایند زمان‌بندی ارسال می‌شود تا نسبت
+                            به شروع فرآیند زمان‌بندی مطلع شوند.
+                        </CustomTypography>
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={4} xl={4} className={classes.gridItem}>
                         <ComboBox
@@ -162,7 +180,7 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                                 }
                             })}
                             textFieldInputProps={{
-                                label: "مدت‌زمان",
+                                label: "مدت زمان",
                             }}
                         />
                     </Grid>
@@ -199,16 +217,28 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                             maxDate={DateUtils.getCurrentDate(+30)}
                         />
                     </Grid>
-                    <Grid container justify={"center"}>
-                        <Grid item>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.gridItem}>
+                        <CustomAlert
+                            icon={<InfoOutlinedIcon/>}
+                            severity="info"
+                            variant="outlined"
+                        >
+                            <CustomTypography lineHeight={2}>
+                                دقت شود که با شروع زمان‌بندی دفاع، امکان تغییر تنها زمان شروع و پایان دفاع امکان‌پذیر می‌شود.
+                            </CustomTypography>
+                        </CustomAlert>
+                    </Grid>
+                    <Grid container item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.gridItem}
+                          justify={"center"}>
+                        <Box marginTop={1}>
                             <Button
                                 // onClick={registerHandler}
                                 variant="contained"
                                 color="primary"
                             >
-                                افزودن دانشگاه
+                                شروع زمان‌بندی
                             </Button>
-                        </Grid>
+                        </Box>
                     </Grid>
                 </Grid>
                 <CustomScheduler

@@ -13,6 +13,7 @@ import {rtlTheme} from "../../../App";
 import KeywordsList from "../../../components/Chip/KeywordsList";
 import ConfirmDialog from "../../../components/Dialog/ConfirmDialog";
 import SearchableListDialog from "../../../components/Dialog/SearchableListDialog";
+import CustomTypography from "../../../components/Typography/CustomTypography";
 import {generalErrorHandler} from "../../../config/axios-config";
 import browserHistory from "../../../config/browserHistory";
 import {educationMapToPersian} from "../../../model/enum/education";
@@ -34,9 +35,6 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         column: {
             padding: theme.spacing(1),
-        },
-        justifyAlign: {
-            textAlign: "justify"
         },
         centerAlign: {
             textAlign: "center"
@@ -141,21 +139,17 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                             <Typography paragraph>
                                 {`دوره تحصیلی: ${problem ? educationMapToPersian(problem.education) : ""}`}
                             </Typography>
-                            <Typography paragraph
-                                        className={classes.justifyAlign}>{`عنوان: ${problem?.title}`}</Typography>
-                            <Typography paragraph className={classes.justifyAlign}>
+                            <CustomTypography paragraph>{`عنوان: ${problem?.title}`}</CustomTypography>
+                            <CustomTypography paragraph>
                                 {`عنوان انگلیسی: ${problem?.englishTitle}`}
-                            </Typography>
+                            </CustomTypography>
                             <Typography paragraph>کلیدواژه‌ها: </Typography>
                             <Box marginBottom={2}>
                                 <KeywordsList keywords={problem ? problem.keywords : []} marginDir="left"/>
                             </Box>
-                            <Typography paragraph
-                                        className={classes.justifyAlign}>{`تعریف: ${problem?.definition}`}</Typography>
-                            <Typography paragraph
-                                        className={classes.justifyAlign}>{`بیشینه: ${problem?.history}`}</Typography>
-                            <Typography paragraph
-                                        className={classes.justifyAlign}>{`ملاحظات: ${problem?.considerations}`}</Typography>
+                            <CustomTypography paragraph>{`تعریف: ${problem?.definition}`}</CustomTypography>
+                            <CustomTypography paragraph>{`بیشینه: ${problem?.history}`}</CustomTypography>
+                            <CustomTypography paragraph>{`ملاحظات: ${problem?.considerations}`}</CustomTypography>
                         </Paper>
                     </Grid>
                 </Grid>
