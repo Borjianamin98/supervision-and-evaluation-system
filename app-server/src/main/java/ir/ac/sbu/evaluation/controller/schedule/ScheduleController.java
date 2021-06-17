@@ -33,12 +33,12 @@ public class ScheduleController {
     }
 
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.MASTER_ROLE_NAME)")
-    @PostMapping(path = "/{meetScheduleId}")
+    @PostMapping(path = "/{meetScheduleId}/start")
     public MeetScheduleDto updateMeetSchedule(
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long meetScheduleId,
             @Valid @RequestBody MeetScheduleSaveDto meetScheduleSaveDto) {
-        return scheduleService.saveMeetSchedule(authUserDetail.getUserId(), meetScheduleId, meetScheduleSaveDto);
+        return scheduleService.startMeetSchedule(authUserDetail.getUserId(), meetScheduleId, meetScheduleSaveDto);
     }
 
     @GetMapping(path = "/{meetScheduleId}/events")

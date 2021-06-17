@@ -8,6 +8,7 @@ import {Problem} from "../../../model/problem/problem";
 import {MeetSchedule} from "../../../model/schedule/MeetSchedule";
 import {MeetScheduleSave} from '../../../model/schedule/MeetScheduleSave';
 import {ScheduleState} from '../../../model/schedule/ScheduleState';
+import AuthenticationService from "../../../services/api/AuthenticationService";
 import ScheduleService from "../../../services/api/schedule/ScheduleService";
 import ProblemScheduleCreate from "./ProblemScheduleCreate";
 import ProblemScheduleModify from "./ProblemScheduleModify";
@@ -26,7 +27,7 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
     const queryClient = useQueryClient();
     const saveMeetScheduleMutation: SaveMeetScheduleMutation = useMutation(
         (data: { meetScheduleId: number, meetScheduleSave: MeetScheduleSave }) =>
-            ScheduleService.saveMeetSchedule(data.meetScheduleId, data.meetScheduleSave),
+            ScheduleService.startMeetSchedule(data.meetScheduleId, data.meetScheduleSave),
         {
             onSuccess: async (data) => {
                 queryClient.setQueryData<Problem>(["problem", problem.id], {...problem, meetSchedule: data});
@@ -34,12 +35,13 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
             onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
 
+    const jwtPayload = AuthenticationService.getJwtPayload()!;
+    const currentUserIsSupervisor = problem.supervisor.id === jwtPayload.userId;
+
     switch (problem.meetSchedule.scheduleState) {
         case ScheduleState.CREATED:
-            return <ProblemScheduleCreate
-                problem={problem}
-                saveMeetScheduleMutation={saveMeetScheduleMutation}
-            />
+            return currentUserIsSupervisor ? <ProblemScheduleCreate problem={problem}/> :
+                <HomeRedirect message={"دسترسی به صفحه‌ی مربوطه با توجه به سطح دسترسی شما امکان‌پذیر نمی‌باشد."}/>
         case ScheduleState.STARTED:
             return <ProblemScheduleModify
                 problem={problem}

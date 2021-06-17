@@ -7,9 +7,12 @@ import ir.ac.sbu.evaluation.dto.schedule.event.ScheduleEventDto;
 import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
 import ir.ac.sbu.evaluation.model.problem.Problem;
+import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
 import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
 import ir.ac.sbu.evaluation.model.schedule.ScheduleEvent;
+import ir.ac.sbu.evaluation.model.schedule.ScheduleState;
 import ir.ac.sbu.evaluation.model.user.User;
+import ir.ac.sbu.evaluation.repository.problem.ProblemEventRepository;
 import ir.ac.sbu.evaluation.repository.schedule.MeetScheduleRepository;
 import ir.ac.sbu.evaluation.repository.schedule.ScheduleEventRepository;
 import ir.ac.sbu.evaluation.repository.user.UserRepository;
@@ -24,19 +27,23 @@ public class ScheduleService {
 
     private final UserRepository userRepository;
 
+    private final ProblemEventRepository problemEventRepository;
+
     private final MeetScheduleRepository meetScheduleRepository;
     private final ScheduleEventRepository scheduleEventRepository;
 
     public ScheduleService(UserRepository userRepository,
+            ProblemEventRepository problemEventRepository,
             MeetScheduleRepository meetScheduleRepository,
             ScheduleEventRepository scheduleEventRepository) {
         this.userRepository = userRepository;
+        this.problemEventRepository = problemEventRepository;
         this.meetScheduleRepository = meetScheduleRepository;
         this.scheduleEventRepository = scheduleEventRepository;
     }
 
-    public List<ScheduleEventDto> retrieveScheduleEvents(long userId, long meetScheduleId,
-            Instant startDate, Instant endDate) {
+    public List<ScheduleEventDto> retrieveScheduleEvents(long userId, long meetScheduleId, Instant startDate,
+            Instant endDate) {
         MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
         checkUserAccessMeetSchedule(userId, meetSchedule);
         List<ScheduleEvent> scheduleEvents = scheduleEventRepository
@@ -46,19 +53,15 @@ public class ScheduleService {
     }
 
     @Transactional
-    public ScheduleEventDto addScheduleEvent(long userId, long meetScheduleId,
-            DateRangeDto dateRangeDto) {
+    public ScheduleEventDto addScheduleEvent(long userId, long meetScheduleId, DateRangeDto dateRangeDto) {
         MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: ID = " + userId));
         checkUserAccessMeetSchedule(userId, meetSchedule);
 
-        ScheduleEvent newScheduleEvent = scheduleEventRepository.save(ScheduleEvent.builder()
-                .startDate(dateRangeDto.getStartDate())
-                .endDate(dateRangeDto.getEndDate())
-                .meetSchedule(meetSchedule)
-                .owner(user)
-                .build());
+        ScheduleEvent newScheduleEvent = scheduleEventRepository
+                .save(ScheduleEvent.builder().startDate(dateRangeDto.getStartDate()).endDate(dateRangeDto.getEndDate())
+                        .meetSchedule(meetSchedule).owner(user).build());
         meetSchedule.getScheduleEvents().add(newScheduleEvent);
         meetScheduleRepository.save(meetSchedule);
         return ScheduleEventDto.from(newScheduleEvent);
@@ -91,31 +94,45 @@ public class ScheduleService {
         return ScheduleEventDto.from(savedScheduleEvent);
     }
 
-
-    public MeetScheduleDto saveMeetSchedule(long userId, long meetScheduleId, MeetScheduleSaveDto meetScheduleSaveDto) {
+    @Transactional
+    public MeetScheduleDto startMeetSchedule(long userId, long meetScheduleId,
+            MeetScheduleSaveDto meetScheduleSaveDto) {
         MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
-        checkUserAccessMeetSchedule(userId, meetSchedule);
 
         Problem scheduleProblem = meetSchedule.getProblem();
-        if (scheduleProblem.getSupervisor().getId() != userId) {
-            throw new IllegalResourceAccessException(
-                    "Meet schedule info can only controlled by supervisor: ID = " + userId
-                            + " Schedule ID = " + meetSchedule.getId());
+        checkUserIsSupervisor(userId, scheduleProblem);
+        if (meetSchedule.getScheduleState() != ScheduleState.CREATED) {
+            throw new IllegalArgumentException(
+                    "It is illegal to start an already started meet schedule: ID = " + meetScheduleId);
         }
+
+        problemEventRepository.save(ProblemEvent.builder()
+                .message(
+                        "زمان‌بندی دفاع پایان‌نامه (پروژه) شروع شده است. خواهشا تمامی اعضای مربوطه زمان‌های حضور خود "
+                                + "را برای برگزاری جلسه‌ی دفاع مشخص نمایند.")
+                .problem(scheduleProblem).build());
 
         meetSchedule.setDurationMinutes(meetScheduleSaveDto.getDurationMinutes());
         meetSchedule.setMinimumDate(meetScheduleSaveDto.getMinimumDate());
         meetSchedule.setMaximumDate(meetScheduleSaveDto.getMaximumDate());
-        meetSchedule.setFinalizedDate(meetScheduleSaveDto.getFinalizedDate());
+        meetSchedule.setScheduleState(ScheduleState.STARTED);
         return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
     }
 
     private void checkUserAccessModifyOrDeleteEvent(long userId, ScheduleEvent scheduleEvent) {
         if (scheduleEvent.getOwner().getId() != userId) {
             throw new IllegalResourceAccessException(
-                    "Schedule event is not created by user: user ID = " + userId
-                            + " Schedule event ID = " + scheduleEvent.getId()
-                            + " schedule event owner: " + scheduleEvent.getOwner().getFullName());
+                    "Schedule event is not created by user: user ID = " + userId + " Schedule event ID = "
+                            + scheduleEvent.getId() + " schedule event owner: " + scheduleEvent.getOwner()
+                            .getFullName());
+        }
+    }
+
+    private void checkUserIsSupervisor(long userId, Problem problem) {
+        if (problem.getSupervisor().getId() != userId) {
+            throw new IllegalResourceAccessException(
+                    "Problem is not owned or controlled (supervisor) by user: user ID = " + userId + " Problem ID = "
+                            + problem.getId());
         }
     }
 
@@ -124,8 +141,8 @@ public class ScheduleService {
         if (scheduleProblem.getStudent().getId() != userId && scheduleProblem.getSupervisor().getId() != userId
                 && scheduleProblem.getReferees().stream().noneMatch(master -> master.getId() == userId)) {
             throw new IllegalResourceAccessException(
-                    "Meet schedule is not owned or controlled by user: ID = " + userId
-                            + " Schedule ID = " + meetSchedule.getId());
+                    "Meet schedule is not owned or controlled by user: ID = " + userId + " Schedule ID = "
+                            + meetSchedule.getId());
         }
     }
 
@@ -138,8 +155,8 @@ public class ScheduleService {
         ScheduleEvent scheduleEvent = scheduleEventRepository.findById(scheduleEventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Schedule event not found: ID = " + scheduleEventId));
         if (scheduleEvent.getMeetSchedule().getId() != meetScheduleId) {
-            throw new IllegalResourceAccessException(
-                    String.format("Schedule event selected is not belonging to meet schedule: "
+            throw new IllegalResourceAccessException(String.format(
+                    "Schedule event selected is not belonging to meet schedule: "
                             + "meet schedule ID = %s schedule event ID = %s", meetScheduleId, scheduleEvent.getId()));
         }
         return scheduleEvent;

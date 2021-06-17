@@ -11,36 +11,42 @@ class ScheduleService {
     private constructor() {
     }
 
-    static saveMeetSchedule(meetScheduleId: number, meetScheduleSave: MeetScheduleSave) {
-        return apiAxios.post<MeetSchedule>(`${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}`, meetScheduleSave)
+    static startMeetSchedule(meetScheduleId: number, meetScheduleSave: MeetScheduleSave) {
+        return apiAxios
+            .post<MeetSchedule>(`${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/start`,
+                meetScheduleSave)
             .then(response => response.data)
     }
 
     static retrieveMeetScheduleEvents(meetScheduleId: number, startDate: Date, endDate: Date) {
-        return apiAxios.get<ScheduleEvent[]>(
-            `${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/events`,
-            {
-                params: {
-                    startDate,
-                    endDate,
-                }
-            }).then(response => response.data)
+        return apiAxios
+            .get<ScheduleEvent[]>(`${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/events`,
+                {
+                    params: {
+                        startDate,
+                        endDate,
+                    }
+                })
+            .then(response => response.data)
     }
 
     static addMeetScheduleEvent(meetScheduleId: number, dateRange: DateRange) {
-        return apiAxios.post<ScheduleEvent>(`${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/event`,
-            dateRange).then(response => response.data)
+        return apiAxios
+            .post<ScheduleEvent>(`${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/event`,
+                dateRange)
+            .then(response => response.data)
     }
 
     static updateMeetScheduleEvent(meetScheduleId: number, scheduleEventId: number, updatedDates: DateRange) {
-        return apiAxios.post<ScheduleEvent>(
-            `${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/event/${scheduleEventId}`, updatedDates)
+        return apiAxios
+            .post<ScheduleEvent>(`${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/event/${scheduleEventId}`,
+                updatedDates)
             .then(response => response.data)
     }
 
     static deleteMeetScheduleEvent(meetScheduleId: number, scheduleEventId: number) {
-        return apiAxios.delete<ScheduleEvent>(
-            `${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/event/${scheduleEventId}`)
+        return apiAxios
+            .delete<ScheduleEvent>(`${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/event/${scheduleEventId}`)
             .then(response => response.data)
     }
 

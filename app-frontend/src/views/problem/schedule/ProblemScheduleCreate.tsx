@@ -5,20 +5,26 @@ import Paper from '@material-ui/core/Paper';
 import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import {AxiosError} from 'axios';
 import moment from 'moment';
+import {useSnackbar} from 'notistack';
 import React from 'react';
+import {useMutation, useQueryClient} from 'react-query';
 import {rtlTheme} from '../../../App';
 import CustomAlert from "../../../components/Alert/CustomAlert";
 import ComboBox from "../../../components/ComboBox/ComboBox";
 import CustomDatePicker from "../../../components/DatePicker/CustomDatePicker";
 import CustomTypography from "../../../components/Typography/CustomTypography";
+import {generalErrorHandler} from "../../../config/axios-config";
 import {Problem} from "../../../model/problem/problem";
+import {MeetScheduleSave} from "../../../model/schedule/MeetScheduleSave";
 import {
     PERSIAN_SCHEDULE_DURATIONS,
     ScheduleDuration,
     scheduleDurationMapToEnglish,
     scheduleDurationMapToPersian
 } from "../../../model/schedule/ScheduleDuration";
+import ScheduleService from "../../../services/api/schedule/ScheduleService";
 import DateUtils from "../../../utility/DateUtils";
 import {SaveMeetScheduleMutation} from "./ProblemScheduleView";
 
@@ -34,16 +40,28 @@ const useStyles = makeStyles((theme) => ({
 
 interface ProblemScheduleCreateProps {
     problem: Problem,
-    saveMeetScheduleMutation: SaveMeetScheduleMutation,
 }
 
 const ProblemScheduleCreate: React.FunctionComponent<ProblemScheduleCreateProps> = (props) => {
     const classes = useStyles();
-    const {saveMeetScheduleMutation} = props;
+    const {enqueueSnackbar} = useSnackbar();
+    const {problem} = props;
 
     const [initialScheduleDuration, setInitialScheduleDuration] = React.useState(ScheduleDuration.THIRTY_MINUTES);
     const [scheduleMinDate, setScheduleMinDate] = React.useState(moment(DateUtils.getCurrentDate()));
     const [scheduleMaxDate, setScheduleMaxDate] = React.useState(moment(DateUtils.getCurrentDate()));
+
+    const queryClient = useQueryClient();
+    const startMeetSchedule: SaveMeetScheduleMutation = useMutation(
+        (data: { meetScheduleId: number, meetScheduleSave: MeetScheduleSave }) =>
+            ScheduleService.startMeetSchedule(data.meetScheduleId, data.meetScheduleSave),
+        {
+            onSuccess: async (data) => {
+                queryClient.setQueryData<Problem>(["problem", problem.id], {...problem, meetSchedule: data});
+                await queryClient.invalidateQueries(['events', problem.id]);
+            },
+            onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
+        });
 
     return (
         <ThemeProvider theme={rtlTheme}>
@@ -91,8 +109,8 @@ const ProblemScheduleCreate: React.FunctionComponent<ProblemScheduleCreateProps>
                             onDateChange={newValue =>
                                 setScheduleMinDate(newValue.set({hour: 0, minute: 0, second: 0, millisecond: 0}))}
                             autoSelect={true}
-                            minDate={DateUtils.getCurrentDate(-10)}
-                            maxDate={DateUtils.getCurrentDate(+30)}
+                            minDate={DateUtils.getCurrentDate()}
+                            maxDate={scheduleMaxDate}
                         />
                     </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={4} xl={4} className={classes.gridItem}>
@@ -102,7 +120,7 @@ const ProblemScheduleCreate: React.FunctionComponent<ProblemScheduleCreateProps>
                             onDateChange={newValue =>
                                 setScheduleMaxDate(newValue.set({hour: 23, minute: 59, second: 59, millisecond: 999}))}
                             autoSelect={true}
-                            minDate={DateUtils.getCurrentDate(-10)}
+                            minDate={scheduleMinDate}
                             maxDate={DateUtils.getCurrentDate(+30)}
                         />
                     </Grid>
@@ -114,7 +132,7 @@ const ProblemScheduleCreate: React.FunctionComponent<ProblemScheduleCreateProps>
                         >
                             <CustomTypography lineHeight={2}>
                                 دقت شود که با شروع زمان‌بندی دفاع، امکان تغییر تنها زمان شروع و پایان دفاع امکان‌پذیر
-                                می‌شود.
+                                می‌باشد.
                             </CustomTypography>
                         </CustomAlert>
                     </Grid>
@@ -122,7 +140,16 @@ const ProblemScheduleCreate: React.FunctionComponent<ProblemScheduleCreateProps>
                           justify={"center"}>
                         <Box marginTop={1}>
                             <Button
-                                // onClick={registerHandler}
+                                onClick={() => {
+                                    startMeetSchedule.mutate({
+                                        meetScheduleId: problem.meetSchedule.id,
+                                        meetScheduleSave: {
+                                            durationMinutes: initialScheduleDuration,
+                                            minimumDate: scheduleMinDate.toDate(),
+                                            maximumDate: scheduleMaxDate.toDate(),
+                                        }
+                                    })
+                                }}
                                 variant="contained"
                                 color="primary"
                             >

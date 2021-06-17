@@ -44,6 +44,8 @@ const CustomDatePicker: React.FunctionComponent<CustomDatePickerProps> = (props)
                     autoOk={autoSelect ?? true}
                     okLabel={autoSelect ? "" : "تأیید"}
                     cancelLabel={autoSelect ? "" : "لغو"}
+                    minDateMessage={"زمان انتخاب شده نمی‌تواند قبل از حداقل زمانی باشد."}
+                    maxDateMessage={"زمان انتخاب شده نمی‌تواند بعد از حداکثر زمانی باشد."}
                     labelFunc={(date) => (date ? date.format("ddd، jD jMMMM jYYYY") : "")}
                     value={selectedDate}
                     onChange={handleDateChange}

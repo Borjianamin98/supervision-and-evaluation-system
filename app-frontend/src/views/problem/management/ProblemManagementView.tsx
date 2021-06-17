@@ -18,6 +18,7 @@ import {generalErrorHandler} from "../../../config/axios-config";
 import browserHistory from "../../../config/browserHistory";
 import {educationMapToPersian} from "../../../model/enum/education";
 import {Problem} from "../../../model/problem/problem";
+import {ScheduleState} from "../../../model/schedule/ScheduleState";
 import {Master} from "../../../model/user/master/Master";
 import AuthenticationService from "../../../services/api/AuthenticationService";
 import ProblemMasterService from "../../../services/api/problem/ProblemMasterService";
@@ -65,7 +66,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
             ProblemMasterService.addReferee(data.problemId, data.refereeId),
         {
             onSuccess: async (data, {problemId}) => {
-                queryClient.setQueryData(['problem', problemId], data);
+                queryClient.setQueryData<Problem>(['problem', problemId], data);
                 await queryClient.invalidateQueries(['events', problemId])
             },
             onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
@@ -75,7 +76,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
             ProblemMasterService.removeReferee(data.problemId, data.referee.id, data.force),
         {
             onSuccess: async (data, {problemId}) => {
-                queryClient.setQueryData(['problem', problemId], data);
+                queryClient.setQueryData<Problem>(['problem', problemId], data);
                 await queryClient.invalidateQueries(['events', problemId])
             },
             onError: (error: AxiosError, {referee}) => {
@@ -115,6 +116,19 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
             pathname: `${PROBLEM_SCHEDULE_VIEW_PATH}/${problem.id}`,
             state: problem
         });
+    }
+
+    const meetScheduleDisabled = () => {
+        switch (problem.meetSchedule.scheduleState) {
+            case ScheduleState.CREATED:
+                return !currentUserIsSupervisor;
+            case ScheduleState.STARTED:
+                return false;
+            case ScheduleState.FINALIZED:
+                return true;
+            default:
+                throw new Error("Illegal problem meet schedule state: " + problem.meetSchedule.scheduleState);
+        }
     }
 
     return (
@@ -249,6 +263,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                                         color="secondary"
                                         startIcon={<ScheduleIcon/>}
                                         onClick={onScheduleClick}
+                                        disabled={meetScheduleDisabled()}
                                     >
                                         زمان‌بندی دفاع
                                     </Button>
