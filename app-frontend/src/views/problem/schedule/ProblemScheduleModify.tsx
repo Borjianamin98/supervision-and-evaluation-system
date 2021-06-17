@@ -1,0 +1,145 @@
+import blue from '@material-ui/core/colors/blue';
+import brown from '@material-ui/core/colors/brown';
+import deepOrange from '@material-ui/core/colors/deepOrange';
+import indigo from '@material-ui/core/colors/indigo';
+import purple from '@material-ui/core/colors/purple';
+import teal from '@material-ui/core/colors/teal';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import {makeStyles, Theme, ThemeProvider} from "@material-ui/core/styles";
+import useMediaQuery from "@material-ui/core/useMediaQuery/useMediaQuery";
+import {ScheduleComponent} from '@syncfusion/ej2-react-schedule'
+import {AxiosError} from "axios";
+import {useSnackbar} from "notistack";
+import React from 'react';
+import {useQuery} from "react-query";
+import {rtlTheme} from '../../../App';
+import CustomScheduler from "../../../components/Scheduler/CustomScheduler";
+import {generalErrorHandler} from "../../../config/axios-config";
+import {Problem} from "../../../model/problem/problem";
+import {DateRange} from "../../../model/schedule/event/DateRange";
+import {ScheduleEvent, SyncfusionSchedulerEvent} from "../../../model/schedule/event/ScheduleEvent";
+import AuthenticationService from "../../../services/api/AuthenticationService";
+import ScheduleService from "../../../services/api/schedule/ScheduleService";
+import DateUtils from "../../../utility/DateUtils";
+import {SaveMeetScheduleMutation} from "./ProblemScheduleView";
+
+function scheduleEventToSyncfusionSchedulerEvent(event: ScheduleEvent, userId: number): SyncfusionSchedulerEvent {
+    return {
+        id: event.id,
+        subject: event.owner.fullName,
+        startDate: event.startDate,
+        endDate: event.endDate,
+        isAllDay: false,
+        ownerId: event.owner.id,
+        readonly: event.owner.id !== userId,
+    }
+}
+
+const useStyles = makeStyles((theme) => ({
+    topGrid: {
+        margin: theme.spacing(1, 0),
+        padding: theme.spacing(2),
+    },
+}));
+
+interface ProblemScheduleViewProps {
+    problem: Problem,
+    saveMeetScheduleMutation: SaveMeetScheduleMutation,
+}
+
+const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (props) => {
+    const classes = useStyles();
+    const {enqueueSnackbar} = useSnackbar();
+    const {problem, saveMeetScheduleMutation} = props;
+
+    const mobileMatches = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
+    const smallScreenMatches = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
+    const totalDaysInView = mobileMatches ? 3 : (smallScreenMatches ? 5 : 7);
+
+    const [startDate, setStartDate] = React.useState(DateUtils.getCurrentDate());
+    const {data: problemScheduleEvents} = useQuery(
+        ["meetScheduleEvents", problem.meetSchedule.id, startDate, totalDaysInView],
+        () => {
+            const jwtPayloadUserId = AuthenticationService.getJwtPayloadUserId()!;
+            const endDate = DateUtils.addDays(startDate, totalDaysInView);
+            return ScheduleService.retrieveMeetScheduleEvents(problem.meetSchedule.id, startDate, endDate)
+                .then(events => events.map(event => scheduleEventToSyncfusionSchedulerEvent(event, jwtPayloadUserId)))
+        }
+    );
+
+    const onCellClick = (scheduler: ScheduleComponent, scheduleEventDate: DateRange) => {
+        const jwtPayloadUserId = AuthenticationService.getJwtPayloadUserId()!;
+        ScheduleService.addMeetScheduleEvent(problem.meetSchedule.id, {
+            startDate: scheduleEventDate.startDate,
+            endDate: scheduleEventDate.endDate,
+        })
+            .then(data => scheduler.addEvent(scheduleEventToSyncfusionSchedulerEvent(data, jwtPayloadUserId)))
+            .catch((error: AxiosError) => {
+                generalErrorHandler(error, enqueueSnackbar);
+            })
+    }
+
+    const onEventChange = (scheduler: ScheduleComponent, syncfusionEvent: SyncfusionSchedulerEvent) => {
+        ScheduleService.updateMeetScheduleEvent(problem.meetSchedule.id, syncfusionEvent.id, {
+            startDate: syncfusionEvent.startDate,
+            endDate: syncfusionEvent.endDate,
+        }).catch(error => generalErrorHandler(error, enqueueSnackbar))
+    }
+
+    const onEventDelete = (scheduler: ScheduleComponent, syncfusionEvent: SyncfusionSchedulerEvent) => {
+        ScheduleService.deleteMeetScheduleEvent(problem.meetSchedule.id, syncfusionEvent.id)
+            .then(() => scheduler.deleteEvent(syncfusionEvent))
+            .catch(error => generalErrorHandler(error, enqueueSnackbar))
+    }
+
+    const candidateColors = [blue[500], purple[500], teal[500], indigo[500]]
+    const participants = [
+        {
+            id: problem.student.id,
+            name: problem.student.fullName,
+            color: deepOrange[500],
+        },
+        {
+            id: problem.supervisor.id,
+            name: problem.supervisor.fullName,
+            color: brown[500],
+        },
+        ...problem.referees.map((referee, i) => {
+            return {
+                id: referee.id,
+                name: referee.fullName,
+                color: candidateColors[i],
+            }
+        }),
+    ]
+
+    return (
+        <ThemeProvider theme={rtlTheme}>
+            <Grid container direction="column">
+                <Grid container dir="rtl"
+                      component={Paper}
+                      elevation={4}
+                      className={classes.topGrid}
+                >
+                </Grid>
+                <CustomScheduler
+                    height="550px"
+                    minimumDate={problem.meetSchedule.minimumDate}
+                    maximumDate={problem.meetSchedule.maximumDate}
+                    timeScaleInterval={30}
+                    minimumDurationMinutes={problem.meetSchedule.durationMinutes}
+                    totalDaysInView={totalDaysInView}
+                    onStartDateChange={date => setStartDate(date)}
+                    scheduleEvents={problemScheduleEvents}
+                    participants={participants}
+                    onCellClick={onCellClick}
+                    onEventDelete={onEventDelete}
+                    onEventChange={onEventChange}
+                />
+            </Grid>
+        </ThemeProvider>
+    )
+}
+
+export default ProblemScheduleView;

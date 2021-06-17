@@ -160,7 +160,7 @@ public class DataLoader implements CommandLineRunner {
                 .durationMinutes(30L)
                 .minimumDate(yesterday)
                 .maximumDate(tomorrow)
-                .scheduleState(ScheduleState.STARTED)
+                .scheduleState(ScheduleState.CREATED)
                 .build());
         Problem problem3 = problemRepository.save(Problem.builder()
                 .education(Education.BACHELOR)
