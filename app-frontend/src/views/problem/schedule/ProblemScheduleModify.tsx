@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import useMediaQuery from "@material-ui/core/useMediaQuery/useMediaQuery";
 import {ScheduleComponent} from '@syncfusion/ej2-react-schedule'
 import {AxiosError} from "axios";
+import classNames from 'classnames';
 import {useSnackbar} from "notistack";
 import React from 'react';
 import {useQuery} from "react-query";
@@ -52,6 +53,9 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
     const mobileMatches = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
     const smallScreenMatches = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
     const totalDaysInView = mobileMatches ? 3 : (smallScreenMatches ? 5 : 7);
+
+    const jwtPayload = AuthenticationService.getJwtPayload()!;
+    const currentUserIsSupervisor = problem.supervisor.id === jwtPayload.userId;
 
     const [startDate, setStartDate] = React.useState(DateUtils.getCurrentDate());
     const {data: problemScheduleEvents} = useQuery(
@@ -140,11 +144,24 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                           justify={"center"} spacing={1} style={{marginTop: 8}}>
                         <Grid item className={commonClasses.gridItem}>
                             <Button
-                                onClick={() => setScheduleDateDialogOpen(true)}
                                 variant="contained"
                                 color="primary"
+                                className={classNames({
+                                    [commonClasses.hidden]: !currentUserIsSupervisor
+                                })}
                             >
-                                ویرایش بازه زمان‌بندی
+                                درخواست تعیین زمان دوباره از همه
+                            </Button>
+                        </Grid>
+                        <Grid item className={commonClasses.gridItem}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                className={classNames({
+                                    [commonClasses.hidden]: !currentUserIsSupervisor
+                                })}
+                            >
+                                تایین زمان دفاع
                             </Button>
                         </Grid>
                         <Grid item className={commonClasses.gridItem}>
@@ -152,8 +169,19 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                                 onClick={() => setScheduleDateDialogOpen(true)}
                                 variant="contained"
                                 color="primary"
+                                className={classNames({
+                                    [commonClasses.hidden]: !currentUserIsSupervisor
+                                })}
                             >
-                                اعلام زمان‌بندی
+                                ویرایش بازه زمان‌بندی
+                            </Button>
+                        </Grid>
+                        <Grid item className={commonClasses.gridItem}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                            >
+                                اعلام نهایی‌شدن
                             </Button>
                         </Grid>
                     </Grid>

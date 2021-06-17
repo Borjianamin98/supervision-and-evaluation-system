@@ -15,6 +15,9 @@ const useCommonStyles = makeStyles((theme) => ({
     gridItem: {
         padding: theme.spacing(0, 1),
     },
+    hidden: {
+        display: "none",
+    }
 }));
 
 interface ProblemScheduleViewProps {
