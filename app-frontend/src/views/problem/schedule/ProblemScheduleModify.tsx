@@ -28,7 +28,7 @@ import {ScheduleEvent, SyncfusionSchedulerEvent} from "../../../model/schedule/e
 import AuthenticationService from "../../../services/api/AuthenticationService";
 import ScheduleService from "../../../services/api/schedule/ScheduleService";
 import DateUtils from "../../../utility/DateUtils";
-import ScheduleDateDialog from "./ScheduleDateDialog";
+import ScheduleDateDialog from "./dialog/ScheduleDateDialog";
 
 function scheduleEventToSyncfusionSchedulerEvent(event: ScheduleEvent, userId: number): SyncfusionSchedulerEvent {
     return {

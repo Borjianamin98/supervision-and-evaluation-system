@@ -6,16 +6,16 @@ import moment from 'moment';
 import {useSnackbar} from "notistack";
 import React from 'react';
 import {useMutation, useQueryClient} from "react-query";
-import {rtlTheme} from '../../../App';
-import CustomAlert from "../../../components/Alert/CustomAlert";
-import CustomDatePicker from "../../../components/DatePicker/CustomDatePicker";
-import ConfirmDialog from "../../../components/Dialog/ConfirmDialog";
-import CustomTypography from "../../../components/Typography/CustomTypography";
-import {generalErrorHandler} from "../../../config/axios-config";
-import {Problem} from "../../../model/problem/problem";
-import {DateRange} from "../../../model/schedule/event/DateRange";
-import ScheduleService from "../../../services/api/schedule/ScheduleService";
-import DateUtils from "../../../utility/DateUtils";
+import {rtlTheme} from '../../../../App';
+import CustomAlert from "../../../../components/Alert/CustomAlert";
+import CustomDatePicker from "../../../../components/DatePicker/CustomDatePicker";
+import ConfirmDialog from "../../../../components/Dialog/ConfirmDialog";
+import CustomTypography from "../../../../components/Typography/CustomTypography";
+import {generalErrorHandler} from "../../../../config/axios-config";
+import {Problem} from "../../../../model/problem/problem";
+import {DateRange} from "../../../../model/schedule/event/DateRange";
+import ScheduleService from "../../../../services/api/schedule/ScheduleService";
+import DateUtils from "../../../../utility/DateUtils";
 
 interface ScheduleDateDialogProps {
     problem: Problem,
