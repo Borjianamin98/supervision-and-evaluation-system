@@ -29,6 +29,7 @@ import AuthenticationService from "../../../services/api/AuthenticationService";
 import ScheduleService from "../../../services/api/schedule/ScheduleService";
 import DateUtils from "../../../utility/DateUtils";
 import ScheduleDateDialog from "./dialog/ScheduleDateDialog";
+import ScheduleFinalizationDialog from "./dialog/ScheduleFinalizationDialog";
 
 function scheduleEventToSyncfusionSchedulerEvent(event: ScheduleEvent, userId: number): SyncfusionSchedulerEvent {
     return {
@@ -79,6 +80,7 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
         });
 
     const [scheduleDateDialogOpen, setScheduleDateDialogOpen] = React.useState(false);
+    const [scheduleFinalizationDialogOpen, setScheduleFinalizationDialogOpen] = React.useState(false);
     const [announcingDialogOpen, setAnnouncingDialogOpen] = React.useState(false);
     const announcingDialogEventHandler = (confirmed: boolean) => {
         if (confirmed) {
@@ -161,17 +163,7 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                           justify={"center"} spacing={1} style={{marginTop: 8}}>
                         <Grid item className={commonClasses.gridItem}>
                             <Button
-                                variant="contained"
-                                color="primary"
-                                className={classNames({
-                                    [commonClasses.hidden]: !currentUserIsSupervisor
-                                })}
-                            >
-                                درخواست تعیین زمان دوباره از همه
-                            </Button>
-                        </Grid>
-                        <Grid item className={commonClasses.gridItem}>
-                            <Button
+                                onClick={() => setScheduleFinalizationDialogOpen(true)}
                                 variant="contained"
                                 color="primary"
                                 className={classNames({
@@ -234,6 +226,11 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                         شما می‌توانید همچنان پس از اعلان نهایی‌شدن، در صورت نیاز تغییراتی را اعمال کنید
                         اما بهتر است تنها برای تغییرات جزئی از این روش استفاده شود و تا حد امکان زمان‌بندی‌های اصلی خود را مشخص نموده باشید.
                         `}
+                    />
+                    <ScheduleFinalizationDialog
+                        problem={problem}
+                        open={scheduleFinalizationDialogOpen}
+                        onClose={() => setScheduleFinalizationDialogOpen(false)}
                     />
                 </div>
             </Grid>
