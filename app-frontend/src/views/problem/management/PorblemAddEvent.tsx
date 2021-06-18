@@ -32,7 +32,7 @@ const ProblemAddEvent: React.FunctionComponent<ProblemAddEventProps> = (props) =
             onSuccess: (data, variables) => {
                 return Promise.all([
                     queryClient.invalidateQueries(['problems', jwtPayloadRole]),
-                    queryClient.refetchQueries(['events', variables.problemId])
+                    queryClient.refetchQueries(["problemEvents", variables.problemId])
                 ]).then(() => enqueueSnackbar(`نظر جدید با موفقیت ثبت شد.`, {variant: "success"}))
             },
             onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),

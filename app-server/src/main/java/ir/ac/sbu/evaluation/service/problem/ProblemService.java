@@ -233,15 +233,14 @@ public class ProblemService {
             throw new ResourceConflictException("Unable to remove referee because of some schedule event dependencies: "
                     + "schedule events count = " + problemScheduleEventsByReferee.size());
         } else {
-            problem.getMeetSchedule().removeVerifyUser(refereeId);
+            problem.getMeetSchedule().getAnnouncedUsers().remove(refereeId);
             problem.setMeetSchedule(meetScheduleRepository.save(problem.getMeetSchedule()));
             problemScheduleEventsByReferee.forEach(scheduleEventRepository::delete);
         }
 
         Master referee = refereeToRemove.get();
         problem.getReferees().remove(referee);
-        Problem savedProblem = problemRepository.save(problem);
-        referee.getProblemsReferee().removeIf(p -> p.getId().equals(savedProblem.getId()));
+        referee.getProblemsReferee().removeIf(p -> p.getId().equals(problem.getId()));
         masterRepository.save(referee);
 
         String message = String.format("استاد داور «%s» حذف شد.", referee.getFullName());
@@ -249,7 +248,7 @@ public class ProblemService {
                 .message(message).problem(problem).build());
         problem.getEvents().add(savedProblemEvent);
 
-        return ProblemDto.from(savedProblem);
+        return ProblemDto.from(problemRepository.save(problem));
     }
 
     private void checkUserAccessProblem(long userId, Problem problem) {

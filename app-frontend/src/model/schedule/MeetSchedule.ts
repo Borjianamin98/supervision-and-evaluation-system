@@ -8,5 +8,5 @@ export interface MeetSchedule {
     scheduleState: ScheduleState,
     finalizedDate?: Date,
 
-    verifiedUsers: number[]
+    announcedUsers: number[]
 }

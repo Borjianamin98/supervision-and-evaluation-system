@@ -47,7 +47,7 @@ const ProblemScheduleCreate: React.FunctionComponent<ProblemScheduleCreateProps>
         {
             onSuccess: async (data) => {
                 queryClient.setQueryData<Problem>(["problem", problem.id], {...problem, meetSchedule: data});
-                await queryClient.invalidateQueries(['events', problem.id]);
+                await queryClient.invalidateQueries(["problemEvents", problem.id]);
             },
             onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
@@ -115,7 +115,6 @@ const ProblemScheduleCreate: React.FunctionComponent<ProblemScheduleCreateProps>
                         <CustomAlert
                             icon={<InfoOutlinedIcon/>}
                             severity="info"
-                            variant="outlined"
                         >
                             <CustomTypography lineHeight={2}>
                                 دقت شود که با شروع زمان‌بندی دفاع، امکان تغییر تنها زمان شروع و پایان دفاع امکان‌پذیر

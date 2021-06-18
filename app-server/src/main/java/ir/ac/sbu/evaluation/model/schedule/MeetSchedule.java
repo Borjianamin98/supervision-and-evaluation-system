@@ -46,7 +46,7 @@ public class MeetSchedule extends BaseEntity {
     private Set<ScheduleEvent> scheduleEvents = new HashSet<>();
 
     @ElementCollection
-    private Set<Long> verifiedUsers = new HashSet<>();
+    private Set<Long> announcedUsers = new HashSet<>();
 
     public MeetSchedule() {
     }
@@ -55,7 +55,8 @@ public class MeetSchedule extends BaseEntity {
     public MeetSchedule(Long id, Long durationMinutes,
             Instant minimumDate, Instant maximumDate,
             ScheduleState scheduleState, Instant finalizedDate,
-            Problem problem, Set<ScheduleEvent> scheduleEvents, Set<Long> verifiedUsers) {
+            Problem problem, Set<ScheduleEvent> scheduleEvents,
+            Set<Long> announcedUsers) {
         super(id);
         this.durationMinutes = durationMinutes;
         this.minimumDate = minimumDate;
@@ -64,10 +65,6 @@ public class MeetSchedule extends BaseEntity {
         this.finalizedDate = finalizedDate;
         this.problem = problem;
         this.scheduleEvents = scheduleEvents == null ? new HashSet<>() : scheduleEvents;
-        this.verifiedUsers = verifiedUsers == null ? new HashSet<>() : verifiedUsers;
-    }
-
-    public void removeVerifyUser(long refereeId) {
-        getVerifiedUsers().remove(refereeId);
+        this.announcedUsers = announcedUsers == null ? new HashSet<>() : announcedUsers;
     }
 }

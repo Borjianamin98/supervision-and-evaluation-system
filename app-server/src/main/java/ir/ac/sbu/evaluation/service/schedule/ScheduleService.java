@@ -131,6 +131,7 @@ public class ScheduleService {
         return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
     }
 
+    @Transactional
     public MeetScheduleDto updateMeetScheduleDate(long userId, long meetScheduleId, DateRangeDto dateRangeDto) {
         MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
 
@@ -153,13 +154,23 @@ public class ScheduleService {
         return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
     }
 
-    private void checkUserAccessModifyOrDeleteEvent(long userId, ScheduleEvent scheduleEvent) {
-        if (scheduleEvent.getOwner().getId() != userId) {
-            throw new IllegalResourceAccessException(
-                    "Schedule event is not created by user: user ID = " + userId + " Schedule event ID = "
-                            + scheduleEvent.getId() + " schedule event owner: " + scheduleEvent.getOwner()
-                            .getFullName());
+    public MeetScheduleDto announceFinalizationByUser(long userId, long meetScheduleId) {
+        MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
+        checkUserAccessMeetSchedule(userId, meetSchedule);
+        if (meetSchedule.getScheduleState() != ScheduleState.STARTED) {
+            throw new IllegalArgumentException(
+                    "Illegal to announce finalization for meet schedule in not started state: ID = " + meetScheduleId);
         }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: ID = " + userId));
+        problemEventRepository.save(ProblemEvent.builder()
+                .message(String.format("زمان‌بندی دفاع پایان‌نامه (پروژه) توسط «%s» نهایی شد.", user.getFullName()))
+                .problem(meetSchedule.getProblem())
+                .build());
+
+        meetSchedule.getAnnouncedUsers().add(userId);
+        return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
     }
 
     private void checkUserIsSupervisor(long userId, Problem problem) {
@@ -167,6 +178,15 @@ public class ScheduleService {
             throw new IllegalResourceAccessException(
                     "Problem is not owned or controlled (supervisor) by user: user ID = " + userId + " Problem ID = "
                             + problem.getId());
+        }
+    }
+
+    private void checkUserAccessModifyOrDeleteEvent(long userId, ScheduleEvent scheduleEvent) {
+        if (scheduleEvent.getOwner().getId() != userId) {
+            throw new IllegalResourceAccessException(
+                    "Schedule event is not created by user: user ID = " + userId + " Schedule event ID = "
+                            + scheduleEvent.getId() + " schedule event owner: " + scheduleEvent.getOwner()
+                            .getFullName());
         }
     }
 

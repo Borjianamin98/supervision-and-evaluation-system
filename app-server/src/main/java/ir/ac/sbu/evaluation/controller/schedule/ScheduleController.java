@@ -50,6 +50,14 @@ public class ScheduleController {
         return scheduleService.updateMeetScheduleDate(authUserDetail.getUserId(), meetScheduleId, dateRangeDto);
     }
 
+    @PreAuthorize("hasAnyAuthority(@SecurityRoles.STUDENT_ROLE_NAME, @SecurityRoles.MASTER_ROLE_NAME)")
+    @PostMapping(path = "/{meetScheduleId}/announceFinalization")
+    public MeetScheduleDto announceFinalizationByUserOfMeetSchedule(
+            @ModelAttribute AuthUserDetail authUserDetail,
+            @PathVariable long meetScheduleId) {
+        return scheduleService.announceFinalizationByUser(authUserDetail.getUserId(), meetScheduleId);
+    }
+
     @GetMapping(path = "/{meetScheduleId}/events")
     public List<ScheduleEventDto> retrieveScheduleEvents(
             @ModelAttribute AuthUserDetail authUserDetail,

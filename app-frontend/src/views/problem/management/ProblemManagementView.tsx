@@ -67,7 +67,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
         {
             onSuccess: async (data, {problemId}) => {
                 queryClient.setQueryData<Problem>(['problem', problemId], data);
-                await queryClient.invalidateQueries(['events', problemId])
+                await queryClient.invalidateQueries(["problemEvents", problemId])
             },
             onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
@@ -77,7 +77,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
         {
             onSuccess: async (data, {problemId}) => {
                 queryClient.setQueryData<Problem>(['problem', problemId], data);
-                await queryClient.invalidateQueries(['events', problemId])
+                await queryClient.invalidateQueries(["problemEvents", problemId])
             },
             onError: (error: AxiosError, {referee}) => {
                 if (error.response && error.response.status === 409 /* Conflict */) {

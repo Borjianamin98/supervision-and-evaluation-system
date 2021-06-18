@@ -16,8 +16,9 @@ import {AxiosError} from "axios";
 import classNames from 'classnames';
 import {useSnackbar} from "notistack";
 import React from 'react';
-import {useQuery} from "react-query";
+import {useMutation, useQuery, useQueryClient} from "react-query";
 import {rtlTheme} from '../../../App';
+import ConfirmDialog from "../../../components/Dialog/ConfirmDialog";
 import CustomScheduler from "../../../components/Scheduler/CustomScheduler";
 import CustomTypography from "../../../components/Typography/CustomTypography";
 import {generalErrorHandler} from "../../../config/axios-config";
@@ -58,6 +59,7 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
     const currentUserIsSupervisor = problem.supervisor.id === jwtPayload.userId;
 
     const [startDate, setStartDate] = React.useState(DateUtils.getCurrentDate());
+    const queryClient = useQueryClient();
     const {data: problemScheduleEvents} = useQuery(
         ["meetScheduleEvents", problem.meetSchedule.id, startDate, totalDaysInView],
         () => {
@@ -67,8 +69,23 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                 .then(events => events.map(event => scheduleEventToSyncfusionSchedulerEvent(event, jwtPayloadUserId)))
         }
     );
+    const announceFinalization = useMutation((data: number) => ScheduleService.announceFinalizationByUser(data),
+        {
+            onSuccess: async (data) => {
+                queryClient.setQueryData<Problem>(["problem", problem.id], {...problem, meetSchedule: data});
+                await queryClient.invalidateQueries(["problemEvents", problem.id]);
+            },
+            onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
+        });
 
     const [scheduleDateDialogOpen, setScheduleDateDialogOpen] = React.useState(false);
+    const [announcingDialogOpen, setAnnouncingDialogOpen] = React.useState(false);
+    const announcingDialogEventHandler = (confirmed: boolean) => {
+        if (confirmed) {
+            announceFinalization.mutate(problem.meetSchedule.id);
+        }
+        setAnnouncingDialogOpen(false);
+    }
 
     const onCellClick = (scheduler: ScheduleComponent, scheduleEventDate: DateRange) => {
         const jwtPayloadUserId = AuthenticationService.getJwtPayloadUserId()!;
@@ -178,10 +195,11 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                         </Grid>
                         <Grid item className={commonClasses.gridItem}>
                             <Button
+                                onClick={() => setAnnouncingDialogOpen(true)}
                                 variant="contained"
                                 color="primary"
                             >
-                                اعلام نهایی‌شدن
+                                اعلان نهایی‌شدن
                             </Button>
                         </Grid>
                     </Grid>
@@ -205,6 +223,17 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                         problem={problem}
                         open={scheduleDateDialogOpen}
                         onDialogClose={() => setScheduleDateDialogOpen(false)}
+                    />
+                    <ConfirmDialog
+                        open={announcingDialogOpen}
+                        onDialogOpenClose={announcingDialogEventHandler}
+                        title={"اعلان نهایی‌شدن"}
+                        description={`
+                        پس از آن که زمان‌بندی‌ها و تغییرات را به صورت کامل انجام دادید، با اعلان نهایی شدن تمامی افراد ذینفع نسبت به این موضوع اطلاع می‌یابند.
+                        اعلان نهایی شدن تنها به منظور اطلاع همه افراد نسبت به وضعیت شما می‌باشد.
+                        شما می‌توانید همچنان پس از اعلان نهایی‌شدن، در صورت نیاز تغییراتی را اعمال کنید
+                        اما بهتر است تنها برای تغییرات جزئی از این روش استفاده شود و تا حد امکان زمان‌بندی‌های اصلی خود را مشخص نموده باشید.
+                        `}
                     />
                 </div>
             </Grid>

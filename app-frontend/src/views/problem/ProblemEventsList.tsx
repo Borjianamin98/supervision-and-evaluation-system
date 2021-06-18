@@ -21,7 +21,7 @@ const ProblemEventsList: React.FunctionComponent<ProblemEventListProps> = (props
     const [page, setPage] = React.useState(0);
 
     const queryClient = useQueryClient();
-    const {data: events, isLoading, isError} = useQuery(['events', problemId, pageSize, page],
+    const {data: events, isLoading, isError} = useQuery(["problemEvents", problemId, pageSize, page],
         () => {
             return ProblemAuthenticatedService.retrieveProblemEvents(pageSize, page, problemId,
                 "createdDate", "desc");

@@ -39,6 +39,7 @@ const ScheduleDateDialog: React.FunctionComponent<ScheduleDateDialogProps> = (pr
             onSuccess: async (data) => {
                 queryClient.setQueryData<Problem>(["problem", problem.id], {...problem, meetSchedule: data});
                 queryClient.invalidateQueries(["meetScheduleEvents", problem.meetSchedule.id])
+                queryClient.invalidateQueries(["problemEvents", problem.id]);
                 onDialogClose();
             },
             onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
