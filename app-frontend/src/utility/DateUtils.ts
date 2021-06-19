@@ -20,4 +20,8 @@ export default class DateUtils {
     static endOfDay(date: Date | moment.Moment) {
         return moment(date).set({hour: 23, minute: 59, second: 59, millisecond: 999});
     }
+
+    static minutesPassedSinceStartOfDay(date: Date | moment.Moment) {
+        return moment(date).diff(moment(date).startOf("day"), "minutes");
+    }
 }

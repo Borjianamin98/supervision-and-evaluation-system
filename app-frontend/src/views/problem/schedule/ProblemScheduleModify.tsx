@@ -14,7 +14,6 @@ import useMediaQuery from "@material-ui/core/useMediaQuery/useMediaQuery";
 import {ScheduleComponent} from '@syncfusion/ej2-react-schedule'
 import {AxiosError} from "axios";
 import classNames from 'classnames';
-import moment from 'moment';
 import {useSnackbar} from "notistack";
 import React from 'react';
 import {useMutation, useQuery, useQueryClient} from "react-query";
@@ -60,13 +59,13 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
     const jwtPayload = AuthenticationService.getJwtPayload()!;
     const currentUserIsSupervisor = problem.supervisor.id === jwtPayload.userId;
 
-    const [startDate, setStartDate] = React.useState(DateUtils.getCurrentDate());
+    const [startDate, setStartDate] = React.useState(DateUtils.getCurrentDate().toDate());
     const queryClient = useQueryClient();
     const {data: problemScheduleEvents} = useQuery(
         ["meetScheduleEvents", problem.meetSchedule.id, startDate, totalDaysInView],
         () => {
             const jwtPayloadUserId = AuthenticationService.getJwtPayloadUserId()!;
-            const endDate = DateUtils.addDays(startDate, totalDaysInView);
+            const endDate = DateUtils.addDays(startDate, totalDaysInView).toDate();
             return ScheduleService.retrieveMeetScheduleEvents(problem.meetSchedule.id, startDate, endDate)
                 .then(events => events.map(event => scheduleEventToSyncfusionSchedulerEvent(event, jwtPayloadUserId)))
         }
@@ -204,7 +203,7 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                     timeScaleInterval={30}
                     minimumDurationMinutes={problem.meetSchedule.durationMinutes}
                     totalDaysInView={totalDaysInView}
-                    onStartDateChange={date => setStartDate(moment(date))}
+                    onStartDateChange={date => setStartDate(date)}
                     scheduleEvents={problemScheduleEvents}
                     participants={participants}
                     onCellClick={onCellClick}

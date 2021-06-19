@@ -31,7 +31,7 @@ class ScheduleService {
             .then(response => response.data)
     }
 
-    static retrieveMeetScheduleEvents(meetScheduleId: number, startDate: moment.Moment, endDate: moment.Moment) {
+    static retrieveMeetScheduleEvents(meetScheduleId: number, startDate: Date, endDate: Date) {
         return apiAxios
             .get<ScheduleEvent[]>(`${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/events`,
                 {

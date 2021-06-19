@@ -4,7 +4,7 @@ import {MuiPickersUtilsProvider, TimePicker, TimePickerProps} from '@material-ui
 import jMoment from "moment-jalaali";
 import React from 'react';
 import {ltrTheme, rtlTheme} from "../../App";
-import CustomTextField from "../Text/CustomTextField";
+import CustomTextField, {CustomTextFieldProps} from "../Text/CustomTextField";
 
 jMoment.loadPersian({dialect: "persian-modern", usePersianDigits: true});
 
@@ -13,10 +13,11 @@ interface CustomDatePickerProps extends Omit<TimePickerProps, "onChange" | "valu
     selectedDate: moment.Moment,
     onDateChange: (date: moment.Moment) => void,
     autoSelect: boolean,
+    textFieldProps?: Partial<CustomTextFieldProps>,
 }
 
 const CustomTimePicker: React.FunctionComponent<CustomDatePickerProps> = (props) => {
-    const {label, selectedDate, onDateChange, autoSelect, ...rest} = props;
+    const {label, selectedDate, onDateChange, autoSelect, textFieldProps, ...rest} = props;
 
     const handleDateChange = (date: moment.Moment | null) => {
         if (date) {
@@ -38,6 +39,7 @@ const CustomTimePicker: React.FunctionComponent<CustomDatePickerProps> = (props)
                         <ThemeProvider theme={rtlTheme}>
                             <CustomTextField
                                 {...props}
+                                {...textFieldProps}
                                 label={label}
                             />
                         </ThemeProvider>

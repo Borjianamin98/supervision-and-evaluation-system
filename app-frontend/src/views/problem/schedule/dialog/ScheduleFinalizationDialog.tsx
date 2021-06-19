@@ -15,6 +15,7 @@ import CustomTimePicker from "../../../../components/DatePicker/CustomTimePicker
 import MultiActionDialog from "../../../../components/Dialog/MultiActionDialog";
 import CustomTypography from "../../../../components/Typography/CustomTypography";
 import {Problem} from "../../../../model/problem/problem";
+import {userRoleInfo} from "../../../../model/user/User";
 import DateUtils from "../../../../utility/DateUtils";
 
 interface ScheduleDateDialogProps {
@@ -41,7 +42,19 @@ const PersonListItem: React.FunctionComponent<{ name: string, secondary: string 
 const ScheduleFinalizationDialog: React.FunctionComponent<ScheduleDateDialogProps> = (props) => {
     const {problem, open, onClose} = props;
 
-    const [selectedDate, setSelectedDate] = React.useState(DateUtils.getCurrentDate());
+    const [selectedDate, setSelectedDate] = React.useState(DateUtils.getCurrentDate().hours(12));
+
+    const announcedUsers = [problem.student, problem.supervisor, ...problem.referees]
+        .filter(user => problem.meetSchedule.announcedUsers.includes(user.id));
+
+    const [selectedDateError, setSelectedDateError] = React.useState(false);
+    React.useEffect(() => {
+        // Calculated based on 'scheduleStartHour' and 'scheduleEndHour' of scheduler.
+        const minAvailableTime = 8 * 60;
+        const maxAvailableTime = 20 * 60 - problem.meetSchedule.durationMinutes;
+        const selectedDayTimeOfDay = DateUtils.minutesPassedSinceStartOfDay(selectedDate);
+        setSelectedDateError(selectedDayTimeOfDay < minAvailableTime || selectedDayTimeOfDay > maxAvailableTime);
+    }, [problem.meetSchedule.durationMinutes, selectedDate]);
 
     return (
         <ThemeProvider theme={rtlTheme}>
@@ -54,6 +67,9 @@ const ScheduleFinalizationDialog: React.FunctionComponent<ScheduleDateDialogProp
                         onClose();
                         return;
                     }
+                    if (selectedDateError) {
+                        return;
+                    }
                     // Do something
                 }}
                 actions={[
@@ -63,17 +79,31 @@ const ScheduleFinalizationDialog: React.FunctionComponent<ScheduleDateDialogProp
                 ]}
             >
                 <Box display={"flex"} flexDirection={"column"}>
+                    {
+                        announcedUsers.length > 0 ? (
+                            <>
+                                <CustomTypography lineHeight={2}>
+                                    افراد زیر تاکنون زمان‌های خود را نهایی کرده‌اند:
+                                </CustomTypography>
+                                <List>
+                                    {announcedUsers.map(announcedUser => (
+                                        <PersonListItem
+                                            key={announcedUser.id}
+                                            name={announcedUser.fullName}
+                                            secondary={userRoleInfo(announcedUser)}
+                                        />
+                                    ))}
+                                </List>
+                            </>
+                        ) : (
+                            <CustomTypography lineHeight={2}>
+                                هیچ کدام از افراد حاضر در جلسه‌ی دفاع تاکنون زمان‌بندی خود را نهایی نکرده‌اند.
+                            </CustomTypography>
+                        )
+                    }
                     <CustomTypography lineHeight={2}>
-                        زمان‌بندی دفاع مربوط به پایان‌نامه (پروژه) شروع شده است و افراد ذینفع زیر تاکنون زمان‌های خود را
-                        نهایی کرده‌اند:
-                    </CustomTypography>
-                    <List>
-                        <PersonListItem name={"صادق علی‌اکبری"} secondary={"صادق علی‌اکبری"}/>
-                        <PersonListItem name={"صادق علی‌اکبری"} secondary={"صادق علی‌اکبری"}/>
-                    </List>
-                    <CustomTypography lineHeight={2}>
-                        در صورتی که تمامی افراد زمان‌بندی خود را نهایی نکرده‌اند، بهتر است صبر کنید تا همه افراد تایید
-                        کنند.
+                        در صورتی که تمامی افراد زمان‌بندی خود را نهایی نکرده‌اند، بهتر است صبر کنید تا همه افراد
+                        زمان‌بندی خود را مشخص و نهایی کنند.
                         بعد از وارد شدن زمان‌بندی تمام افراد، می‌توانید زمان برگزاری جلسه دفاع را در ادامه مشخص نمایید.
                     </CustomTypography>
                     <CustomDatePicker
@@ -95,6 +125,10 @@ const ScheduleFinalizationDialog: React.FunctionComponent<ScheduleDateDialogProp
                                 millisecond: newValue.millisecond(),
                             }))}
                         autoSelect={false}
+                        textFieldProps={{
+                            error: selectedDateError,
+                            helperText: "ساعت جلسه دفاع باید بین 8 صبح الی 8 شب باشد.",
+                        }}
                     />
                     <CustomAlert
                         icon={<InfoOutlinedIcon/>}
@@ -102,10 +136,10 @@ const ScheduleFinalizationDialog: React.FunctionComponent<ScheduleDateDialogProp
                     >
                         <CustomTypography lineHeight={2}>
                             در صورتی که زمان مشخصی را به عنوان زمان مشترک تشکیل جلسه‌ی دفاع پیدا نمی‌کنید، می‌توانید
-                            درخواست زمان‌بندی دوباره را از تمامی افراد ذینفع در جلسه داشته باشید.
-                            در این صورت پیامی برای تمامی افراد ذینفع مبنی بر زمان‌بندی دوباره ارسال می‌شود و شما
-                            می‌توانید از همه بخواهید تا سعی کنند زمان‌های حضور خود را بهتر نمایند تا زمانی مشترک برای
-                            تشکیل جلسه‌ی دفاع یافت شود.
+                            درخواست زمان‌بندی دوباره را انتخاب کنید تا پیامی برای تمامی افراد مبنی بر زمان‌بندی دوباره
+                            ارسال می‌شود.
+                            شما می‌توانید از همه بخواهید تا سعی کنند زمان‌های حضور خود را بهتر نمایند تا زمانی مشترک
+                            برای تشکیل جلسه‌ی دفاع یافت شود.
                         </CustomTypography>
                     </CustomAlert>
                 </Box>
