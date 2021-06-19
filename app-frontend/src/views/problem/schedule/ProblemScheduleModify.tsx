@@ -14,6 +14,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery/useMediaQuery";
 import {ScheduleComponent} from '@syncfusion/ej2-react-schedule'
 import {AxiosError} from "axios";
 import classNames from 'classnames';
+import moment from 'moment';
 import {useSnackbar} from "notistack";
 import React from 'react';
 import {useMutation, useQuery, useQueryClient} from "react-query";
@@ -203,7 +204,7 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                     timeScaleInterval={30}
                     minimumDurationMinutes={problem.meetSchedule.durationMinutes}
                     totalDaysInView={totalDaysInView}
-                    onStartDateChange={date => setStartDate(date)}
+                    onStartDateChange={date => setStartDate(moment(date))}
                     scheduleEvents={problemScheduleEvents}
                     participants={participants}
                     onCellClick={onCellClick}

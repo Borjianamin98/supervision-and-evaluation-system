@@ -6,11 +6,11 @@ export default class DateUtils {
     }
 
     static getCurrentDate(offsetDays?: number) {
-        return DateUtils.firstOfDay(new Date()).add(offsetDays ?? 0, "days").toDate();
+        return DateUtils.firstOfDay(new Date()).add(offsetDays ?? 0, "days");
     }
 
     static addDays(date: Date | moment.Moment, days: number) {
-        return moment(date).add(days, "days").toDate();
+        return moment(date).add(days, "days");
     }
 
     static firstOfDay(date: Date | moment.Moment) {

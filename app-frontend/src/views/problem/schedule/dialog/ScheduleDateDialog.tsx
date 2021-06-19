@@ -74,7 +74,7 @@ const ScheduleDateDialog: React.FunctionComponent<ScheduleDateDialogProps> = (pr
                         selectedDate={scheduleMinDate}
                         onDateChange={newValue => setScheduleMinDate(DateUtils.firstOfDay(newValue))}
                         autoSelect={true}
-                        minDate={DateUtils.getCurrentDate(+2)}
+                        minDate={DateUtils.getCurrentDate()}
                         maxDate={scheduleMaxDate}
                         onError={reason => setScheduleMinDateError(Boolean(reason))}
                     />
