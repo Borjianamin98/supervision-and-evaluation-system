@@ -1,12 +1,15 @@
 package ir.ac.sbu.evaluation.exception;
 
+import ir.ac.sbu.evaluation.exception.api.ApiException;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(code = HttpStatus.CONFLICT)
-public class ResourceConflictException extends RuntimeException {
+public class ResourceConflictException extends ApiException {
 
     public ResourceConflictException(String message) {
-        super(message);
+        this(message, "درخواست مربوط به منبع دارای تضاد با وضعیت فعلی می‌باشد.");
+    }
+
+    public ResourceConflictException(String message, String faMessage) {
+        super(HttpStatus.CONFLICT, message, faMessage);
     }
 }

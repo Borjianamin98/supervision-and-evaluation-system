@@ -1,10 +1,9 @@
 package ir.ac.sbu.evaluation.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ir.ac.sbu.evaluation.exception.api.ApiError;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.Instant;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
@@ -27,12 +26,16 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         // We should just send a 401 unauthorized response.
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        Map<String, Object> data = new HashMap<>();
-        data.put("timestamp", Calendar.getInstance().getTime());
-        data.put("status", HttpServletResponse.SC_UNAUTHORIZED);
-        data.put("error", "Unauthorized");
-        data.put("message", authException.getMessage());
-        data.put("path", request.getRequestURI());
-        response.getWriter().write(objectMapper.writeValueAsString(data));
+        ApiError apiError = ApiError.builder()
+                .status(HttpServletResponse.SC_UNAUTHORIZED)
+                .exception(authException.getClass().getSimpleName())
+                .detail(authException.getMessage())
+                .apiPath(request.getRequestURI())
+                .httpMethod(request.getMethod())
+                .timestamp(Instant.now())
+                .enMessage("Full authentication is required to access this resource")
+                .faMessage("دسترسی به منبع مربوطه امکان پذیر نمی‌باشد.")
+                .build();
+        response.getWriter().write(objectMapper.writeValueAsString(apiError));
     }
 }

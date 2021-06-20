@@ -1,7 +1,10 @@
 server:
   port: 8080
   error:
-    include-message: always # Show error message in server error: https://stackoverflow.com/a/62586031/3739748
+    # Show error message in server error: https://stackoverflow.com/a/62586031/
+    include-message: always
+    include-exception: true
+
 spring:
   h2:
     console:
@@ -16,6 +19,9 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: false # TODO: Added for debug purpose and should be disabled
+  # To redirect the exception to our advice (ResponseEntityExceptionHandler) instead of DefaultHandlerExceptionResolver
+  mvc.throw-exception-if-no-handler-found: true
+  web.resources.add-mappings: false
 
 # Application configurations
 # JWT configurations

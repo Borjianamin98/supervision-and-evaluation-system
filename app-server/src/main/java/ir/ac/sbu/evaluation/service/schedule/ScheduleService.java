@@ -9,6 +9,7 @@ import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleSaveDto;
 import ir.ac.sbu.evaluation.dto.schedule.event.DateRangeDto;
 import ir.ac.sbu.evaluation.dto.schedule.event.ScheduleEventDto;
 import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
+import ir.ac.sbu.evaluation.exception.ResourceConflictException;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
 import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
@@ -22,6 +23,9 @@ import ir.ac.sbu.evaluation.repository.schedule.ScheduleEventRepository;
 import ir.ac.sbu.evaluation.repository.user.UserRepository;
 import ir.ac.sbu.evaluation.utility.DateUtility;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -199,6 +203,19 @@ public class ScheduleService {
         checkUserIsSupervisor(userId, scheduleProblem);
         checkMeetScheduleState(meetSchedule, ScheduleState.STARTED);
 
+        // Time of finalization date should be between 8 AM to 8 PM
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(finalizedDate, ZoneId.systemDefault());
+        int hour = localDateTime.getHour();
+        if (hour < 8 || hour * 60 + meetSchedule.getDurationMinutes() > 20 * 60) {
+            throw new IllegalArgumentException("Schedule finalization date should be between 8 am until 8 pm: "
+                    + "hour = " + hour);
+        }
+
+        // Check selected time be in all involved user's schedule times.
+        if (true) {
+            throw new ResourceConflictException("Not good!", "اصلا خوب نیست!");
+        }
+
         problemEventRepository.save(ProblemEvent.builder()
                 .message(String.format(
                         "زمان‌ جلسه دفاع پایان‌نامه (پروژه) در تاریخ %s به مدت %s برگزار می‌شود.",
@@ -207,7 +224,7 @@ public class ScheduleService {
                 .build());
 
         // TODO: Must completed.
-        
+
         return null;
     }
 

@@ -1,12 +1,12 @@
 package ir.ac.sbu.evaluation.exception;
 
+import ir.ac.sbu.evaluation.exception.api.ApiException;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(code = HttpStatus.FORBIDDEN)
-public class IllegalResourceAccessException extends RuntimeException {
+public class IllegalResourceAccessException extends ApiException {
 
     public IllegalResourceAccessException(String message) {
-        super(message);
+        super(HttpStatus.FORBIDDEN, message, "دسترسی به منبع مربوطه امکان پذیر نمی‌باشد.");
     }
+
 }

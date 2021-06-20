@@ -1,12 +1,11 @@
 package ir.ac.sbu.evaluation.exception;
 
+import ir.ac.sbu.evaluation.exception.api.ApiException;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(code = HttpStatus.NOT_FOUND)
-public class ResourceNotFoundException extends RuntimeException {
+public class ResourceNotFoundException extends ApiException {
 
     public ResourceNotFoundException(String message) {
-        super(message);
+        super(HttpStatus.NOT_FOUND, message, "منبع مربوطه یافت نشد.");
     }
 }
