@@ -1,6 +1,6 @@
 import apiAxios from "../../../config/axios-config";
 import {Education, ENGLISH_EDUCATIONS} from "../../../model/enum/education";
-import {Pageable} from "../../../model/pageable";
+import {Pageable} from "../../../model/api/Pageable";
 import {Problem, ProblemSave} from "../../../model/problem/problem";
 import {ProblemState} from "../../../model/problem/problemState";
 import {API_PROBLEM_ROOT_PATH} from "../../ApiPaths";

@@ -1,5 +1,5 @@
 import apiAxios from "../../../config/axios-config";
-import {Pageable} from "../../../model/pageable";
+import {Pageable} from "../../../model/api/Pageable";
 import {Problem} from "../../../model/problem/problem";
 import {ProblemEvent} from "../../../model/problem/problemEvent";
 import {API_PROBLEM_ROOT_PATH} from "../../ApiPaths";

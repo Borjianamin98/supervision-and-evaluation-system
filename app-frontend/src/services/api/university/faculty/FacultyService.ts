@@ -1,5 +1,5 @@
 import apiAxios from "../../../../config/axios-config";
-import {Pageable} from "../../../../model/pageable";
+import {Pageable} from "../../../../model/api/Pageable";
 import {Faculty} from "../../../../model/university/faculty/faculty";
 import {FacultySave} from "../../../../model/university/faculty/facultySave";
 

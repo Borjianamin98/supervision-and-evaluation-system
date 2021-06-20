@@ -18,6 +18,7 @@ import CustomTimePicker from "../../../../components/DatePicker/CustomTimePicker
 import MultiActionDialog from "../../../../components/Dialog/MultiActionDialog";
 import CustomTypography from "../../../../components/Typography/CustomTypography";
 import {generalErrorHandler} from "../../../../config/axios-config";
+import {ApiError} from "../../../../model/api/ApiError";
 import {Problem} from "../../../../model/problem/problem";
 import {userRoleInfo} from "../../../../model/user/User";
 import ScheduleService from "../../../../services/api/schedule/ScheduleService";
@@ -66,7 +67,13 @@ const ScheduleFinalizationDialog: React.FunctionComponent<ScheduleDateDialogProp
                 // queryClient.setQueryData<Problem>(["problem", problem.id], {...problem, meetSchedule: data});
                 queryClient.invalidateQueries(["problemEvents", problem.id]);
             },
-            onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
+            onError: (error: AxiosError<ApiError>) => {
+                if (error.response) {
+                    enqueueSnackbar(error.response.data.faMessage, {variant: "error"});
+                } else {
+                    generalErrorHandler(error, enqueueSnackbar);
+                }
+            },
         });
 
     const [selectedDate, setSelectedDate] = React.useState(DateUtils.getCurrentDate().hours(12));

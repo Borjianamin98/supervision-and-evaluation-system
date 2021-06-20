@@ -1,5 +1,5 @@
 import apiAxios from "../../../config/axios-config";
-import {Pageable} from "../../../model/pageable";
+import {Pageable} from "../../../model/api/Pageable";
 import {Master} from "../../../model/user/master/Master";
 import {MasterSave} from "../../../model/user/master/MasterSave";
 
