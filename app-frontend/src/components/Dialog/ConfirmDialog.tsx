@@ -40,10 +40,10 @@ const ConfirmDialog: React.FunctionComponent<ConfirmDialogProps> = (props) => {
                 {props.children}
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => onDialogOpenClose(false)} color="primary">
+                <Button onClick={() => onDialogOpenClose(false)} color="primary" variant={"outlined"}>
                     انصراف
                 </Button>
-                <Button onClick={() => onDialogOpenClose(true)} color="primary" autoFocus>
+                <Button onClick={() => onDialogOpenClose(true)} color="primary" variant={"outlined"} autoFocus>
                     تایید
                 </Button>
             </DialogActions>

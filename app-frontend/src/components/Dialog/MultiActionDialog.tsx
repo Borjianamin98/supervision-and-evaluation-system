@@ -43,9 +43,11 @@ const MultiActionDialog: React.FunctionComponent<MultiActionDialogProps> = (prop
             <DialogActions>
                 {
                     actions.map(action =>
-                        <Button key={action.name}
-                                onClick={() => onClose(action.name)}
-                                color="primary"
+                        <Button
+                            key={action.name}
+                            onClick={() => onClose(action.name)}
+                            color={"primary"}
+                            variant={"outlined"}
                         >
                             {action.content}
                         </Button>)

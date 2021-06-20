@@ -128,12 +128,14 @@ function SearchableListDialog<T>(props: SearchableListDialogProps<T>) {
                 <Button
                     onClick={() => onDialogClose(false)}
                     color="primary"
+                    variant={"outlined"}
                 >
                     انصراف
                 </Button>
                 <Button
                     onClick={() => onDialogClose(true)}
                     color="primary" autoFocus disabled={checkedIndex === -1}
+                    variant={"outlined"}
                 >
                     تایید
                 </Button>

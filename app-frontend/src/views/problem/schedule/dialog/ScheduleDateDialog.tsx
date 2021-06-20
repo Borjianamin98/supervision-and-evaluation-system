@@ -36,9 +36,9 @@ const ScheduleDateDialog: React.FunctionComponent<ScheduleDateDialogProps> = (pr
         (data: { meetScheduleId: number, dateRange: DateRange }) =>
             ScheduleService.updateMeetScheduleDate(data.meetScheduleId, data.dateRange),
         {
-            onSuccess: async (data) => {
+            onSuccess: async (data, variables) => {
                 queryClient.setQueryData<Problem>(["problem", problem.id], {...problem, meetSchedule: data});
-                queryClient.invalidateQueries(["meetScheduleEvents", problem.meetSchedule.id])
+                queryClient.invalidateQueries(["meetScheduleEvents", variables.meetScheduleId])
                 queryClient.invalidateQueries(["problemEvents", problem.id]);
                 onDialogClose();
             },

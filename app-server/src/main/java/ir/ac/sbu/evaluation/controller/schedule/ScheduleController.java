@@ -58,6 +58,14 @@ public class ScheduleController {
         return scheduleService.announceFinalizationByUser(authUserDetail.getUserId(), meetScheduleId);
     }
 
+    @PreAuthorize("hasAnyAuthority(@SecurityRoles.MASTER_ROLE_NAME)")
+    @PostMapping(path = "/{meetScheduleId}/reschedule")
+    public MeetScheduleDto requestRescheduleMeetSchedule(
+            @ModelAttribute AuthUserDetail authUserDetail,
+            @PathVariable long meetScheduleId) {
+        return scheduleService.rescheduleMeetSchedule(authUserDetail.getUserId(), meetScheduleId);
+    }
+
     @GetMapping(path = "/{meetScheduleId}/events")
     public List<ScheduleEventDto> retrieveScheduleEvents(
             @ModelAttribute AuthUserDetail authUserDetail,

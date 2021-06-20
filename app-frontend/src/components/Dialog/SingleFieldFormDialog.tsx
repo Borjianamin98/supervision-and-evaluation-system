@@ -78,10 +78,10 @@ const SingleFieldFormDialog: React.FunctionComponent<ConfirmDialogProps> = (prop
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={event => onCommentDialogClose(false)} color="primary">
+                <Button onClick={() => onCommentDialogClose(false)} color="primary" variant={"outlined"}>
                     انصراف
                 </Button>
-                <Button onClick={event => onCommentDialogClose(true)} color="primary">
+                <Button onClick={() => onCommentDialogClose(true)} color="primary" variant={"outlined"}>
                     ثبت
                 </Button>
             </DialogActions>

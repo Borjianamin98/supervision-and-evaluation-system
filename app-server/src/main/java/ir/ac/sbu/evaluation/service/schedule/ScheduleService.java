@@ -19,6 +19,7 @@ import ir.ac.sbu.evaluation.repository.user.UserRepository;
 import ir.ac.sbu.evaluation.utility.DateUtility;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -108,10 +109,7 @@ public class ScheduleService {
 
         Problem scheduleProblem = meetSchedule.getProblem();
         checkUserIsSupervisor(userId, scheduleProblem);
-        if (meetSchedule.getScheduleState() != ScheduleState.CREATED) {
-            throw new IllegalArgumentException(
-                    "It is illegal to start an already started meet schedule: ID = " + meetScheduleId);
-        }
+        checkMeetScheduleState(meetSchedule, ScheduleState.CREATED);
         long durationMinutes = meetScheduleSaveDto.getDurationMinutes();
         if (durationMinutes % 30 != 0) {
             throw new IllegalArgumentException("Invalid duration value for a meet schedule: ID = " + meetScheduleId
@@ -137,10 +135,7 @@ public class ScheduleService {
 
         Problem scheduleProblem = meetSchedule.getProblem();
         checkUserIsSupervisor(userId, scheduleProblem);
-        if (meetSchedule.getScheduleState() != ScheduleState.STARTED) {
-            throw new IllegalArgumentException(
-                    "Illegal to change date of meet schedule which is not in started state: ID = " + meetScheduleId);
-        }
+        checkMeetScheduleState(meetSchedule, ScheduleState.STARTED);
 
         problemEventRepository.save(ProblemEvent.builder()
                 .message(
@@ -154,13 +149,11 @@ public class ScheduleService {
         return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
     }
 
+    @Transactional
     public MeetScheduleDto announceFinalizationByUser(long userId, long meetScheduleId) {
         MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
         checkUserAccessMeetSchedule(userId, meetSchedule);
-        if (meetSchedule.getScheduleState() != ScheduleState.STARTED) {
-            throw new IllegalArgumentException(
-                    "Illegal to announce finalization for meet schedule in not started state: ID = " + meetScheduleId);
-        }
+        checkMeetScheduleState(meetSchedule, ScheduleState.STARTED);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: ID = " + userId));
@@ -171,6 +164,33 @@ public class ScheduleService {
 
         meetSchedule.getAnnouncedUsers().add(userId);
         return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
+    }
+
+    @Transactional
+    public MeetScheduleDto rescheduleMeetSchedule(long userId, long meetScheduleId) {
+        MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
+
+        Problem scheduleProblem = meetSchedule.getProblem();
+        checkUserIsSupervisor(userId, scheduleProblem);
+        checkMeetScheduleState(meetSchedule, ScheduleState.STARTED);
+
+        problemEventRepository.save(ProblemEvent.builder()
+                .message(
+                        "با توجه به زمان‌های اعلام‌شده توسط اساتید، زمان مشترکی برای برگزاری جلسه دفاع یافت نشد. به "
+                                + "همین منظور زمان‌بندی بازنشانی شد تا تمامی افراد زمان‌های خود را بررسی و در صورت "
+                                + "امکان مواردی را تغییر دهند.")
+                .problem(meetSchedule.getProblem())
+                .build());
+
+        meetSchedule.setAnnouncedUsers(new HashSet<>());
+        return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
+    }
+
+    private void checkMeetScheduleState(MeetSchedule meetSchedule, ScheduleState state) {
+        if (meetSchedule.getScheduleState() != state) {
+            throw new IllegalArgumentException("Illegal change on meet schedule in current state: "
+                    + "ID = " + meetSchedule.getId() + " state = " + meetSchedule.getScheduleState());
+        }
     }
 
     private void checkUserIsSupervisor(long userId, Problem problem) {

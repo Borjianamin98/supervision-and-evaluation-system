@@ -6,16 +6,21 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import {ThemeProvider} from "@material-ui/core/styles";
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import {AxiosError} from 'axios';
 import moment from 'moment';
+import {useSnackbar} from 'notistack';
 import React from 'react';
+import {useMutation, useQueryClient} from 'react-query';
 import {rtlTheme} from '../../../../App';
 import CustomAlert from "../../../../components/Alert/CustomAlert";
 import CustomDatePicker from "../../../../components/DatePicker/CustomDatePicker";
 import CustomTimePicker from "../../../../components/DatePicker/CustomTimePicker";
 import MultiActionDialog from "../../../../components/Dialog/MultiActionDialog";
 import CustomTypography from "../../../../components/Typography/CustomTypography";
+import {generalErrorHandler} from "../../../../config/axios-config";
 import {Problem} from "../../../../model/problem/problem";
 import {userRoleInfo} from "../../../../model/user/User";
+import ScheduleService from "../../../../services/api/schedule/ScheduleService";
 import DateUtils from "../../../../utility/DateUtils";
 
 interface ScheduleDateDialogProps {
@@ -40,10 +45,21 @@ const PersonListItem: React.FunctionComponent<{ name: string, secondary: string 
 }
 
 const ScheduleFinalizationDialog: React.FunctionComponent<ScheduleDateDialogProps> = (props) => {
+    const {enqueueSnackbar} = useSnackbar();
     const {problem, open, onClose} = props;
 
-    const [selectedDate, setSelectedDate] = React.useState(DateUtils.getCurrentDate().hours(12));
+    const queryClient = useQueryClient();
+    const rescheduleMeetSchedule = useMutation((data: number) =>
+            ScheduleService.requestRescheduleMeetSchedule(data),
+        {
+            onSuccess: async (data) => {
+                queryClient.setQueryData<Problem>(["problem", problem.id], {...problem, meetSchedule: data});
+                queryClient.invalidateQueries(["problemEvents", problem.id]);
+            },
+            onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
+        });
 
+    const [selectedDate, setSelectedDate] = React.useState(DateUtils.getCurrentDate().hours(12));
     const announcedUsers = [problem.student, problem.supervisor, ...problem.referees]
         .filter(user => problem.meetSchedule.announcedUsers.includes(user.id));
 
@@ -60,15 +76,28 @@ const ScheduleFinalizationDialog: React.FunctionComponent<ScheduleDateDialogProp
         <ThemeProvider theme={rtlTheme}>
             <MultiActionDialog
                 title={"تایین زمان دفاع"}
-                description={`زمان دفاع پایان‌نامه (پروژه) «${problem.title}»`}
+                description={`دفاع پایان‌نامه (پروژه) «${problem.title}»`}
                 open={open}
                 onClose={reason => {
                     if (reason === "closed") {
                         onClose();
                         return;
                     }
+
                     if (selectedDateError) {
                         return;
+                    }
+                    switch (reason) {
+                        case "reschedule":
+                            rescheduleMeetSchedule.mutate(problem.meetSchedule.id, {
+                                onSuccess: () => onClose()
+                            })
+                            break;
+                        case "confirm":
+
+                            break;
+                        default:
+                            throw new Error("Unexpected reason for dialog actions");
                     }
                     // Do something
                 }}
