@@ -1,5 +1,9 @@
 package ir.ac.sbu.evaluation.service.schedule;
 
+import com.ibm.icu.text.DateFormat;
+import com.ibm.icu.text.SimpleDateFormat;
+import com.ibm.icu.util.Calendar;
+import com.ibm.icu.util.ULocale;
 import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleDto;
 import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleSaveDto;
 import ir.ac.sbu.evaluation.dto.schedule.event.DateRangeDto;
@@ -19,6 +23,7 @@ import ir.ac.sbu.evaluation.repository.user.UserRepository;
 import ir.ac.sbu.evaluation.utility.DateUtility;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -184,6 +189,26 @@ public class ScheduleService {
 
         meetSchedule.setAnnouncedUsers(new HashSet<>());
         return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
+    }
+
+    @Transactional
+    public MeetScheduleDto finalizeMeetSchedule(long userId, long meetScheduleId, Instant finalizedDate) {
+        MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
+
+        Problem scheduleProblem = meetSchedule.getProblem();
+        checkUserIsSupervisor(userId, scheduleProblem);
+        checkMeetScheduleState(meetSchedule, ScheduleState.STARTED);
+
+        problemEventRepository.save(ProblemEvent.builder()
+                .message(String.format(
+                        "زمان‌ جلسه دفاع پایان‌نامه (پروژه) در تاریخ %s به مدت %s برگزار می‌شود.",
+                        DateUtility.getFullPersianDate(finalizedDate), meetSchedule.getDurationInfo()))
+                .problem(meetSchedule.getProblem())
+                .build());
+
+        // TODO: Must completed.
+        
+        return null;
     }
 
     private void checkMeetScheduleState(MeetSchedule meetSchedule, ScheduleState state) {

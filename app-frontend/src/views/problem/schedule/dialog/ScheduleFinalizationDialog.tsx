@@ -58,6 +58,16 @@ const ScheduleFinalizationDialog: React.FunctionComponent<ScheduleDateDialogProp
             },
             onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
+    const finalizeMeetSchedule = useMutation(
+        (data: { meetScheduleId: number, finalizedDate: Date }) =>
+            ScheduleService.finalizeMeetSchedule(data.meetScheduleId, data.finalizedDate),
+        {
+            onSuccess: async (data) => {
+                // queryClient.setQueryData<Problem>(["problem", problem.id], {...problem, meetSchedule: data});
+                queryClient.invalidateQueries(["problemEvents", problem.id]);
+            },
+            onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
+        });
 
     const [selectedDate, setSelectedDate] = React.useState(DateUtils.getCurrentDate().hours(12));
     const announcedUsers = [problem.student, problem.supervisor, ...problem.referees]
@@ -91,10 +101,13 @@ const ScheduleFinalizationDialog: React.FunctionComponent<ScheduleDateDialogProp
                         case "reschedule":
                             rescheduleMeetSchedule.mutate(problem.meetSchedule.id, {
                                 onSuccess: () => onClose()
-                            })
+                            });
                             break;
                         case "confirm":
-
+                            finalizeMeetSchedule.mutate({
+                                meetScheduleId: problem.meetSchedule.id,
+                                finalizedDate: selectedDate.toDate(),
+                            });
                             break;
                         default:
                             throw new Error("Unexpected reason for dialog actions");

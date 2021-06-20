@@ -1,5 +1,8 @@
 package ir.ac.sbu.evaluation.utility;
 
+import com.ibm.icu.text.DateFormat;
+import com.ibm.icu.text.SimpleDateFormat;
+import com.ibm.icu.util.ULocale;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.Calendar;
@@ -28,5 +31,17 @@ public class DateUtility {
         calendar.set(Calendar.MINUTE, 59);
         calendar.set(Calendar.HOUR_OF_DAY, 23);
         return calendar.toInstant();
+    }
+
+    public static String getFullPersianDate(Instant instant) {
+        return DateUtility.getPersianDate(instant, "EEEE، d MMMM YYYY (h:mm a)");
+    }
+
+    public static String getPersianDate(Instant instant, String format) {
+        ULocale locale = new ULocale("fa_IR@calendar=persian");
+        com.ibm.icu.util.Calendar calendar = com.ibm.icu.util.Calendar.getInstance(locale);
+        calendar.setTime(java.util.Date.from(instant));
+        DateFormat dateFormat = new SimpleDateFormat(format, locale);
+        return dateFormat.format(calendar);
     }
 }

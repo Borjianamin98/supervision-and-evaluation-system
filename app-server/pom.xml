@@ -76,6 +76,13 @@
             <version>${io.jsonwebtoken.version}</version>
         </dependency>
 
+        <!-- International Components for Unicode (Persian Calendar) -->
+        <dependency>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j</artifactId>
+            <version>69.1</version>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <artifactId>spring-boot-starter-test</artifactId>

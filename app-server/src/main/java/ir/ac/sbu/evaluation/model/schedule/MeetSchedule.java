@@ -67,4 +67,13 @@ public class MeetSchedule extends BaseEntity {
         this.scheduleEvents = scheduleEvents == null ? new HashSet<>() : scheduleEvents;
         this.announcedUsers = announcedUsers == null ? new HashSet<>() : announcedUsers;
     }
+
+    public String getDurationInfo() {
+        String[] persianDurationNames = new String[]{"۳۰ دقیقه", "یک ساعت", "یک ساعت و ۳۰ دقیقه", "دو ساعت"};
+        if (durationMinutes < 30 || durationMinutes > 120) {
+            throw new IllegalStateException(
+                    "Schedule duration should be between 30 to 120 minutes: " + durationMinutes);
+        }
+        return persianDurationNames[(int) (durationMinutes / 30) - 1];
+    }
 }
