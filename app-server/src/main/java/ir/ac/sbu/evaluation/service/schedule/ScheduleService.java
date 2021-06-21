@@ -255,7 +255,7 @@ public class ScheduleService {
 
         problemEventRepository.save(ProblemEvent.builder()
                 .message(String.format(
-                        "زمان‌ جلسه دفاع پایان‌نامه (پروژه) در تاریخ %s به مدت %s برگزار می‌شود.",
+                        "جلسه دفاع پایان‌نامه (پروژه) در تاریخ %s به مدت %s برگزار می‌شود.",
                         DateUtility.getFullPersianDate(finalizedDateStart), meetSchedule.getDurationInfo()))
                 .problem(meetSchedule.getProblem())
                 .build());
