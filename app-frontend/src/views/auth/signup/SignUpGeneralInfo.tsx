@@ -72,6 +72,7 @@ const SignUpGeneralInfo: React.FunctionComponent<SignUpSectionsProps> = (props) 
             />
             <ComboBox
                 options={PERSIAN_GENDERS}
+                filterOptions={(options) => options} // do not filter values
                 value={genderMapToPersian(userSave.personalInfo.gender)}
                 onChange={(e, newValue) =>
                     updateUser(update(userSave, {

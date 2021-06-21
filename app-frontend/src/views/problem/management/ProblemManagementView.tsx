@@ -2,20 +2,22 @@ import {Box, Button, Grid, Paper} from "@material-ui/core";
 import {createStyles, makeStyles, Theme, ThemeProvider} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import AddCommentIcon from "@material-ui/icons/AddComment";
-import GradeIcon from '@material-ui/icons/Grade';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import ScheduleIcon from '@material-ui/icons/Schedule';
 import {AxiosError} from "axios";
+import moment from "jalali-moment";
 import {useSnackbar} from "notistack";
 import React from 'react';
 import {useMutation, useQueryClient} from "react-query";
 import {rtlTheme} from "../../../App";
+import conclusionImage from "../../../assets/images/schedule/Conclusion.jpg";
+import meetScheduleImage from "../../../assets/images/schedule/MeetSchedule.jpg";
+import ButtonLink from "../../../components/Button/ButtonLink";
 import KeywordsList from "../../../components/Chip/KeywordsList";
 import ConfirmDialog from "../../../components/Dialog/ConfirmDialog";
 import SearchableListDialog from "../../../components/Dialog/SearchableListDialog";
+import MediaCard from "../../../components/MediaCard/MediaCard";
 import CustomTypography from "../../../components/Typography/CustomTypography";
 import {generalErrorHandler} from "../../../config/axios-config";
-import browserHistory from "../../../config/browserHistory";
 import {educationMapToPersian} from "../../../model/enum/education";
 import {Problem} from "../../../model/problem/problem";
 import {ScheduleState} from "../../../model/schedule/ScheduleState";
@@ -24,7 +26,7 @@ import AuthenticationService from "../../../services/api/AuthenticationService";
 import ProblemMasterService from "../../../services/api/problem/ProblemMasterService";
 import MasterService from "../../../services/api/user/MasterService";
 import NumberUtils from "../../../utility/NumberUtils";
-import {PROBLEM_SCHEDULE_VIEW_PATH} from "../../ViewPaths";
+import {PROBLEM_SCHEDULE_VIEW_PATH, UNIVERSITY_LIST_VIEW_PATH} from "../../ViewPaths";
 import ProblemEventsList from "../ProblemEventsList";
 import ProblemAddEvent from "./PorblemAddEvent";
 import ProfileInfoCard from "./ProfileInfoCard";
@@ -111,21 +113,73 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
         setRefereeDialogOpen(false);
     }
 
-    const onScheduleClick = () => {
-        browserHistory.push({
-            pathname: `${PROBLEM_SCHEDULE_VIEW_PATH}/${problem.id}`,
-            state: problem
-        });
-    }
-
-    const meetScheduleEnabled = () => {
+    const schedulingMediaContent = () => {
         switch (problem.meetSchedule.scheduleState) {
             case ScheduleState.CREATED:
-                return currentUserIsSupervisor && problem.referees.length === 2;
+                if (currentUserIsSupervisor) {
+                    if (problem.referees.length === 2) {
+                        return ["شرایط لازم برای زمان‌بندی و تعیین جلسه‌ی دفاع فراهم می‌باشد. " +
+                        "شما می‌توانید زمانی که به برگزاری جلسه دفاع نزدیک می‌شود، " +
+                        "زمان‌بندی مسئله را شروع کنید تا زمانی مشترک برای برگزاری جلسه دفاع مشخص کنید."];
+                    } else {
+                        return ["داورهای پروژه (پایان‌نامه) مشخص نشده‌اند. " +
+                        "پیش از شروع به تشکیل جلسه‌ی دفاع باید تمامی داورها مشخص شده باشند."];
+                    }
+                } else {
+                    return ["برگزاری جلسه دفاع پایان‌نامه (پروژه) هنوز شروع نشده است. " +
+                    "شما می‌توانید بعد از این که امکان زمان‌بندی جلسه دفاع توسط استاد راهنما فعال شد، از این قسمت زمان‌های حضور و هماهنگی‌های لازم را انجام دهید."]
+                }
             case ScheduleState.STARTED:
-                return problem.referees.length === 2;
+                if (problem.referees.length === 2) {
+                    return ["برنامه‌ریزی جلسه‌ی دفاع پایان‌نامه (پروژه) شروع شده است. " +
+                    "تمامی افرادی که باید در جلسه حاضرشوند، زمان‌های حضور خود را برای تعیین تاریخ دفاع مشخص نمایند."];
+                } else {
+                    return ["تعدادی از داورهای مسئله بعد از شروع برنامه‌ریزی برای جلسه دفاع به دلایلی حذف گردیده‌اند. " +
+                    "برای زمان‌بندی و مشخص‌کردن جلسه‌ی دفاع باید ابتدا تمامی داورهای مسئله مشخص شوند. " +
+                    "با توجه به شروع برنامه‌ریزی جلسه دفاع، در تعیین به موقع داورهای جایگزین مسئله اقدام کنید."];
+                }
             case ScheduleState.FINALIZED:
-                return false;
+                const finalizedDate = new Date(problem.meetSchedule.finalizedDate!);
+                const finalizedMoment = moment(finalizedDate).locale('fa')
+                    .format('ddd، D MMMM YYYY (h:mm a)');
+                const finalizedDateIsAfterNow = moment(finalizedDate).isAfter(moment(new Date()));
+                const finalizeFromNow = moment(finalizedDate).locale('fa').fromNow();
+
+                return [
+                    `زمان جلسه دفاع در تاریخ ${finalizedMoment} می‌باشد.`,
+                    finalizedDateIsAfterNow ?
+                        `${finalizeFromNow} آینده جلسه دفاع تشکیل خواهد شد.` :
+                        `${finalizeFromNow} جلسه دفاع تشکیل شده است.`,
+                ];
+            default:
+                throw new Error("Illegal problem meet schedule state: " + problem.meetSchedule.scheduleState);
+        }
+    }
+    const schedulingMediaActions = () => {
+        switch (problem.meetSchedule.scheduleState) {
+            case ScheduleState.CREATED:
+                if (currentUserIsSupervisor && problem.referees.length === 2) {
+                    return <ButtonLink to={`${PROBLEM_SCHEDULE_VIEW_PATH}/${problem.id}`} color="primary">
+                        شروع برنامه‌ریزی جلسه دفاع
+                    </ButtonLink>;
+                } else {
+                    return null;
+                }
+            case ScheduleState.STARTED:
+                if (problem.referees.length === 2) {
+                    return <ButtonLink to={`${PROBLEM_SCHEDULE_VIEW_PATH}/${problem.id}`} color="primary">
+                        برنامه‌ریزی جلسه دفاع
+                    </ButtonLink>;
+                } else {
+                    return null;
+                }
+            case ScheduleState.FINALIZED:
+                const finalizedDate = new Date(problem.meetSchedule.finalizedDate!);
+                const finalizedDateIsAfterNow = moment(finalizedDate).isAfter(moment(new Date()));
+                return <>
+                    <Button disabled={finalizedDateIsAfterNow} color="primary">تایید برگزاری جلسه</Button>
+                    <Button disabled={finalizedDateIsAfterNow} color="primary">اعلام تشکیل‌نشدن جلسه</Button>
+                </>
             default:
                 throw new Error("Illegal problem meet schedule state: " + problem.meetSchedule.scheduleState);
         }
@@ -196,7 +250,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                                 </Box>
                             </Grid>
                             <Box marginTop={2}>
-                                {problem ? <ProblemEventsList problemId={problem.id!} pageSize={3}/> : undefined}
+                                {problem ? <ProblemEventsList problemId={problem.id!} pageSize={4}/> : undefined}
                             </Box>
                         </Paper>
                     </Grid>
@@ -249,38 +303,64 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                         }
                     </Grid>
                     <Grid item>
-                        <Box component={Paper} px={4} marginTop={1}>
-                            <Grid container spacing={1} className={classes.columnContent}>
-                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                    <Typography variant="h6" className={classes.centerAlign} paragraph>
-                                        عملیات
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                    <Button
-                                        fullWidth
-                                        variant="contained"
-                                        color="secondary"
-                                        startIcon={<ScheduleIcon/>}
-                                        onClick={onScheduleClick}
-                                        disabled={!meetScheduleEnabled()}
-                                    >
-                                        زمان‌بندی دفاع
-                                    </Button>
-                                </Grid>
-                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                    <Button
-                                        fullWidth
-                                        variant="contained"
-                                        color="secondary"
-                                        startIcon={<GradeIcon/>}
-                                    >
-                                        نمره‌دهی
-                                    </Button>
-                                </Grid>
-                            </Grid>
+                        <Box component={Paper} padding={1} marginBottom={1}>
+                            <Typography className={classes.centerAlign}>
+                                عملیات
+                            </Typography>
                         </Box>
+                        <Grid container direction="row" spacing={1}>
+                            <Grid item xs={12} sm={6} md={6} lg={12} xl={6}>
+                                <MediaCard
+                                    media={meetScheduleImage}
+                                    mediaHeight={100}
+                                    title={"جلسه دفاع"}
+                                    subTitle={schedulingMediaContent()}
+                                >
+                                    {schedulingMediaActions()}
+                                </MediaCard>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={6} lg={12} xl={6}>
+                                <MediaCard
+                                    media={conclusionImage}
+                                    mediaHeight={100}
+                                    title={"جمع‌بندی"}
+                                    subTitle={["زمان برگزاری جلسه دفاع خود را مشخص نمایید."]}
+                                >
+                                    <ButtonLink to={UNIVERSITY_LIST_VIEW_PATH} color="primary">
+                                        مشاهده
+                                    </ButtonLink>
+                                </MediaCard>
+                            </Grid>
+                        </Grid>
                     </Grid>
+                    {/*<Grid item>*/}
+                    {/*<Box component={Paper} px={4} marginTop={1}>*/}
+                    {/*    <Grid container spacing={1} className={classes.columnContent}>*/}
+                    {/*        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>*/}
+                    {/*            /!*<Button*!/*/}
+                    {/*            /!*    fullWidth*!/*/}
+                    {/*            /!*    variant="contained"*!/*/}
+                    {/*            /!*    color="secondary"*!/*/}
+                    {/*            /!*    startIcon={<ScheduleIcon/>}*!/*/}
+                    {/*            /!*    onClick={onScheduleClick}*!/*/}
+                    {/*            /!*    disabled={!meetScheduleEnabled()}*!/*/}
+                    {/*            /!*>*!/*/}
+                    {/*            /!*    زمان‌بندی دفاع*!/*/}
+                    {/*            /!*</Button>*!/*/}
+                    {/*        </Grid>*/}
+                    {/*        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>*/}
+                    {/*            <Button*/}
+                    {/*                fullWidth*/}
+                    {/*                variant="contained"*/}
+                    {/*                color="secondary"*/}
+                    {/*                startIcon={<GradeIcon/>}*/}
+                    {/*            >*/}
+                    {/*                نمره‌دهی */}
+                    {/*            </Button>*/}
+                    {/*        </Grid>*/}
+                    {/*    </Grid>*/}
+                    {/*</Box>*/}
+                    {/*</Grid>*/}
                 </Grid>
                 <div aria-label={"dialogs"}>
                     <ProblemAddEvent

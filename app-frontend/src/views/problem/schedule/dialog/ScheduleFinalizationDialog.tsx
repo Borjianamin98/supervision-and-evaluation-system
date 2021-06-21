@@ -26,10 +26,13 @@ import ScheduleService from "../../../../services/api/schedule/ScheduleService";
 import DateUtils from "../../../../utility/DateUtils";
 import {PROBLEM_MANAGEMENT_VIEW_PATH} from "../../../ViewPaths";
 
-interface ScheduleDateDialogProps {
-    problem: Problem,
-    open: boolean,
-    onClose: () => void,
+function minAvailableHour(selectedDate: moment.Moment) {
+    let minAvailableHour = 8;
+    if (!selectedDate.isAfter(DateUtils.endOfDay(DateUtils.getCurrentDate()))) {
+        // Selected finalize date is in today date time
+        minAvailableHour = Math.max(new Date().getHours(), 8);
+    }
+    return minAvailableHour;
 }
 
 const PersonListItem: React.FunctionComponent<{ name: string, secondary: string }> = (props) => {
@@ -45,6 +48,12 @@ const PersonListItem: React.FunctionComponent<{ name: string, secondary: string 
             />
         </ListItem>
     )
+}
+
+interface ScheduleDateDialogProps {
+    problem: Problem,
+    open: boolean,
+    onClose: () => void,
 }
 
 const ScheduleFinalizationDialog: React.FunctionComponent<ScheduleDateDialogProps> = (props) => {
@@ -86,10 +95,10 @@ const ScheduleFinalizationDialog: React.FunctionComponent<ScheduleDateDialogProp
     const [selectedDateError, setSelectedDateError] = React.useState(false);
     React.useEffect(() => {
         // Calculated based on 'scheduleStartHour' and 'scheduleEndHour' of scheduler.
-        const minAvailableTime = 8 * 60;
         const maxAvailableTime = 20 * 60 - problem.meetSchedule.durationMinutes;
         const selectedDayTimeOfDay = DateUtils.minutesPassedSinceStartOfDay(selectedDate);
-        setSelectedDateError(selectedDayTimeOfDay < minAvailableTime || selectedDayTimeOfDay > maxAvailableTime);
+        setSelectedDateError(selectedDayTimeOfDay < minAvailableHour(selectedDate) * 60
+            || selectedDayTimeOfDay > maxAvailableTime);
     }, [problem.meetSchedule.durationMinutes, selectedDate]);
 
     return (
@@ -179,7 +188,7 @@ const ScheduleFinalizationDialog: React.FunctionComponent<ScheduleDateDialogProp
                         autoSelect={false}
                         textFieldProps={{
                             error: selectedDateError,
-                            helperText: "ساعت جلسه دفاع باید بین 8 صبح الی 8 شب باشد.",
+                            helperText: `ساعت جلسه دفاع باید بین ${minAvailableHour(selectedDate)} الی 20 باشد.`,
                         }}
                     />
                     <CustomAlert

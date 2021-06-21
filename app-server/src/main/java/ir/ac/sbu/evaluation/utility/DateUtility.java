@@ -5,6 +5,9 @@ import com.ibm.icu.text.SimpleDateFormat;
 import com.ibm.icu.util.ULocale;
 import java.sql.Date;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -43,5 +46,9 @@ public class DateUtility {
         calendar.setTime(java.util.Date.from(instant));
         DateFormat dateFormat = new SimpleDateFormat(format, locale);
         return dateFormat.format(calendar);
+    }
+
+    public static LocalDateTime convert(Instant instant) {
+        return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
     }
 }

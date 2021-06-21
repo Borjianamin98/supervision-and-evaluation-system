@@ -2,11 +2,12 @@ import {Card, CardMedia, CardProps, makeStyles} from "@material-ui/core";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
 import React from 'react';
+import CustomTypography from "../Typography/CustomTypography";
 
 interface MediaCardProps extends CardProps {
     media: string,
+    mediaHeight?: number,
     title: string,
     subTitle: string[],
 }
@@ -19,25 +20,29 @@ const useStyles = makeStyles((theme) => ({
 
 const MediaCard: React.FunctionComponent<MediaCardProps> = (props) => {
     const classes = useStyles();
-    const {media, title, subTitle, ...rest} = props;
+    const {media, mediaHeight, title, subTitle, ...rest} = props;
 
     return (
         <Card {...rest}>
             <CardActionArea>
                 <CardMedia
                     component="img"
-                    height="180"
+                    height={mediaHeight ?? 180}
                     image={media}
                 />
                 <CardContent>
-                    <Typography gutterBottom variant="h5">
+                    <CustomTypography gutterBottom variant="h5">
                         {title}
-                    </Typography>
+                    </CustomTypography>
                     {
                         subTitle.map((value, index) =>
-                            <Typography key={index} className={classes.subtitle} variant="body2" color="textSecondary">
+                            <CustomTypography
+                                key={index}
+                                className={classes.subtitle}
+                                variant="body2"
+                                color="textSecondary">
                                 {value}
-                            </Typography>
+                            </CustomTypography>
                         )
                     }
                 </CardContent>

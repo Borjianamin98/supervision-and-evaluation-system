@@ -22,7 +22,6 @@ import ir.ac.sbu.evaluation.repository.user.UserRepository;
 import ir.ac.sbu.evaluation.utility.DateUtility;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.HashSet;
@@ -211,9 +210,14 @@ public class ScheduleService {
                     + " maximum date = " + meetSchedule.getMaximumDate());
         }
         // Finalized date time should be between 8 AM to 8 PM
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(finalizedDateStart, ZoneId.systemDefault());
+        LocalDateTime localDateTime = DateUtility.convert(finalizedDateStart);
         int hour = localDateTime.getHour();
-        if (hour < 8 || hour * 60 + meetSchedule.getDurationMinutes() > 20 * 60) {
+        int minimumHour = 8;
+        if (!localDateTime.isAfter(DateUtility.convert(DateUtility.getEndOfDay(Instant.now())))) {
+            // Selected finalize date is in today date time
+            minimumHour = Math.max(8, LocalDateTime.now().getHour());
+        }
+        if (hour < minimumHour || hour * 60 + meetSchedule.getDurationMinutes() > 20 * 60) {
             throw new IllegalArgumentException("Schedule finalization date should be between 8 am until 8 pm: "
                     + "hour = " + hour);
         }

@@ -200,6 +200,7 @@ const ProblemListView: React.FunctionComponent = () => {
                         <ComboBox
                             disableListWrap
                             options={PERSIAN_PROBLEM_STATES}
+                            filterOptions={(options) => options} // do not filter values
                             textFieldInputProps={{
                                 label: "وضعیت",
                             }}

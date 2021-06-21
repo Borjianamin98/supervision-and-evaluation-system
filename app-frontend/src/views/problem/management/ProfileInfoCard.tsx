@@ -9,8 +9,8 @@ import {User, userRoleInfo} from "../../../model/user/User";
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         avatar: {
-            width: 120,
-            height: 120,
+            width: 100,
+            height: 100,
         },
         centerAlignment: {
             textAlign: "center",
