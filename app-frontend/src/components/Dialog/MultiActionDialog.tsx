@@ -17,7 +17,7 @@ interface MultiActionDialogProps extends Omit<DialogProps, "onClose" | "onOpen" 
     title: string,
     description: string,
     open: boolean,
-    actions: { name: string, content: string }[],
+    actions: { name: string, content: string, disabled?: boolean }[],
     onClose: (reason: "closed" | string) => void,
 }
 
@@ -48,6 +48,7 @@ const MultiActionDialog: React.FunctionComponent<MultiActionDialogProps> = (prop
                             onClick={() => onClose(action.name)}
                             color={"primary"}
                             variant={"outlined"}
+                            disabled={action.disabled ?? false}
                         >
                             {action.content}
                         </Button>)

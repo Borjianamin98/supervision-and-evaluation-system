@@ -95,9 +95,11 @@ const ScheduleFinalizationDialog: React.FunctionComponent<ScheduleDateDialogProp
     const [selectedDateError, setSelectedDateError] = React.useState(false);
     React.useEffect(() => {
         // Calculated based on 'scheduleStartHour' and 'scheduleEndHour' of scheduler.
+        const minAvailableTime = minAvailableHour(selectedDate) * 60;
         const maxAvailableTime = 20 * 60 - problem.meetSchedule.durationMinutes;
         const selectedDayTimeOfDay = DateUtils.minutesPassedSinceStartOfDay(selectedDate);
-        setSelectedDateError(selectedDayTimeOfDay < minAvailableHour(selectedDate) * 60
+        setSelectedDateError(minAvailableTime > maxAvailableTime
+            || selectedDayTimeOfDay < minAvailableTime
             || selectedDayTimeOfDay > maxAvailableTime);
     }, [problem.meetSchedule.durationMinutes, selectedDate]);
 
@@ -113,9 +115,6 @@ const ScheduleFinalizationDialog: React.FunctionComponent<ScheduleDateDialogProp
                         return;
                     }
 
-                    if (selectedDateError) {
-                        return;
-                    }
                     switch (reason) {
                         case "reschedule":
                             rescheduleMeetSchedule.mutate(problem.meetSchedule.id, {
@@ -131,12 +130,11 @@ const ScheduleFinalizationDialog: React.FunctionComponent<ScheduleDateDialogProp
                         default:
                             throw new Error("Unexpected reason for dialog actions");
                     }
-                    // Do something
                 }}
                 actions={[
                     {content: "انصراف", name: "closed"},
                     {content: "زمان‌بندی دوباره", name: "reschedule"},
-                    {content: "تایید زمان دفاع", name: "confirm"},
+                    {content: "تایید زمان دفاع", name: "confirm", disabled: selectedDateError},
                 ]}
             >
                 <Box display={"flex"} flexDirection={"column"}>
@@ -170,7 +168,7 @@ const ScheduleFinalizationDialog: React.FunctionComponent<ScheduleDateDialogProp
                     <CustomDatePicker
                         label={"تاریخ دفاع"}
                         selectedDate={selectedDate}
-                        onDateChange={newValue => setSelectedDate(DateUtils.firstOfDay(newValue))}
+                        onDateChange={newValue => setSelectedDate(DateUtils.firstOfDay(newValue).hours(12))}
                         autoSelect={true}
                         minDate={DateUtils.firstOfDay(DateUtils.getCurrentDate())}
                         maxDate={DateUtils.endOfDay(problem.meetSchedule.maximumDate)}
@@ -188,7 +186,11 @@ const ScheduleFinalizationDialog: React.FunctionComponent<ScheduleDateDialogProp
                         autoSelect={false}
                         textFieldProps={{
                             error: selectedDateError,
-                            helperText: `ساعت جلسه دفاع باید بین ${minAvailableHour(selectedDate)} الی 20 باشد.`,
+                            helperText: selectedDateError ? (
+                                minAvailableHour(selectedDate) > 20 ?
+                                    `در تاریخ مربوطه امکان تشکیل جلسه دفاع ممکن نمی‌باشد.` :
+                                    `ساعت جلسه دفاع باید بین ${minAvailableHour(selectedDate)} الی 20 باشد.`
+                            ) : ""
                         }}
                     />
                     <CustomAlert

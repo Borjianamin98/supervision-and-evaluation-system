@@ -6,9 +6,9 @@ export enum ScheduleDuration {
 }
 
 export const PERSIAN_SCHEDULE_DURATIONS = [
-    "30 دقیقه",
+    "۳۰ دقیقه",
     "یک ساعت",
-    "یک ساعت و 30 دقیقه",
+    "یک ساعت و ۳۰ دقیقه",
     "دو ساعت",
 ];
 

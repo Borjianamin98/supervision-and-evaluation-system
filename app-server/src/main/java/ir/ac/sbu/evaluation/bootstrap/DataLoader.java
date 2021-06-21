@@ -246,6 +246,10 @@ public class DataLoader implements CommandLineRunner {
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH) + 1,
                 calendar.get(Calendar.DAY_OF_MONTH));
+        String tomorrowDate = String.format("%04d-%02d-%02d",
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DAY_OF_MONTH) + 1);
         scheduleService.addScheduleEvent(sadeghMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
                 .startDate(dateFormat.parse(String.format("%s 09:00", todayDate)).toInstant())
                 .endDate(dateFormat.parse(String.format("%s 10:00", todayDate)).toInstant())
@@ -260,20 +264,20 @@ public class DataLoader implements CommandLineRunner {
                 .build());
         // Shared schedule event between all participants
         scheduleService.addScheduleEvent(sadeghMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
-                .startDate(dateFormat.parse(String.format("%s 15:00", todayDate)).toInstant())
-                .endDate(dateFormat.parse(String.format("%s 20:00", todayDate)).toInstant())
+                .startDate(dateFormat.parse(String.format("%s 15:00", tomorrowDate)).toInstant())
+                .endDate(dateFormat.parse(String.format("%s 20:00", tomorrowDate)).toInstant())
                 .build());
         scheduleService.addScheduleEvent(aminStudent.getId(), meetSchedule3.getId(), DateRangeDto.builder()
-                .startDate(dateFormat.parse(String.format("%s 15:30", todayDate)).toInstant())
-                .endDate(dateFormat.parse(String.format("%s 19:30", todayDate)).toInstant())
+                .startDate(dateFormat.parse(String.format("%s 15:30", tomorrowDate)).toInstant())
+                .endDate(dateFormat.parse(String.format("%s 19:30", tomorrowDate)).toInstant())
                 .build());
         scheduleService.addScheduleEvent(mojtabaMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
-                .startDate(dateFormat.parse(String.format("%s 16:00", todayDate)).toInstant())
-                .endDate(dateFormat.parse(String.format("%s 19:00", todayDate)).toInstant())
+                .startDate(dateFormat.parse(String.format("%s 16:00", tomorrowDate)).toInstant())
+                .endDate(dateFormat.parse(String.format("%s 19:00", tomorrowDate)).toInstant())
                 .build());
         scheduleService.addScheduleEvent(mahmoudMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
-                .startDate(dateFormat.parse(String.format("%s 17:00", todayDate)).toInstant())
-                .endDate(dateFormat.parse(String.format("%s 18:00", todayDate)).toInstant())
+                .startDate(dateFormat.parse(String.format("%s 17:00", tomorrowDate)).toInstant())
+                .endDate(dateFormat.parse(String.format("%s 18:00", tomorrowDate)).toInstant())
                 .build());
     }
 

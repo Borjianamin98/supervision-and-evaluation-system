@@ -38,7 +38,7 @@ const ProblemScheduleCreate: React.FunctionComponent<ProblemScheduleCreateProps>
 
     const [initialScheduleDuration, setInitialScheduleDuration] = React.useState(ScheduleDuration.THIRTY_MINUTES);
     const [scheduleMinDate, setScheduleMinDate] = React.useState(DateUtils.firstOfDay(DateUtils.getCurrentDate()));
-    const [scheduleMaxDate, setScheduleMaxDate] = React.useState(DateUtils.endOfDay(DateUtils.getCurrentDate()));
+    const [scheduleMaxDate, setScheduleMaxDate] = React.useState(DateUtils.endOfDay(DateUtils.getCurrentDate(+1)));
 
     const queryClient = useQueryClient();
     const startMeetSchedule = useMutation(
