@@ -12,8 +12,8 @@ import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
 import ir.ac.sbu.evaluation.model.problem.ProblemState;
 import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
-import ir.ac.sbu.evaluation.model.schedule.ScheduleEvent;
 import ir.ac.sbu.evaluation.model.schedule.MeetScheduleState;
+import ir.ac.sbu.evaluation.model.schedule.ScheduleEvent;
 import ir.ac.sbu.evaluation.model.user.User;
 import ir.ac.sbu.evaluation.repository.problem.ProblemEventRepository;
 import ir.ac.sbu.evaluation.repository.schedule.MeetScheduleRepository;
@@ -267,6 +267,32 @@ public class MeetScheduleService {
         meetSchedule.setState(MeetScheduleState.FINALIZED);
         meetSchedule.setFinalizedDate(finalizedDateStart);
         meetSchedule.setAnnouncedUsers(Collections.emptySet());
+        return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
+    }
+
+    @Transactional
+    public MeetScheduleDto rejectFinalizedMeetSchedule(long userId, long meetScheduleId) {
+        MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
+
+        Problem scheduleProblem = meetSchedule.getProblem();
+        checkUserIsSupervisor(userId, scheduleProblem);
+        checkMeetScheduleState(meetSchedule, MeetScheduleState.FINALIZED);
+
+        if (meetSchedule.getEndOfFinalizedDate().isBefore(Instant.now())) {
+            throw new ResourceConflictException("It is illegal to reject problem before finalized date of meeting: "
+                    + "problem ID = " + scheduleProblem.getId());
+        }
+
+        problemEventRepository.save(ProblemEvent.builder()
+                .message(
+                        "جلسه دفاع به علت یکسری دلایل (مانند عدم حضور دانشجو و ...) تشکیل نشد. با توجه به تصمیم "
+                                + "گرفته‌شده، پایان‌نامه (پروژه) رد شد و نمره صفر برای پایان‌نامه (پروژه) دانشجو در "
+                                + "نظر گرفته شد.")
+                .problem(meetSchedule.getProblem())
+                .build());
+
+        meetSchedule.setMeetingHeld(false);
+        meetSchedule.setState(MeetScheduleState.FINISHED);
         return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
     }
 

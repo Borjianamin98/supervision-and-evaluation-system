@@ -150,14 +150,17 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                     finalizedDateIsAfterNow ?
                         `${finalizeFromNow} آینده جلسه دفاع تشکیل خواهد شد.` :
                         `${finalizeFromNow} جلسه دفاع تشکیل شده است.`,
+                    !finalizedDateIsAfterNow && !currentUserIsSupervisor ?
+                        "زمان برگزاری جلسه دفاع به اتمام رسیده است. منتظر بررسی استاد راهنما برای تایید برگزاری جلسه باشید." :
+                        "",
                 ];
             case MeetScheduleState.FINISHED:
                 if (problem.meetSchedule.meetingHeld) {
                     return [""];
                 } else {
-                    return ["جلسه دفاع به علت یکسری دلایل (مانند عدم حضور دانشجو و ...) برگزار نشد. " +
+                    return ["جلسه دفاع به علت یکسری دلایل (مانند عدم حضور دانشجو و ...) تشکیل نشد. " +
                     "با توجه به این که علت عدم برگزاری جلسه سبب عدم ارزیابی مناسب در ادامه می‌شود، " +
-                    "نتیجه این پایان‌نامه (پروژه) به صورت ردشده خواهد بود."];
+                    "نتیجه این پایان‌نامه (پروژه) به صورت ردشده در نظر گرفته شد."];
                 }
             default:
                 throw new Error("Illegal problem meet schedule state: " + problem.meetSchedule.state);
@@ -184,10 +187,14 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
             case MeetScheduleState.FINALIZED:
                 const finalizedDate = new Date(problem.meetSchedule.finalizedDate!);
                 const finalizedDateIsAfterNow = moment(finalizedDate).isAfter(moment(new Date()));
-                return <>
-                    <Button disabled={finalizedDateIsAfterNow} color="primary">تایید برگزاری جلسه</Button>
-                    <Button disabled={finalizedDateIsAfterNow} color="primary">اعلام تشکیل‌نشدن جلسه</Button>
-                </>
+                if (currentUserIsSupervisor) {
+                    return <>
+                        <Button disabled={finalizedDateIsAfterNow} color="primary">تایید برگزاری جلسه</Button>
+                        <Button disabled={finalizedDateIsAfterNow} color="primary">اعلام تشکیل‌نشدن جلسه</Button>
+                    </>
+                } else {
+                    return null;
+                }
             case MeetScheduleState.FINISHED:
                 return null;
             default:
@@ -347,34 +354,6 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                             </Grid>
                         </Grid>
                     </Grid>
-                    {/*<Grid item>*/}
-                    {/*<Box component={Paper} px={4} marginTop={1}>*/}
-                    {/*    <Grid container spacing={1} className={classes.columnContent}>*/}
-                    {/*        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>*/}
-                    {/*            /!*<Button*!/*/}
-                    {/*            /!*    fullWidth*!/*/}
-                    {/*            /!*    variant="contained"*!/*/}
-                    {/*            /!*    color="secondary"*!/*/}
-                    {/*            /!*    startIcon={<ScheduleIcon/>}*!/*/}
-                    {/*            /!*    onClick={onScheduleClick}*!/*/}
-                    {/*            /!*    disabled={!meetScheduleEnabled()}*!/*/}
-                    {/*            /!*>*!/*/}
-                    {/*            /!*    زمان‌بندی دفاع*!/*/}
-                    {/*            /!*</Button>*!/*/}
-                    {/*        </Grid>*/}
-                    {/*        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>*/}
-                    {/*            <Button*/}
-                    {/*                fullWidth*/}
-                    {/*                variant="contained"*/}
-                    {/*                color="secondary"*/}
-                    {/*                startIcon={<GradeIcon/>}*/}
-                    {/*            >*/}
-                    {/*                نمره‌دهی */}
-                    {/*            </Button>*/}
-                    {/*        </Grid>*/}
-                    {/*    </Grid>*/}
-                    {/*</Box>*/}
-                    {/*</Grid>*/}
                 </Grid>
                 <div aria-label={"dialogs"}>
                     <ProblemAddEvent
