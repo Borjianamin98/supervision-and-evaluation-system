@@ -1,7 +1,8 @@
 package ir.ac.sbu.evaluation.model.schedule;
 
-public enum ScheduleState {
+public enum MeetScheduleState {
     CREATED,
     STARTED,
     FINALIZED,
+    FINISHED,
 }

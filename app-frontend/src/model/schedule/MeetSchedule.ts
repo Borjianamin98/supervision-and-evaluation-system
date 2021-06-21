@@ -1,12 +1,13 @@
-import {ScheduleState} from "./ScheduleState";
+import {MeetScheduleState} from "./MeetScheduleState";
 
 export interface MeetSchedule {
     id: number,
     durationMinutes: number,
     minimumDate: Date,
     maximumDate: Date,
-    scheduleState: ScheduleState,
+    state: MeetScheduleState,
     finalizedDate?: Date,
+    meetingHeld: boolean,
 
     announcedUsers: number[]
 }

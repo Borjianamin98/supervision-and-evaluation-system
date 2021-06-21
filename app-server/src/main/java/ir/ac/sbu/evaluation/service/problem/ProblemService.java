@@ -13,7 +13,7 @@ import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
 import ir.ac.sbu.evaluation.model.problem.ProblemState;
 import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
 import ir.ac.sbu.evaluation.model.schedule.ScheduleEvent;
-import ir.ac.sbu.evaluation.model.schedule.ScheduleState;
+import ir.ac.sbu.evaluation.model.schedule.MeetScheduleState;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.Student;
 import ir.ac.sbu.evaluation.repository.problem.ProblemEventRepository;
@@ -77,7 +77,7 @@ public class ProblemService {
                 .durationMinutes(30L)
                 .minimumDate(Instant.now())
                 .maximumDate(Instant.now())
-                .scheduleState(ScheduleState.CREATED)
+                .state(MeetScheduleState.CREATED)
                 .problem(savedProblem)
                 .build());
         savedProblem.setMeetSchedule(meetSchedule);
@@ -227,7 +227,7 @@ public class ProblemService {
                     + "problem ID = " + problemId + " referee ID = " + refereeId);
         }
 
-        if (problem.getMeetSchedule().getScheduleState() == ScheduleState.FINALIZED) {
+        if (problem.getMeetSchedule().getState() == MeetScheduleState.FINALIZED) {
             throw new ResourceConflictException("Meet schedule time finalized and it is illegal to remove referee "
                     + "after finalizing meet schedule: problem ID = " + problemId + " referee ID = " + refereeId);
         }

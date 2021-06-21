@@ -7,7 +7,7 @@ import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleSaveDto;
 import ir.ac.sbu.evaluation.dto.schedule.event.DateRangeDto;
 import ir.ac.sbu.evaluation.dto.schedule.event.ScheduleEventDto;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
-import ir.ac.sbu.evaluation.service.schedule.ScheduleService;
+import ir.ac.sbu.evaluation.service.schedule.MeetScheduleService;
 import java.time.Instant;
 import java.util.List;
 import javax.validation.Valid;
@@ -26,10 +26,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(API_SCHEDULE_ROOT_PATH)
 public class ScheduleController {
 
-    private final ScheduleService scheduleService;
+    private final MeetScheduleService meetScheduleService;
 
-    public ScheduleController(ScheduleService scheduleService) {
-        this.scheduleService = scheduleService;
+    public ScheduleController(MeetScheduleService meetScheduleService) {
+        this.meetScheduleService = meetScheduleService;
     }
 
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.MASTER_ROLE_NAME)")
@@ -38,7 +38,7 @@ public class ScheduleController {
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long meetScheduleId,
             @Valid @RequestBody MeetScheduleSaveDto meetScheduleSaveDto) {
-        return scheduleService.startMeetSchedule(authUserDetail.getUserId(), meetScheduleId, meetScheduleSaveDto);
+        return meetScheduleService.startMeetSchedule(authUserDetail.getUserId(), meetScheduleId, meetScheduleSaveDto);
     }
 
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.MASTER_ROLE_NAME)")
@@ -47,7 +47,7 @@ public class ScheduleController {
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long meetScheduleId,
             @Valid @RequestBody DateRangeDto dateRangeDto) {
-        return scheduleService.updateMeetScheduleDate(authUserDetail.getUserId(), meetScheduleId, dateRangeDto);
+        return meetScheduleService.updateMeetScheduleDate(authUserDetail.getUserId(), meetScheduleId, dateRangeDto);
     }
 
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.STUDENT_ROLE_NAME, @SecurityRoles.MASTER_ROLE_NAME)")
@@ -55,7 +55,7 @@ public class ScheduleController {
     public MeetScheduleDto announceFinalizationByUserOfMeetSchedule(
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long meetScheduleId) {
-        return scheduleService.announceFinalizationByUser(authUserDetail.getUserId(), meetScheduleId);
+        return meetScheduleService.announceFinalizationByUser(authUserDetail.getUserId(), meetScheduleId);
     }
 
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.MASTER_ROLE_NAME)")
@@ -63,7 +63,7 @@ public class ScheduleController {
     public MeetScheduleDto requestRescheduleMeetSchedule(
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long meetScheduleId) {
-        return scheduleService.rescheduleMeetSchedule(authUserDetail.getUserId(), meetScheduleId);
+        return meetScheduleService.rescheduleMeetSchedule(authUserDetail.getUserId(), meetScheduleId);
     }
 
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.MASTER_ROLE_NAME)")
@@ -72,7 +72,7 @@ public class ScheduleController {
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long meetScheduleId,
             @RequestParam(name = "finalizedDate") Instant finalizedDate) {
-        return scheduleService.finalizeMeetSchedule(authUserDetail.getUserId(), meetScheduleId, finalizedDate);
+        return meetScheduleService.finalizeMeetSchedule(authUserDetail.getUserId(), meetScheduleId, finalizedDate);
     }
 
     @GetMapping(path = "/{meetScheduleId}/events")
@@ -81,7 +81,7 @@ public class ScheduleController {
             @PathVariable long meetScheduleId,
             @RequestParam(name = "startDate") Instant startDate,
             @RequestParam(name = "endDate") Instant endDate) {
-        return scheduleService.retrieveScheduleEvents(authUserDetail.getUserId(), meetScheduleId, startDate, endDate);
+        return meetScheduleService.retrieveScheduleEvents(authUserDetail.getUserId(), meetScheduleId, startDate, endDate);
     }
 
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.STUDENT_ROLE_NAME, @SecurityRoles.MASTER_ROLE_NAME)")
@@ -90,7 +90,7 @@ public class ScheduleController {
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long meetScheduleId,
             @Valid @RequestBody DateRangeDto dateRangeDto) {
-        return scheduleService.addScheduleEvent(authUserDetail.getUserId(), meetScheduleId, dateRangeDto);
+        return meetScheduleService.addScheduleEvent(authUserDetail.getUserId(), meetScheduleId, dateRangeDto);
     }
 
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.STUDENT_ROLE_NAME, @SecurityRoles.MASTER_ROLE_NAME)")
@@ -100,7 +100,7 @@ public class ScheduleController {
             @PathVariable long meetScheduleId,
             @PathVariable long scheduleEventId,
             @Valid @RequestBody DateRangeDto dateRangeDto) {
-        return scheduleService.updateScheduleEvent(authUserDetail.getUserId(),
+        return meetScheduleService.updateScheduleEvent(authUserDetail.getUserId(),
                 meetScheduleId, scheduleEventId, dateRangeDto);
     }
 
@@ -110,6 +110,6 @@ public class ScheduleController {
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long meetScheduleId,
             @PathVariable long scheduleEventId) {
-        return scheduleService.deleteScheduleEvent(authUserDetail.getUserId(), meetScheduleId, scheduleEventId);
+        return meetScheduleService.deleteScheduleEvent(authUserDetail.getUserId(), meetScheduleId, scheduleEventId);
     }
 }

@@ -2,7 +2,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import React from 'react';
 import HomeRedirect from "../../../components/Route/HomeRedirect";
 import {Problem} from "../../../model/problem/problem";
-import {ScheduleState} from '../../../model/schedule/ScheduleState';
+import {MeetScheduleState} from '../../../model/schedule/MeetScheduleState';
 import AuthenticationService from "../../../services/api/AuthenticationService";
 import ProblemScheduleCreate from "./ProblemScheduleCreate";
 import ProblemScheduleModify from "./ProblemScheduleModify";
@@ -36,12 +36,12 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
             message={"دسترسی به صفحه‌ی مربوطه با توجه به عدم مشخص‌شدن تمامی داورهای مسئله امکان‌پذیر نمی‌باشد."}/>
     }
 
-    switch (problem.meetSchedule.scheduleState) {
-        case ScheduleState.CREATED:
+    switch (problem.meetSchedule.state) {
+        case MeetScheduleState.CREATED:
             return currentUserIsSupervisor ?
                 <ProblemScheduleCreate commonClasses={commonClasses} problem={problem}/> :
                 <HomeRedirect message={"دسترسی به صفحه‌ی مربوطه با توجه به سطح دسترسی شما امکان‌پذیر نمی‌باشد."}/>
-        case ScheduleState.STARTED:
+        case MeetScheduleState.STARTED:
             return <ProblemScheduleModify
                 commonClasses={commonClasses}
                 problem={problem}

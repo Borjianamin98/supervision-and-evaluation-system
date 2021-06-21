@@ -20,7 +20,7 @@ import CustomTypography from "../../../components/Typography/CustomTypography";
 import {generalErrorHandler} from "../../../config/axios-config";
 import {educationMapToPersian} from "../../../model/enum/education";
 import {Problem} from "../../../model/problem/problem";
-import {ScheduleState} from "../../../model/schedule/ScheduleState";
+import {MeetScheduleState} from "../../../model/schedule/MeetScheduleState";
 import {Master} from "../../../model/user/master/Master";
 import AuthenticationService from "../../../services/api/AuthenticationService";
 import ProblemMasterService from "../../../services/api/problem/ProblemMasterService";
@@ -114,8 +114,8 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
     }
 
     const schedulingMediaContent = () => {
-        switch (problem.meetSchedule.scheduleState) {
-            case ScheduleState.CREATED:
+        switch (problem.meetSchedule.state) {
+            case MeetScheduleState.CREATED:
                 if (currentUserIsSupervisor) {
                     if (problem.referees.length === 2) {
                         return ["شرایط لازم برای زمان‌بندی و تعیین جلسه‌ی دفاع فراهم می‌باشد. " +
@@ -129,7 +129,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                     return ["برگزاری جلسه دفاع پایان‌نامه (پروژه) هنوز شروع نشده است. " +
                     "شما می‌توانید بعد از این که امکان زمان‌بندی جلسه دفاع توسط استاد راهنما فعال شد، از این قسمت زمان‌های حضور و هماهنگی‌های لازم را انجام دهید."]
                 }
-            case ScheduleState.STARTED:
+            case MeetScheduleState.STARTED:
                 if (problem.referees.length === 2) {
                     return ["برنامه‌ریزی جلسه‌ی دفاع پایان‌نامه (پروژه) شروع شده است. " +
                     "تمامی افرادی که باید در جلسه حاضرشوند، زمان‌های حضور خود را برای تعیین تاریخ دفاع مشخص نمایند."];
@@ -138,7 +138,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                     "برای زمان‌بندی و مشخص‌کردن جلسه‌ی دفاع باید ابتدا تمامی داورهای مسئله مشخص شوند. " +
                     "با توجه به شروع برنامه‌ریزی جلسه دفاع، در تعیین به موقع داورهای جایگزین مسئله اقدام کنید."];
                 }
-            case ScheduleState.FINALIZED:
+            case MeetScheduleState.FINALIZED:
                 const finalizedDate = new Date(problem.meetSchedule.finalizedDate!);
                 const finalizedMoment = moment(finalizedDate).locale('fa')
                     .format('ddd، D MMMM YYYY (h:mm a)');
@@ -151,13 +151,21 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                         `${finalizeFromNow} آینده جلسه دفاع تشکیل خواهد شد.` :
                         `${finalizeFromNow} جلسه دفاع تشکیل شده است.`,
                 ];
+            case MeetScheduleState.FINISHED:
+                if (problem.meetSchedule.meetingHeld) {
+                    return [""];
+                } else {
+                    return ["جلسه دفاع به علت یکسری دلایل (مانند عدم حضور دانشجو و ...) برگزار نشد. " +
+                    "با توجه به این که علت عدم برگزاری جلسه سبب عدم ارزیابی مناسب در ادامه می‌شود، " +
+                    "نتیجه این پایان‌نامه (پروژه) به صورت ردشده خواهد بود."];
+                }
             default:
-                throw new Error("Illegal problem meet schedule state: " + problem.meetSchedule.scheduleState);
+                throw new Error("Illegal problem meet schedule state: " + problem.meetSchedule.state);
         }
     }
     const schedulingMediaActions = () => {
-        switch (problem.meetSchedule.scheduleState) {
-            case ScheduleState.CREATED:
+        switch (problem.meetSchedule.state) {
+            case MeetScheduleState.CREATED:
                 if (currentUserIsSupervisor && problem.referees.length === 2) {
                     return <ButtonLink to={`${PROBLEM_SCHEDULE_VIEW_PATH}/${problem.id}`} color="primary">
                         شروع برنامه‌ریزی جلسه دفاع
@@ -165,7 +173,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                 } else {
                     return null;
                 }
-            case ScheduleState.STARTED:
+            case MeetScheduleState.STARTED:
                 if (problem.referees.length === 2) {
                     return <ButtonLink to={`${PROBLEM_SCHEDULE_VIEW_PATH}/${problem.id}`} color="primary">
                         برنامه‌ریزی جلسه دفاع
@@ -173,15 +181,17 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                 } else {
                     return null;
                 }
-            case ScheduleState.FINALIZED:
+            case MeetScheduleState.FINALIZED:
                 const finalizedDate = new Date(problem.meetSchedule.finalizedDate!);
                 const finalizedDateIsAfterNow = moment(finalizedDate).isAfter(moment(new Date()));
                 return <>
                     <Button disabled={finalizedDateIsAfterNow} color="primary">تایید برگزاری جلسه</Button>
                     <Button disabled={finalizedDateIsAfterNow} color="primary">اعلام تشکیل‌نشدن جلسه</Button>
                 </>
+            case MeetScheduleState.FINISHED:
+                return null;
             default:
-                throw new Error("Illegal problem meet schedule state: " + problem.meetSchedule.scheduleState);
+                throw new Error("Illegal problem meet schedule state: " + problem.meetSchedule.state);
         }
     }
 
@@ -271,7 +281,11 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                                     content = <ProfileInfoCard
                                         user={problem.referees[index]}
                                         subheader={`داور ${orderString} پایان‌نامه (پروژه)`}
-                                        hasDelete={currentUserIsSupervisor && problem.meetSchedule.scheduleState !== ScheduleState.FINALIZED}
+                                        hasDelete={
+                                            currentUserIsSupervisor &&
+                                            (problem.meetSchedule.state === MeetScheduleState.CREATED ||
+                                                problem.meetSchedule.state === MeetScheduleState.STARTED)
+                                        }
                                         onDelete={() =>
                                             removeReferee.mutate({
                                                 problemId: problem.id,

@@ -35,11 +35,14 @@ public class MeetSchedule extends BaseEntity {
     private Instant maximumDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "schedule_state")
-    private ScheduleState scheduleState;
+    @Column(name = "state")
+    private MeetScheduleState state;
 
     @Column(name = "finalized_date")
     private Instant finalizedDate;
+
+    @Column(name = "meeting_held")
+    private Boolean meetingHeld = false;
 
     @OneToOne(mappedBy = "meetSchedule")
     private Problem problem;
@@ -54,17 +57,23 @@ public class MeetSchedule extends BaseEntity {
     }
 
     @Builder
-    public MeetSchedule(Long id, Long durationMinutes,
-            Instant minimumDate, Instant maximumDate,
-            ScheduleState scheduleState, Instant finalizedDate,
-            Problem problem, Set<ScheduleEvent> scheduleEvents,
+    public MeetSchedule(Long id,
+            Long durationMinutes,
+            Instant minimumDate,
+            Instant maximumDate,
+            MeetScheduleState state,
+            Instant finalizedDate,
+            Boolean meetingHeld,
+            Problem problem,
+            Set<ScheduleEvent> scheduleEvents,
             Set<Long> announcedUsers) {
         super(id);
         this.durationMinutes = durationMinutes;
         this.minimumDate = minimumDate;
         this.maximumDate = maximumDate;
-        this.scheduleState = scheduleState;
+        this.state = state;
         this.finalizedDate = finalizedDate;
+        this.meetingHeld = meetingHeld != null && meetingHeld;
         this.problem = problem;
         this.scheduleEvents = scheduleEvents == null ? new HashSet<>() : scheduleEvents;
         this.announcedUsers = announcedUsers == null ? new HashSet<>() : announcedUsers;

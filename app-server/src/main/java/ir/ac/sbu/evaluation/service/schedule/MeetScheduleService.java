@@ -13,7 +13,7 @@ import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
 import ir.ac.sbu.evaluation.model.problem.ProblemState;
 import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
 import ir.ac.sbu.evaluation.model.schedule.ScheduleEvent;
-import ir.ac.sbu.evaluation.model.schedule.ScheduleState;
+import ir.ac.sbu.evaluation.model.schedule.MeetScheduleState;
 import ir.ac.sbu.evaluation.model.user.User;
 import ir.ac.sbu.evaluation.repository.problem.ProblemEventRepository;
 import ir.ac.sbu.evaluation.repository.schedule.MeetScheduleRepository;
@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ScheduleService {
+public class MeetScheduleService {
 
     private final UserRepository userRepository;
 
@@ -41,7 +41,7 @@ public class ScheduleService {
     private final MeetScheduleRepository meetScheduleRepository;
     private final ScheduleEventRepository scheduleEventRepository;
 
-    public ScheduleService(UserRepository userRepository,
+    public MeetScheduleService(UserRepository userRepository,
             ProblemEventRepository problemEventRepository,
             MeetScheduleRepository meetScheduleRepository,
             ScheduleEventRepository scheduleEventRepository) {
@@ -115,7 +115,7 @@ public class ScheduleService {
 
         Problem scheduleProblem = meetSchedule.getProblem();
         checkUserIsSupervisor(userId, scheduleProblem);
-        checkMeetScheduleState(meetSchedule, ScheduleState.CREATED);
+        checkMeetScheduleState(meetSchedule, MeetScheduleState.CREATED);
         long durationMinutes = meetScheduleSaveDto.getDurationMinutes();
         if (durationMinutes % 30 != 0) {
             throw new IllegalArgumentException("Invalid duration value for a meet schedule: ID = " + meetScheduleId
@@ -131,7 +131,7 @@ public class ScheduleService {
         meetSchedule.setDurationMinutes(durationMinutes);
         meetSchedule.setMinimumDate(DateUtility.getStartOfDay(meetScheduleSaveDto.getMinimumDate()));
         meetSchedule.setMaximumDate(DateUtility.getEndOfDay(meetScheduleSaveDto.getMaximumDate()));
-        meetSchedule.setScheduleState(ScheduleState.STARTED);
+        meetSchedule.setState(MeetScheduleState.STARTED);
         return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
     }
 
@@ -141,7 +141,7 @@ public class ScheduleService {
 
         Problem scheduleProblem = meetSchedule.getProblem();
         checkUserIsSupervisor(userId, scheduleProblem);
-        checkMeetScheduleState(meetSchedule, ScheduleState.STARTED);
+        checkMeetScheduleState(meetSchedule, MeetScheduleState.STARTED);
 
         problemEventRepository.save(ProblemEvent.builder()
                 .message(
@@ -159,7 +159,7 @@ public class ScheduleService {
     public MeetScheduleDto announceFinalizationByUser(long userId, long meetScheduleId) {
         MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
         checkUserAccessMeetSchedule(userId, meetSchedule);
-        checkMeetScheduleState(meetSchedule, ScheduleState.STARTED);
+        checkMeetScheduleState(meetSchedule, MeetScheduleState.STARTED);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: ID = " + userId));
@@ -178,7 +178,7 @@ public class ScheduleService {
 
         Problem scheduleProblem = meetSchedule.getProblem();
         checkUserIsSupervisor(userId, scheduleProblem);
-        checkMeetScheduleState(meetSchedule, ScheduleState.STARTED);
+        checkMeetScheduleState(meetSchedule, MeetScheduleState.STARTED);
 
         problemEventRepository.save(ProblemEvent.builder()
                 .message(
@@ -198,7 +198,7 @@ public class ScheduleService {
 
         Problem scheduleProblem = meetSchedule.getProblem();
         checkUserIsSupervisor(userId, scheduleProblem);
-        checkMeetScheduleState(meetSchedule, ScheduleState.STARTED);
+        checkMeetScheduleState(meetSchedule, MeetScheduleState.STARTED);
 
         // Finalized date should be between min and max date of meet schedule
         Instant finalizedDateEnd = finalizedDateStart.plus(meetSchedule.getDurationMinutes(), ChronoUnit.MINUTES);
@@ -240,7 +240,7 @@ public class ScheduleService {
         // Check that there is no meet schedule in this time for all involved users.
         List<MeetSchedule> finalizedMeetSchedulesIncludeUsers = meetScheduleRepository
                 .findAllMeetScheduleIncludeAnyOfUsersAsParticipant(ProblemState.IN_PROGRESS,
-                        ScheduleState.FINALIZED, meetScheduleParticipants);
+                        MeetScheduleState.FINALIZED, meetScheduleParticipants);
         List<MeetSchedule> allMeetScheduleIntersectWithFinalizedDate = finalizedMeetSchedulesIncludeUsers.stream()
                 .filter(m -> !(finalizedDateEnd.isBefore(m.getFinalizedDate())
                         || finalizedDateStart.isAfter(m.getEndOfFinalizedDate())))
@@ -264,16 +264,16 @@ public class ScheduleService {
                 .problem(meetSchedule.getProblem())
                 .build());
 
-        meetSchedule.setScheduleState(ScheduleState.FINALIZED);
+        meetSchedule.setState(MeetScheduleState.FINALIZED);
         meetSchedule.setFinalizedDate(finalizedDateStart);
         meetSchedule.setAnnouncedUsers(Collections.emptySet());
         return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
     }
 
-    private void checkMeetScheduleState(MeetSchedule meetSchedule, ScheduleState state) {
-        if (meetSchedule.getScheduleState() != state) {
+    private void checkMeetScheduleState(MeetSchedule meetSchedule, MeetScheduleState state) {
+        if (meetSchedule.getState() != state) {
             throw new IllegalArgumentException("Illegal change on meet schedule in current state: "
-                    + "ID = " + meetSchedule.getId() + " state = " + meetSchedule.getScheduleState());
+                    + "ID = " + meetSchedule.getId() + " state = " + meetSchedule.getState());
         }
     }
 

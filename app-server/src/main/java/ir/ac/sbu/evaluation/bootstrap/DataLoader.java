@@ -19,7 +19,7 @@ import ir.ac.sbu.evaluation.enumeration.Gender;
 import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.problem.ProblemState;
 import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
-import ir.ac.sbu.evaluation.model.schedule.ScheduleState;
+import ir.ac.sbu.evaluation.model.schedule.MeetScheduleState;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.Student;
 import ir.ac.sbu.evaluation.repository.problem.ProblemRepository;
@@ -28,7 +28,7 @@ import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.service.problem.ProblemService;
-import ir.ac.sbu.evaluation.service.schedule.ScheduleService;
+import ir.ac.sbu.evaluation.service.schedule.MeetScheduleService;
 import ir.ac.sbu.evaluation.service.university.FacultyService;
 import ir.ac.sbu.evaluation.service.university.UniversityService;
 import ir.ac.sbu.evaluation.service.user.AdminService;
@@ -71,7 +71,7 @@ public class DataLoader implements CommandLineRunner {
     private final StudentRepository studentRepository;
 
     private final MeetScheduleRepository meetScheduleRepository;
-    private final ScheduleService scheduleService;
+    private final MeetScheduleService meetScheduleService;
 
     private final ProblemService problemService;
     private final ProblemRepository problemRepository;
@@ -90,7 +90,7 @@ public class DataLoader implements CommandLineRunner {
             StudentRepository studentRepository,
             MasterRepository masterRepository,
             MeetScheduleRepository meetScheduleRepository,
-            ScheduleService scheduleService,
+            MeetScheduleService meetScheduleService,
             ProblemRepository problemRepository) {
         this.universityService = universityService;
         this.facultyService = facultyService;
@@ -101,7 +101,7 @@ public class DataLoader implements CommandLineRunner {
         this.studentRepository = studentRepository;
         this.masterRepository = masterRepository;
         this.meetScheduleRepository = meetScheduleRepository;
-        this.scheduleService = scheduleService;
+        this.meetScheduleService = meetScheduleService;
         this.problemRepository = problemRepository;
     }
 
@@ -117,7 +117,7 @@ public class DataLoader implements CommandLineRunner {
                 .durationMinutes(30L)
                 .minimumDate(yesterday)
                 .maximumDate(tomorrow)
-                .scheduleState(ScheduleState.CREATED)
+                .state(MeetScheduleState.CREATED)
                 .build());
         Problem problem1 = problemRepository.save(Problem.builder()
                 .education(Education.BACHELOR)
@@ -145,7 +145,7 @@ public class DataLoader implements CommandLineRunner {
                 .durationMinutes(30L)
                 .minimumDate(yesterday)
                 .maximumDate(tomorrow)
-                .scheduleState(ScheduleState.CREATED)
+                .state(MeetScheduleState.CREATED)
                 .build());
         Problem problem2 = problemRepository.save(Problem.builder()
                 .education(Education.BACHELOR)
@@ -167,7 +167,7 @@ public class DataLoader implements CommandLineRunner {
                 .durationMinutes(30L)
                 .minimumDate(yesterday)
                 .maximumDate(tomorrow)
-                .scheduleState(ScheduleState.CREATED)
+                .state(MeetScheduleState.CREATED)
                 .build());
         Problem problem3 = problemRepository.save(Problem.builder()
                 .education(Education.BACHELOR)
@@ -187,7 +187,7 @@ public class DataLoader implements CommandLineRunner {
                 .durationMinutes(30L)
                 .minimumDate(yesterday)
                 .maximumDate(tomorrow)
-                .scheduleState(ScheduleState.CREATED)
+                .state(MeetScheduleState.CREATED)
                 .build());
         Problem problem4 = problemRepository.save(Problem.builder()
                 .education(Education.BACHELOR)
@@ -250,32 +250,32 @@ public class DataLoader implements CommandLineRunner {
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH) + 1,
                 calendar.get(Calendar.DAY_OF_MONTH) + 1);
-        scheduleService.addScheduleEvent(sadeghMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
+        meetScheduleService.addScheduleEvent(sadeghMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
                 .startDate(dateFormat.parse(String.format("%s 09:00", todayDate)).toInstant())
                 .endDate(dateFormat.parse(String.format("%s 10:00", todayDate)).toInstant())
                 .build());
-        scheduleService.addScheduleEvent(aminStudent.getId(), meetSchedule3.getId(), DateRangeDto.builder()
+        meetScheduleService.addScheduleEvent(aminStudent.getId(), meetSchedule3.getId(), DateRangeDto.builder()
                 .startDate(dateFormat.parse(String.format("%s 11:00", todayDate)).toInstant())
                 .endDate(dateFormat.parse(String.format("%s 12:00", todayDate)).toInstant())
                 .build());
-        scheduleService.addScheduleEvent(mojtabaMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
+        meetScheduleService.addScheduleEvent(mojtabaMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
                 .startDate(dateFormat.parse(String.format("%s 13:00", todayDate)).toInstant())
                 .endDate(dateFormat.parse(String.format("%s 15:00", todayDate)).toInstant())
                 .build());
         // Shared schedule event between all participants
-        scheduleService.addScheduleEvent(sadeghMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
+        meetScheduleService.addScheduleEvent(sadeghMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
                 .startDate(dateFormat.parse(String.format("%s 15:00", tomorrowDate)).toInstant())
                 .endDate(dateFormat.parse(String.format("%s 20:00", tomorrowDate)).toInstant())
                 .build());
-        scheduleService.addScheduleEvent(aminStudent.getId(), meetSchedule3.getId(), DateRangeDto.builder()
+        meetScheduleService.addScheduleEvent(aminStudent.getId(), meetSchedule3.getId(), DateRangeDto.builder()
                 .startDate(dateFormat.parse(String.format("%s 15:30", tomorrowDate)).toInstant())
                 .endDate(dateFormat.parse(String.format("%s 19:30", tomorrowDate)).toInstant())
                 .build());
-        scheduleService.addScheduleEvent(mojtabaMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
+        meetScheduleService.addScheduleEvent(mojtabaMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
                 .startDate(dateFormat.parse(String.format("%s 16:00", tomorrowDate)).toInstant())
                 .endDate(dateFormat.parse(String.format("%s 19:00", tomorrowDate)).toInstant())
                 .build());
-        scheduleService.addScheduleEvent(mahmoudMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
+        meetScheduleService.addScheduleEvent(mahmoudMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
                 .startDate(dateFormat.parse(String.format("%s 17:00", tomorrowDate)).toInstant())
                 .endDate(dateFormat.parse(String.format("%s 18:00", tomorrowDate)).toInstant())
                 .build());
