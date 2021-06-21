@@ -4,13 +4,11 @@ import Typography from "@material-ui/core/Typography";
 import AddCommentIcon from "@material-ui/icons/AddComment";
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import {AxiosError} from "axios";
-import moment from "jalali-moment";
 import {useSnackbar} from "notistack";
 import React from 'react';
 import {useMutation, useQueryClient} from "react-query";
 import {rtlTheme} from "../../../App";
 import conclusionImage from "../../../assets/images/schedule/Conclusion.jpg";
-import meetScheduleImage from "../../../assets/images/schedule/MeetSchedule.jpg";
 import ButtonLink from "../../../components/Button/ButtonLink";
 import KeywordsList from "../../../components/Chip/KeywordsList";
 import ConfirmDialog from "../../../components/Dialog/ConfirmDialog";
@@ -26,9 +24,10 @@ import AuthenticationService from "../../../services/api/AuthenticationService";
 import ProblemMasterService from "../../../services/api/problem/ProblemMasterService";
 import MasterService from "../../../services/api/user/MasterService";
 import NumberUtils from "../../../utility/NumberUtils";
-import {PROBLEM_SCHEDULE_VIEW_PATH, UNIVERSITY_LIST_VIEW_PATH} from "../../ViewPaths";
+import {UNIVERSITY_LIST_VIEW_PATH} from "../../ViewPaths";
 import ProblemEventsList from "../ProblemEventsList";
 import ProblemAddEvent from "./PorblemAddEvent";
+import ProblemManagementScheduleCard from "./ProblemManagementScheduleCard";
 import ProfileInfoCard from "./ProfileInfoCard";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -111,95 +110,6 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
             addReferee.mutate({problemId: problem.id, refereeId: master.id});
         }
         setRefereeDialogOpen(false);
-    }
-
-    const schedulingMediaContent = () => {
-        switch (problem.meetSchedule.state) {
-            case MeetScheduleState.CREATED:
-                if (currentUserIsSupervisor) {
-                    if (problem.referees.length === 2) {
-                        return ["شرایط لازم برای زمان‌بندی و تعیین جلسه‌ی دفاع فراهم می‌باشد. " +
-                        "شما می‌توانید زمانی که به برگزاری جلسه دفاع نزدیک می‌شود، " +
-                        "زمان‌بندی مسئله را شروع کنید تا زمانی مشترک برای برگزاری جلسه دفاع مشخص کنید."];
-                    } else {
-                        return ["داورهای پروژه (پایان‌نامه) مشخص نشده‌اند. " +
-                        "پیش از شروع به تشکیل جلسه‌ی دفاع باید تمامی داورها مشخص شده باشند."];
-                    }
-                } else {
-                    return ["برگزاری جلسه دفاع پایان‌نامه (پروژه) هنوز شروع نشده است. " +
-                    "شما می‌توانید بعد از این که امکان زمان‌بندی جلسه دفاع توسط استاد راهنما فعال شد، از این قسمت زمان‌های حضور و هماهنگی‌های لازم را انجام دهید."]
-                }
-            case MeetScheduleState.STARTED:
-                if (problem.referees.length === 2) {
-                    return ["برنامه‌ریزی جلسه‌ی دفاع پایان‌نامه (پروژه) شروع شده است. " +
-                    "تمامی افرادی که باید در جلسه حاضرشوند، زمان‌های حضور خود را برای تعیین تاریخ دفاع مشخص نمایند."];
-                } else {
-                    return ["تعدادی از داورهای مسئله بعد از شروع برنامه‌ریزی برای جلسه دفاع به دلایلی حذف گردیده‌اند. " +
-                    "برای زمان‌بندی و مشخص‌کردن جلسه‌ی دفاع باید ابتدا تمامی داورهای مسئله مشخص شوند. " +
-                    "با توجه به شروع برنامه‌ریزی جلسه دفاع، در تعیین به موقع داورهای جایگزین مسئله اقدام کنید."];
-                }
-            case MeetScheduleState.FINALIZED:
-                const finalizedDate = new Date(problem.meetSchedule.finalizedDate!);
-                const finalizedMoment = moment(finalizedDate).locale('fa')
-                    .format('ddd، D MMMM YYYY (h:mm a)');
-                const finalizedDateIsAfterNow = moment(finalizedDate).isAfter(moment(new Date()));
-                const finalizeFromNow = moment(finalizedDate).locale('fa').fromNow();
-
-                return [
-                    `زمان جلسه دفاع در تاریخ ${finalizedMoment} می‌باشد.`,
-                    finalizedDateIsAfterNow ?
-                        `${finalizeFromNow} آینده جلسه دفاع تشکیل خواهد شد.` :
-                        `${finalizeFromNow} جلسه دفاع تشکیل شده است.`,
-                    !finalizedDateIsAfterNow && !currentUserIsSupervisor ?
-                        "زمان برگزاری جلسه دفاع به اتمام رسیده است. منتظر بررسی استاد راهنما برای تایید برگزاری جلسه باشید." :
-                        "",
-                ];
-            case MeetScheduleState.FINISHED:
-                if (problem.meetSchedule.meetingHeld) {
-                    return [""];
-                } else {
-                    return ["جلسه دفاع به علت یکسری دلایل (مانند عدم حضور دانشجو و ...) تشکیل نشد. " +
-                    "با توجه به این که علت عدم برگزاری جلسه سبب عدم ارزیابی مناسب در ادامه می‌شود، " +
-                    "نتیجه این پایان‌نامه (پروژه) به صورت ردشده در نظر گرفته شد."];
-                }
-            default:
-                throw new Error("Illegal problem meet schedule state: " + problem.meetSchedule.state);
-        }
-    }
-    const schedulingMediaActions = () => {
-        switch (problem.meetSchedule.state) {
-            case MeetScheduleState.CREATED:
-                if (currentUserIsSupervisor && problem.referees.length === 2) {
-                    return <ButtonLink to={`${PROBLEM_SCHEDULE_VIEW_PATH}/${problem.id}`} color="primary">
-                        شروع برنامه‌ریزی جلسه دفاع
-                    </ButtonLink>;
-                } else {
-                    return null;
-                }
-            case MeetScheduleState.STARTED:
-                if (problem.referees.length === 2) {
-                    return <ButtonLink to={`${PROBLEM_SCHEDULE_VIEW_PATH}/${problem.id}`} color="primary">
-                        برنامه‌ریزی جلسه دفاع
-                    </ButtonLink>;
-                } else {
-                    return null;
-                }
-            case MeetScheduleState.FINALIZED:
-                const finalizedDate = new Date(problem.meetSchedule.finalizedDate!);
-                const finalizedDateIsAfterNow = moment(finalizedDate).isAfter(moment(new Date()));
-                if (currentUserIsSupervisor) {
-                    return <>
-                        <Button disabled={finalizedDateIsAfterNow} color="primary">تایید برگزاری جلسه</Button>
-                        <Button disabled={finalizedDateIsAfterNow} color="primary">اعلام تشکیل‌نشدن جلسه</Button>
-                    </>
-                } else {
-                    return null;
-                }
-            case MeetScheduleState.FINISHED:
-                return null;
-            default:
-                throw new Error("Illegal problem meet schedule state: " + problem.meetSchedule.state);
-        }
     }
 
     return (
@@ -331,14 +241,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                         </Box>
                         <Grid container direction="row" spacing={1}>
                             <Grid item xs={12} sm={6} md={6} lg={12} xl={6}>
-                                <MediaCard
-                                    media={meetScheduleImage}
-                                    mediaHeight={100}
-                                    title={"جلسه دفاع"}
-                                    subTitle={schedulingMediaContent()}
-                                >
-                                    {schedulingMediaActions()}
-                                </MediaCard>
+                                <ProblemManagementScheduleCard problem={problem}/>
                             </Grid>
                             <Grid item xs={12} sm={6} md={6} lg={12} xl={6}>
                                 <MediaCard

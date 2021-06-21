@@ -278,9 +278,10 @@ public class MeetScheduleService {
         checkUserIsSupervisor(userId, scheduleProblem);
         checkMeetScheduleState(meetSchedule, MeetScheduleState.FINALIZED);
 
-        if (meetSchedule.getEndOfFinalizedDate().isBefore(Instant.now())) {
+        if (meetSchedule.getEndOfFinalizedDate().isAfter(Instant.now())) {
             throw new ResourceConflictException("It is illegal to reject problem before finalized date of meeting: "
-                    + "problem ID = " + scheduleProblem.getId());
+                    + "problem ID = " + scheduleProblem.getId(),
+                    "اعلان تشکیل‌نشدن جلسه دفاع پایان‌نامه (پروژه) پیش از زمان برگزاری جلسه امکان‌پذیر نمی‌باشد.");
         }
 
         problemEventRepository.save(ProblemEvent.builder()
