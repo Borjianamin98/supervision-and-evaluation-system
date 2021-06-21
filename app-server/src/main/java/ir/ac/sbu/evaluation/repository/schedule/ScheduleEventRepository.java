@@ -12,5 +12,8 @@ public interface ScheduleEventRepository extends JpaRepository<ScheduleEvent, Lo
     List<ScheduleEvent> findAllByMeetScheduleIdAndStartDateGreaterThanEqualAndEndDateLessThanEqual(
             long meetScheduleId, Instant startDate, Instant endDate);
 
+    List<ScheduleEvent> findAllByMeetScheduleIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+            long meetScheduleId, Instant includedStartDate, Instant includedEndDate);
+
     List<ScheduleEvent> findAllByOwnerIdAndMeetSchedule_Problem_Id(long ownerId, long problemId);
 }

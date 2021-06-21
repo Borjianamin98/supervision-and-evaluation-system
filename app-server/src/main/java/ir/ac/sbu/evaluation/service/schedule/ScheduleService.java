@@ -1,9 +1,5 @@
 package ir.ac.sbu.evaluation.service.schedule;
 
-import com.ibm.icu.text.DateFormat;
-import com.ibm.icu.text.SimpleDateFormat;
-import com.ibm.icu.util.Calendar;
-import com.ibm.icu.util.ULocale;
 import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleDto;
 import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleSaveDto;
 import ir.ac.sbu.evaluation.dto.schedule.event.DateRangeDto;
@@ -11,8 +7,10 @@ import ir.ac.sbu.evaluation.dto.schedule.event.ScheduleEventDto;
 import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
 import ir.ac.sbu.evaluation.exception.ResourceConflictException;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
+import ir.ac.sbu.evaluation.model.BaseEntity;
 import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
+import ir.ac.sbu.evaluation.model.problem.ProblemState;
 import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
 import ir.ac.sbu.evaluation.model.schedule.ScheduleEvent;
 import ir.ac.sbu.evaluation.model.schedule.ScheduleState;
@@ -25,11 +23,11 @@ import ir.ac.sbu.evaluation.utility.DateUtility;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -196,15 +194,24 @@ public class ScheduleService {
     }
 
     @Transactional
-    public MeetScheduleDto finalizeMeetSchedule(long userId, long meetScheduleId, Instant finalizedDate) {
+    public MeetScheduleDto finalizeMeetSchedule(long userId, long meetScheduleId, Instant finalizedDateStart) {
         MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
 
         Problem scheduleProblem = meetSchedule.getProblem();
         checkUserIsSupervisor(userId, scheduleProblem);
         checkMeetScheduleState(meetSchedule, ScheduleState.STARTED);
 
-        // Time of finalization date should be between 8 AM to 8 PM
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(finalizedDate, ZoneId.systemDefault());
+        // Finalized date should be between min and max date of meet schedule
+        Instant finalizedDateEnd = finalizedDateStart.plus(meetSchedule.getDurationMinutes(), ChronoUnit.MINUTES);
+        if (finalizedDateStart.isBefore(meetSchedule.getMinimumDate()) ||
+                finalizedDateEnd.isAfter(meetSchedule.getMaximumDate())) {
+            throw new IllegalArgumentException("Schedule finalization date should be between minimum and maximum date:"
+                    + " finalized date = " + finalizedDateStart
+                    + " minimum date = " + meetSchedule.getMinimumDate()
+                    + " maximum date = " + meetSchedule.getMaximumDate());
+        }
+        // Finalized date time should be between 8 AM to 8 PM
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(finalizedDateStart, ZoneId.systemDefault());
         int hour = localDateTime.getHour();
         if (hour < 8 || hour * 60 + meetSchedule.getDurationMinutes() > 20 * 60) {
             throw new IllegalArgumentException("Schedule finalization date should be between 8 am until 8 pm: "
@@ -212,20 +219,51 @@ public class ScheduleService {
         }
 
         // Check selected time be in all involved user's schedule times.
-        if (true) {
-            throw new ResourceConflictException("Not good!", "اصلا خوب نیست!");
+        Set<Long> availableUsersInFinalizedDate = scheduleEventRepository
+                .findAllByMeetScheduleIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(meetScheduleId,
+                        finalizedDateStart, finalizedDateEnd)
+                .stream().map(ScheduleEvent::getOwner)
+                .map(BaseEntity::getId)
+                .collect(Collectors.toSet());
+        Set<Long> meetScheduleParticipants = meetSchedule.getParticipants();
+        if (!availableUsersInFinalizedDate.equals(meetScheduleParticipants)) {
+            throw new ResourceConflictException("Not all users are available during selected finalize date: "
+                    + "available users = " + availableUsersInFinalizedDate
+                    + " required users = " + meetScheduleParticipants,
+                    "تمام افرادی که باید در جلسه دفاع حضور داشته باشند، در زمان مشخص‌شده حضور خود را اعلام نکرده‌اند.");
+        }
+
+        // Check that there is no meet schedule in this time for all involved users.
+        List<MeetSchedule> finalizedMeetSchedulesIncludeUsers = meetScheduleRepository
+                .findAllMeetScheduleIncludeAnyOfUsersAsParticipant(ProblemState.IN_PROGRESS,
+                        ScheduleState.FINALIZED, meetScheduleParticipants);
+        List<MeetSchedule> allMeetScheduleIntersectWithFinalizedDate = finalizedMeetSchedulesIncludeUsers.stream()
+                .filter(m -> !(finalizedDateEnd.isBefore(m.getFinalizedDate())
+                        || finalizedDateStart.isAfter(m.getEndOfFinalizedDate())))
+                .collect(Collectors.toList());
+        List<Long> usersHaveAnotherMeetScheduleSameTime = allMeetScheduleIntersectWithFinalizedDate.stream()
+                .flatMap(m -> m.getParticipants().stream())
+                .filter(meetScheduleParticipants::contains)
+                .collect(Collectors.toList());
+        if (!usersHaveAnotherMeetScheduleSameTime.isEmpty()) {
+            throw new ResourceConflictException(
+                    "Some of users are participated in another meet schedule during selected finalize date: "
+                            + "users = " + usersHaveAnotherMeetScheduleSameTime,
+                    "تعدادی از افرادی که باید در جلسه‌ی دفاع حضور داشته باشند، به صورت همزمان در جلسه‌ی دفاع دیگری "
+                            + "شرکت می‌کنند.");
         }
 
         problemEventRepository.save(ProblemEvent.builder()
                 .message(String.format(
                         "زمان‌ جلسه دفاع پایان‌نامه (پروژه) در تاریخ %s به مدت %s برگزار می‌شود.",
-                        DateUtility.getFullPersianDate(finalizedDate), meetSchedule.getDurationInfo()))
+                        DateUtility.getFullPersianDate(finalizedDateStart), meetSchedule.getDurationInfo()))
                 .problem(meetSchedule.getProblem())
                 .build());
 
-        // TODO: Must completed.
-
-        return null;
+        meetSchedule.setScheduleState(ScheduleState.FINALIZED);
+        meetSchedule.setFinalizedDate(finalizedDateStart);
+        meetSchedule.setAnnouncedUsers(Collections.emptySet());
+        return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
     }
 
     private void checkMeetScheduleState(MeetSchedule meetSchedule, ScheduleState state) {

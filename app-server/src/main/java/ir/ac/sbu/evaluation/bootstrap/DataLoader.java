@@ -2,7 +2,6 @@ package ir.ac.sbu.evaluation.bootstrap;
 
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventSaveDto;
 import ir.ac.sbu.evaluation.dto.schedule.event.DateRangeDto;
-import ir.ac.sbu.evaluation.dto.schedule.event.ScheduleEventDto;
 import ir.ac.sbu.evaluation.dto.university.UniversityDto;
 import ir.ac.sbu.evaluation.dto.university.UniversitySaveDto;
 import ir.ac.sbu.evaluation.dto.university.faculty.FacultyDto;
@@ -126,7 +125,14 @@ public class DataLoader implements CommandLineRunner {
                 .englishTitle("Integrated supervision and evaluation system")
                 .keywords(new HashSet<>(Arrays.asList("مجتمع", "ارزیابی", "یکپارچه", "نظارت")))
                 .definition(
-                        "در رویکرد قدیمی، برای انجام کارهای مربوط به ارائه‌ی پروژه‌ی پایانی، رساله، پروپوزال و انتقال اطلاعات آن، از روش‌های حضوری برای هماهنگی با استادها، مسئولین آموزش و ... استفاده می‌شد. همچنین برای به اشتراک‌گذاری اطلاعات، نتایج تحقیقات و پیشرفت‌ها و ... نیز از سامانه‌های متنوعی مثل ایمیل و موارد مشابه استفاده می‌شد که با توجه به تعداد زیاد دانشجویان و مشغله‌های افراد درگیر در این فرآیند، این پیام‌ها و اطلاعات متمرکز نبودند و دنبال‌کردن تاریخچه یا بررسی آن‌ها بسیار زمان‌بر بود. در سامانه‌های تحت وب، تمامی این کارها می‌توانند با صرفه جویی در زمان و منابع و بدون محدودیت مکانی و با دقت بالاتری به همراه مستند‌شدن ارتباط بین اساتید و دانشجو انجام بپذیرد.")
+                        "در رویکرد قدیمی، برای انجام کارهای مربوط به ارائه‌ی پروژه‌ی پایانی، رساله، پروپوزال و انتقال"
+                                + " اطلاعات آن، از روش‌های حضوری برای هماهنگی با استادها، مسئولین آموزش و ... استفاده"
+                                + " می‌شد. همچنین برای به اشتراک‌گذاری اطلاعات، نتایج تحقیقات و پیشرفت‌ها و ... نیز "
+                                + "از سامانه‌های متنوعی مثل ایمیل و موارد مشابه استفاده می‌شد که با توجه به تعداد "
+                                + "زیاد دانشجویان و مشغله‌های افراد درگیر در این فرآیند، این پیام‌ها و اطلاعات متمرکز"
+                                + " نبودند و دنبال‌کردن تاریخچه یا بررسی آن‌ها بسیار زمان‌بر بود. در سامانه‌های تحت "
+                                + "وب، تمامی این کارها می‌توانند با صرفه جویی در زمان و منابع و بدون محدودیت مکانی و "
+                                + "با دقت بالاتری به همراه مستند‌شدن ارتباط بین اساتید و دانشجو انجام بپذیرد.")
                 .history("بیشینه مسئله")
                 .considerations("برای پیاده‌سازی در محیط عملیاتی، نیازمند سرور و تجهیزات شبکه‌ای مربوطه می‌باشد.")
                 .state(ProblemState.CREATED)
@@ -147,7 +153,8 @@ public class DataLoader implements CommandLineRunner {
                 .englishTitle("Restaurant sales management system")
                 .keywords(new HashSet<>(Arrays.asList("رستوران", "فروش", "خرید", "سامانه")))
                 .definition(
-                        "سامانه‌ جامع و کامل که به منظورت مدیریت خرید و فروش رستوران‌های کل شهرهای کشور استفاده می‌شود.")
+                        "سامانه‌ جامع و کامل که به منظورت مدیریت خرید و فروش رستوران‌های کل شهرهای کشور استفاده "
+                                + "می‌شود.")
                 .history("بیشینه مسئله")
                 .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
                 .state(ProblemState.CREATED)
@@ -230,7 +237,8 @@ public class DataLoader implements CommandLineRunner {
         setSpringSecurityAuthentication(sadeghMaster);
         problemService.addProblemEvent(sadeghMaster.getId(), problem1.getId(), ProblemEventSaveDto.builder()
                 .message(
-                        "من با پیشنهاد شما موافق هستم ولی خیلی می‌تواند بهتر باشد اگر جوانب مختلف این تصمیم را پیش از رفتن به سمت آن بسنجیم تا از درستی آن تا حد خوبی اطمینان پیدا کنیم.")
+                        "من با پیشنهاد شما موافق هستم ولی خیلی می‌تواند بهتر باشد اگر جوانب مختلف این تصمیم را پیش از"
+                                + " رفتن به سمت آن بسنجیم تا از درستی آن تا حد خوبی اطمینان پیدا کنیم.")
                 .build());
 
         Calendar calendar = Calendar.getInstance();
@@ -238,21 +246,35 @@ public class DataLoader implements CommandLineRunner {
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH) + 1,
                 calendar.get(Calendar.DAY_OF_MONTH));
-        ScheduleEventDto scheduleEvent1 = scheduleService
-                .addScheduleEvent(sadeghMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
-                        .startDate(dateFormat.parse(String.format("%s 09:00", todayDate)).toInstant())
-                        .endDate(dateFormat.parse(String.format("%s 10:00", todayDate)).toInstant())
-                        .build());
-        ScheduleEventDto scheduleEvent2 = scheduleService
-                .addScheduleEvent(aminStudent.getId(), meetSchedule3.getId(), DateRangeDto.builder()
-                        .startDate(dateFormat.parse(String.format("%s 11:00", todayDate)).toInstant())
-                        .endDate(dateFormat.parse(String.format("%s 12:00", todayDate)).toInstant())
-                        .build());
-        ScheduleEventDto scheduleEvent3 = scheduleService
-                .addScheduleEvent(mojtabaMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
-                        .startDate(dateFormat.parse(String.format("%s 13:00", todayDate)).toInstant())
-                        .endDate(dateFormat.parse(String.format("%s 15:00", todayDate)).toInstant())
-                        .build());
+        scheduleService.addScheduleEvent(sadeghMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
+                .startDate(dateFormat.parse(String.format("%s 09:00", todayDate)).toInstant())
+                .endDate(dateFormat.parse(String.format("%s 10:00", todayDate)).toInstant())
+                .build());
+        scheduleService.addScheduleEvent(aminStudent.getId(), meetSchedule3.getId(), DateRangeDto.builder()
+                .startDate(dateFormat.parse(String.format("%s 11:00", todayDate)).toInstant())
+                .endDate(dateFormat.parse(String.format("%s 12:00", todayDate)).toInstant())
+                .build());
+        scheduleService.addScheduleEvent(mojtabaMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
+                .startDate(dateFormat.parse(String.format("%s 13:00", todayDate)).toInstant())
+                .endDate(dateFormat.parse(String.format("%s 15:00", todayDate)).toInstant())
+                .build());
+        // Shared schedule event between all participants
+        scheduleService.addScheduleEvent(sadeghMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
+                .startDate(dateFormat.parse(String.format("%s 15:00", todayDate)).toInstant())
+                .endDate(dateFormat.parse(String.format("%s 20:00", todayDate)).toInstant())
+                .build());
+        scheduleService.addScheduleEvent(aminStudent.getId(), meetSchedule3.getId(), DateRangeDto.builder()
+                .startDate(dateFormat.parse(String.format("%s 15:30", todayDate)).toInstant())
+                .endDate(dateFormat.parse(String.format("%s 19:30", todayDate)).toInstant())
+                .build());
+        scheduleService.addScheduleEvent(mojtabaMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
+                .startDate(dateFormat.parse(String.format("%s 16:00", todayDate)).toInstant())
+                .endDate(dateFormat.parse(String.format("%s 19:00", todayDate)).toInstant())
+                .build());
+        scheduleService.addScheduleEvent(mahmoudMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
+                .startDate(dateFormat.parse(String.format("%s 17:00", todayDate)).toInstant())
+                .endDate(dateFormat.parse(String.format("%s 18:00", todayDate)).toInstant())
+                .build());
     }
 
     private void prepareUsers() {

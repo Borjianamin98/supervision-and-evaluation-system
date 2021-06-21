@@ -3,8 +3,10 @@ package ir.ac.sbu.evaluation.model.schedule;
 import ir.ac.sbu.evaluation.model.BaseEntity;
 import ir.ac.sbu.evaluation.model.problem.Problem;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -75,5 +77,17 @@ public class MeetSchedule extends BaseEntity {
                     "Schedule duration should be between 30 to 120 minutes: " + durationMinutes);
         }
         return persianDurationNames[(int) (durationMinutes / 30) - 1];
+    }
+
+    public Instant getEndOfFinalizedDate() {
+        return finalizedDate.plus(durationMinutes, ChronoUnit.MINUTES);
+    }
+
+    public Set<Long> getParticipants() {
+        Set<Long> participants = new HashSet<>();
+        participants.add(problem.getStudent().getId());
+        participants.add(problem.getSupervisor().getId());
+        participants.addAll(problem.getReferees().stream().map(BaseEntity::getId).collect(Collectors.toSet()));
+        return participants;
     }
 }
