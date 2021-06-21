@@ -227,6 +227,11 @@ public class ProblemService {
                     + "problem ID = " + problemId + " referee ID = " + refereeId);
         }
 
+        if (problem.getMeetSchedule().getScheduleState() == ScheduleState.FINALIZED) {
+            throw new ResourceConflictException("Meet schedule time finalized and it is illegal to remove referee "
+                    + "after finalizing meet schedule: problem ID = " + problemId + " referee ID = " + refereeId);
+        }
+
         List<ScheduleEvent> problemScheduleEventsByReferee = scheduleEventRepository
                 .findAllByOwnerIdAndMeetSchedule_Problem_Id(refereeId, problemId);
         if (!forceToRemove && !problemScheduleEventsByReferee.isEmpty()) {

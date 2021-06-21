@@ -118,14 +118,14 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
         });
     }
 
-    const meetScheduleDisabled = () => {
+    const meetScheduleEnabled = () => {
         switch (problem.meetSchedule.scheduleState) {
             case ScheduleState.CREATED:
-                return !currentUserIsSupervisor;
+                return currentUserIsSupervisor && problem.referees.length === 2;
             case ScheduleState.STARTED:
-                return false;
+                return problem.referees.length === 2;
             case ScheduleState.FINALIZED:
-                return true;
+                return false;
             default:
                 throw new Error("Illegal problem meet schedule state: " + problem.meetSchedule.scheduleState);
         }
@@ -217,7 +217,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                                     content = <ProfileInfoCard
                                         user={problem.referees[index]}
                                         subheader={`داور ${orderString} پایان‌نامه (پروژه)`}
-                                        hasDelete={currentUserIsSupervisor}
+                                        hasDelete={currentUserIsSupervisor && problem.meetSchedule.scheduleState !== ScheduleState.FINALIZED}
                                         onDelete={() =>
                                             removeReferee.mutate({
                                                 problemId: problem.id,
@@ -263,7 +263,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                                         color="secondary"
                                         startIcon={<ScheduleIcon/>}
                                         onClick={onScheduleClick}
-                                        disabled={meetScheduleDisabled()}
+                                        disabled={!meetScheduleEnabled()}
                                     >
                                         زمان‌بندی دفاع
                                     </Button>

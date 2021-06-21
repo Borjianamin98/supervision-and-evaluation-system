@@ -31,6 +31,11 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
     const jwtPayload = AuthenticationService.getJwtPayload()!;
     const currentUserIsSupervisor = problem.supervisor.id === jwtPayload.userId;
 
+    if (problem.referees.length !== 2) {
+        return <HomeRedirect
+            message={"دسترسی به صفحه‌ی مربوطه با توجه به عدم مشخص‌شدن تمامی داورهای مسئله امکان‌پذیر نمی‌باشد."}/>
+    }
+
     switch (problem.meetSchedule.scheduleState) {
         case ScheduleState.CREATED:
             return currentUserIsSupervisor ?
