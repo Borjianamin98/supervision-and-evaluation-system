@@ -1,11 +1,13 @@
 package ir.ac.sbu.evaluation.dto.problem;
 
+import ir.ac.sbu.evaluation.dto.review.PeerReviewDto;
+import ir.ac.sbu.evaluation.dto.review.ProblemReviewDto;
 import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleDto;
 import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
 import ir.ac.sbu.evaluation.dto.user.student.StudentDto;
 import ir.ac.sbu.evaluation.enumeration.Education;
-import ir.ac.sbu.evaluation.model.problem.ProblemState;
 import ir.ac.sbu.evaluation.model.problem.Problem;
+import ir.ac.sbu.evaluation.model.problem.ProblemState;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,6 +34,8 @@ public class ProblemDto {
     private Set<MasterDto> referees;
 
     private MeetScheduleDto meetSchedule;
+    private Set<ProblemReviewDto> problemReviews;
+    private Set<PeerReviewDto> peerReviews;
 
     @Builder
     public ProblemDto(long id,
@@ -39,8 +43,12 @@ public class ProblemDto {
             String title, String englishTitle, Set<String> keywords,
             String definition, String history, String considerations,
             ProblemState state,
-            StudentDto student, MasterDto supervisor, Set<MasterDto> referees,
-            MeetScheduleDto meetSchedule) {
+            StudentDto student,
+            MasterDto supervisor,
+            Set<MasterDto> referees,
+            MeetScheduleDto meetSchedule,
+            Set<ProblemReviewDto> problemReviews,
+            Set<PeerReviewDto> peerReviews) {
         this.id = id;
         this.education = education;
         this.title = title;
@@ -54,6 +62,8 @@ public class ProblemDto {
         this.supervisor = supervisor;
         this.referees = referees;
         this.meetSchedule = meetSchedule;
+        this.problemReviews = problemReviews;
+        this.peerReviews = peerReviews;
     }
 
     public static ProblemDto from(Problem problem) {
@@ -69,6 +79,9 @@ public class ProblemDto {
                 .supervisor(MasterDto.from(problem.getSupervisor()))
                 .referees(problem.getReferees().stream().map(MasterDto::from).collect(Collectors.toSet()))
                 .meetSchedule(MeetScheduleDto.from(problem.getMeetSchedule()))
+                .problemReviews(
+                        problem.getProblemReviews().stream().map(ProblemReviewDto::from).collect(Collectors.toSet()))
+                .peerReviews(problem.getPeerReviews().stream().map(PeerReviewDto::from).collect(Collectors.toSet()))
                 .build();
     }
 

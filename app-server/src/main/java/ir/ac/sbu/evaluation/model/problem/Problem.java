@@ -2,6 +2,8 @@ package ir.ac.sbu.evaluation.model.problem;
 
 import ir.ac.sbu.evaluation.enumeration.Education;
 import ir.ac.sbu.evaluation.model.BaseEntity;
+import ir.ac.sbu.evaluation.model.review.PeerReview;
+import ir.ac.sbu.evaluation.model.review.ProblemReview;
 import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.Student;
@@ -79,15 +81,27 @@ public class Problem extends BaseEntity {
     @JoinColumn(name = "schedule")
     private MeetSchedule meetSchedule;
 
+    @OneToMany(mappedBy = "problem")
+    private Set<PeerReview> peerReviews;
+
+    @OneToMany(mappedBy = "problem")
+    private Set<ProblemReview> problemReviews;
+
     public Problem() {
     }
 
     @Builder
-    public Problem(Long id, Education education, String title, String englishTitle,
+    public Problem(Long id,
+            Education education, String title, String englishTitle,
             Set<String> keywords, String definition, String history, String considerations,
-            ProblemState state, Student student, Master supervisor,
-            Set<Master> referees, Set<ProblemEvent> events,
-            MeetSchedule meetSchedule) {
+            ProblemState state,
+            Student student,
+            Master supervisor,
+            Set<Master> referees,
+            Set<ProblemEvent> events,
+            MeetSchedule meetSchedule,
+            Set<PeerReview> peerReviews,
+            Set<ProblemReview> problemReviews) {
         super(id);
         this.education = education;
         this.title = title;
@@ -102,6 +116,8 @@ public class Problem extends BaseEntity {
         this.referees = referees == null ? new HashSet<>() : referees;
         this.events = events == null ? new HashSet<>() : events;
         this.meetSchedule = meetSchedule;
+        this.peerReviews = peerReviews == null ? new HashSet<>() : peerReviews;
+        this.problemReviews = problemReviews == null ? new HashSet<>() : problemReviews;
     }
 
     @Override
