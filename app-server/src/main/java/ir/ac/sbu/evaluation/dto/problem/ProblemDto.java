@@ -28,6 +28,7 @@ public class ProblemDto {
     private String history;
     private String considerations;
     private ProblemState state;
+    private int finalGrade;
 
     private StudentDto student;
     private MasterDto supervisor;
@@ -43,6 +44,7 @@ public class ProblemDto {
             String title, String englishTitle, Set<String> keywords,
             String definition, String history, String considerations,
             ProblemState state,
+            int finalGrade,
             StudentDto student,
             MasterDto supervisor,
             Set<MasterDto> referees,
@@ -58,6 +60,7 @@ public class ProblemDto {
         this.history = history;
         this.considerations = considerations;
         this.state = state;
+        this.finalGrade = finalGrade;
         this.student = student;
         this.supervisor = supervisor;
         this.referees = referees;
@@ -75,6 +78,7 @@ public class ProblemDto {
                 .definition(problem.getDefinition()).history(problem.getHistory())
                 .considerations(problem.getConsiderations())
                 .state(problem.getState())
+                .finalGrade(problem.getFinalGrade())
                 .student(StudentDto.from(problem.getStudent()))
                 .supervisor(MasterDto.from(problem.getSupervisor()))
                 .referees(problem.getReferees().stream().map(MasterDto::from).collect(Collectors.toSet()))
@@ -102,11 +106,15 @@ public class ProblemDto {
                 && Objects.equals(definition, that.definition)
                 && Objects.equals(history, that.history)
                 && Objects.equals(considerations, that.considerations)
-                && state == that.state;
+                && state == that.state
+                && finalGrade == that.finalGrade;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, education, title, englishTitle, keywords, definition, history, considerations, state);
+        return Objects.hash(id, education,
+                title, englishTitle, keywords,
+                definition, history, considerations,
+                state, finalGrade);
     }
 }

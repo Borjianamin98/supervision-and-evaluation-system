@@ -60,6 +60,9 @@ public class Problem extends BaseEntity {
     @Column(name = "state")
     private ProblemState state;
 
+    @Column(name = "final_grade")
+    private Integer finalGrade = 0;
+
     @ManyToOne
     @JoinColumn(name = "student_id")
     private Student student;
@@ -82,10 +85,10 @@ public class Problem extends BaseEntity {
     private MeetSchedule meetSchedule;
 
     @OneToMany(mappedBy = "problem")
-    private Set<PeerReview> peerReviews;
+    private Set<PeerReview> peerReviews = new HashSet<>();
 
     @OneToMany(mappedBy = "problem")
-    private Set<ProblemReview> problemReviews;
+    private Set<ProblemReview> problemReviews = new HashSet<>();
 
     public Problem() {
     }
@@ -95,6 +98,7 @@ public class Problem extends BaseEntity {
             Education education, String title, String englishTitle,
             Set<String> keywords, String definition, String history, String considerations,
             ProblemState state,
+            Integer finalGrade,
             Student student,
             Master supervisor,
             Set<Master> referees,
@@ -111,6 +115,7 @@ public class Problem extends BaseEntity {
         this.history = history;
         this.considerations = considerations;
         this.state = state;
+        this.finalGrade = finalGrade == null ? 0 : finalGrade;
         this.student = student;
         this.supervisor = supervisor;
         this.referees = referees == null ? new HashSet<>() : referees;
@@ -131,6 +136,7 @@ public class Problem extends BaseEntity {
                 ", history='" + history + '\'' +
                 ", considerations='" + considerations + '\'' +
                 ", state=" + state +
+                ", finalGrade=" + finalGrade +
                 '}';
     }
 }
