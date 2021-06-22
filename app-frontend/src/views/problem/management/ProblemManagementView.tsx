@@ -8,12 +8,9 @@ import {useSnackbar} from "notistack";
 import React from 'react';
 import {useMutation, useQueryClient} from "react-query";
 import {rtlTheme} from "../../../App";
-import conclusionImage from "../../../assets/images/schedule/Conclusion.jpg";
-import ButtonLink from "../../../components/Button/ButtonLink";
 import KeywordsList from "../../../components/Chip/KeywordsList";
 import ConfirmDialog from "../../../components/Dialog/ConfirmDialog";
 import SearchableListDialog from "../../../components/Dialog/SearchableListDialog";
-import MediaCard from "../../../components/MediaCard/MediaCard";
 import CustomTypography from "../../../components/Typography/CustomTypography";
 import {generalErrorHandler} from "../../../config/axios-config";
 import {educationMapToPersian} from "../../../model/enum/education";
@@ -24,9 +21,9 @@ import AuthenticationService from "../../../services/api/AuthenticationService";
 import ProblemMasterService from "../../../services/api/problem/ProblemMasterService";
 import MasterService from "../../../services/api/user/MasterService";
 import NumberUtils from "../../../utility/NumberUtils";
-import {UNIVERSITY_LIST_VIEW_PATH} from "../../ViewPaths";
 import ProblemEventsList from "../ProblemEventsList";
 import ProblemAddEvent from "./PorblemAddEvent";
+import ProblemManagementReviewCard from "./ProblemManagementReviewCard";
 import ProblemManagementScheduleCard from "./ProblemManagementScheduleCard";
 import ProfileInfoCard from "./ProfileInfoCard";
 
@@ -244,16 +241,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                                 <ProblemManagementScheduleCard problem={problem}/>
                             </Grid>
                             <Grid item xs={12} sm={6} md={6} lg={12} xl={6}>
-                                <MediaCard
-                                    media={conclusionImage}
-                                    mediaHeight={100}
-                                    title={"جمع‌بندی"}
-                                    subTitle={["زمان برگزاری جلسه دفاع خود را مشخص نمایید."]}
-                                >
-                                    <ButtonLink to={UNIVERSITY_LIST_VIEW_PATH} color="primary">
-                                        مشاهده
-                                    </ButtonLink>
-                                </MediaCard>
+                                <ProblemManagementReviewCard problem={problem}/>
                             </Grid>
                         </Grid>
                     </Grid>
