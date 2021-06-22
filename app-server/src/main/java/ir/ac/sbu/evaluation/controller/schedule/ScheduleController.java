@@ -77,10 +77,18 @@ public class ScheduleController {
 
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.MASTER_ROLE_NAME)")
     @PostMapping(path = "/{meetScheduleId}/reject")
-    public MeetScheduleDto rejectFinalizedMeetSchedule(
+    public MeetScheduleDto rejectMeetSchedule(
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long meetScheduleId) {
-        return meetScheduleService.rejectFinalizedMeetSchedule(authUserDetail.getUserId(), meetScheduleId);
+        return meetScheduleService.rejectMeetSchedule(authUserDetail.getUserId(), meetScheduleId);
+    }
+
+    @PreAuthorize("hasAnyAuthority(@SecurityRoles.MASTER_ROLE_NAME)")
+    @PostMapping(path = "/{meetScheduleId}/accept")
+    public MeetScheduleDto acceptMeetSchedule(
+            @ModelAttribute AuthUserDetail authUserDetail,
+            @PathVariable long meetScheduleId) {
+        return meetScheduleService.acceptMeetSchedule(authUserDetail.getUserId(), meetScheduleId);
     }
 
     @GetMapping(path = "/{meetScheduleId}/events")

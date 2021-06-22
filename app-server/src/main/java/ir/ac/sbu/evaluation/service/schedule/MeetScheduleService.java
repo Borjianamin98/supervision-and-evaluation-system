@@ -271,7 +271,7 @@ public class MeetScheduleService {
     }
 
     @Transactional
-    public MeetScheduleDto rejectFinalizedMeetSchedule(long userId, long meetScheduleId) {
+    public MeetScheduleDto rejectMeetSchedule(long userId, long meetScheduleId) {
         MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
 
         Problem scheduleProblem = meetSchedule.getProblem();
@@ -292,8 +292,31 @@ public class MeetScheduleService {
                 .problem(meetSchedule.getProblem())
                 .build());
 
-        meetSchedule.setMeetingHeld(false);
-        meetSchedule.setState(MeetScheduleState.FINISHED);
+        meetSchedule.setState(MeetScheduleState.REJECTED);
+        return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
+    }
+
+    @Transactional
+    public MeetScheduleDto acceptMeetSchedule(long userId, long meetScheduleId) {
+        MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
+
+        Problem scheduleProblem = meetSchedule.getProblem();
+        checkUserIsSupervisor(userId, scheduleProblem);
+        checkMeetScheduleState(meetSchedule, MeetScheduleState.FINALIZED);
+
+        if (meetSchedule.getEndOfFinalizedDate().isAfter(Instant.now())) {
+            throw new ResourceConflictException("It is illegal to accept problem before finalized date of meeting: "
+                    + "problem ID = " + scheduleProblem.getId(),
+                    "اعلان تشکیل‌شدن جلسه دفاع پایان‌نامه (پروژه) پیش از زمان برگزاری جلسه امکان‌پذیر نمی‌باشد.");
+        }
+
+        problemEventRepository.save(ProblemEvent.builder()
+                .message("جلسه‌ی دفاع در زمان مقرر با حضور تمامی اعضا تشکیل شد. "
+                        + "داوران از بخش جمع‌بندی، نمره و نظر نهایی خود را در مورد پایان‌نامه (پروژه) مشخصص کنند.")
+                .problem(meetSchedule.getProblem())
+                .build());
+
+        meetSchedule.setState(MeetScheduleState.ACCEPTED);
         return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
     }
 

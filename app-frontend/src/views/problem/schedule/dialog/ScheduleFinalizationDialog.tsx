@@ -183,7 +183,7 @@ const ScheduleFinalizationDialog: React.FunctionComponent<ScheduleDateDialogProp
                                 second: newValue.second(),
                                 millisecond: newValue.millisecond(),
                             }))}
-                        autoSelect={false}
+                        autoSelect={true}
                         textFieldProps={{
                             error: selectedDateError,
                             helperText: selectedDateError ? (

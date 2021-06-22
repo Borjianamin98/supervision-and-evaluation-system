@@ -22,7 +22,6 @@ public class MeetScheduleDto {
     private Instant maximumDate;
     private MeetScheduleState state;
     private Instant finalizedDate;
-    private boolean meetingHeld;
 
     private Set<Long> announcedUsers;
 
@@ -36,7 +35,6 @@ public class MeetScheduleDto {
             Instant maximumDate,
             MeetScheduleState state,
             Instant finalizedDate,
-            boolean meetingHeld,
             Set<Long> announcedUsers) {
         this.id = id;
         this.durationMinutes = durationMinutes;
@@ -44,7 +42,6 @@ public class MeetScheduleDto {
         this.maximumDate = maximumDate;
         this.state = state;
         this.finalizedDate = finalizedDate;
-        this.meetingHeld = meetingHeld;
         this.announcedUsers = announcedUsers;
     }
 
@@ -56,7 +53,6 @@ public class MeetScheduleDto {
                 .maximumDate(meetSchedule.getMaximumDate())
                 .state(meetSchedule.getState())
                 .finalizedDate(meetSchedule.getFinalizedDate())
-                .meetingHeld(meetSchedule.getMeetingHeld())
                 .announcedUsers(meetSchedule.getAnnouncedUsers())
                 .build();
     }
@@ -76,13 +72,12 @@ public class MeetScheduleDto {
                 && Objects.equals(maximumDate, that.maximumDate)
                 && state == that.state
                 && Objects.equals(finalizedDate, that.finalizedDate)
-                && meetingHeld == that.meetingHeld
                 && Objects.equals(announcedUsers, that.announcedUsers);
     }
 
     @Override
     public int hashCode() {
         return Objects
-                .hash(id, durationMinutes, minimumDate, maximumDate, state, finalizedDate, meetingHeld, announcedUsers);
+                .hash(id, durationMinutes, minimumDate, maximumDate, state, finalizedDate, announcedUsers);
     }
 }

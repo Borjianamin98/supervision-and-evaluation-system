@@ -41,9 +41,6 @@ public class MeetSchedule extends BaseEntity {
     @Column(name = "finalized_date")
     private Instant finalizedDate;
 
-    @Column(name = "meeting_held")
-    private Boolean meetingHeld = false;
-
     @OneToOne(mappedBy = "meetSchedule")
     private Problem problem;
 
@@ -63,7 +60,6 @@ public class MeetSchedule extends BaseEntity {
             Instant maximumDate,
             MeetScheduleState state,
             Instant finalizedDate,
-            Boolean meetingHeld,
             Problem problem,
             Set<ScheduleEvent> scheduleEvents,
             Set<Long> announcedUsers) {
@@ -73,7 +69,6 @@ public class MeetSchedule extends BaseEntity {
         this.maximumDate = maximumDate;
         this.state = state;
         this.finalizedDate = finalizedDate;
-        this.meetingHeld = meetingHeld != null && meetingHeld;
         this.problem = problem;
         this.scheduleEvents = scheduleEvents == null ? new HashSet<>() : scheduleEvents;
         this.announcedUsers = announcedUsers == null ? new HashSet<>() : announcedUsers;

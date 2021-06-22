@@ -12,6 +12,7 @@ import ConfirmDialog from "../../../components/Dialog/ConfirmDialog";
 import MediaCard from "../../../components/MediaCard/MediaCard";
 import {generalErrorHandler} from "../../../config/axios-config";
 import {Problem} from "../../../model/problem/problem";
+import {MeetSchedule} from "../../../model/schedule/MeetSchedule";
 import {MeetScheduleState} from "../../../model/schedule/MeetScheduleState";
 import AuthenticationService from "../../../services/api/AuthenticationService";
 import ScheduleService from "../../../services/api/schedule/ScheduleService";
@@ -26,15 +27,21 @@ const ProblemManagementScheduleCard: React.FunctionComponent<ProblemManagementSc
     const queryClient = useQueryClient();
     const {problem} = props;
 
-    const [rejectFinalizedMeetScheduleDialogOpen, setRejectFinalizedMeetScheduleDialogOpen] = React.useState(false);
-    const rejectFinalizedMeetSchedule = useMutation(
-        (data: number) =>
-            ScheduleService.rejectFinalizedMeetSchedule(data),
+    const [rejectMeetScheduleDialogOpen, setRejectMeetScheduleDialogOpen] = React.useState(false);
+    const rejectOrAcceptOnSuccess = (data: MeetSchedule) => {
+        queryClient.setQueryData<Problem>(["problem", problem.id], {...problem, meetSchedule: data});
+        queryClient.invalidateQueries(["problemEvents", problem.id]);
+    }
+    const rejectMeetSchedule = useMutation(
+        (data: number) => ScheduleService.rejectMeetSchedule(data),
         {
-            onSuccess: async (data) => {
-                queryClient.setQueryData<Problem>(["problem", problem.id], {...problem, meetSchedule: data});
-                queryClient.invalidateQueries(["problemEvents", problem.id]);
-            },
+            onSuccess: rejectOrAcceptOnSuccess,
+            onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
+        });
+    const acceptMeetSchedule = useMutation(
+        (data: number) => ScheduleService.acceptMeetSchedule(data),
+        {
+            onSuccess: rejectOrAcceptOnSuccess,
             onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
 
@@ -82,14 +89,15 @@ const ProblemManagementScheduleCard: React.FunctionComponent<ProblemManagementSc
                         "زمان برگزاری جلسه دفاع به اتمام رسیده است. منتظر بررسی استاد راهنما برای تایید برگزاری جلسه باشید." :
                         "",
                 ];
-            case MeetScheduleState.FINISHED:
-                if (problem.meetSchedule.meetingHeld) {
-                    return [""];
-                } else {
-                    return ["جلسه دفاع به علت یکسری دلایل (مانند عدم حضور دانشجو و ...) تشکیل نشد. " +
+            case MeetScheduleState.REJECTED:
+                return [
+                    "جلسه دفاع به علت یکسری دلایل (مانند عدم حضور دانشجو و ...) تشکیل نشد. " +
                     "با توجه به این که علت عدم برگزاری جلسه سبب عدم ارزیابی مناسب در ادامه می‌شود، " +
                     "نتیجه این پایان‌نامه (پروژه) به صورت ردشده در نظر گرفته شد."];
-                }
+            case MeetScheduleState.ACCEPTED:
+                return [
+                    "جلسه‌ی دفاع در زمان مقرر با حضور تمامی اعضا تشکیل شد. " +
+                    "داوران از بخش جمع‌بندی، نمره و نظر نهایی خود را در مورد پایان‌نامه (پروژه) مشخصص کنند."];
             default:
                 throw new Error("Illegal problem meet schedule state: " + problem.meetSchedule.state);
         }
@@ -121,13 +129,14 @@ const ProblemManagementScheduleCard: React.FunctionComponent<ProblemManagementSc
                         <Button
                             disabled={finalizedDateIsAfterNow}
                             color="primary"
+                            onClick={() => acceptMeetSchedule.mutate(problem.meetSchedule.id)}
                         >
                             تایید برگزاری جلسه
                         </Button>
                         <Button
                             disabled={finalizedDateIsAfterNow}
                             color="primary"
-                            onClick={() => setRejectFinalizedMeetScheduleDialogOpen(true)}
+                            onClick={() => setRejectMeetScheduleDialogOpen(true)}
                         >
                             اعلام تشکیل‌نشدن جلسه
                         </Button>
@@ -135,7 +144,8 @@ const ProblemManagementScheduleCard: React.FunctionComponent<ProblemManagementSc
                 } else {
                     return null;
                 }
-            case MeetScheduleState.FINISHED:
+            case MeetScheduleState.REJECTED:
+            case MeetScheduleState.ACCEPTED:
                 return null;
             default:
                 throw new Error("Illegal problem meet schedule state: " + problem.meetSchedule.state);
@@ -154,12 +164,12 @@ const ProblemManagementScheduleCard: React.FunctionComponent<ProblemManagementSc
             </MediaCard>
             <div aria-label={"dialogs"}>
                 <ConfirmDialog
-                    open={rejectFinalizedMeetScheduleDialogOpen}
+                    open={rejectMeetScheduleDialogOpen}
                     onDialogOpenClose={confirmed => {
                         if (confirmed) {
-                            rejectFinalizedMeetSchedule.mutate(problem.meetSchedule.id);
+                            rejectMeetSchedule.mutate(problem.meetSchedule.id);
                         }
-                        setRejectFinalizedMeetScheduleDialogOpen(false);
+                        setRejectMeetScheduleDialogOpen(false);
                     }}
                     title={"اعلام تشکیل‌نشدن جلسه"}
                     description={"در صورتی که به دلایلی که از سمت دانشجو می‌باشد، جلسه دفاع برگزار نشده است، " +

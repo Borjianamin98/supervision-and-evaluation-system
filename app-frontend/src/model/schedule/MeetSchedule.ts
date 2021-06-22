@@ -7,7 +7,6 @@ export interface MeetSchedule {
     maximumDate: Date,
     state: MeetScheduleState,
     finalizedDate?: Date,
-    meetingHeld: boolean,
 
     announcedUsers: number[]
 }

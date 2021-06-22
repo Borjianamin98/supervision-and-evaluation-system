@@ -4,5 +4,6 @@ public enum MeetScheduleState {
     CREATED,
     STARTED,
     FINALIZED,
-    FINISHED,
+    REJECTED,
+    ACCEPTED,
 }

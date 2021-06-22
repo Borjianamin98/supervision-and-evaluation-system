@@ -48,9 +48,15 @@ class ScheduleService {
             .then(response => response.data)
     }
 
-    static rejectFinalizedMeetSchedule(meetScheduleId: number) {
+    static rejectMeetSchedule(meetScheduleId: number) {
         return apiAxios
             .post<MeetSchedule>(`${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/reject`, {})
+            .then(response => response.data)
+    }
+
+    static acceptMeetSchedule(meetScheduleId: number) {
+        return apiAxios
+            .post<MeetSchedule>(`${ScheduleService.API_SCHEDULE_ROOT_PATH}/${meetScheduleId}/accept`, {})
             .then(response => response.data)
     }
 
