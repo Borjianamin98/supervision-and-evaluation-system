@@ -1,6 +1,7 @@
 package ir.ac.sbu.evaluation.bootstrap;
 
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventSaveDto;
+import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleSaveDto;
 import ir.ac.sbu.evaluation.dto.schedule.event.DateRangeDto;
 import ir.ac.sbu.evaluation.dto.university.UniversityDto;
 import ir.ac.sbu.evaluation.dto.university.UniversitySaveDto;
@@ -110,13 +111,13 @@ public class DataLoader implements CommandLineRunner {
         prepareUniversities();
         prepareUsers();
 
-        Instant yesterday = DateUtility.getStartOfDay(Instant.now().minus(2, ChronoUnit.DAYS));
-        Instant tomorrow = DateUtility.getStartOfDay(Instant.now().plus(2, ChronoUnit.DAYS));
+        Instant twoDayAgo = DateUtility.getStartOfDay(Instant.now().minus(2, ChronoUnit.DAYS));
+        Instant threeDayTomorrow = DateUtility.getStartOfDay(Instant.now().plus(2, ChronoUnit.DAYS));
 
         MeetSchedule meetSchedule1 = meetScheduleRepository.save(MeetSchedule.builder()
                 .durationMinutes(30L)
-                .minimumDate(yesterday)
-                .maximumDate(tomorrow)
+                .minimumDate(twoDayAgo)
+                .maximumDate(threeDayTomorrow)
                 .state(MeetScheduleState.CREATED)
                 .build());
         Problem problem1 = problemRepository.save(Problem.builder()
@@ -143,8 +144,8 @@ public class DataLoader implements CommandLineRunner {
 
         MeetSchedule meetSchedule2 = meetScheduleRepository.save(MeetSchedule.builder()
                 .durationMinutes(30L)
-                .minimumDate(yesterday)
-                .maximumDate(tomorrow)
+                .minimumDate(twoDayAgo)
+                .maximumDate(threeDayTomorrow)
                 .state(MeetScheduleState.CREATED)
                 .build());
         Problem problem2 = problemRepository.save(Problem.builder()
@@ -165,8 +166,8 @@ public class DataLoader implements CommandLineRunner {
 
         MeetSchedule meetSchedule3 = meetScheduleRepository.save(MeetSchedule.builder()
                 .durationMinutes(30L)
-                .minimumDate(yesterday)
-                .maximumDate(tomorrow)
+                .minimumDate(twoDayAgo)
+                .maximumDate(threeDayTomorrow)
                 .state(MeetScheduleState.CREATED)
                 .build());
         Problem problem3 = problemRepository.save(Problem.builder()
@@ -185,8 +186,8 @@ public class DataLoader implements CommandLineRunner {
 
         MeetSchedule meetSchedule4 = meetScheduleRepository.save(MeetSchedule.builder()
                 .durationMinutes(30L)
-                .minimumDate(yesterday)
-                .maximumDate(tomorrow)
+                .minimumDate(twoDayAgo)
+                .maximumDate(threeDayTomorrow)
                 .state(MeetScheduleState.CREATED)
                 .build());
         Problem problem4 = problemRepository.save(Problem.builder()
@@ -229,6 +230,7 @@ public class DataLoader implements CommandLineRunner {
         problemService.addReferee(mojtabaMaster.getId(), problem3.getId(), sadeghMaster.getId());
         problemService.addReferee(mojtabaMaster.getId(), problem3.getId(), mahmoudMaster.getId());
         problemService.addReferee(mojtabaMaster.getId(), problem4.getId(), mahmoudMaster.getId());
+        problemService.addReferee(mojtabaMaster.getId(), problem4.getId(), sadeghMaster.getId());
 
         setSpringSecurityAuthentication(aminStudent);
         problemService.addProblemEvent(aminStudent.getId(), problem1.getId(), ProblemEventSaveDto.builder()
@@ -242,6 +244,10 @@ public class DataLoader implements CommandLineRunner {
                 .build());
 
         Calendar calendar = Calendar.getInstance();
+        String yesterdayDate = String.format("%04d-%02d-%02d",
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DAY_OF_MONTH) - 1);
         String todayDate = String.format("%04d-%02d-%02d",
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH) + 1,
@@ -262,7 +268,8 @@ public class DataLoader implements CommandLineRunner {
                 .startDate(dateFormat.parse(String.format("%s 13:00", todayDate)).toInstant())
                 .endDate(dateFormat.parse(String.format("%s 15:00", todayDate)).toInstant())
                 .build());
-        // Shared schedule event between all participants
+
+        // Shared schedule event between all participants for problem 3
         meetScheduleService.addScheduleEvent(sadeghMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
                 .startDate(dateFormat.parse(String.format("%s 15:00", tomorrowDate)).toInstant())
                 .endDate(dateFormat.parse(String.format("%s 20:00", tomorrowDate)).toInstant())
@@ -279,6 +286,25 @@ public class DataLoader implements CommandLineRunner {
                 .startDate(dateFormat.parse(String.format("%s 17:00", tomorrowDate)).toInstant())
                 .endDate(dateFormat.parse(String.format("%s 18:00", tomorrowDate)).toInstant())
                 .build());
+
+        // Shared schedule event between all participants for problem 4
+        meetScheduleService.startMeetSchedule(mojtabaMaster.getId(), meetSchedule4.getId(),
+                MeetScheduleSaveDto.builder()
+                        .durationMinutes(30)
+                        .minimumDate(twoDayAgo)
+                        .maximumDate(threeDayTomorrow)
+                        .build());
+        for (UserDto user : Arrays.asList(sadeghMaster, aminStudent, mojtabaMaster, mahmoudMaster)) {
+            meetScheduleService.addScheduleEvent(user.getId(), meetSchedule4.getId(), DateRangeDto.builder()
+                    .startDate(dateFormat.parse(String.format("%s 17:00", yesterdayDate)).toInstant())
+                    .endDate(dateFormat.parse(String.format("%s 18:00", yesterdayDate)).toInstant())
+                    .build());
+        }
+        // Complete meet schedule of problem 4
+        meetScheduleService.finalizeMeetSchedule(mojtabaMaster.getId(), meetSchedule4.getId(),
+                dateFormat.parse(String.format("%s 17:00", yesterdayDate)).toInstant());
+        meetScheduleService.acceptMeetSchedule(mojtabaMaster.getId(), meetSchedule4.getId());
+
     }
 
     private void prepareUsers() {

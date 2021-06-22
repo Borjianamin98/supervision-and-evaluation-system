@@ -46,7 +46,7 @@ const ProblemManagementReviewCard: React.FunctionComponent<ProblemManagementRevi
                         `نمره‌ی نهایی پایان‌نامه (پروژه) مربوطه ${problem.finalGrade} می‌باشد.` :
                         (currentUserIsStudent ?
                             "نمره‌ی پاپا‌ن‌نامه (پروژه) هنوز توسط داوران نهایی نشده است."
-                            : "داوران از بخش نمره‌دهی، اطلاعات لازم را در مورد پایان‌نامه (پروژه) مشخصص کنند.")
+                            : "داوران از بخش نمره‌دهی، اطلاعات لازم را در مورد پایان‌نامه (پروژه) مشخص کنند.")
                 ];
             default:
                 throw new Error("Illegal problem meet schedule state: " + problem.meetSchedule.state);
