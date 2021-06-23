@@ -6,6 +6,7 @@ import ir.ac.sbu.evaluation.dto.review.ProblemReviewSaveDto;
 import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
 import ir.ac.sbu.evaluation.model.problem.Problem;
+import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
 import ir.ac.sbu.evaluation.model.review.PeerReview;
 import ir.ac.sbu.evaluation.model.review.ProblemReview;
 import ir.ac.sbu.evaluation.model.user.User;
@@ -59,6 +60,13 @@ public class ReviewService {
             peerReview.setReviewed(getUser(peerReviewSaveDto.getReviewedId()));
             peerReviewRepository.save(peerReview);
         }
+
+        problemEventRepository.save(ProblemEvent.builder()
+                .message(String.format(
+                        "استاد «%s» ارزیابی خود از جلسه‌ی دفاع را تکمیل نمودند.",
+                        reviewer.getFullName()))
+                .problem(problem)
+                .build());
 
         problem.getProblemReviews().add(problemReview);
         return ProblemDto.from(problem);

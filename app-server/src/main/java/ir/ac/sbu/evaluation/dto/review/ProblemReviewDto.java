@@ -1,5 +1,7 @@
 package ir.ac.sbu.evaluation.dto.review;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import ir.ac.sbu.evaluation.dto.user.UserDto;
 import ir.ac.sbu.evaluation.model.review.ProblemReview;
 import java.util.Objects;
@@ -9,6 +11,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@JsonInclude(Include.NON_NULL)
 public class ProblemReviewDto {
 
     private long id;

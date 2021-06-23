@@ -7,16 +7,23 @@ import StepLabel from "@material-ui/core/StepLabel";
 import Stepper from "@material-ui/core/Stepper";
 import {ThemeProvider} from "@material-ui/core/styles";
 import Rating from "@material-ui/lab/Rating";
+import {AxiosError} from "axios";
+import {useSnackbar} from "notistack";
 import React from 'react';
+import {useMutation, useQueryClient} from "react-query";
 import {rtlTheme} from "../../../../App";
 import CustomAlert from "../../../../components/Alert/CustomAlert";
 import MultiActionDialog from "../../../../components/Dialog/MultiActionDialog";
 import CenterBox from "../../../../components/Grid/CenterBox";
 import CustomTextField from "../../../../components/Text/CustomTextField";
 import CustomTypography from "../../../../components/Typography/CustomTypography";
+import {generalErrorHandler} from "../../../../config/axios-config";
 import {Problem} from "../../../../model/problem/problem";
+import {PeerReviewSave} from "../../../../model/review/PeerReviewSave";
+import {ProblemReviewSave} from "../../../../model/review/ProblemReviewSave";
 import {User, userRoleInfo} from "../../../../model/user/User";
 import AuthenticationService from "../../../../services/api/AuthenticationService";
+import ReviewService from "../../../../services/api/review/ReviewService";
 
 interface ReviewEvaluationDialogProps {
     problem: Problem,
@@ -24,12 +31,51 @@ interface ReviewEvaluationDialogProps {
     onClose: () => void,
 }
 
+const convertUserToPeerReview = (users: User[]) => {
+    return users.map<PeerReviewSave>(user => ({
+        content: "",
+        score: 0,
+        reviewedId: user.id,
+    }))
+}
+
 const ReviewEvaluationDialog: React.FunctionComponent<ReviewEvaluationDialogProps> = (props) => {
+    const {enqueueSnackbar} = useSnackbar();
+    const queryClient = useQueryClient();
     const {problem, open, onClose} = props;
-    const [activeStep, setActiveStep] = React.useState(0);
 
     const jwtPayload = AuthenticationService.getJwtPayload()!;
     const steps = ["پایان‌نامه (پروژه)", "ارزیابی همکار"];
+
+    const reviewProblem = useMutation(
+        (data: { problemId: number, problemReviewSave: ProblemReviewSave }) =>
+            ReviewService.reviewProblem(data.problemId, data.problemReviewSave),
+        {
+            onSuccess: (data: Problem) => {
+                queryClient.setQueryData<Problem>(["problem", problem.id], data);
+                queryClient.invalidateQueries(["problemEvents", problem.id]);
+            },
+            onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
+        });
+
+    const candidatePeers = [...problem.referees, problem.supervisor]
+        .filter(user => user.id !== jwtPayload.userId);
+
+    const [activeStep, setActiveStep] = React.useState(0);
+    const [problemScore, setProblemScore] = React.useState(0);
+    const [peerReviewSaves, setPeerReviewSaves] = React.useState<PeerReviewSave[]>(convertUserToPeerReview(candidatePeers));
+
+    React.useEffect(() => {
+        if (!open) {
+            setActiveStep(0);
+            setProblemScore(0);
+            setPeerReviewSaves(convertUserToPeerReview(candidatePeers));
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open])
+
+    const isProblemScoreValid = (score: number) => score >= 0 && score <= 20;
+    const isPeerReviewValid = (peerReviewSave: PeerReviewSave) => peerReviewSave.content.length > 0;
 
     const stepperContent = () => {
         if (activeStep === 0) {
@@ -49,10 +95,13 @@ const ReviewEvaluationDialog: React.FunctionComponent<ReviewEvaluationDialogProp
                 <CustomTextField
                     autoFocus
                     label={"نمره نهایی"}
-                    // value={content}
-                    // onChange={(e) => setContent(e.target.value)}
-                    // helperText={isBlank(content) ? "اطلاعات مربوطه نمی‌تواند خالی باشد." : ""}
-                    // error={isBlank(content)}
+                    value={problemScore}
+                    onChange={(e) => {
+                        const onlyTwoDigit = e.target.value.replace(/[^0-9]/g, '').substring(0, 2);
+                        setProblemScore(onlyTwoDigit === "" ? 0 : parseInt(onlyTwoDigit))
+                    }}
+                    helperText={!isProblemScoreValid(problemScore) ? "نمره دانشجو باید بین صفر و بیست باشد." : ""}
+                    error={!isProblemScoreValid(problemScore)}
                 />
             </>;
         } else if (activeStep === 1) {
@@ -64,14 +113,20 @@ const ReviewEvaluationDialog: React.FunctionComponent<ReviewEvaluationDialogProp
                     به امید این که بازخوردهای شما بتواند در بهبود پایان‌نامه (پروژه‌) و جلسات آینده مفید واقع شود.
                 </CustomTypography>
                 <List>
-                    {[...problem.referees, problem.supervisor]
-                        .filter(user => user.id !== jwtPayload.userId)
-                        .map(referee => (
-                            <div key={referee.id}>
-                                <PersonListItem user={referee}/>
-                                <Divider component={"li"}/>
-                            </div>
-                        ))}
+                    {peerReviewSaves.map((peerReviewSave, index) => (
+                        <div key={peerReviewSave.reviewedId}>
+                            <PersonReviewListItem
+                                user={candidatePeers[index]}
+                                peerReviewSave={peerReviewSave}
+                                updatePeerReviewSave={peerReviewSave => {
+                                    const copy = peerReviewSaves.slice();
+                                    copy[index] = peerReviewSave;
+                                    setPeerReviewSaves(copy);
+                                }}
+                            />
+                            <Divider component={"li"}/>
+                        </div>
+                    ))}
                 </List>
             </>
         } else {
@@ -91,15 +146,35 @@ const ReviewEvaluationDialog: React.FunctionComponent<ReviewEvaluationDialogProp
                     } else if (reason === "previous") {
                         setActiveStep(prev => prev - 1);
                     } else if (reason === "confirm") {
-                        // setActiveStep(prev => prev - 1);
+                        reviewProblem.mutate({
+                            problemId: problem.id,
+                            problemReviewSave: {
+                                score: problemScore,
+                                peerReviews: peerReviewSaves,
+                            }
+                        }, {
+                            onSuccess: () => onClose(),
+                        });
                     }
                 }}
                 title={"ارزیابی پایان‌نامه (پروژه)"}
                 description={""}
                 actions={[
-                    {content: "قسمت قبل", name: "previous", disabled: false},
-                    {content: "قسمت بعد", name: "next", disabled: false},
-                    {content: "تایید", name: "confirm", disabled: false},
+                    {
+                        content: "قسمت قبل",
+                        name: "previous",
+                        disabled: activeStep === 0
+                    },
+                    {
+                        content: "قسمت بعد",
+                        name: "next",
+                        disabled: activeStep === 1 || !isProblemScoreValid(problemScore)
+                    },
+                    {
+                        content: "تایید",
+                        name: "confirm",
+                        disabled: activeStep === 0 || peerReviewSaves.some(p => !isPeerReviewValid(p))
+                    },
                 ]}
             >
                 <Stepper alternativeLabel activeStep={activeStep}>
@@ -115,8 +190,17 @@ const ReviewEvaluationDialog: React.FunctionComponent<ReviewEvaluationDialogProp
     );
 }
 
-const PersonListItem: React.FunctionComponent<{ user: User }> = (props) => {
-    const {user} = props;
+interface PersonReviewListItemProps {
+    user: User,
+    peerReviewSave: PeerReviewSave,
+    updatePeerReviewSave: (PeerReviewSave: PeerReviewSave) => void,
+}
+
+const PersonReviewListItem: React.FunctionComponent<PersonReviewListItemProps> = (props) => {
+    const {user, peerReviewSave, updatePeerReviewSave} = props;
+
+    const isBlank = (c?: string) => !c || c.length === 0;
+
     return (
         <ListItem>
             <ListItemText
@@ -125,24 +209,23 @@ const PersonListItem: React.FunctionComponent<{ user: User }> = (props) => {
                 <CustomTypography>{user.fullName}</CustomTypography>
                 <CustomTypography>{userRoleInfo(user)}</CustomTypography>
                 <CustomTextField
+                    required
                     label="نظرات"
                     maxLength={255}
                     multiline={true}
                     rows={3}
-                    // value={problemSave.definition}
-                    // onChange={event => updateProblemSave({...problemSave, definition: event.target.value})}
-                    // helperText={isDefinitionValid(problemSave.definition) ? "" : "تعریف مسئله در حداقل 15 کلمه توضیح داده شود."}
-                    // error={!isDefinitionValid(problemSave.definition)}
+                    value={peerReviewSave.content}
+                    onChange={event => updatePeerReviewSave({...peerReviewSave, content: event.target.value})}
+                    helperText={isBlank(peerReviewSave.content) ? "نظر حداقلی در مورد همکار الزامی می‌باشد." : ""}
+                    // error={isBlank(peerReviewSave.content)}
                 />
                 <CenterBox flexDirection={"row"} justifyContent={"space-between"}>
                     <CustomTypography>امتیازدهی:</CustomTypography>
                     <Rating
                         name={`rating-${user.id}`}
                         size="large"
-                        // value={value}
-                        // onChange={(event, newValue) => {
-                        //     setValue(newValue);
-                        // }}
+                        value={peerReviewSave.score}
+                        onChange={(event, newValue) => updatePeerReviewSave({...peerReviewSave, score: newValue ?? 0})}
                     />
                 </CenterBox>
             </ListItemText>

@@ -1,11 +1,10 @@
 package ir.ac.sbu.evaluation.dto.review;
 
 import ir.ac.sbu.evaluation.model.review.PeerReview;
-import ir.ac.sbu.evaluation.model.university.University;
 import java.util.Objects;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +14,7 @@ import lombok.Setter;
 @Setter
 public class PeerReviewSaveDto {
 
-    @NotNull
+    @NotBlank
     @Size(max = 255)
     private String content;
 
