@@ -1,14 +1,14 @@
 import Button from "@material-ui/core/Button";
 import {ThemeProvider} from "@material-ui/core/styles";
 import React from 'react';
-import {rtlTheme} from "../../../App";
-import conclusionImage from "../../../assets/images/schedule/Conclusion.jpg";
-import ConfirmDialog from "../../../components/Dialog/ConfirmDialog";
-import MediaCard from "../../../components/MediaCard/MediaCard";
-import {Problem} from "../../../model/problem/problem";
-import {ProblemState} from "../../../model/problem/problemState";
-import {MeetScheduleState} from "../../../model/schedule/MeetScheduleState";
-import AuthenticationService from "../../../services/api/AuthenticationService";
+import {rtlTheme} from "../../../../App";
+import conclusionImage from "../../../../assets/images/schedule/Conclusion.jpg";
+import MediaCard from "../../../../components/MediaCard/MediaCard";
+import {Problem} from "../../../../model/problem/problem";
+import {ProblemState} from "../../../../model/problem/problemState";
+import {MeetScheduleState} from "../../../../model/schedule/MeetScheduleState";
+import AuthenticationService from "../../../../services/api/AuthenticationService";
+import ReviewEvaluationDialog from "./ReviewEvaluationDialog";
 
 interface ProblemManagementReviewCardProps {
     problem: Problem,
@@ -17,11 +17,11 @@ interface ProblemManagementReviewCardProps {
 const ProblemManagementReviewCard: React.FunctionComponent<ProblemManagementReviewCardProps> = (props) => {
     const {problem} = props;
 
-    const [finalizeProblemDialogOpen, setFinalizeProblemDialogOpen] = React.useState(false);
-
     const jwtPayload = AuthenticationService.getJwtPayload()!;
     const currentUserIsSupervisor = problem.supervisor.id === jwtPayload.userId;
     const currentUserIsStudent = problem.student.id === jwtPayload.userId;
+
+    const [evaluationDialogOpen, setEvaluationDialogOpen] = React.useState(false);
 
     const reviewMediaContent = () => {
         switch (problem.meetSchedule.state) {
@@ -84,13 +84,13 @@ const ProblemManagementReviewCard: React.FunctionComponent<ProblemManagementRevi
                             <Button
                                 disabled={false}
                                 color="primary"
+                                onClick={() => setEvaluationDialogOpen(true)}
                             >
                                 ارزیابی
                             </Button>
                             <Button
                                 disabled={false}
                                 color="primary"
-                                onClick={() => setFinalizeProblemDialogOpen(true)}
                             >
                                 جمع‌بندی
                             </Button>
@@ -120,16 +120,10 @@ const ProblemManagementReviewCard: React.FunctionComponent<ProblemManagementRevi
                 {reviewMediaActions()}
             </MediaCard>
             <div aria-label={"dialogs"}>
-                <ConfirmDialog
-                    open={finalizeProblemDialogOpen}
-                    onDialogOpenClose={confirmed => {
-                        if (confirmed) {
-                            // TODO
-                        }
-                        setFinalizeProblemDialogOpen(false);
-                    }}
-                    title={"جمع‌بندی"}
-                    description={""}
+                <ReviewEvaluationDialog
+                    problem={problem}
+                    open={evaluationDialogOpen}
+                    onClose={() => setEvaluationDialogOpen(false)}
                 />
             </div>
         </ThemeProvider>

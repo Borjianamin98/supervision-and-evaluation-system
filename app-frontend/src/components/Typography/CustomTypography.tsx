@@ -1,4 +1,4 @@
-import Box from '@material-ui/core/Box';
+import Box, {BoxProps} from '@material-ui/core/Box';
 import {makeStyles} from "@material-ui/core/styles";
 import Typography, {TypographyProps, TypographyTypeMap} from "@material-ui/core/Typography";
 import classNames from "classnames";
@@ -13,12 +13,13 @@ const useStyles = makeStyles((theme) => ({
 interface CustomTypographyProps {
     justifyText?: boolean,
     lineHeight?: number,
+    boxProps?: BoxProps,
 }
 
 function CustomTypography<D extends React.ElementType = TypographyTypeMap['defaultComponent'],
     P = {}>(props: CustomTypographyProps & TypographyProps<D, P>) {
     const classes = useStyles();
-    const {justifyText, lineHeight, className, ...rest} = props;
+    const {justifyText, lineHeight, boxProps, className, ...rest} = props;
 
     return (
         <Typography
@@ -28,7 +29,7 @@ function CustomTypography<D extends React.ElementType = TypographyTypeMap['defau
             component={lineHeight ? "div" : undefined}
             {...rest}
         >
-            {lineHeight ? <Box lineHeight={lineHeight}>{props.children}</Box> : props.children}
+            {lineHeight ? <Box lineHeight={lineHeight} {...boxProps}>{props.children}</Box> : props.children}
         </Typography>
     )
 }

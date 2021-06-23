@@ -23,7 +23,7 @@ import MasterService from "../../../services/api/user/MasterService";
 import NumberUtils from "../../../utility/NumberUtils";
 import ProblemEventsList from "../ProblemEventsList";
 import ProblemAddEvent from "./PorblemAddEvent";
-import ProblemManagementReviewCard from "./ProblemManagementReviewCard";
+import ProblemManagementReviewCard from "./review/ProblemManagementReviewCard";
 import ProblemManagementScheduleCard from "./ProblemManagementScheduleCard";
 import ProfileInfoCard from "./ProfileInfoCard";
 
