@@ -213,13 +213,14 @@ public class MeetScheduleService {
         LocalDateTime localDateTime = DateUtility.convert(finalizedDateStart);
         int hour = localDateTime.getHour();
         int minimumHour = 8;
-        if (!localDateTime.isAfter(DateUtility.convert(DateUtility.getEndOfDay(Instant.now())))) {
-            // Selected finalize date is in today date time
-            minimumHour = Math.max(8, LocalDateTime.now().getHour());
+        if (DateUtility.compareOnlyDate(finalizedDateStart, Instant.now()) == 0) {
+            // Selected finalize date is today date time
+            minimumHour = Math.max(8, LocalDateTime.now().getHour() + 1);
         }
         if (hour < minimumHour || hour * 60 + meetSchedule.getDurationMinutes() > 20 * 60) {
-            throw new IllegalArgumentException("Schedule finalization date should be between 8 am until 8 pm: "
-                    + "hour = " + hour);
+            throw new IllegalArgumentException(
+                    String.format("Schedule finalization date should be between %d until 20: "
+                            + "hour = %d", minimumHour, hour));
         }
 
         // Check selected time be in all involved user's schedule times.

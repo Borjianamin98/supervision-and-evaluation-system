@@ -2,7 +2,6 @@ package ir.ac.sbu.evaluation.controller.problem;
 
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_PROBLEM_ROOT_PATH;
 
-import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventSaveDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventDto;
 import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleDto;
@@ -36,7 +35,7 @@ public class ProblemAuthenticatedController {
 
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.STUDENT_ROLE_NAME, @SecurityRoles.MASTER_ROLE_NAME)")
     @GetMapping(path = "/{problemId}")
-    public ProblemDto retrieveProblem(
+    public ir.ac.sbu.evaluation.dto.problem.ProblemDto retrieveProblem(
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long problemId) {
         return problemService.retrieveProblem(authUserDetail.getUserId(), problemId);
@@ -62,7 +61,7 @@ public class ProblemAuthenticatedController {
 
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.STUDENT_ROLE_NAME, @SecurityRoles.MASTER_ROLE_NAME)")
     @GetMapping(path = "/{problemId}" + API_PROBLEM_AUTHENTICATED_ABANDON_PROBLEM_PATH)
-    public ProblemDto abandonProblem(
+    public ir.ac.sbu.evaluation.dto.problem.ProblemDto abandonProblem(
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long problemId) {
         return problemService.abandonProblem(authUserDetail.getUserId(), problemId);

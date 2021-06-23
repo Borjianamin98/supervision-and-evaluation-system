@@ -13,16 +13,19 @@ public class PeerReviewDto {
 
     private long id;
     private String content;
+    private int score;
     private UserDto reviewer;
     private UserDto reviewed;
 
     @Builder
     public PeerReviewDto(long id,
             String content,
+            int score,
             UserDto reviewer,
             UserDto reviewed) {
         this.id = id;
         this.content = content;
+        this.score = score;
         this.reviewer = reviewer;
         this.reviewed = reviewed;
     }
@@ -31,6 +34,7 @@ public class PeerReviewDto {
         return PeerReviewDto.builder()
                 .id(peerReview.getId())
                 .content(peerReview.getContent())
+                .score(peerReview.getScore())
                 .reviewer(UserDto.from(peerReview.getReviewer()))
                 .reviewed(UserDto.from(peerReview.getReviewed()))
                 .build();
@@ -47,12 +51,13 @@ public class PeerReviewDto {
         PeerReviewDto that = (PeerReviewDto) o;
         return id == that.id
                 && Objects.equals(content, that.content)
+                && score == that.score
                 && Objects.equals(reviewer, that.reviewer)
                 && Objects.equals(reviewed, that.reviewed);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, content, reviewer, reviewed);
+        return Objects.hash(id, content, score, reviewer, reviewed);
     }
 }

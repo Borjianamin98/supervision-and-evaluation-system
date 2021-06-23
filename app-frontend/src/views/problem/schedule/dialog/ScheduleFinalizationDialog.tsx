@@ -28,9 +28,9 @@ import {PROBLEM_MANAGEMENT_VIEW_PATH} from "../../../ViewPaths";
 
 function minAvailableHour(selectedDate: moment.Moment) {
     let minAvailableHour = 8;
-    if (!selectedDate.isAfter(DateUtils.endOfDay(DateUtils.getCurrentDate()))) {
+    if (DateUtils.compareOnlyDate(selectedDate, DateUtils.getCurrentDate()) === 0) {
         // Selected finalize date is in today date time
-        minAvailableHour = Math.max(new Date().getHours(), 8);
+        minAvailableHour = Math.max(new Date().getHours() + 1, 8);
     }
     return minAvailableHour;
 }

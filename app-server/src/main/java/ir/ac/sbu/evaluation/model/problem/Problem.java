@@ -85,9 +85,6 @@ public class Problem extends BaseEntity {
     private MeetSchedule meetSchedule;
 
     @OneToMany(mappedBy = "problem")
-    private Set<PeerReview> peerReviews = new HashSet<>();
-
-    @OneToMany(mappedBy = "problem")
     private Set<ProblemReview> problemReviews = new HashSet<>();
 
     public Problem() {
@@ -104,7 +101,6 @@ public class Problem extends BaseEntity {
             Set<Master> referees,
             Set<ProblemEvent> events,
             MeetSchedule meetSchedule,
-            Set<PeerReview> peerReviews,
             Set<ProblemReview> problemReviews) {
         super(id);
         this.education = education;
@@ -121,7 +117,6 @@ public class Problem extends BaseEntity {
         this.referees = referees == null ? new HashSet<>() : referees;
         this.events = events == null ? new HashSet<>() : events;
         this.meetSchedule = meetSchedule;
-        this.peerReviews = peerReviews == null ? new HashSet<>() : peerReviews;
         this.problemReviews = problemReviews == null ? new HashSet<>() : problemReviews;
     }
 

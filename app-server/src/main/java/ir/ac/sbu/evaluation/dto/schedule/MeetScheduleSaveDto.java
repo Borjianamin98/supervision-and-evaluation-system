@@ -38,15 +38,6 @@ public class MeetScheduleSaveDto {
         this.finalizedDate = finalizedDate;
     }
 
-    public static MeetScheduleSaveDto from(MeetSchedule meetSchedule) {
-        return MeetScheduleSaveDto.builder()
-                .durationMinutes(meetSchedule.getDurationMinutes())
-                .minimumDate(meetSchedule.getMinimumDate())
-                .maximumDate(meetSchedule.getMaximumDate())
-                .finalizedDate(meetSchedule.getFinalizedDate())
-                .build();
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {

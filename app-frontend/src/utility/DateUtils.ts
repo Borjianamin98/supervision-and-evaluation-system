@@ -21,6 +21,10 @@ export default class DateUtils {
         return moment(date).set({hour: 23, minute: 59, second: 59, millisecond: 999});
     }
 
+    static compareOnlyDate(date1: Date | moment.Moment, date2: Date | moment.Moment) {
+        return DateUtils.firstOfDay(date1).diff(DateUtils.firstOfDay(date2));
+    }
+
     static minutesPassedSinceStartOfDay(date: Date | moment.Moment) {
         return moment(date).diff(moment(date).startOf("day"), "minutes");
     }

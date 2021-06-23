@@ -1,5 +1,4 @@
 import {Education} from "../enum/education";
-import {PeerReview} from "../review/PeerReview";
 import {ProblemReview} from "../review/ProblemReview";
 import {MeetSchedule} from "../schedule/MeetSchedule";
 import {Master} from "../user/master/Master";
@@ -35,5 +34,4 @@ export interface Problem {
 
     meetSchedule: MeetSchedule,
     problemReviews: ProblemReview[],
-    peerReviews: PeerReview[],
 }

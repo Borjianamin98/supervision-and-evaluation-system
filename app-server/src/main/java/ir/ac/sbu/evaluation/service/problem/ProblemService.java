@@ -1,6 +1,5 @@
 package ir.ac.sbu.evaluation.service.problem;
 
-import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
 import ir.ac.sbu.evaluation.dto.problem.ProblemSaveDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventSaveDto;
@@ -58,7 +57,7 @@ public class ProblemService {
     }
 
     @Transactional
-    public ProblemDto addProblem(long studentUserId, ProblemSaveDto problemSaveDto) {
+    public ir.ac.sbu.evaluation.dto.problem.ProblemDto addProblem(long studentUserId, ProblemSaveDto problemSaveDto) {
         Student student = studentRepository.findById(studentUserId)
                 .orElseThrow(() -> new IllegalArgumentException("Student not found: ID = " + studentUserId));
         Master supervisor = masterRepository.findById(problemSaveDto.getSupervisorId())
@@ -82,11 +81,11 @@ public class ProblemService {
                 .build());
         savedProblem.setMeetSchedule(meetSchedule);
         savedProblem = problemRepository.save(savedProblem);
-        return ProblemDto.from(savedProblem);
+        return ir.ac.sbu.evaluation.dto.problem.ProblemDto.from(savedProblem);
     }
 
     @Transactional
-    public ProblemDto updateProblem(long studentId, long problemId, ProblemSaveDto problemSaveDto) {
+    public ir.ac.sbu.evaluation.dto.problem.ProblemDto updateProblem(long studentId, long problemId, ProblemSaveDto problemSaveDto) {
         Problem problem = getProblem(problemId);
         if (problem.getStudent().getId() != studentId) {
             throw new IllegalResourceAccessException("Problem is not belong to student: " + studentId);
@@ -101,11 +100,11 @@ public class ProblemService {
         problem.setConsiderations(problemSaveDto.getConsiderations());
         problem.getEvents().add(problemEventRepository.save(
                 ProblemEvent.builder().message("اطلاعات مربوط به مسئله ویرایش شد.").build()));
-        return ProblemDto.from(problemRepository.save(problem));
+        return ir.ac.sbu.evaluation.dto.problem.ProblemDto.from(problemRepository.save(problem));
     }
 
     @Transactional
-    public ProblemDto abandonProblem(long userId, long problemId) {
+    public ir.ac.sbu.evaluation.dto.problem.ProblemDto abandonProblem(long userId, long problemId) {
         Problem problem = getProblem(problemId);
         if (problem.getStudent().getId() != userId && problem.getSupervisor().getId() != userId) {
             throw new IllegalResourceAccessException(
@@ -115,11 +114,11 @@ public class ProblemService {
         problem.setState(ProblemState.ABANDONED);
         problem.getEvents().add(problemEventRepository.save(
                 ProblemEvent.builder().message("مسئله به وضعیت لغو شده تغییر کرد.").build()));
-        return ProblemDto.from(problemRepository.save(problem));
+        return ir.ac.sbu.evaluation.dto.problem.ProblemDto.from(problemRepository.save(problem));
     }
 
     @Transactional
-    public ProblemDto initialApprovalOfProblem(long userId, long problemId) {
+    public ir.ac.sbu.evaluation.dto.problem.ProblemDto initialApprovalOfProblem(long userId, long problemId) {
         Problem problem = getProblem(problemId);
         if (problem.getSupervisor().getId() != userId) {
             throw new IllegalResourceAccessException(
@@ -130,26 +129,26 @@ public class ProblemService {
         ProblemEvent savedProblemEvent = problemEventRepository.save(ProblemEvent.builder()
                 .message("مسئله تایید اولیه شد.").problem(problem).build());
         problem.getEvents().add(savedProblemEvent);
-        return ProblemDto.from(problemRepository.save(problem));
+        return ir.ac.sbu.evaluation.dto.problem.ProblemDto.from(problemRepository.save(problem));
     }
 
-    public ProblemDto retrieveProblem(long userId, long problemId) {
+    public ir.ac.sbu.evaluation.dto.problem.ProblemDto retrieveProblem(long userId, long problemId) {
         Problem problem = getProblem(problemId);
         checkUserAccessProblem(userId, problem);
-        return ProblemDto.from(problem);
+        return ir.ac.sbu.evaluation.dto.problem.ProblemDto.from(problem);
     }
 
-    public Page<ProblemDto> retrieveProblemsOfStudents(long studentUserId, ProblemState problemState,
+    public Page<ir.ac.sbu.evaluation.dto.problem.ProblemDto> retrieveProblemsOfStudents(long studentUserId, ProblemState problemState,
             Pageable pageable) {
         return problemRepository.findAllByStudentIdAndState(studentUserId, problemState, pageable)
-                .map(ProblemDto::from);
+                .map(ir.ac.sbu.evaluation.dto.problem.ProblemDto::from);
     }
 
-    public Page<ProblemDto> retrieveMasterAssignedProblems(long masterUserId, ProblemState problemState,
+    public Page<ir.ac.sbu.evaluation.dto.problem.ProblemDto> retrieveMasterAssignedProblems(long masterUserId, ProblemState problemState,
             Pageable pageable) {
         return problemRepository
                 .findAllAssignedForMasterAndState(masterUserId, problemState, pageable)
-                .map(ProblemDto::from);
+                .map(ir.ac.sbu.evaluation.dto.problem.ProblemDto::from);
     }
 
     @Transactional
@@ -182,7 +181,7 @@ public class ProblemService {
     }
 
     @Transactional
-    public ProblemDto addReferee(long userId, long problemId, long refereeId) {
+    public ir.ac.sbu.evaluation.dto.problem.ProblemDto addReferee(long userId, long problemId, long refereeId) {
         Problem problem = getProblem(problemId);
         checkUserAccessProblem(userId, problem, Collections.singletonList(SecurityRoles.MASTER_ROLE_NAME));
         if (problem.getSupervisor().getId() != userId) {
@@ -207,11 +206,11 @@ public class ProblemService {
                 .message(message).problem(problem).build());
         problem.getEvents().add(savedProblemEvent);
 
-        return ProblemDto.from(savedProblem);
+        return ir.ac.sbu.evaluation.dto.problem.ProblemDto.from(savedProblem);
     }
 
     @Transactional
-    public ProblemDto deleteReferee(long userId, long problemId, long refereeId, boolean forceToRemove) {
+    public ir.ac.sbu.evaluation.dto.problem.ProblemDto deleteReferee(long userId, long problemId, long refereeId, boolean forceToRemove) {
         Problem problem = getProblem(problemId);
         checkUserAccessProblem(userId, problem, Collections.singletonList(SecurityRoles.MASTER_ROLE_NAME));
         if (problem.getSupervisor().getId() != userId) {
@@ -253,7 +252,7 @@ public class ProblemService {
                 .message(message).problem(problem).build());
         problem.getEvents().add(savedProblemEvent);
 
-        return ProblemDto.from(problemRepository.save(problem));
+        return ir.ac.sbu.evaluation.dto.problem.ProblemDto.from(problemRepository.save(problem));
     }
 
     private void checkUserAccessProblem(long userId, Problem problem) {

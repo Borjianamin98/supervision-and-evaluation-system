@@ -12,24 +12,28 @@ import lombok.Setter;
 public class ProblemReviewDto {
 
     private long id;
-    private int score;
+    private Integer score;
     private UserDto reviewer;
 
     @Builder
     public ProblemReviewDto(long id,
-            int score,
+            Integer score,
             UserDto reviewer) {
         this.id = id;
         this.score = score;
         this.reviewer = reviewer;
     }
 
-    public static ProblemReviewDto from(ProblemReview problemReview) {
+    public static ProblemReviewDto from(ProblemReview problemReview, boolean hasSensitive) {
         return ProblemReviewDto.builder()
                 .id(problemReview.getId())
-                .score(problemReview.getScore())
+                .score(hasSensitive ? problemReview.getScore() : null)
                 .reviewer(UserDto.from(problemReview.getReviewer()))
                 .build();
+    }
+
+    public static ProblemReviewDto from(ProblemReview problemReview) {
+        return from(problemReview, false);
     }
 
     @Override
@@ -42,7 +46,7 @@ public class ProblemReviewDto {
         }
         ProblemReviewDto that = (ProblemReviewDto) o;
         return id == that.id
-                && score == that.score
+                && Objects.equals(score, that.score)
                 && Objects.equals(reviewer, that.reviewer);
     }
 

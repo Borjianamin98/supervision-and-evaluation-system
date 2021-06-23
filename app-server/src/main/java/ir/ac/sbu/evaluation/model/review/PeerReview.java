@@ -21,6 +21,9 @@ public class PeerReview extends BaseEntity {
     @Column(name = "content", length = 255)
     private String content;
 
+    @Column(name = "score")
+    private Integer score;
+
     @ManyToOne
     @JoinColumn(name = "reviewer_id")
     private User reviewer;
@@ -33,19 +36,19 @@ public class PeerReview extends BaseEntity {
     @JoinColumn(name = "problem_id")
     private Problem problem;
 
-    // TODO: support score by reviewer for reviewed person
-
     public PeerReview() {
     }
 
     @Builder
     public PeerReview(Long id,
             String content,
+            Integer score,
             User reviewer,
             User reviewed,
             Problem problem) {
         super(id);
         this.content = content;
+        this.score = score;
         this.reviewer = reviewer;
         this.reviewed = reviewed;
         this.problem = problem;

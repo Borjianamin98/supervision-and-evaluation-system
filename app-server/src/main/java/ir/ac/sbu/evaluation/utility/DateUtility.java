@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.TimeZone;
+import javax.persistence.criteria.CriteriaBuilder.In;
 
 public class DateUtility {
 
@@ -34,6 +35,10 @@ public class DateUtility {
         calendar.set(Calendar.MINUTE, 59);
         calendar.set(Calendar.HOUR_OF_DAY, 23);
         return calendar.toInstant();
+    }
+
+    public static int compareOnlyDate(Instant instant1, Instant instant2) {
+        return DateUtility.getStartOfDay(instant1).compareTo(DateUtility.getStartOfDay(instant2));
     }
 
     public static String getFullPersianDate(Instant instant) {

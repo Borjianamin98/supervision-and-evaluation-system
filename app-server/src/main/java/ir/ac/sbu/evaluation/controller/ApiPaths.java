@@ -13,6 +13,7 @@ public class ApiPaths {
     public final static String API_FACULTY_ROOT_PATH = API_ROOT_PATH + "/faculty";
 
     public final static String API_SCHEDULE_ROOT_PATH = API_ROOT_PATH + "/schedule";
+    public final static String API_REVIEW_ROOT_PATH = API_ROOT_PATH + "/review";
 
     // User Paths
     public final static String API_USER_ROOT_PATH = API_ROOT_PATH + "/user";
