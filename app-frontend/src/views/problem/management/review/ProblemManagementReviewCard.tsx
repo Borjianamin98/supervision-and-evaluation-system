@@ -52,7 +52,7 @@ const ProblemManagementReviewCard: React.FunctionComponent<ProblemManagementRevi
                             "وضعیت پایان‌نامه (پروژه) دانشجو را با توجه به ارزیابی خود در جلسه‌ی دفاع وارد نمایید.",
                             (problem.problemReviews.length === 3 ?
                                 "تمامی اساتید نمرات و جمع‌بندی‌های خود را وارد نموده‌اند. از بخش جمع‌بندی، وضعیت نهایی را مشخص کنید." :
-                                "هنوز تعدادی از اساتید وضعیت نهایی پایا‌نامه (پروژه) را مشخص نکرده‌اند. " +
+                                "هنوز تعدادی از اساتید وضعیت نهایی پایا‌ن‌نامه (پروژه) را مشخص نکرده‌اند. " +
                                 "در صورت لزوم می‌توانید این مورد را یادآوری کنید.")
                         ]
                     } else {
@@ -79,15 +79,16 @@ const ProblemManagementReviewCard: React.FunctionComponent<ProblemManagementRevi
                 if (problem.state === ProblemState.COMPLETED || currentUserIsStudent) {
                     return null;
                 } else {
+                    const evaluationAction = <Button
+                        disabled={false}
+                        color="primary"
+                        onClick={() => setEvaluationDialogOpen(true)}
+                    >
+                        ارزیابی
+                    </Button>
                     if (currentUserIsSupervisor) {
                         return <>
-                            <Button
-                                disabled={false}
-                                color="primary"
-                                onClick={() => setEvaluationDialogOpen(true)}
-                            >
-                                ارزیابی
-                            </Button>
+                            {evaluationAction}
                             <Button
                                 disabled={false}
                                 color="primary"
@@ -96,12 +97,7 @@ const ProblemManagementReviewCard: React.FunctionComponent<ProblemManagementRevi
                             </Button>
                         </>
                     } else {
-                        return <Button
-                            disabled={false}
-                            color="primary"
-                        >
-                            ارزیابی
-                        </Button>
+                        return evaluationAction;
                     }
                 }
             default:

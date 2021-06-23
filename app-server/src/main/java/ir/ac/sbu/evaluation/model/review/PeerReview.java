@@ -18,7 +18,7 @@ import lombok.Setter;
 @Table(name = "peer_review")
 public class PeerReview extends BaseEntity {
 
-    @Column(name = "content")
+    @Column(name = "content", length = 255)
     private String content;
 
     @ManyToOne

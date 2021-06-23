@@ -1,14 +1,22 @@
+import Divider from "@material-ui/core/Divider";
+import List from "@material-ui/core/List/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import Stepper from "@material-ui/core/Stepper";
 import {ThemeProvider} from "@material-ui/core/styles";
+import Rating from "@material-ui/lab/Rating";
 import React from 'react';
 import {rtlTheme} from "../../../../App";
 import CustomAlert from "../../../../components/Alert/CustomAlert";
 import MultiActionDialog from "../../../../components/Dialog/MultiActionDialog";
+import CenterBox from "../../../../components/Grid/CenterBox";
 import CustomTextField from "../../../../components/Text/CustomTextField";
 import CustomTypography from "../../../../components/Typography/CustomTypography";
 import {Problem} from "../../../../model/problem/problem";
+import {User, userRoleInfo} from "../../../../model/user/User";
+import AuthenticationService from "../../../../services/api/AuthenticationService";
 
 interface ReviewEvaluationDialogProps {
     problem: Problem,
@@ -20,7 +28,8 @@ const ReviewEvaluationDialog: React.FunctionComponent<ReviewEvaluationDialogProp
     const {problem, open, onClose} = props;
     const [activeStep, setActiveStep] = React.useState(0);
 
-    const steps = ["پایان‌نامه (پروژه)", "ارزیابی همکار", "بازبینی"];
+    const jwtPayload = AuthenticationService.getJwtPayload()!;
+    const steps = ["پایان‌نامه (پروژه)", "ارزیابی همکار"];
 
     const stepperContent = () => {
         if (activeStep === 0) {
@@ -54,9 +63,17 @@ const ReviewEvaluationDialog: React.FunctionComponent<ReviewEvaluationDialogProp
                     ممنون می‌شویم که بخشی از زمان پرارزشتان را برای پرکردن اطلاعات زیر در مورد دیگر اساتید صرف کنید
                     به امید این که بازخوردهای شما بتواند در بهبود پایان‌نامه (پروژه‌) و جلسات آینده مفید واقع شود.
                 </CustomTypography>
+                <List>
+                    {[...problem.referees, problem.supervisor]
+                        .filter(user => user.id !== jwtPayload.userId)
+                        .map(referee => (
+                            <div key={referee.id}>
+                                <PersonListItem user={referee}/>
+                                <Divider component={"li"}/>
+                            </div>
+                        ))}
+                </List>
             </>
-        } else if (activeStep === 2) {
-            return null;
         } else {
             return null;
         }
@@ -77,7 +94,7 @@ const ReviewEvaluationDialog: React.FunctionComponent<ReviewEvaluationDialogProp
                         // setActiveStep(prev => prev - 1);
                     }
                 }}
-                title={"ارزیابی"}
+                title={"ارزیابی پایان‌نامه (پروژه)"}
                 description={""}
                 actions={[
                     {content: "قسمت قبل", name: "previous", disabled: false},
@@ -96,6 +113,41 @@ const ReviewEvaluationDialog: React.FunctionComponent<ReviewEvaluationDialogProp
             </MultiActionDialog>
         </ThemeProvider>
     );
+}
+
+const PersonListItem: React.FunctionComponent<{ user: User }> = (props) => {
+    const {user} = props;
+    return (
+        <ListItem>
+            <ListItemText
+                disableTypography={true}
+            >
+                <CustomTypography>{user.fullName}</CustomTypography>
+                <CustomTypography>{userRoleInfo(user)}</CustomTypography>
+                <CustomTextField
+                    label="نظرات"
+                    maxLength={255}
+                    multiline={true}
+                    rows={3}
+                    // value={problemSave.definition}
+                    // onChange={event => updateProblemSave({...problemSave, definition: event.target.value})}
+                    // helperText={isDefinitionValid(problemSave.definition) ? "" : "تعریف مسئله در حداقل 15 کلمه توضیح داده شود."}
+                    // error={!isDefinitionValid(problemSave.definition)}
+                />
+                <CenterBox flexDirection={"row"} justifyContent={"space-between"}>
+                    <CustomTypography>امتیازدهی:</CustomTypography>
+                    <Rating
+                        name={`rating-${user.id}`}
+                        size="large"
+                        // value={value}
+                        // onChange={(event, newValue) => {
+                        //     setValue(newValue);
+                        // }}
+                    />
+                </CenterBox>
+            </ListItemText>
+        </ListItem>
+    )
 }
 
 export default ReviewEvaluationDialog;
