@@ -4,6 +4,7 @@ import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
 import ir.ac.sbu.evaluation.dto.review.PeerReviewSaveDto;
 import ir.ac.sbu.evaluation.dto.review.ProblemReviewSaveDto;
 import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
+import ir.ac.sbu.evaluation.exception.ResourceConflictException;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
 import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
@@ -46,6 +47,12 @@ public class ReviewService {
         Problem problem = getProblem(problemId);
         User reviewer = getUser(userId);
         checkUserAccessProblem(userId, problem);
+
+        if (problem.getProblemReviews().stream()
+                .anyMatch(problemReview -> problemReview.getReviewer().getId().equals(reviewer.getId()))) {
+            throw new ResourceConflictException("It is illegal to review a problem more than once by a same user: "
+                    + "problem ID = " + problemId + " user ID = " + reviewer.getId());
+        }
 
         ProblemReview problemReview = problemReviewRepository.save(ProblemReview.builder()
                 .problem(problem)

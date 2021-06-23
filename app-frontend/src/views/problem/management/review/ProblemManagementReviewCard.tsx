@@ -50,8 +50,8 @@ const ProblemManagementReviewCard: React.FunctionComponent<ProblemManagementRevi
                         return [
                             sharedInfo +
                             "وضعیت پایان‌نامه (پروژه) دانشجو را با توجه به ارزیابی خود در جلسه‌ی دفاع وارد نمایید.",
-                            (problem.problemReviews.length === 3 ?
-                                "تمامی اساتید نمرات و جمع‌بندی‌های خود را وارد نموده‌اند. از بخش جمع‌بندی، وضعیت نهایی را مشخص کنید." :
+                            (problem.problemReviews.length === problem.referees.length + 1 ?
+                                "تمامی اساتید نمرات و جمع‌بندی‌های خود را وارد نموده‌اند. از بخش جمع‌بندی، وضعیت نهایی را تایید کنید." :
                                 "هنوز تعدادی از اساتید وضعیت نهایی پایا‌ن‌نامه (پروژه) را مشخص نکرده‌اند. " +
                                 "در صورت لزوم می‌توانید این مورد را یادآوری کنید.")
                         ]
@@ -80,7 +80,7 @@ const ProblemManagementReviewCard: React.FunctionComponent<ProblemManagementRevi
                     return null;
                 } else {
                     const evaluationAction = <Button
-                        disabled={false}
+                        disabled={problem.problemReviews.some(review => review.reviewer.id === jwtPayload.userId)}
                         color="primary"
                         onClick={() => setEvaluationDialogOpen(true)}
                     >
