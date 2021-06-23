@@ -2,7 +2,7 @@ package ir.ac.sbu.evaluation.dto.review;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import ir.ac.sbu.evaluation.dto.user.UserDto;
+import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
 import ir.ac.sbu.evaluation.model.review.ProblemReview;
 import java.util.Objects;
 import lombok.Builder;
@@ -16,12 +16,12 @@ public class ProblemReviewDto {
 
     private long id;
     private Integer score;
-    private UserDto reviewer;
+    private MasterDto reviewer;
 
     @Builder
     public ProblemReviewDto(long id,
             Integer score,
-            UserDto reviewer) {
+            MasterDto reviewer) {
         this.id = id;
         this.score = score;
         this.reviewer = reviewer;
@@ -31,7 +31,7 @@ public class ProblemReviewDto {
         return ProblemReviewDto.builder()
                 .id(problemReview.getId())
                 .score(hasSensitive ? problemReview.getScore() : null)
-                .reviewer(UserDto.from(problemReview.getReviewer()))
+                .reviewer(MasterDto.from(problemReview.getReviewer()))
                 .build();
     }
 

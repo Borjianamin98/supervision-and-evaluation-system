@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface ConfirmDialogProps extends Omit<DialogProps, "onClose" | "onOpen" | "open"> {
     open: boolean,
-    onDialogOpenClose: (confirmed: boolean) => void,
+    onAction: (confirmed: boolean) => void,
     title: string,
     description: string,
 }
@@ -23,13 +23,13 @@ interface ConfirmDialogProps extends Omit<DialogProps, "onClose" | "onOpen" | "o
 const ConfirmDialog: React.FunctionComponent<ConfirmDialogProps> = (props) => {
     const classes = useStyles();
     const theme = useTheme();
-    const {open, onDialogOpenClose, title, description, ...rest} = props;
+    const {open, onAction, title, description, ...rest} = props;
 
     return (
         <Dialog
             dir={theme.direction}
             open={open}
-            onClose={() => onDialogOpenClose(false)}
+            onClose={() => onAction(false)}
             {...rest}
         >
             <DialogTitle id="dialog-title">{title}</DialogTitle>
@@ -40,10 +40,10 @@ const ConfirmDialog: React.FunctionComponent<ConfirmDialogProps> = (props) => {
                 {props.children}
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => onDialogOpenClose(false)} color="primary" variant={"outlined"}>
+                <Button onClick={() => onAction(false)} color="primary" variant={"outlined"}>
                     انصراف
                 </Button>
-                <Button onClick={() => onDialogOpenClose(true)} color="primary" variant={"outlined"} autoFocus>
+                <Button onClick={() => onAction(true)} color="primary" variant={"outlined"} autoFocus>
                     تایید
                 </Button>
             </DialogActions>

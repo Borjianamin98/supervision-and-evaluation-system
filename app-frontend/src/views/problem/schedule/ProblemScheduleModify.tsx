@@ -218,7 +218,7 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
                     />
                     <ConfirmDialog
                         open={announcingDialogOpen}
-                        onDialogOpenClose={announcingDialogEventHandler}
+                        onAction={announcingDialogEventHandler}
                         title={"اعلان نهایی‌شدن"}
                         description={`
                         پس از آن که زمان‌بندی‌ها و تغییرات را به صورت کامل انجام دادید، با اعلان نهایی شدن تمامی افراد ذینفع نسبت به این موضوع اطلاع می‌یابند.

@@ -1,6 +1,6 @@
 package ir.ac.sbu.evaluation.dto.review;
 
-import ir.ac.sbu.evaluation.dto.user.UserDto;
+import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
 import ir.ac.sbu.evaluation.model.review.PeerReview;
 import java.util.Objects;
 import lombok.Builder;
@@ -14,15 +14,15 @@ public class PeerReviewDto {
     private long id;
     private String content;
     private int score;
-    private UserDto reviewer;
-    private UserDto reviewed;
+    private MasterDto reviewer;
+    private MasterDto reviewed;
 
     @Builder
     public PeerReviewDto(long id,
             String content,
             int score,
-            UserDto reviewer,
-            UserDto reviewed) {
+            MasterDto reviewer,
+            MasterDto reviewed) {
         this.id = id;
         this.content = content;
         this.score = score;
@@ -35,8 +35,8 @@ public class PeerReviewDto {
                 .id(peerReview.getId())
                 .content(peerReview.getContent())
                 .score(peerReview.getScore())
-                .reviewer(UserDto.from(peerReview.getReviewer()))
-                .reviewed(UserDto.from(peerReview.getReviewed()))
+                .reviewer(MasterDto.from(peerReview.getReviewer()))
+                .reviewed(MasterDto.from(peerReview.getReviewed()))
                 .build();
     }
 

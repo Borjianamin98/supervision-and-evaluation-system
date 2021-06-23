@@ -2,7 +2,6 @@ package ir.ac.sbu.evaluation.model.problem;
 
 import ir.ac.sbu.evaluation.enumeration.Education;
 import ir.ac.sbu.evaluation.model.BaseEntity;
-import ir.ac.sbu.evaluation.model.review.PeerReview;
 import ir.ac.sbu.evaluation.model.review.ProblemReview;
 import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
 import ir.ac.sbu.evaluation.model.user.Master;
@@ -61,7 +60,7 @@ public class Problem extends BaseEntity {
     private ProblemState state;
 
     @Column(name = "final_grade")
-    private Integer finalGrade = 0;
+    private Double finalGrade = 0.0;
 
     @ManyToOne
     @JoinColumn(name = "student_id")
@@ -95,7 +94,7 @@ public class Problem extends BaseEntity {
             Education education, String title, String englishTitle,
             Set<String> keywords, String definition, String history, String considerations,
             ProblemState state,
-            Integer finalGrade,
+            Double finalGrade,
             Student student,
             Master supervisor,
             Set<Master> referees,
@@ -111,7 +110,7 @@ public class Problem extends BaseEntity {
         this.history = history;
         this.considerations = considerations;
         this.state = state;
-        this.finalGrade = finalGrade == null ? 0 : finalGrade;
+        this.finalGrade = finalGrade == null ? 0.0 : finalGrade;
         this.student = student;
         this.supervisor = supervisor;
         this.referees = referees == null ? new HashSet<>() : referees;

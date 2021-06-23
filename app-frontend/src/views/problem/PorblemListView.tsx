@@ -318,13 +318,13 @@ const ProblemListView: React.FunctionComponent = () => {
                     />
                     <ConfirmDialog
                         open={abandonDialogOpen}
-                        onDialogOpenClose={onAbandonDialogEvent}
+                        onAction={onAbandonDialogEvent}
                         title={"لغو پایان‌نامه (پروژه)"}
                         description={"در صورتی که تمایل به لغو مسئله ایجاد شده دارید، تایید نمایید. دقت کنید که این عمل برگشت‌پذیر نمی‌باشد."}
                     />
                     <ConfirmDialog
                         open={approvalDialogOpen}
-                        onDialogOpenClose={onApprovalDialogEvent}
+                        onAction={onApprovalDialogEvent}
                         title={"تایید اولیه پایان‌نامه (پروژه)"}
                         description={"با تایید اولیه مسئله، کلیت مسئله و توضیحات آن مورد تایید قرار می‌گیرد و ادامه‌ی روند مسئله در بخش مسائل در حال پیگیری دنبال می‌شود."}
                     />

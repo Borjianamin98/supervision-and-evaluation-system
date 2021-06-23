@@ -266,7 +266,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                     />
                     <ConfirmDialog
                         open={refereeToRemoveConfirm !== null}
-                        onDialogOpenClose={confirmed => {
+                        onAction={confirmed => {
                             if (confirmed && refereeToRemoveConfirm) {
                                 removeReferee.mutate({
                                     problemId: problem.id,

@@ -165,7 +165,7 @@ const ProblemManagementScheduleCard: React.FunctionComponent<ProblemManagementSc
             <div aria-label={"dialogs"}>
                 <ConfirmDialog
                     open={rejectMeetScheduleDialogOpen}
-                    onDialogOpenClose={confirmed => {
+                    onAction={confirmed => {
                         if (confirmed) {
                             rejectMeetSchedule.mutate(problem.meetSchedule.id);
                         }

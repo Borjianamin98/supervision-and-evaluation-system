@@ -109,7 +109,7 @@ const ScheduleFinalizationDialog: React.FunctionComponent<ScheduleDateDialogProp
                 title={"تایین زمان دفاع"}
                 description={`دفاع پایان‌نامه (پروژه) «${problem.title}»`}
                 open={open}
-                onClose={reason => {
+                onAction={reason => {
                     if (reason === "closed") {
                         onClose();
                         return;

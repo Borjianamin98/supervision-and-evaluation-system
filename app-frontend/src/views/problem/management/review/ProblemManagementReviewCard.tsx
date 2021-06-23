@@ -8,6 +8,7 @@ import {Problem} from "../../../../model/problem/problem";
 import {ProblemState} from "../../../../model/problem/problemState";
 import {MeetScheduleState} from "../../../../model/schedule/MeetScheduleState";
 import AuthenticationService from "../../../../services/api/AuthenticationService";
+import ReviewConclusionDialog from "./ReviewConclusionDialog";
 import ReviewEvaluationDialog from "./ReviewEvaluationDialog";
 
 interface ProblemManagementReviewCardProps {
@@ -22,6 +23,7 @@ const ProblemManagementReviewCard: React.FunctionComponent<ProblemManagementRevi
     const currentUserIsStudent = problem.student.id === jwtPayload.userId;
 
     const [evaluationDialogOpen, setEvaluationDialogOpen] = React.useState(false);
+    const [conclusionDialogOpen, setConclusionDialogOpen] = React.useState(false);
 
     const reviewMediaContent = () => {
         switch (problem.meetSchedule.state) {
@@ -40,7 +42,7 @@ const ProblemManagementReviewCard: React.FunctionComponent<ProblemManagementRevi
                     "جلسه دفاع به علت یکسری دلایل (مانند عدم حضور دانشجو و ...) تشکیل نشده است. " +
                     "با توجه به عدم تشکیل جلسه، پایان‌نامه (پروژه) به صورت ردشده در نظر گرفته‌شده و نمره‌نهایی آن صفر می‌باشد،"];
             case MeetScheduleState.ACCEPTED:
-                if (problem.state === ProblemState.COMPLETED) {
+                if (problem.state === ProblemState.COMPLETED || problem.state === ProblemState.ABANDONED) {
                     return [`نمره‌ی نهایی پایان‌نامه (پروژه) مربوطه ${problem.finalGrade} می‌باشد.`]
                 } else {
                     const sharedInfo = "جلسه‌ی دفاع در زمان مقرر با حضور تمامی اعضا تشکیل شده است. ";
@@ -90,8 +92,8 @@ const ProblemManagementReviewCard: React.FunctionComponent<ProblemManagementRevi
                         return <>
                             {evaluationAction}
                             <Button
-                                disabled={false}
                                 color="primary"
+                                onClick={() => setConclusionDialogOpen(true)}
                             >
                                 جمع‌بندی
                             </Button>
@@ -120,6 +122,11 @@ const ProblemManagementReviewCard: React.FunctionComponent<ProblemManagementRevi
                     problem={problem}
                     open={evaluationDialogOpen}
                     onClose={() => setEvaluationDialogOpen(false)}
+                />
+                <ReviewConclusionDialog
+                    problem={problem}
+                    open={conclusionDialogOpen}
+                    onClose={() => setConclusionDialogOpen(false)}
                 />
             </div>
         </ThemeProvider>

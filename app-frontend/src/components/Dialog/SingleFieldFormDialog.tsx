@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface ConfirmDialogProps extends Omit<DialogProps, "onClose" | "onOpen" | "open"> {
     open: boolean,
-    onDialogOpenClose: (content?: string) => void,
+    onAction: (content?: string) => void,
     title: string,
     descriptions: string[],
     textFieldProps: CustomTextFieldProps,
@@ -27,7 +27,7 @@ const SingleFieldFormDialog: React.FunctionComponent<ConfirmDialogProps> = (prop
     const classes = useStyles();
     const theme = useTheme();
 
-    const {open, onDialogOpenClose, title, descriptions, textFieldProps, ...rest} = props;
+    const {open, onAction, title, descriptions, textFieldProps, ...rest} = props;
     const [content, setContent] = React.useState("");
 
     const [errorChecking, setErrorChecking] = React.useState(false);
@@ -39,9 +39,9 @@ const SingleFieldFormDialog: React.FunctionComponent<ConfirmDialogProps> = (prop
                 setErrorChecking(true);
                 return;
             }
-            onDialogOpenClose(content);
+            onAction(content);
         } else {
-            onDialogOpenClose();
+            onAction();
         }
     };
 
@@ -54,7 +54,7 @@ const SingleFieldFormDialog: React.FunctionComponent<ConfirmDialogProps> = (prop
         <Dialog
             dir={theme.direction}
             open={open}
-            onClose={event => onCommentDialogClose(false)}
+            onClose={() => onCommentDialogClose(false)}
             {...rest}
         >
             <DialogTitle>{title}</DialogTitle>

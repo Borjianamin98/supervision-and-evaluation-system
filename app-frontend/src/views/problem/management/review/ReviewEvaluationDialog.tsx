@@ -138,7 +138,7 @@ const ReviewEvaluationDialog: React.FunctionComponent<ReviewEvaluationDialogProp
         <ThemeProvider theme={rtlTheme}>
             <MultiActionDialog
                 open={open}
-                onClose={reason => {
+                onAction={reason => {
                     if (reason === "closed") {
                         onClose();
                     } else if (reason === "next") {

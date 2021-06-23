@@ -52,7 +52,7 @@ const ProblemAddEvent: React.FunctionComponent<ProblemAddEventProps> = (props) =
         <ThemeProvider theme={rtlTheme}>
             <SingleFieldFormDialog
                 open={open}
-                onDialogOpenClose={onCommentDialogEvent}
+                onAction={onCommentDialogEvent}
                 title="ثبت نظر"
                 descriptions={[
                     "نظرات، بازخوردها یا پیشنهادات خود را برای تایید مسئله وارد نمایید.",

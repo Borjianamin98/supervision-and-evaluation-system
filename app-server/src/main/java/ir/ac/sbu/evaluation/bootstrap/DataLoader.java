@@ -1,6 +1,7 @@
 package ir.ac.sbu.evaluation.bootstrap;
 
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventSaveDto;
+import ir.ac.sbu.evaluation.dto.review.ProblemReviewSaveDto;
 import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleSaveDto;
 import ir.ac.sbu.evaluation.dto.schedule.event.DateRangeDto;
 import ir.ac.sbu.evaluation.dto.university.UniversityDto;
@@ -29,6 +30,7 @@ import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.service.problem.ProblemService;
+import ir.ac.sbu.evaluation.service.review.ReviewService;
 import ir.ac.sbu.evaluation.service.schedule.MeetScheduleService;
 import ir.ac.sbu.evaluation.service.university.FacultyService;
 import ir.ac.sbu.evaluation.service.university.UniversityService;
@@ -77,6 +79,8 @@ public class DataLoader implements CommandLineRunner {
     private final ProblemService problemService;
     private final ProblemRepository problemRepository;
 
+    private final ReviewService reviewService;
+
     private MasterDto sadeghMaster;
     private MasterDto mojtabaMaster;
     private MasterDto mahmoudMaster;
@@ -92,7 +96,8 @@ public class DataLoader implements CommandLineRunner {
             MasterRepository masterRepository,
             MeetScheduleRepository meetScheduleRepository,
             MeetScheduleService meetScheduleService,
-            ProblemRepository problemRepository) {
+            ProblemRepository problemRepository,
+            ReviewService reviewService) {
         this.universityService = universityService;
         this.facultyService = facultyService;
         this.adminService = adminService;
@@ -104,6 +109,7 @@ public class DataLoader implements CommandLineRunner {
         this.meetScheduleRepository = meetScheduleRepository;
         this.meetScheduleService = meetScheduleService;
         this.problemRepository = problemRepository;
+        this.reviewService = reviewService;
     }
 
     @Override
@@ -304,7 +310,15 @@ public class DataLoader implements CommandLineRunner {
         meetScheduleService.finalizeMeetSchedule(mojtabaMaster.getId(), meetSchedule4.getId(),
                 dateFormat.parse(String.format("%s 17:00", yesterdayDate)).toInstant());
         meetScheduleService.acceptMeetSchedule(mojtabaMaster.getId(), meetSchedule4.getId());
-
+        // Complete some of evaluation of users
+        reviewService.reviewProblem(mahmoudMaster.getId(), problem4.getId(), ProblemReviewSaveDto.builder()
+                .score(10)
+                .peerReviews(new HashSet<>())
+                .build());
+        reviewService.reviewProblem(sadeghMaster.getId(), problem4.getId(), ProblemReviewSaveDto.builder()
+                .score(15)
+                .peerReviews(new HashSet<>())
+                .build());
     }
 
     private void prepareUsers() {

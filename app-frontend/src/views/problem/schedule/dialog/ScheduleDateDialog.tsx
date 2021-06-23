@@ -49,7 +49,7 @@ const ScheduleDateDialog: React.FunctionComponent<ScheduleDateDialogProps> = (pr
         <ThemeProvider theme={rtlTheme}>
             <ConfirmDialog
                 open={open}
-                onDialogOpenClose={confirmed => {
+                onAction={confirmed => {
                     if (!confirmed) {
                         onDialogClose();
                         return;

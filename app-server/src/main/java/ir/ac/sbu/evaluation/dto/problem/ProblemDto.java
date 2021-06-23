@@ -27,7 +27,7 @@ public class ProblemDto {
     private String history;
     private String considerations;
     private ProblemState state;
-    private int finalGrade;
+    private double finalGrade;
 
     private StudentDto student;
     private MasterDto supervisor;
@@ -42,7 +42,7 @@ public class ProblemDto {
             String title, String englishTitle, Set<String> keywords,
             String definition, String history, String considerations,
             ProblemState state,
-            int finalGrade,
+            double finalGrade,
             StudentDto student,
             MasterDto supervisor,
             Set<MasterDto> referees,
@@ -102,7 +102,7 @@ public class ProblemDto {
                 && Objects.equals(history, that.history)
                 && Objects.equals(considerations, that.considerations)
                 && state == that.state
-                && finalGrade == that.finalGrade;
+                && Double.compare(finalGrade, that.finalGrade) == 0;
     }
 
     @Override

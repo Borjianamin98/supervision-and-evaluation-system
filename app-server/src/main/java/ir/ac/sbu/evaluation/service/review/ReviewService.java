@@ -10,19 +10,19 @@ import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
 import ir.ac.sbu.evaluation.model.review.PeerReview;
 import ir.ac.sbu.evaluation.model.review.ProblemReview;
-import ir.ac.sbu.evaluation.model.user.User;
+import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.repository.problem.ProblemEventRepository;
 import ir.ac.sbu.evaluation.repository.problem.ProblemRepository;
 import ir.ac.sbu.evaluation.repository.review.PeerReviewRepository;
 import ir.ac.sbu.evaluation.repository.review.ProblemReviewRepository;
-import ir.ac.sbu.evaluation.repository.user.UserRepository;
+import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ReviewService {
 
-    private final UserRepository userRepository;
+    private final MasterRepository masterRepository;
 
     private final ProblemRepository problemRepository;
     private final ProblemEventRepository problemEventRepository;
@@ -30,12 +30,12 @@ public class ReviewService {
     private final PeerReviewRepository peerReviewRepository;
     private final ProblemReviewRepository problemReviewRepository;
 
-    public ReviewService(UserRepository userRepository,
+    public ReviewService(MasterRepository masterRepository,
             ProblemRepository problemRepository,
             ProblemEventRepository problemEventRepository,
             PeerReviewRepository peerReviewRepository,
             ProblemReviewRepository problemReviewRepository) {
-        this.userRepository = userRepository;
+        this.masterRepository = masterRepository;
         this.problemRepository = problemRepository;
         this.problemEventRepository = problemEventRepository;
         this.peerReviewRepository = peerReviewRepository;
@@ -45,7 +45,7 @@ public class ReviewService {
     @Transactional
     public ProblemDto reviewProblem(long userId, long problemId, ProblemReviewSaveDto problemReviewSaveDto) {
         Problem problem = getProblem(problemId);
-        User reviewer = getUser(userId);
+        Master reviewer = getMasterUser(userId);
         checkUserAccessProblem(userId, problem);
 
         if (problem.getProblemReviews().stream()
@@ -64,19 +64,25 @@ public class ReviewService {
             PeerReview peerReview = peerReviewSaveDto.toPeerReview();
             peerReview.setProblem(problem);
             peerReview.setReviewer(reviewer);
-            peerReview.setReviewed(getUser(peerReviewSaveDto.getReviewedId()));
+            peerReview.setReviewed(getMasterUser(peerReviewSaveDto.getReviewedId()));
             peerReviewRepository.save(peerReview);
         }
 
         problemEventRepository.save(ProblemEvent.builder()
                 .message(String.format(
-                        "استاد «%s» ارزیابی خود از جلسه‌ی دفاع را تکمیل نمودند.",
+                        "استاد «%s» ارزیابی مربوط به جلسه‌ی دفاع را تکمیل نمودند.",
                         reviewer.getFullName()))
                 .problem(problem)
                 .build());
 
         problem.getProblemReviews().add(problemReview);
-        return ProblemDto.from(problem);
+        if (problem.getProblemReviews().size() == problem.getReferees().size() + 1) {
+            // All participant evaluated problem so we update final grade of problem
+            problem.getProblemReviews()
+                    .stream().mapToInt(ProblemReview::getScore).average()
+                    .ifPresent(problem::setFinalGrade);
+        }
+        return ProblemDto.from(problemRepository.save(problem));
     }
 
     private void checkUserIsSupervisor(long userId, Problem problem) {
@@ -101,8 +107,8 @@ public class ReviewService {
                 .orElseThrow(() -> new ResourceNotFoundException("Problem not found: ID = " + problemId));
     }
 
-    private User getUser(long userId) {
-        return userRepository.findById(userId)
+    private Master getMasterUser(long userId) {
+        return masterRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: ID = " + userId));
     }
 }

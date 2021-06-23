@@ -2,7 +2,7 @@ package ir.ac.sbu.evaluation.model.review;
 
 import ir.ac.sbu.evaluation.model.BaseEntity;
 import ir.ac.sbu.evaluation.model.problem.Problem;
-import ir.ac.sbu.evaluation.model.user.User;
+import ir.ac.sbu.evaluation.model.user.Master;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -23,7 +23,7 @@ public class ProblemReview extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "reviewer_id")
-    private User reviewer;
+    private Master reviewer;
 
     @ManyToOne
     @JoinColumn(name = "problem_id")
@@ -35,7 +35,7 @@ public class ProblemReview extends BaseEntity {
     @Builder
     public ProblemReview(Long id,
             int score,
-            User reviewer,
+            Master reviewer,
             Problem problem) {
         super(id);
         this.score = score;
