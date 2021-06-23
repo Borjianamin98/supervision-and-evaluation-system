@@ -1,4 +1,4 @@
-import {Card, CardMedia, CardProps, makeStyles} from "@material-ui/core";
+import {Card, CardMedia, CardProps} from "@material-ui/core";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from "@material-ui/core/CardContent";
@@ -12,14 +12,7 @@ interface MediaCardProps extends CardProps {
     subTitle: string[],
 }
 
-const useStyles = makeStyles((theme) => ({
-    subtitle: {
-        margin: theme.spacing(1, 0)
-    },
-}));
-
 const MediaCard: React.FunctionComponent<MediaCardProps> = (props) => {
-    const classes = useStyles();
     const {media, mediaHeight, title, subTitle, ...rest} = props;
 
     return (
@@ -38,7 +31,7 @@ const MediaCard: React.FunctionComponent<MediaCardProps> = (props) => {
                         subTitle.map((value, index) =>
                             <CustomTypography
                                 key={index}
-                                className={classes.subtitle}
+                                lineHeight={2}
                                 variant="body2"
                                 color="textSecondary">
                                 {value}

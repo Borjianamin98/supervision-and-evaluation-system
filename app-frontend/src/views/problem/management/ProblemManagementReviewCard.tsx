@@ -40,14 +40,29 @@ const ProblemManagementReviewCard: React.FunctionComponent<ProblemManagementRevi
                     "جلسه دفاع به علت یکسری دلایل (مانند عدم حضور دانشجو و ...) تشکیل نشده است. " +
                     "با توجه به عدم تشکیل جلسه، پایان‌نامه (پروژه) به صورت ردشده در نظر گرفته‌شده و نمره‌نهایی آن صفر می‌باشد،"];
             case MeetScheduleState.ACCEPTED:
-                return [
-                    "جلسه‌ی دفاع در زمان مقرر با حضور تمامی اعضا تشکیل شده است. " +
-                    problem.state === ProblemState.COMPLETED ?
-                        `نمره‌ی نهایی پایان‌نامه (پروژه) مربوطه ${problem.finalGrade} می‌باشد.` :
-                        (currentUserIsStudent ?
-                            "نمره‌ی پاپا‌ن‌نامه (پروژه) هنوز توسط داوران نهایی نشده است."
-                            : "داوران از بخش نمره‌دهی، اطلاعات لازم را در مورد پایان‌نامه (پروژه) مشخص کنند.")
-                ];
+                if (problem.state === ProblemState.COMPLETED) {
+                    return [`نمره‌ی نهایی پایان‌نامه (پروژه) مربوطه ${problem.finalGrade} می‌باشد.`]
+                } else {
+                    const sharedInfo = "جلسه‌ی دفاع در زمان مقرر با حضور تمامی اعضا تشکیل شده است. ";
+                    if (currentUserIsStudent) {
+                        return ["نمره‌ی پاپا‌ن‌نامه (پروژه) هنوز توسط داوران نهایی نشده است."]
+                    } else if (currentUserIsSupervisor) {
+                        return [
+                            sharedInfo +
+                            "وضعیت پایان‌نامه (پروژه) دانشجو را با توجه به ارزیابی خود در جلسه‌ی دفاع وارد نمایید.",
+                            (problem.problemReviews.length === 3 ?
+                                "تمامی اساتید نمرات و جمع‌بندی‌های خود را وارد نموده‌اند. از بخش جمع‌بندی، وضعیت نهایی را مشخص کنید." :
+                                "هنوز تعدادی از اساتید وضعیت نهایی پایا‌نامه (پروژه) را مشخص نکرده‌اند. " +
+                                "در صورت لزوم می‌توانید این مورد را یادآوری کنید.")
+                        ]
+                    } else {
+                        return [
+                            sharedInfo +
+                            "داوران محترم از بخش نمره‌دهی، اطلاعات لازم را در مورد پایان‌نامه (پروژه) مشخص کنند.",
+                            "پس از واردشدن نمرات و جمع‌بندی توسط تمامی داورها، وضعیت نهایی پایان‌نامه (پروژه) توسط استاد راهنما تایید می‌شود."
+                        ]
+                    }
+                }
             default:
                 throw new Error("Illegal problem meet schedule state: " + problem.meetSchedule.state);
         }
@@ -57,8 +72,8 @@ const ProblemManagementReviewCard: React.FunctionComponent<ProblemManagementRevi
         switch (problem.meetSchedule.state) {
             case MeetScheduleState.CREATED:
             case MeetScheduleState.STARTED:
-            case MeetScheduleState.REJECTED:
             case MeetScheduleState.FINALIZED:
+            case MeetScheduleState.REJECTED:
                 return null;
             case MeetScheduleState.ACCEPTED:
                 if (problem.state === ProblemState.COMPLETED || currentUserIsStudent) {
@@ -70,7 +85,7 @@ const ProblemManagementReviewCard: React.FunctionComponent<ProblemManagementRevi
                                 disabled={false}
                                 color="primary"
                             >
-                                نمره‌دهی
+                                ارزیابی
                             </Button>
                             <Button
                                 disabled={false}
@@ -85,7 +100,7 @@ const ProblemManagementReviewCard: React.FunctionComponent<ProblemManagementRevi
                             disabled={false}
                             color="primary"
                         >
-                            نمره‌دهی
+                            ارزیابی
                         </Button>
                     }
                 }
