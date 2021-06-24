@@ -19,7 +19,7 @@ import CustomTextField from "../../../../components/Text/CustomTextField";
 import CustomTypography from "../../../../components/Typography/CustomTypography";
 import {generalErrorHandler} from "../../../../config/axios-config";
 import {Problem} from "../../../../model/problem/problem";
-import {PeerReviewSave} from "../../../../model/review/PeerReviewSave";
+import {PeerReviewSave} from "../../../../model/review/peer/PeerReviewSave";
 import {ProblemReviewSave} from "../../../../model/review/ProblemReviewSave";
 import {User, userRoleInfo} from "../../../../model/user/User";
 import AuthenticationService from "../../../../services/api/AuthenticationService";

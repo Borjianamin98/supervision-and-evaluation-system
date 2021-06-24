@@ -3,7 +3,7 @@ package ir.ac.sbu.evaluation.bootstrap;
 import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
 import ir.ac.sbu.evaluation.dto.problem.ProblemSaveDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventSaveDto;
-import ir.ac.sbu.evaluation.dto.review.PeerReviewSaveDto;
+import ir.ac.sbu.evaluation.dto.review.peer.PeerReviewSaveDto;
 import ir.ac.sbu.evaluation.dto.review.ProblemReviewSaveDto;
 import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleSaveDto;
 import ir.ac.sbu.evaluation.dto.schedule.event.DateRangeDto;

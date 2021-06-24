@@ -2,7 +2,7 @@ package ir.ac.sbu.evaluation.controller.user;
 
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_MASTER_ROOT_PATH;
 
-import ir.ac.sbu.evaluation.dto.review.PeerReviewDto;
+import ir.ac.sbu.evaluation.dto.review.peer.AggregatedPeerReviewsDto;
 import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
 import ir.ac.sbu.evaluation.dto.user.master.MasterSaveDto;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
@@ -61,7 +61,7 @@ public class MasterController {
 
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.ADMIN_ROLE_NAME)")
     @GetMapping(path = "/{masterId}/peerReviews")
-    public Page<PeerReviewDto> retrieveMasterPeerReviews(
+    public AggregatedPeerReviewsDto retrieveMasterPeerReviews(
             @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long masterId,
             Pageable pageable) {

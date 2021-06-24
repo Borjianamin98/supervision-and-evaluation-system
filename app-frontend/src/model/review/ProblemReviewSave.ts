@@ -1,4 +1,4 @@
-import {PeerReviewSave} from "./PeerReviewSave";
+import {PeerReviewSave} from "./peer/PeerReviewSave";
 
 export interface ProblemReviewSave {
     score: number,

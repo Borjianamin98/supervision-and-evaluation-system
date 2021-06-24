@@ -1,9 +1,11 @@
 package ir.ac.sbu.evaluation.service.user;
 
-import ir.ac.sbu.evaluation.dto.review.PeerReviewDto;
+import ir.ac.sbu.evaluation.dto.review.peer.AggregatedPeerReviewsDto;
+import ir.ac.sbu.evaluation.dto.review.peer.PeerReviewDto;
 import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
 import ir.ac.sbu.evaluation.dto.user.master.MasterSaveDto;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
+import ir.ac.sbu.evaluation.model.review.ScoreCount;
 import ir.ac.sbu.evaluation.model.university.Faculty;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.PersonalInfo;
@@ -12,6 +14,10 @@ import ir.ac.sbu.evaluation.repository.university.FacultyRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.PersonalInfoRepository;
 import ir.ac.sbu.evaluation.repository.user.UserRepository;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.OptionalDouble;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -72,9 +78,26 @@ public class MasterService {
         return MasterDto.from(getMaster(userId));
     }
 
-    public Page<PeerReviewDto> retrieveMasterPeerReviews(long masterId, Pageable pageable) {
-        return peerReviewRepository.findAllByReviewedId(masterId, pageable)
+    public AggregatedPeerReviewsDto retrieveMasterPeerReviews(long masterId, Pageable pageable) {
+        Page<PeerReviewDto> peerReviews = peerReviewRepository.findAllByReviewedId(masterId, pageable)
                 .map(PeerReviewDto::from);
+
+        List<ScoreCount> scoreCounts = peerReviewRepository.findTotalReviewScoresByReviewedId(masterId);
+        Map<Integer, Long> scoreCountsMapping = new HashMap<>();
+        for (int i = 1; i <= 5; i++) {
+            // Provide zero value for not available scores.
+            scoreCountsMapping.put(i, 0L);
+        }
+        for (ScoreCount scoreCount : scoreCounts) {
+            scoreCountsMapping.put(scoreCount.getScore(), scoreCount.getCount());
+        }
+
+        OptionalDouble averageScore = scoreCounts.stream().mapToLong(s -> s.getScore() * s.getCount()).average();
+        return AggregatedPeerReviewsDto.builder()
+                .averageScore(averageScore.isPresent() ? averageScore.getAsDouble() : 0.0)
+                .scoresCount(scoreCountsMapping)
+                .peerReviews(peerReviews)
+                .build();
     }
 
     public Master getMaster(long userId) {

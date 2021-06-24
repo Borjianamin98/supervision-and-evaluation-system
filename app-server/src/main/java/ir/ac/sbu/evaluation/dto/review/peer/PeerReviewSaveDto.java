@@ -1,4 +1,4 @@
-package ir.ac.sbu.evaluation.dto.review;
+package ir.ac.sbu.evaluation.dto.review.peer;
 
 import ir.ac.sbu.evaluation.model.review.PeerReview;
 import java.util.Objects;

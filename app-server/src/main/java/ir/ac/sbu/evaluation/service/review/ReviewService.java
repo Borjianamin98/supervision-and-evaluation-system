@@ -1,7 +1,7 @@
 package ir.ac.sbu.evaluation.service.review;
 
 import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
-import ir.ac.sbu.evaluation.dto.review.PeerReviewSaveDto;
+import ir.ac.sbu.evaluation.dto.review.peer.PeerReviewSaveDto;
 import ir.ac.sbu.evaluation.dto.review.ProblemReviewSaveDto;
 import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
 import ir.ac.sbu.evaluation.exception.ResourceConflictException;
