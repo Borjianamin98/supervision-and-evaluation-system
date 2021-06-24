@@ -18,8 +18,9 @@ import ProblemListView from "../problem/PorblemListView";
 import ProblemRequiredEntryPoint from "../problem/ProblemRequiredEntryPoint";
 import ProblemScheduleView from "../problem/schedule/ProblemScheduleView";
 import ProfileView from "../ProfileView";
-import MasterReportListView from "../report/MasterReportListView";
-import MasterReportView from "../report/MasterReportView";
+import MasterReportListView from "../report/master/MasterReportListView";
+import MasterReportView from "../report/master/MasterReportView";
+import MasterRequiredEntryPoint from "../report/MasterRequiredEntryPoint";
 import FacultyListView from "../university/faculty/FacultyListView";
 import UniversityListView from "../university/UniversityListView";
 import {
@@ -113,7 +114,7 @@ const reportRoutesInfo: navBarRouteInfo[] = [
         path: MASTER_REPORT_VIEW_PATH + "/:masterId",
         name: "گزارش استاد",
         roles: [Role.ADMIN],
-        component: MasterReportView,
+        component: MasterRequiredEntryPoint(MasterReportView),
     },
     {
         path: MASTER_REPORT_VIEW_PATH,

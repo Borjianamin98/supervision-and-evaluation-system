@@ -62,7 +62,7 @@ const ProfileView: React.FunctionComponent = () => {
                 if (jwtPayloadRole === Role.STUDENT) {
                     return await StudentService.retrieveStudentInfo();
                 } else if (jwtPayloadRole === Role.MASTER) {
-                    return await MasterService.retrieveMasterInfo();
+                    return await MasterService.retrieveAuthenticatedMaster();
                 } else if (jwtPayloadRole === Role.ADMIN) {
                     return await AdminService.retrieveAdminInfo();
                 } else {

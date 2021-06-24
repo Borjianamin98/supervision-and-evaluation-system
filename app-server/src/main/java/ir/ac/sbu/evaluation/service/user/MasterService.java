@@ -2,6 +2,7 @@ package ir.ac.sbu.evaluation.service.user;
 
 import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
 import ir.ac.sbu.evaluation.dto.user.master.MasterSaveDto;
+import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
 import ir.ac.sbu.evaluation.model.university.Faculty;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.PersonalInfo;
@@ -61,8 +62,8 @@ public class MasterService {
         return MasterDto.from(masterRepository.save(master));
     }
 
-    public MasterDto retrieve(long userId) {
+    public MasterDto retrieveMaster(long userId) {
         return MasterDto.from(masterRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Master not found: ID = " + userId)));
+                .orElseThrow(() -> new ResourceNotFoundException("Master not found: ID = " + userId)));
     }
 }

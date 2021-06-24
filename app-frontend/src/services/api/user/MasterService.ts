@@ -7,7 +7,6 @@ class MasterService {
 
     private static readonly API_MASTER_ROOT_PATH = "/master"
     private static readonly API_MASTER_REGISTER_PATH = `${MasterService.API_MASTER_ROOT_PATH}/register`
-    private static readonly API_MASTER_INFO_PATH = `${MasterService.API_MASTER_ROOT_PATH}/info`
 
     private constructor() {
     }
@@ -18,20 +17,29 @@ class MasterService {
     }
 
     static retrieveMasters(pageSize: number, page: number, nameQuery?: string) {
-        return apiAxios.get<Pageable<Master>>(MasterService.API_MASTER_ROOT_PATH,
-            {
-                params: {
-                    size: pageSize,
-                    page: page,
-                    nameQuery: nameQuery,
-                }
-            }).then(response => response.data);
+        return apiAxios
+            .get<Pageable<Master>>(MasterService.API_MASTER_ROOT_PATH,
+                {
+                    params: {
+                        size: pageSize,
+                        page: page,
+                        nameQuery: nameQuery,
+                    }
+                })
+            .then(response => response.data);
     }
 
-    static retrieveMasterInfo() {
-        // Returns info based on authenticated user.
-        return apiAxios.get<Master>(MasterService.API_MASTER_INFO_PATH)
+    static retrieveAuthenticatedMaster() {
+        // Returns authenticated master user information
+        return apiAxios
+            .get<Master>(`${MasterService.API_MASTER_ROOT_PATH}/authenticated`)
             .then(response => response.data);
+    }
+
+    static retrieveMaster(masterId: number) {
+        return apiAxios
+            .get<Master>(`${MasterService.API_MASTER_ROOT_PATH}/${masterId}`)
+            .then(response => response.data)
     }
 }
 

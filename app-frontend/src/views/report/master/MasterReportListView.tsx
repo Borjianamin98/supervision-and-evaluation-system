@@ -7,16 +7,16 @@ import SearchIcon from '@material-ui/icons/Search';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import React, {useState} from 'react';
 import {useQuery, useQueryClient} from "react-query";
-import {rtlTheme} from "../../App";
-import ExtendedTableRow from "../../components/Table/ExtendedTableRow";
-import {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
-import StatelessPaginationTable from "../../components/Table/StatelessPaginationTable";
-import CustomTextField from "../../components/Text/CustomTextField";
-import browserHistory from "../../config/browserHistory";
-import {toLoadingState} from "../../model/enum/loadingState";
-import {Master} from "../../model/user/master/Master";
-import MasterService from "../../services/api/user/MasterService";
-import {MASTER_REPORT_VIEW_PATH} from "../ViewPaths";
+import {rtlTheme} from "../../../App";
+import ExtendedTableRow from "../../../components/Table/ExtendedTableRow";
+import {OptionalTableCellProps} from "../../../components/Table/OptionalTableCell";
+import StatelessPaginationTable from "../../../components/Table/StatelessPaginationTable";
+import CustomTextField from "../../../components/Text/CustomTextField";
+import browserHistory from "../../../config/browserHistory";
+import {toLoadingState} from "../../../model/enum/loadingState";
+import {Master} from "../../../model/user/master/Master";
+import MasterService from "../../../services/api/user/MasterService";
+import {MASTER_REPORT_VIEW_PATH} from "../../ViewPaths";
 
 const useStyles = makeStyles((theme) => ({
     searchGrid: {
@@ -101,12 +101,12 @@ const MasterReportListView: React.FunctionComponent = () => {
                         return <ExtendedTableRow key={row.id} cells={cells}/>;
                     }}
                     noDataMessage={"هیچ استادی در سامانه ثبت نشده است."}
-                    hasDelete={row => false}
-                    isDeletable={row => false}
-                    onDeleteRow={row => undefined}
-                    hasEdit={row => false}
-                    isEditable={row => false}
-                    onEditRow={row => undefined}
+                    hasDelete={() => false}
+                    isDeletable={() => false}
+                    onDeleteRow={() => undefined}
+                    hasEdit={() => false}
+                    isEditable={() => false}
+                    onEditRow={() => undefined}
                     extraActions={[
                         {
                             tooltipTitle: "مشاهده",

@@ -10,8 +10,10 @@ import java.util.stream.Stream;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class MasterController {
 
     private final static String API_MASTER_REGISTER_PATH = "/register";
-    private final static String API_MASTER_INFO_PATH = "/info";
 
     private final MasterService masterService;
 
@@ -36,16 +37,25 @@ public class MasterController {
                 .map(path -> API_MASTER_ROOT_PATH + path).toArray(String[]::new);
     }
 
-    @GetMapping(path = API_MASTER_INFO_PATH)
-    public MasterDto retrieveInfo(@ModelAttribute AuthUserDetail authUserDetail) {
-        return masterService.retrieve(authUserDetail.getUserId());
-    }
-
     @GetMapping(value = {"", "/"})
     public Page<MasterDto> list(
             @RequestParam(name = "nameQuery", required = false, defaultValue = "") String nameQuery,
             Pageable pageable) {
         return masterService.retrieveMasters(nameQuery, pageable);
+    }
+
+    @PreAuthorize("hasAnyAuthority(@SecurityRoles.MASTER_ROLE_NAME)")
+    @GetMapping(path = "/authenticated")
+    public MasterDto retrieveAuthenticatedMaster(@ModelAttribute AuthUserDetail authUserDetail) {
+        return masterService.retrieveMaster(authUserDetail.getUserId());
+    }
+
+    @PreAuthorize("hasAnyAuthority(@SecurityRoles.ADMIN_ROLE_NAME)")
+    @GetMapping(path = "/{masterId}")
+    public MasterDto retrieveMaster(
+            @ModelAttribute AuthUserDetail authUserDetail,
+            @PathVariable long masterId) {
+        return masterService.retrieveMaster(masterId);
     }
 
     @PostMapping(path = API_MASTER_REGISTER_PATH)
