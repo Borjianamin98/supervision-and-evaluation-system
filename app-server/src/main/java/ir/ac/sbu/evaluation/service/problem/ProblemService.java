@@ -159,7 +159,7 @@ public class ProblemService {
         Problem problem = getProblem(problemId);
         checkUserAccessProblem(userId, problem);
 
-        if (problem.getState() != ProblemState.CREATED || problem.getState() != ProblemState.IN_PROGRESS) {
+        if (problem.getState() == ProblemState.COMPLETED && problem.getState() == ProblemState.ABANDONED) {
             throw new ResourceConflictException("It is illegal to add new event for completed or abandoned problem: "
                     + "problem ID = " + problemId);
         }

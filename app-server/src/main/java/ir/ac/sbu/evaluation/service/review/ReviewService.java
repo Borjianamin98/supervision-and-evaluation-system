@@ -17,6 +17,7 @@ import ir.ac.sbu.evaluation.repository.problem.ProblemRepository;
 import ir.ac.sbu.evaluation.repository.review.PeerReviewRepository;
 import ir.ac.sbu.evaluation.repository.review.ProblemReviewRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
+import ir.ac.sbu.evaluation.utility.LocaleUtility;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,21 +101,13 @@ public class ReviewService {
                 .message(String.format(
                         "ارزیابی پایان‌نامه (پروژه) توسط استاد راهنما تایید شد. "
                                 + "نمره نهایی پایان‌نامه (پروژه) دانشجو %s می‌باشد.",
-                        finalGrade))
+                        LocaleUtility.convertToPersianDigits(finalGrade.toString())))
                 .problem(problem)
                 .build());
 
         problem.setFinalGrade(finalGrade);
         problem.setState(ProblemState.COMPLETED);
         return ProblemDto.from(problemRepository.save(problem));
-    }
-
-    private void checkUserIsSupervisor(long userId, Problem problem) {
-        if (problem.getSupervisor().getId() != userId) {
-            throw new IllegalResourceAccessException(
-                    "Problem is not owned or controlled (supervisor) by user: user ID = " + userId + " Problem ID = "
-                            + problem.getId());
-        }
     }
 
     private void checkUserAccessProblem(long userId, Problem problem) {

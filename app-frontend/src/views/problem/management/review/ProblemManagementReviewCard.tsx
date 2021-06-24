@@ -8,6 +8,7 @@ import {Problem} from "../../../../model/problem/problem";
 import {ProblemState} from "../../../../model/problem/problemState";
 import {MeetScheduleState} from "../../../../model/schedule/MeetScheduleState";
 import AuthenticationService from "../../../../services/api/AuthenticationService";
+import LocaleUtils from "../../../../utility/LocaleUtils";
 import ReviewConclusionDialog from "./ReviewConclusionDialog";
 import ReviewEvaluationDialog from "./ReviewEvaluationDialog";
 
@@ -43,7 +44,11 @@ const ProblemManagementReviewCard: React.FunctionComponent<ProblemManagementRevi
                     "با توجه به عدم تشکیل جلسه، پایان‌نامه (پروژه) به صورت ردشده در نظر گرفته‌شده و نمره‌نهایی آن صفر می‌باشد،"];
             case MeetScheduleState.ACCEPTED:
                 if (problem.state === ProblemState.COMPLETED) {
-                    return [`نمره‌ی نهایی پایان‌نامه (پروژه) به تایید استاد راهنما، ${problem.finalGrade} می‌باشد.`]
+                    return [
+                        `نمره‌ی نهایی پایان‌نامه (پروژه) به تایید استاد راهنما، 
+                        ${LocaleUtils.convertToPersianDigits(problem.finalGrade.toString())}
+                         می‌باشد.`
+                    ]
                 } else {
                     const sharedInfo = "جلسه‌ی دفاع در زمان مقرر با حضور تمامی اعضا تشکیل شده است. ";
                     if (currentUserIsStudent) {
