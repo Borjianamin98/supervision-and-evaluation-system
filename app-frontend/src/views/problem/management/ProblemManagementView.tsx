@@ -23,7 +23,7 @@ import ProblemEventsList from "../ProblemEventsList";
 import ProblemInfoList from "../ProblemInfoList";
 import ProblemAddEvent from "./PorblemAddEvent";
 import ProblemManagementScheduleCard from "./ProblemManagementScheduleCard";
-import ProfileInfoCard from "./ProfileInfoCard";
+import ProfileInfoCard from "../../profile/ProfileInfoCard";
 import ProblemManagementReviewCard from "./review/ProblemManagementReviewCard";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -163,7 +163,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                                 </Box>
                             </Grid>
                             <Box marginTop={2}>
-                                {problem ? <ProblemEventsList problemId={problem.id!} pageSize={4}/> : undefined}
+                                <ProblemEventsList problemId={problem.id} pageSize={4}/>
                             </Box>
                         </Paper>
                     </Grid>

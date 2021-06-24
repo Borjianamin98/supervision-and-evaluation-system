@@ -17,7 +17,7 @@ import ProblemManagementView from "../problem/management/ProblemManagementView";
 import ProblemListView from "../problem/PorblemListView";
 import ProblemRequiredEntryPoint from "../problem/ProblemRequiredEntryPoint";
 import ProblemScheduleView from "../problem/schedule/ProblemScheduleView";
-import ProfileView from "../ProfileView";
+import ProfileView from "../profile/ProfileView";
 import MasterReportListView from "../report/master/MasterReportListView";
 import MasterReportView from "../report/master/MasterReportView";
 import MasterRequiredEntryPoint from "../report/MasterRequiredEntryPoint";
@@ -37,6 +37,7 @@ import {
 
 interface navBarRouteInfo {
     path: string,
+    pathRegex?: RegExp,     // (Default is to match path completely)
     name: string,
     exact?: boolean,        // (Default: true)
     roles?: Role[],         // (Default: anyone)
@@ -71,12 +72,14 @@ const problemRoutesInfo: navBarRouteInfo[] = [
     },
     {
         path: PROBLEM_MANAGEMENT_VIEW_PATH + "/:problemId",
+        pathRegex: new RegExp(`^${PROBLEM_MANAGEMENT_VIEW_PATH}/[0-9]+$`),
         name: "مدیریت پایان‌نامه‌ (پروژه)",
         roles: [Role.STUDENT, Role.MASTER],
         component: ProblemRequiredEntryPoint(ProblemManagementView),
     },
     {
         path: PROBLEM_SCHEDULE_VIEW_PATH + "/:problemId",
+        pathRegex: new RegExp(`^${PROBLEM_SCHEDULE_VIEW_PATH}/[0-9]+$`),
         name: "زمان‌بندی پایان‌نامه‌ (پروژه)",
         roles: [Role.STUDENT, Role.MASTER],
         component: ProblemRequiredEntryPoint(ProblemScheduleView),
@@ -112,7 +115,8 @@ const universityRoutesInfo: navBarRouteInfo[] = [
 const reportRoutesInfo: navBarRouteInfo[] = [
     {
         path: MASTER_REPORT_VIEW_PATH + "/:masterId",
-        name: "گزارش استاد",
+        pathRegex: new RegExp(`^${MASTER_REPORT_VIEW_PATH}/[0-9]+$`),
+        name: "اطلاعات استاد",
         roles: [Role.ADMIN],
         component: MasterRequiredEntryPoint(MasterReportView),
     },

@@ -3,8 +3,8 @@ import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
 import React from 'react';
-import CenterBox from "../../../components/Grid/CenterBox";
-import {User, userRoleInfo} from "../../../model/user/User";
+import CenterBox from "../../components/Grid/CenterBox";
+import {User, userRoleInfo} from "../../model/user/User";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -56,7 +56,7 @@ const ProfileInfoCard: React.FunctionComponent<ProfileInfoCardProps> = (params) 
                                 startIcon={<DeleteIcon/>}
                                 onClick={() => onDelete()}
                             >
-                                حذف داور
+                                حذف
                             </Button>
                         </Grid>
                     </Grid>

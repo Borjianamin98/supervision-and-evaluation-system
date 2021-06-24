@@ -31,7 +31,10 @@ const MainViewAppBar: React.FunctionComponent = () => {
     const location = useLocation();
     React.useEffect(() => {
         const candidateNames = allRoutesInfo
-            .filter(route => location.pathname.includes(route.path))
+            .filter(route => {
+                const regexPattern = route.pathRegex ? route.pathRegex : new RegExp(`^${route.path}$`);
+                return regexPattern.test(location.pathname);
+            })
             .map(route => route.name);
         setPageTitle(candidateNames.length === 0 || candidateNames.length > 1 ? "" : candidateNames[0]);
     }, [location])
