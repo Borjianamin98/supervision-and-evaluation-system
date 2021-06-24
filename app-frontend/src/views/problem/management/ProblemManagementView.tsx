@@ -8,12 +8,9 @@ import {useSnackbar} from "notistack";
 import React from 'react';
 import {useMutation, useQueryClient} from "react-query";
 import {rtlTheme} from "../../../App";
-import KeywordsList from "../../../components/Chip/KeywordsList";
 import ConfirmDialog from "../../../components/Dialog/ConfirmDialog";
 import SearchableListDialog from "../../../components/Dialog/SearchableListDialog";
-import CustomTypography from "../../../components/Typography/CustomTypography";
 import {generalErrorHandler} from "../../../config/axios-config";
-import {educationMapToPersian} from "../../../model/enum/education";
 import {Problem} from "../../../model/problem/problem";
 import {ProblemState} from "../../../model/problem/problemState";
 import {MeetScheduleState} from "../../../model/schedule/MeetScheduleState";
@@ -23,10 +20,11 @@ import ProblemMasterService from "../../../services/api/problem/ProblemMasterSer
 import MasterService from "../../../services/api/user/MasterService";
 import NumberUtils from "../../../utility/NumberUtils";
 import ProblemEventsList from "../ProblemEventsList";
+import ProblemInfoList from "../ProblemInfoList";
 import ProblemAddEvent from "./PorblemAddEvent";
-import ProblemManagementReviewCard from "./review/ProblemManagementReviewCard";
 import ProblemManagementScheduleCard from "./ProblemManagementScheduleCard";
 import ProfileInfoCard from "./ProfileInfoCard";
+import ProblemManagementReviewCard from "./review/ProblemManagementReviewCard";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -129,20 +127,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                             <Typography variant="h6" paragraph>
                                 اطلاعات کلی
                             </Typography>
-                            <Typography paragraph>
-                                {`دوره تحصیلی: ${problem ? educationMapToPersian(problem.education) : ""}`}
-                            </Typography>
-                            <CustomTypography paragraph>{`عنوان: ${problem?.title}`}</CustomTypography>
-                            <CustomTypography paragraph>
-                                {`عنوان انگلیسی: ${problem?.englishTitle}`}
-                            </CustomTypography>
-                            <Typography paragraph>کلیدواژه‌ها: </Typography>
-                            <Box marginBottom={2}>
-                                <KeywordsList keywords={problem ? problem.keywords : []} marginDir="left"/>
-                            </Box>
-                            <CustomTypography paragraph>{`تعریف: ${problem?.definition}`}</CustomTypography>
-                            <CustomTypography paragraph>{`بیشینه: ${problem?.history}`}</CustomTypography>
-                            <CustomTypography paragraph>{`ملاحظات: ${problem?.considerations}`}</CustomTypography>
+                            <ProblemInfoList problem={problem}/>
                         </Paper>
                     </Grid>
                 </Grid>

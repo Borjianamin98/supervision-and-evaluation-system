@@ -1,4 +1,3 @@
-import {Box, Hidden} from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
@@ -38,6 +37,7 @@ import {PROBLEM_EDIT_VIEW_PATH, PROBLEM_MANAGEMENT_VIEW_PATH} from "../ViewPaths
 import {ProblemEditLocationState} from "./edit/ProblemEdit";
 import ProblemAddEvent from "./management/PorblemAddEvent";
 import ProblemEventsList from "./ProblemEventsList";
+import ProblemInfoList from "./ProblemInfoList";
 
 const useStyles = makeStyles((theme) => ({
     createGrid: {
@@ -264,28 +264,7 @@ const ProblemListView: React.FunctionComponent = () => {
                                         <Typography variant="h6" className={classes.tableContentHeader}>
                                             اطلاعات کلی
                                         </Typography>
-                                        <Typography paragraph>
-                                            {`دوره تحصیلی: ${educationMapToPersian(row.education)}`}
-                                        </Typography>
-                                        <Typography paragraph>{`عنوان: ${row.title}`}</Typography>
-                                        <Typography paragraph>{`عنوان انگلیسی: ${row.englishTitle}`}</Typography>
-                                        <Hidden mdUp>
-                                            <Typography paragraph>کلیدواژه‌ها: </Typography>
-                                            <Box marginBottom={2}>
-                                                {keywordsList}
-                                            </Box>
-                                        </Hidden>
-                                        <Typography paragraph>{`تعریف: ${row.definition}`}</Typography>
-                                        <Typography paragraph>{`بیشینه: ${row.history}`}</Typography>
-                                        <Typography paragraph>{`ملاحظات: ${row.considerations}`}</Typography>
-                                        <Typography paragraph>
-                                            {"استاد راهنما: "}
-                                            {row.supervisor?.fullName ?? ""}
-                                        </Typography>
-                                        <Typography paragraph>
-                                            {"استادهای داور: "}
-                                            {row.referees.length !== 0 ? row.referees.map(r => r.fullName!).join("، ") : "داوری تعیین نشده است."}
-                                        </Typography>
+                                        <ProblemInfoList problem={row}/>
                                     </Grid>
                                     <Grid item xs={false} sm={false} md={1} lg={1} xl={1}/>
                                     <Grid container item direction="column" xs={12} sm={12} md={6} lg={6} xl={6}>
