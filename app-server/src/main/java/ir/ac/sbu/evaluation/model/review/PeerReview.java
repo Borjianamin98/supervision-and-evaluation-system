@@ -1,8 +1,9 @@
 package ir.ac.sbu.evaluation.model.review;
 
-import ir.ac.sbu.evaluation.model.BaseEntity;
+import ir.ac.sbu.evaluation.model.Auditable;
 import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.user.Master;
+import java.time.Instant;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -16,7 +17,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "peer_review")
-public class PeerReview extends BaseEntity {
+public class PeerReview extends Auditable {
 
     @Column(name = "content", length = 255)
     private String content;
@@ -40,13 +41,9 @@ public class PeerReview extends BaseEntity {
     }
 
     @Builder
-    public PeerReview(Long id,
-            String content,
-            Integer score,
-            Master reviewer,
-            Master reviewed,
-            Problem problem) {
-        super(id);
+    public PeerReview(Long id, String createdBy, Instant createdDate, String content, Integer score,
+            Master reviewer, Master reviewed, Problem problem) {
+        super(id, createdBy, createdDate);
         this.content = content;
         this.score = score;
         this.reviewer = reviewer;

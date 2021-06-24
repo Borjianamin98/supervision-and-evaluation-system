@@ -1,7 +1,9 @@
 package ir.ac.sbu.evaluation.dto.review;
 
+import ir.ac.sbu.evaluation.dto.AuditableDto;
 import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
 import ir.ac.sbu.evaluation.model.review.PeerReview;
+import java.time.Instant;
 import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,7 +11,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PeerReviewDto {
+public class PeerReviewDto extends AuditableDto {
 
     private long id;
     private String content;
@@ -18,11 +20,15 @@ public class PeerReviewDto {
     private MasterDto reviewed;
 
     @Builder
-    public PeerReviewDto(long id,
+    public PeerReviewDto(String createdBy,
+            String createdByRole,
+            Instant createdDate,
+            long id,
             String content,
             int score,
             MasterDto reviewer,
             MasterDto reviewed) {
+        super(createdBy, createdByRole, createdDate);
         this.id = id;
         this.content = content;
         this.score = score;
@@ -37,6 +43,9 @@ public class PeerReviewDto {
                 .score(peerReview.getScore())
                 .reviewer(MasterDto.from(peerReview.getReviewer()))
                 .reviewed(MasterDto.from(peerReview.getReviewed()))
+                .createdBy(peerReview.getCreatedBy())
+                .createdByRole(peerReview.getCreatedByRole())
+                .createdDate(peerReview.getCreatedDate())
                 .build();
     }
 

@@ -1,11 +1,13 @@
 package ir.ac.sbu.evaluation.service.user;
 
+import ir.ac.sbu.evaluation.dto.review.PeerReviewDto;
 import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
 import ir.ac.sbu.evaluation.dto.user.master.MasterSaveDto;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
 import ir.ac.sbu.evaluation.model.university.Faculty;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.PersonalInfo;
+import ir.ac.sbu.evaluation.repository.review.PeerReviewRepository;
 import ir.ac.sbu.evaluation.repository.university.FacultyRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.PersonalInfoRepository;
@@ -26,16 +28,20 @@ public class MasterService {
     private final MasterRepository masterRepository;
     private final FacultyRepository facultyRepository;
 
+    private final PeerReviewRepository peerReviewRepository;
+
     public MasterService(PasswordEncoder passwordEncoder,
             UserRepository userRepository,
             PersonalInfoRepository personalInfoRepository,
             MasterRepository masterRepository,
-            FacultyRepository facultyRepository) {
+            FacultyRepository facultyRepository,
+            PeerReviewRepository peerReviewRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.personalInfoRepository = personalInfoRepository;
         this.masterRepository = masterRepository;
         this.facultyRepository = facultyRepository;
+        this.peerReviewRepository = peerReviewRepository;
     }
 
     public Page<MasterDto> retrieveMasters(String nameQuery, Pageable pageable) {
@@ -63,7 +69,16 @@ public class MasterService {
     }
 
     public MasterDto retrieveMaster(long userId) {
-        return MasterDto.from(masterRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Master not found: ID = " + userId)));
+        return MasterDto.from(getMaster(userId));
+    }
+
+    public Page<PeerReviewDto> retrieveMasterPeerReviews(long masterId, Pageable pageable) {
+        return peerReviewRepository.findAllByReviewedId(masterId, pageable)
+                .map(PeerReviewDto::from);
+    }
+
+    public Master getMaster(long userId) {
+        return masterRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Master not found: ID = " + userId));
     }
 }
