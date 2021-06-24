@@ -200,14 +200,14 @@ const ProfileView: React.FunctionComponent = () => {
                         <CustomTextField
                             variant="standard"
                             label="جنسیت"
-                            value={user ? genderMapToPersian(user.personalInfo!.gender) : ""}
+                            value={user ? genderMapToPersian(user.personalInfo.gender) : ""}
                             {...commonTextFieldProps}
                         />
                         <CustomTextField
                             variant="standard"
                             textDir="ltr"
                             label="شماره تلفن"
-                            value={user ? UserService.getPhoneNumberRepresentation(user.personalInfo!.telephoneNumber) : ""}
+                            value={user ? UserService.getPhoneNumberRepresentation(user.personalInfo.telephoneNumber) : ""}
                             InputProps={{
                                 endAdornment: <InputAdornment position="end">98+</InputAdornment>,
                             }}
@@ -217,7 +217,7 @@ const ProfileView: React.FunctionComponent = () => {
                             variant="standard"
                             textDir="ltr"
                             label="آدرس ایمیل"
-                            value={user ? user.personalInfo!.email : ""}
+                            value={user ? user.personalInfo.email : ""}
                             {...commonTextFieldProps}
                         />
                         <CustomTextField
