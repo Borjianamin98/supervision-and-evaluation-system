@@ -18,12 +18,10 @@ export const PROBLEM_SCHEDULE_VIEW_PATH = `${PROBLEM_VIEW_PATH}/schedule`;
 
 // University Views
 export const UNIVERSITY_LIST_VIEW_PATH = "/university/list";
-
-// Faculty Views
 export const FACULTY_LIST_VIEW_PATH = "/faculty/list";
 
-// Settings Views
-export const SETTINGS_VIEW_PATH = "/settings";
+// Report Views
+export const MASTER_REPORT_VIEW_PATH = "/report/masters";
 
 // Error Views
 export const ERROR_VIEW_PATH = "/error";

@@ -1,10 +1,10 @@
 import Divider from "@material-ui/core/Divider";
 import List from '@material-ui/core/List';
+import AssessmentIcon from '@material-ui/icons/Assessment';
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import PersonIcon from '@material-ui/icons/Person';
 import SchoolIcon from '@material-ui/icons/School';
-import SettingsIcon from '@material-ui/icons/Settings';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import React from 'react';
 import {UniversityIcon} from "../../assets/svg/UniversityIcon";
@@ -18,18 +18,18 @@ import ProblemListView from "../problem/PorblemListView";
 import ProblemRequiredEntryPoint from "../problem/ProblemRequiredEntryPoint";
 import ProblemScheduleView from "../problem/schedule/ProblemScheduleView";
 import ProfileView from "../ProfileView";
-import SettingsView from "../SettingsView";
+import MasterReportView from "../report/MasterReportView";
 import FacultyListView from "../university/faculty/FacultyListView";
 import UniversityListView from "../university/UniversityListView";
 import {
     DASHBOARD_VIEW_PATH,
     FACULTY_LIST_VIEW_PATH,
+    MASTER_REPORT_VIEW_PATH,
     PROBLEM_EDIT_VIEW_PATH,
     PROBLEM_LIST_VIEW_PATH,
     PROBLEM_MANAGEMENT_VIEW_PATH,
     PROBLEM_SCHEDULE_VIEW_PATH,
     PROFILE_VIEW_PATH,
-    SETTINGS_VIEW_PATH,
     UNIVERSITY_LIST_VIEW_PATH
 } from "../ViewPaths";
 
@@ -88,15 +88,8 @@ const managementRoutesInfo: navBarRouteInfo[] = [
         component: ProfileView,
         icon: PersonIcon,
     },
-    {
-        path: SETTINGS_VIEW_PATH,
-        name: "تنظیمات",
-        component: SettingsView,
-        icon: SettingsIcon,
-    },
 ]
 
-// Admin role views
 const universityRoutesInfo: navBarRouteInfo[] = [
     {
         path: UNIVERSITY_LIST_VIEW_PATH,
@@ -114,11 +107,22 @@ const universityRoutesInfo: navBarRouteInfo[] = [
     },
 ]
 
+const reportRoutesInfo: navBarRouteInfo[] = [
+    {
+        path: MASTER_REPORT_VIEW_PATH,
+        name: "گزارش اساتید",
+        roles: [Role.ADMIN],
+        component: MasterReportView,
+        icon: AssessmentIcon,
+    },
+]
+
 const allRoutesInfo: navBarRouteInfo[] = [
     ...dashboardRoutesInfo,
     ...problemRoutesInfo,
     ...managementRoutesInfo,
-    ...universityRoutesInfo
+    ...universityRoutesInfo,
+    ...reportRoutesInfo,
 ];
 
 const createListFromRoutesInfo = (routesInfo: navBarRouteInfo[], authenticatedUserRole: Role) => {
@@ -154,6 +158,7 @@ const MainViewNavBarLinks: React.FunctionComponent = () => {
             {createListFromRoutesInfo(dashboardRoutesInfo, jwtPayloadRole)}
             {createListFromRoutesInfo(problemRoutesInfo, jwtPayloadRole)}
             {createListFromRoutesInfo(universityRoutesInfo, jwtPayloadRole)}
+            {createListFromRoutesInfo(reportRoutesInfo, jwtPayloadRole)}
             {createListFromRoutesInfo(managementRoutesInfo, jwtPayloadRole)}
         </>
     );

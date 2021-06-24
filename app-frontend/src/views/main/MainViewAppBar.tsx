@@ -8,7 +8,7 @@ import React from 'react';
 import {Link, useLocation} from "react-router-dom";
 import PopperIconButton from "../../components/Popper/PopperIconButton";
 import AuthenticationService from "../../services/api/AuthenticationService";
-import {PROFILE_VIEW_PATH, SETTINGS_VIEW_PATH} from "../ViewPaths";
+import {PROFILE_VIEW_PATH} from "../ViewPaths";
 import {allRoutesInfo} from "./MainViewNavBarLinks";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -66,14 +66,6 @@ const MainViewAppBar: React.FunctionComponent = () => {
                             onClick={popperClose}
                         >
                             حساب کاربری
-                        </MenuItem>
-                        <MenuItem
-                            component={Link}
-                            to={SETTINGS_VIEW_PATH}
-                            className={classes.dropdownItem}
-                            onClick={popperClose}
-                        >
-                            تنظیمات
                         </MenuItem>
                         <Divider/>
                         <MenuItem
