@@ -15,6 +15,7 @@ import CustomTypography from "../../../components/Typography/CustomTypography";
 import {generalErrorHandler} from "../../../config/axios-config";
 import {educationMapToPersian} from "../../../model/enum/education";
 import {Problem} from "../../../model/problem/problem";
+import {ProblemState} from "../../../model/problem/problemState";
 import {MeetScheduleState} from "../../../model/schedule/MeetScheduleState";
 import {Master} from "../../../model/user/master/Master";
 import AuthenticationService from "../../../services/api/AuthenticationService";
@@ -162,7 +163,10 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                                 <Typography variant="h6">
                                     رخدادهای اخیر
                                 </Typography>
-                                <Box style={{marginRight: "auto"}}>
+                                <Box
+                                    display={problem.state !== ProblemState.IN_PROGRESS ? "none" : "flex"}
+                                    style={{marginRight: "auto"}}
+                                >
                                     <Button
                                         color="secondary"
                                         variant="contained"

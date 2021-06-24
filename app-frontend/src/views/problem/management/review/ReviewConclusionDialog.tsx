@@ -1,22 +1,24 @@
 import Avatar from "@material-ui/core/Avatar";
 import Box from "@material-ui/core/Box";
+import InputAdornment from "@material-ui/core/InputAdornment";
 import List from "@material-ui/core/List/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar/ListItemAvatar";
 import ListItemText from "@material-ui/core/ListItemText";
 import {ThemeProvider} from "@material-ui/core/styles";
+import RestoreIcon from '@material-ui/icons/Restore';
 import {AxiosError} from "axios";
 import {useSnackbar} from "notistack";
 import React from 'react';
 import {useMutation, useQueryClient} from "react-query";
 import {rtlTheme} from "../../../../App";
+import CustomAlert from "../../../../components/Alert/CustomAlert";
+import TooltipIconButton from "../../../../components/Button/TooltipIconButton";
 import MultiActionDialog from "../../../../components/Dialog/MultiActionDialog";
 import CustomTypography from "../../../../components/Typography/CustomTypography";
 import {generalErrorHandler} from "../../../../config/axios-config";
 import {Problem} from "../../../../model/problem/problem";
-import {ProblemReviewSave} from "../../../../model/review/ProblemReviewSave";
 import {User, userRoleInfo} from "../../../../model/user/User";
-import AuthenticationService from "../../../../services/api/AuthenticationService";
 import ReviewService from "../../../../services/api/review/ReviewService";
 import PointNumberTextField from "./PointNumberTextField";
 
@@ -31,11 +33,10 @@ const ReviewConclusionDialog: React.FunctionComponent<ReviewConclusionDialogProp
     const queryClient = useQueryClient();
     const {problem, open, onClose} = props;
 
-    const jwtPayload = AuthenticationService.getJwtPayload()!;
-
-    const reviewProblem = useMutation(
-        (data: { problemId: number, problemReviewSave: ProblemReviewSave }) =>
-            ReviewService.reviewProblem(data.problemId, data.problemReviewSave),
+    // const jwtPayload = AuthenticationService.getJwtPayload()!;
+    const finalizeProblemReview = useMutation(
+        (data: { problemId: number, finalGrade: number }) =>
+            ReviewService.finalizeProblemReview(data.problemId, data.finalGrade),
         {
             onSuccess: (data: Problem) => {
                 queryClient.setQueryData<Problem>(["problem", problem.id], data);
@@ -59,15 +60,12 @@ const ReviewConclusionDialog: React.FunctionComponent<ReviewConclusionDialogProp
                     if (reason === "closed") {
                         onClose();
                     } else if (reason === "confirm") {
-                        // reviewProblem.mutate({
-                        //     problemId: problem.id,
-                        //     problemReviewSave: {
-                        //         score: problemScore,
-                        //         peerReviews: peerReviewSaves,
-                        //     }
-                        // }, {
-                        //     onSuccess: () => onClose(),
-                        // });
+                        finalizeProblemReview.mutate({
+                            problemId: problem.id,
+                            finalGrade: finalGrade,
+                        }, {
+                            onSuccess: () => onClose(),
+                        });
                     }
                 }}
                 title={"جمع‌بندی پایان‌نامه (پروژه)"}
@@ -112,7 +110,25 @@ const ReviewConclusionDialog: React.FunctionComponent<ReviewConclusionDialogProp
                                                 label={"نمره نهایی"}
                                                 value={finalGrade}
                                                 onChange={(e) => setFinalGrade(+e.target.value)}
+                                                InputProps={{
+                                                    endAdornment: (
+                                                        <InputAdornment position="end">
+                                                            <TooltipIconButton
+                                                                tooltipTitle="مقدار پیش‌فرض"
+                                                                onClick={() => setFinalGrade(problem.finalGrade)}>
+                                                                <RestoreIcon/>
+                                                            </TooltipIconButton>
+                                                        </InputAdornment>
+                                                    )
+                                                }}
                                             />
+                                            <CustomAlert severity="info">
+                                                <CustomTypography lineHeight={2}>
+                                                    توجه شود که نمره‌ی محاسبه‌شده بر اساس ارزیابی داوران جلسه می‌باشد.
+                                                    تنها بر اساس جلسه‌ی شورا یا دیگر دلایل محکم اقدام به تغییر نمره‌ی
+                                                    نهایی دانشجو کنید. همچنین این عمل برگشت‌پذیر نمی‌باشد.
+                                                </CustomTypography>
+                                            </CustomAlert>
                                         </React.Fragment>
                                     ) : (
                                         <CustomTypography lineHeight={2}>

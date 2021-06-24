@@ -133,4 +133,9 @@ public class Problem extends BaseEntity {
                 ", finalGrade=" + finalGrade +
                 '}';
     }
+
+    public boolean isAllDoneReview() {
+        // Plus one is supervisor of problem
+        return getProblemReviews().size() == getReferees().size() + 1;
+    }
 }

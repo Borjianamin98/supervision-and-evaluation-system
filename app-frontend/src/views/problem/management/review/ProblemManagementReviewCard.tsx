@@ -42,8 +42,8 @@ const ProblemManagementReviewCard: React.FunctionComponent<ProblemManagementRevi
                     "جلسه دفاع به علت یکسری دلایل (مانند عدم حضور دانشجو و ...) تشکیل نشده است. " +
                     "با توجه به عدم تشکیل جلسه، پایان‌نامه (پروژه) به صورت ردشده در نظر گرفته‌شده و نمره‌نهایی آن صفر می‌باشد،"];
             case MeetScheduleState.ACCEPTED:
-                if (problem.state === ProblemState.COMPLETED || problem.state === ProblemState.ABANDONED) {
-                    return [`نمره‌ی نهایی پایان‌نامه (پروژه) مربوطه ${problem.finalGrade} می‌باشد.`]
+                if (problem.state === ProblemState.COMPLETED) {
+                    return [`نمره‌ی نهایی پایان‌نامه (پروژه) به تایید استاد راهنما، ${problem.finalGrade} می‌باشد.`]
                 } else {
                     const sharedInfo = "جلسه‌ی دفاع در زمان مقرر با حضور تمامی اعضا تشکیل شده است. ";
                     if (currentUserIsStudent) {

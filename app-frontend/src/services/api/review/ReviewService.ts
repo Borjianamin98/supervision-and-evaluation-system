@@ -15,6 +15,17 @@ class ReviewService {
             .then(response => response.data)
     }
 
+    static finalizeProblemReview(problemId: number, finalGrade: number) {
+        return apiAxios
+            .post<Problem>(`${ReviewService.API_REVIEW_ROOT_PATH}/${problemId}/finalize`, {},
+                {
+                    params: {
+                        finalGrade,
+                    }
+                })
+            .then(response => response.data)
+    }
+
 }
 
 export default ReviewService;

@@ -311,10 +311,12 @@ public class DataLoader implements CommandLineRunner {
                 dateFormat.parse(String.format("%s 17:00", yesterdayDate)).toInstant());
         meetScheduleService.acceptMeetSchedule(mojtabaMaster.getId(), meetSchedule4.getId());
         // Complete some of evaluation of users
+        setSpringSecurityAuthentication(mahmoudMaster);
         reviewService.reviewProblem(mahmoudMaster.getId(), problem4.getId(), ProblemReviewSaveDto.builder()
                 .score(10)
                 .peerReviews(new HashSet<>())
                 .build());
+        setSpringSecurityAuthentication(sadeghMaster);
         reviewService.reviewProblem(sadeghMaster.getId(), problem4.getId(), ProblemReviewSaveDto.builder()
                 .score(15)
                 .peerReviews(new HashSet<>())

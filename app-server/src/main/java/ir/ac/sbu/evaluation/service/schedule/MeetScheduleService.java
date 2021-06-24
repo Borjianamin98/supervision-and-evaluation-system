@@ -290,10 +290,11 @@ public class MeetScheduleService {
                         "جلسه دفاع به علت یکسری دلایل (مانند عدم حضور دانشجو و ...) تشکیل نشد. با توجه به تصمیم "
                                 + "گرفته‌شده، پایان‌نامه (پروژه) رد شد و نمره صفر برای پایان‌نامه (پروژه) دانشجو در "
                                 + "نظر گرفته شد.")
-                .problem(meetSchedule.getProblem())
+                .problem(scheduleProblem)
                 .build());
 
         meetSchedule.setState(MeetScheduleState.REJECTED);
+        scheduleProblem.setState(ProblemState.COMPLETED);
         return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
     }
 
@@ -313,7 +314,7 @@ public class MeetScheduleService {
 
         problemEventRepository.save(ProblemEvent.builder()
                 .message("جلسه‌ی دفاع در زمان مقرر با حضور تمامی اعضا تشکیل شد. "
-                        + "داوران از بخش جمع‌بندی، نمره و نظر نهایی خود را در مورد پایان‌نامه (پروژه) مشخصص کنند.")
+                        + "داوران از بخش جمع‌بندی، نمره و نظر نهایی خود را در مورد پایان‌نامه (پروژه) مشخص کنند.")
                 .problem(meetSchedule.getProblem())
                 .build());
 

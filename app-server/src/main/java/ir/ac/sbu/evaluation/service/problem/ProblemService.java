@@ -11,8 +11,8 @@ import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
 import ir.ac.sbu.evaluation.model.problem.ProblemState;
 import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
-import ir.ac.sbu.evaluation.model.schedule.ScheduleEvent;
 import ir.ac.sbu.evaluation.model.schedule.MeetScheduleState;
+import ir.ac.sbu.evaluation.model.schedule.ScheduleEvent;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.Student;
 import ir.ac.sbu.evaluation.repository.problem.ProblemEventRepository;
@@ -85,7 +85,8 @@ public class ProblemService {
     }
 
     @Transactional
-    public ir.ac.sbu.evaluation.dto.problem.ProblemDto updateProblem(long studentId, long problemId, ProblemSaveDto problemSaveDto) {
+    public ir.ac.sbu.evaluation.dto.problem.ProblemDto updateProblem(long studentId, long problemId,
+            ProblemSaveDto problemSaveDto) {
         Problem problem = getProblem(problemId);
         if (problem.getStudent().getId() != studentId) {
             throw new IllegalResourceAccessException("Problem is not belong to student: " + studentId);
@@ -138,13 +139,15 @@ public class ProblemService {
         return ir.ac.sbu.evaluation.dto.problem.ProblemDto.from(problem);
     }
 
-    public Page<ir.ac.sbu.evaluation.dto.problem.ProblemDto> retrieveProblemsOfStudents(long studentUserId, ProblemState problemState,
+    public Page<ir.ac.sbu.evaluation.dto.problem.ProblemDto> retrieveProblemsOfStudents(long studentUserId,
+            ProblemState problemState,
             Pageable pageable) {
         return problemRepository.findAllByStudentIdAndState(studentUserId, problemState, pageable)
                 .map(ir.ac.sbu.evaluation.dto.problem.ProblemDto::from);
     }
 
-    public Page<ir.ac.sbu.evaluation.dto.problem.ProblemDto> retrieveMasterAssignedProblems(long masterUserId, ProblemState problemState,
+    public Page<ir.ac.sbu.evaluation.dto.problem.ProblemDto> retrieveMasterAssignedProblems(long masterUserId,
+            ProblemState problemState,
             Pageable pageable) {
         return problemRepository
                 .findAllAssignedForMasterAndState(masterUserId, problemState, pageable)
@@ -155,6 +158,11 @@ public class ProblemService {
     public ProblemEventDto addProblemEvent(long userId, long problemId, ProblemEventSaveDto problemEventSaveDto) {
         Problem problem = getProblem(problemId);
         checkUserAccessProblem(userId, problem);
+
+        if (problem.getState() != ProblemState.CREATED || problem.getState() != ProblemState.IN_PROGRESS) {
+            throw new ResourceConflictException("It is illegal to add new event for completed or abandoned problem: "
+                    + "problem ID = " + problemId);
+        }
 
         ProblemEvent problemEvent = problemEventSaveDto.toProblemEvent();
         problemEvent.setProblem(problem);
@@ -210,7 +218,8 @@ public class ProblemService {
     }
 
     @Transactional
-    public ir.ac.sbu.evaluation.dto.problem.ProblemDto deleteReferee(long userId, long problemId, long refereeId, boolean forceToRemove) {
+    public ir.ac.sbu.evaluation.dto.problem.ProblemDto deleteReferee(long userId, long problemId, long refereeId,
+            boolean forceToRemove) {
         Problem problem = getProblem(problemId);
         checkUserAccessProblem(userId, problem, Collections.singletonList(SecurityRoles.MASTER_ROLE_NAME));
         if (problem.getSupervisor().getId() != userId) {

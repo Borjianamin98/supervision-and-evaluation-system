@@ -8,6 +8,7 @@ import ir.ac.sbu.evaluation.exception.ResourceConflictException;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
 import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.problem.ProblemEvent;
+import ir.ac.sbu.evaluation.model.problem.ProblemState;
 import ir.ac.sbu.evaluation.model.review.PeerReview;
 import ir.ac.sbu.evaluation.model.review.ProblemReview;
 import ir.ac.sbu.evaluation.model.user.Master;
@@ -76,12 +77,35 @@ public class ReviewService {
                 .build());
 
         problem.getProblemReviews().add(problemReview);
-        if (problem.getProblemReviews().size() == problem.getReferees().size() + 1) {
+        if (problem.isAllDoneReview()) {
             // All participant evaluated problem so we update final grade of problem
             problem.getProblemReviews()
                     .stream().mapToDouble(ProblemReview::getScore).average()
                     .ifPresent(problem::setFinalGrade);
         }
+        return ProblemDto.from(problemRepository.save(problem));
+    }
+
+    @Transactional
+    public ProblemDto finalizeProblem(long userId, long problemId, Double finalGrade) {
+        Problem problem = getProblem(problemId);
+        checkUserAccessProblem(userId, problem);
+
+        if (!problem.isAllDoneReview()) {
+            throw new ResourceConflictException("It is illegal to finalize a problem review before all "
+                    + "participants reviewed problem: problem ID = " + problemId);
+        }
+
+        problemEventRepository.save(ProblemEvent.builder()
+                .message(String.format(
+                        "ارزیابی پایان‌نامه (پروژه) توسط استاد راهنما تایید شد. "
+                                + "نمره نهایی پایان‌نامه (پروژه) دانشجو %s می‌باشد.",
+                        finalGrade))
+                .problem(problem)
+                .build());
+
+        problem.setFinalGrade(finalGrade);
+        problem.setState(ProblemState.COMPLETED);
         return ProblemDto.from(problemRepository.save(problem));
     }
 

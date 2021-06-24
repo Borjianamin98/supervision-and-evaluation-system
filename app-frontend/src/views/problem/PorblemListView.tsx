@@ -135,6 +135,7 @@ const ProblemListView: React.FunctionComponent = () => {
                         throw new Error("Unexpected role: " + jwtPayloadRole);
                 }
             case ProblemState.IN_PROGRESS:
+            case ProblemState.COMPLETED:
                 switch (jwtPayloadRole) {
                     case Role.STUDENT:
                     case Role.MASTER:
@@ -144,7 +145,6 @@ const ProblemListView: React.FunctionComponent = () => {
                     default:
                         throw new Error("Unexpected role: " + jwtPayloadRole);
                 }
-            case ProblemState.COMPLETED:
             case ProblemState.ABANDONED:
                 return [];
         }
