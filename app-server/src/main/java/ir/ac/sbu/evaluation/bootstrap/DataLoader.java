@@ -1,6 +1,9 @@
 package ir.ac.sbu.evaluation.bootstrap;
 
+import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
+import ir.ac.sbu.evaluation.dto.problem.ProblemSaveDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventSaveDto;
+import ir.ac.sbu.evaluation.dto.review.PeerReviewSaveDto;
 import ir.ac.sbu.evaluation.dto.review.ProblemReviewSaveDto;
 import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleSaveDto;
 import ir.ac.sbu.evaluation.dto.schedule.event.DateRangeDto;
@@ -18,16 +21,6 @@ import ir.ac.sbu.evaluation.dto.user.student.StudentDto;
 import ir.ac.sbu.evaluation.dto.user.student.StudentSaveDto;
 import ir.ac.sbu.evaluation.enumeration.Education;
 import ir.ac.sbu.evaluation.enumeration.Gender;
-import ir.ac.sbu.evaluation.model.problem.Problem;
-import ir.ac.sbu.evaluation.model.problem.ProblemState;
-import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
-import ir.ac.sbu.evaluation.model.schedule.MeetScheduleState;
-import ir.ac.sbu.evaluation.model.user.Master;
-import ir.ac.sbu.evaluation.model.user.Student;
-import ir.ac.sbu.evaluation.repository.problem.ProblemRepository;
-import ir.ac.sbu.evaluation.repository.schedule.MeetScheduleRepository;
-import ir.ac.sbu.evaluation.repository.user.MasterRepository;
-import ir.ac.sbu.evaluation.repository.user.StudentRepository;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.service.problem.ProblemService;
 import ir.ac.sbu.evaluation.service.review.ReviewService;
@@ -70,15 +63,8 @@ public class DataLoader implements CommandLineRunner {
     private final MasterService masterService;
     private final StudentService studentService;
 
-    private final MasterRepository masterRepository;
-    private final StudentRepository studentRepository;
-
-    private final MeetScheduleRepository meetScheduleRepository;
     private final MeetScheduleService meetScheduleService;
-
     private final ProblemService problemService;
-    private final ProblemRepository problemRepository;
-
     private final ReviewService reviewService;
 
     private MasterDto sadeghMaster;
@@ -92,11 +78,7 @@ public class DataLoader implements CommandLineRunner {
             AdminService adminService, MasterService masterService,
             StudentService studentService,
             ProblemService problemService,
-            StudentRepository studentRepository,
-            MasterRepository masterRepository,
-            MeetScheduleRepository meetScheduleRepository,
             MeetScheduleService meetScheduleService,
-            ProblemRepository problemRepository,
             ReviewService reviewService) {
         this.universityService = universityService;
         this.facultyService = facultyService;
@@ -104,11 +86,7 @@ public class DataLoader implements CommandLineRunner {
         this.masterService = masterService;
         this.studentService = studentService;
         this.problemService = problemService;
-        this.studentRepository = studentRepository;
-        this.masterRepository = masterRepository;
-        this.meetScheduleRepository = meetScheduleRepository;
         this.meetScheduleService = meetScheduleService;
-        this.problemRepository = problemRepository;
         this.reviewService = reviewService;
     }
 
@@ -120,13 +98,7 @@ public class DataLoader implements CommandLineRunner {
         Instant twoDayAgo = DateUtility.getStartOfDay(Instant.now().minus(2, ChronoUnit.DAYS));
         Instant threeDayTomorrow = DateUtility.getStartOfDay(Instant.now().plus(2, ChronoUnit.DAYS));
 
-        MeetSchedule meetSchedule1 = meetScheduleRepository.save(MeetSchedule.builder()
-                .durationMinutes(30L)
-                .minimumDate(twoDayAgo)
-                .maximumDate(threeDayTomorrow)
-                .state(MeetScheduleState.CREATED)
-                .build());
-        Problem problem1 = problemRepository.save(Problem.builder()
+        ProblemDto problem1 = problemService.addProblem(aminStudent.getId(), ProblemSaveDto.builder()
                 .education(Education.BACHELOR)
                 .title("سامانه ارزیابی و نظارت یکپارچه")
                 .englishTitle("Integrated supervision and evaluation system")
@@ -142,19 +114,9 @@ public class DataLoader implements CommandLineRunner {
                                 + "با دقت بالاتری به همراه مستند‌شدن ارتباط بین اساتید و دانشجو انجام بپذیرد.")
                 .history("بیشینه مسئله")
                 .considerations("برای پیاده‌سازی در محیط عملیاتی، نیازمند سرور و تجهیزات شبکه‌ای مربوطه می‌باشد.")
-                .state(ProblemState.CREATED)
-                .meetSchedule(meetSchedule1)
+                .supervisorId(sadeghMaster.getId())
                 .build());
-        meetSchedule1.setProblem(problem1);
-        problem1 = problemRepository.save(problem1);
-
-        MeetSchedule meetSchedule2 = meetScheduleRepository.save(MeetSchedule.builder()
-                .durationMinutes(30L)
-                .minimumDate(twoDayAgo)
-                .maximumDate(threeDayTomorrow)
-                .state(MeetScheduleState.CREATED)
-                .build());
-        Problem problem2 = problemRepository.save(Problem.builder()
+        ProblemDto problem2 = problemService.addProblem(aminStudent.getId(), ProblemSaveDto.builder()
                 .education(Education.BACHELOR)
                 .title("سامانه مدیریت خرید و فروش رستوران")
                 .englishTitle("Restaurant sales management system")
@@ -164,19 +126,9 @@ public class DataLoader implements CommandLineRunner {
                                 + "می‌شود.")
                 .history("بیشینه مسئله")
                 .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
-                .state(ProblemState.CREATED)
-                .meetSchedule(meetSchedule2)
+                .supervisorId(sadeghMaster.getId())
                 .build());
-        meetSchedule2.setProblem(problem2);
-        problem2 = problemRepository.save(problem2);
-
-        MeetSchedule meetSchedule3 = meetScheduleRepository.save(MeetSchedule.builder()
-                .durationMinutes(30L)
-                .minimumDate(twoDayAgo)
-                .maximumDate(threeDayTomorrow)
-                .state(MeetScheduleState.CREATED)
-                .build());
-        Problem problem3 = problemRepository.save(Problem.builder()
+        ProblemDto problem3 = problemService.addProblem(aminStudent.getId(), ProblemSaveDto.builder()
                 .education(Education.BACHELOR)
                 .title("نقشه تعاملی سامانه‌های نرم‌افزاری یک شرکت")
                 .englishTitle("Interactive map of a company's software systems")
@@ -184,19 +136,9 @@ public class DataLoader implements CommandLineRunner {
                 .definition("سامانه‌ به منظور نقشه تعاملی سامانه‌های نرم‌افزاری یک شرکت استفاده می‌شود.")
                 .history("بیشینه مسئله")
                 .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
-                .state(ProblemState.IN_PROGRESS)
-                .meetSchedule(meetSchedule3)
+                .supervisorId(mojtabaMaster.getId())
                 .build());
-        meetSchedule3.setProblem(problem3);
-        problem3 = problemRepository.save(problem3);
-
-        MeetSchedule meetSchedule4 = meetScheduleRepository.save(MeetSchedule.builder()
-                .durationMinutes(30L)
-                .minimumDate(twoDayAgo)
-                .maximumDate(threeDayTomorrow)
-                .state(MeetScheduleState.CREATED)
-                .build());
-        Problem problem4 = problemRepository.save(Problem.builder()
+        ProblemDto problem4 = problemService.addProblem(aminStudent.getId(), ProblemSaveDto.builder()
                 .education(Education.BACHELOR)
                 .title("طراحی و پیاده سازی بستر ارسال پیامک انبوه")
                 .englishTitle("Design and implementation of bulk SMS platform")
@@ -204,33 +146,11 @@ public class DataLoader implements CommandLineRunner {
                 .definition("سامانه‌ به منظور این که بتوان در حجم انبوه و زیاد، پیامک‌های موردنیاز را ارسال نمود.")
                 .history("بیشینه مسئله")
                 .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
-                .state(ProblemState.IN_PROGRESS)
-                .meetSchedule(meetSchedule4)
+                .supervisorId(mojtabaMaster.getId())
                 .build());
-        meetSchedule4.setProblem(problem4);
-        problem4 = problemRepository.save(problem4);
 
-        Master master = masterRepository.findById(sadeghMaster.getId()).get();
-        problem1.setSupervisor(master);
-        problem1 = problemRepository.save(problem1);
-        problem2.setSupervisor(master);
-        problem2 = problemRepository.save(problem2);
-
-        master = masterRepository.findById(mojtabaMaster.getId()).get();
-        problem3.setSupervisor(master);
-        problem3 = problemRepository.save(problem3);
-        problem4.setSupervisor(master);
-        problem4 = problemRepository.save(problem4);
-
-        Student student = studentRepository.findById(aminStudent.getId()).get();
-        problem1.setStudent(student);
-        problem1 = problemRepository.save(problem1);
-        problem2.setStudent(student);
-        problem2 = problemRepository.save(problem2);
-        problem3.setStudent(student);
-        problem3 = problemRepository.save(problem3);
-        problem4.setStudent(student);
-        problem4 = problemRepository.save(problem4);
+        problemService.initialApprovalOfProblem(mojtabaMaster.getId(), problem3.getId());
+        problemService.initialApprovalOfProblem(mojtabaMaster.getId(), problem4.getId());
 
         setSpringSecurityAuthentication(mojtabaMaster);
         problemService.addReferee(mojtabaMaster.getId(), problem3.getId(), sadeghMaster.getId());
@@ -262,64 +182,99 @@ public class DataLoader implements CommandLineRunner {
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH) + 1,
                 calendar.get(Calendar.DAY_OF_MONTH) + 1);
-        meetScheduleService.addScheduleEvent(sadeghMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
-                .startDate(dateFormat.parse(String.format("%s 09:00", todayDate)).toInstant())
-                .endDate(dateFormat.parse(String.format("%s 10:00", todayDate)).toInstant())
-                .build());
-        meetScheduleService.addScheduleEvent(aminStudent.getId(), meetSchedule3.getId(), DateRangeDto.builder()
-                .startDate(dateFormat.parse(String.format("%s 11:00", todayDate)).toInstant())
-                .endDate(dateFormat.parse(String.format("%s 12:00", todayDate)).toInstant())
-                .build());
-        meetScheduleService.addScheduleEvent(mojtabaMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
-                .startDate(dateFormat.parse(String.format("%s 13:00", todayDate)).toInstant())
-                .endDate(dateFormat.parse(String.format("%s 15:00", todayDate)).toInstant())
-                .build());
+        meetScheduleService.addScheduleEvent(sadeghMaster.getId(), problem3.getMeetSchedule().getId(),
+                DateRangeDto.builder()
+                        .startDate(dateFormat.parse(String.format("%s 09:00", todayDate)).toInstant())
+                        .endDate(dateFormat.parse(String.format("%s 10:00", todayDate)).toInstant())
+                        .build());
+        meetScheduleService.addScheduleEvent(aminStudent.getId(), problem3.getMeetSchedule().getId(),
+                DateRangeDto.builder()
+                        .startDate(dateFormat.parse(String.format("%s 11:00", todayDate)).toInstant())
+                        .endDate(dateFormat.parse(String.format("%s 12:00", todayDate)).toInstant())
+                        .build());
+        meetScheduleService.addScheduleEvent(mojtabaMaster.getId(), problem3.getMeetSchedule().getId(),
+                DateRangeDto.builder()
+                        .startDate(dateFormat.parse(String.format("%s 13:00", todayDate)).toInstant())
+                        .endDate(dateFormat.parse(String.format("%s 15:00", todayDate)).toInstant())
+                        .build());
 
         // Shared schedule event between all participants for problem 3
-        meetScheduleService.addScheduleEvent(sadeghMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
-                .startDate(dateFormat.parse(String.format("%s 15:00", tomorrowDate)).toInstant())
-                .endDate(dateFormat.parse(String.format("%s 20:00", tomorrowDate)).toInstant())
-                .build());
-        meetScheduleService.addScheduleEvent(aminStudent.getId(), meetSchedule3.getId(), DateRangeDto.builder()
-                .startDate(dateFormat.parse(String.format("%s 15:30", tomorrowDate)).toInstant())
-                .endDate(dateFormat.parse(String.format("%s 19:30", tomorrowDate)).toInstant())
-                .build());
-        meetScheduleService.addScheduleEvent(mojtabaMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
-                .startDate(dateFormat.parse(String.format("%s 16:00", tomorrowDate)).toInstant())
-                .endDate(dateFormat.parse(String.format("%s 19:00", tomorrowDate)).toInstant())
-                .build());
-        meetScheduleService.addScheduleEvent(mahmoudMaster.getId(), meetSchedule3.getId(), DateRangeDto.builder()
-                .startDate(dateFormat.parse(String.format("%s 17:00", tomorrowDate)).toInstant())
-                .endDate(dateFormat.parse(String.format("%s 18:00", tomorrowDate)).toInstant())
-                .build());
+        meetScheduleService.addScheduleEvent(sadeghMaster.getId(), problem3.getMeetSchedule().getId(),
+                DateRangeDto.builder()
+                        .startDate(dateFormat.parse(String.format("%s 15:00", tomorrowDate)).toInstant())
+                        .endDate(dateFormat.parse(String.format("%s 20:00", tomorrowDate)).toInstant())
+                        .build());
+        meetScheduleService.addScheduleEvent(aminStudent.getId(), problem3.getMeetSchedule().getId(),
+                DateRangeDto.builder()
+                        .startDate(dateFormat.parse(String.format("%s 15:30", tomorrowDate)).toInstant())
+                        .endDate(dateFormat.parse(String.format("%s 19:30", tomorrowDate)).toInstant())
+                        .build());
+        meetScheduleService.addScheduleEvent(mojtabaMaster.getId(), problem3.getMeetSchedule().getId(),
+                DateRangeDto.builder()
+                        .startDate(dateFormat.parse(String.format("%s 16:00", tomorrowDate)).toInstant())
+                        .endDate(dateFormat.parse(String.format("%s 19:00", tomorrowDate)).toInstant())
+                        .build());
+        meetScheduleService.addScheduleEvent(mahmoudMaster.getId(), problem3.getMeetSchedule().getId(),
+                DateRangeDto.builder()
+                        .startDate(dateFormat.parse(String.format("%s 17:00", tomorrowDate)).toInstant())
+                        .endDate(dateFormat.parse(String.format("%s 18:00", tomorrowDate)).toInstant())
+                        .build());
 
         // Shared schedule event between all participants for problem 4
-        meetScheduleService.startMeetSchedule(mojtabaMaster.getId(), meetSchedule4.getId(),
+        meetScheduleService.startMeetSchedule(mojtabaMaster.getId(), problem4.getMeetSchedule().getId(),
                 MeetScheduleSaveDto.builder()
                         .durationMinutes(30)
                         .minimumDate(twoDayAgo)
                         .maximumDate(threeDayTomorrow)
                         .build());
         for (UserDto user : Arrays.asList(sadeghMaster, aminStudent, mojtabaMaster, mahmoudMaster)) {
-            meetScheduleService.addScheduleEvent(user.getId(), meetSchedule4.getId(), DateRangeDto.builder()
-                    .startDate(dateFormat.parse(String.format("%s 17:00", yesterdayDate)).toInstant())
-                    .endDate(dateFormat.parse(String.format("%s 18:00", yesterdayDate)).toInstant())
-                    .build());
+            meetScheduleService.addScheduleEvent(user.getId(), problem4.getMeetSchedule().getId(),
+                    DateRangeDto.builder()
+                            .startDate(dateFormat.parse(String.format("%s 17:00", yesterdayDate)).toInstant())
+                            .endDate(dateFormat.parse(String.format("%s 18:00", yesterdayDate)).toInstant())
+                            .build());
         }
         // Complete meet schedule of problem 4
-        meetScheduleService.finalizeMeetSchedule(mojtabaMaster.getId(), meetSchedule4.getId(),
+        meetScheduleService.finalizeMeetSchedule(mojtabaMaster.getId(), problem4.getMeetSchedule().getId(),
                 dateFormat.parse(String.format("%s 17:00", yesterdayDate)).toInstant());
-        meetScheduleService.acceptMeetSchedule(mojtabaMaster.getId(), meetSchedule4.getId());
+        meetScheduleService.acceptMeetSchedule(mojtabaMaster.getId(), problem4.getMeetSchedule().getId());
         // Complete some of evaluation of users
         setSpringSecurityAuthentication(mahmoudMaster);
         reviewService.reviewProblem(mahmoudMaster.getId(), problem4.getId(), ProblemReviewSaveDto.builder()
                 .score(10)
-                .peerReviews(new HashSet<>())
+                .peerReviews(new HashSet<>(Arrays.asList(
+                        PeerReviewSaveDto.builder()
+                                .reviewedId(sadeghMaster.getId())
+                                .content("خیلی خوب در زمان جلسه دانشجو را مورد بررسی قرار دادند.")
+                                .score(4)
+                                .build(),
+                        PeerReviewSaveDto.builder()
+                                .reviewedId(sadeghMaster.getId())
+                                .content("ایشان با مطالعه‌ی قبلی در جلسه‌ی دفاع حضور داشتند و نسبت به مسئله‌ی دانشجو و چالش‌های آن کاملا آگاه بودند.")
+                                .score(3)
+                                .build(),
+                        PeerReviewSaveDto.builder()
+                                .reviewedId(mojtabaMaster.getId())
+                                .content("بر روی مطلب پروژه‌ی دانشجو کاملا تسلط داشتند.")
+                                .score(4)
+                                .build()
+                )))
                 .build());
         setSpringSecurityAuthentication(sadeghMaster);
         reviewService.reviewProblem(sadeghMaster.getId(), problem4.getId(), ProblemReviewSaveDto.builder()
                 .score(15)
-                .peerReviews(new HashSet<>())
+                .peerReviews(new HashSet<>(Arrays.asList(
+                        PeerReviewSaveDto.builder()
+                                .reviewedId(mahmoudMaster.getId())
+                                .content("سوالات چالشی خوبی برای بررسی دانشجو مدنظر داشتند.")
+                                .score(5)
+                                .build(),
+                        PeerReviewSaveDto.builder()
+                                .reviewedId(mojtabaMaster.getId())
+                                .content("خیلی از هدف مسئله آگاهی نداشتند.")
+                                .score(1)
+                                .build()
+                )))
                 .build());
     }
 
