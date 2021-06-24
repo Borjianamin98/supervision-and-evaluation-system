@@ -243,8 +243,8 @@ const ProblemListView: React.FunctionComponent = () => {
                             {content: educationMapToPersian(row.education), smOptional: true},
                             {content: row.title},
                             {content: keywordsList, mdOptional: true},
-                            {content: row.student!.fullName, xsOptional: true},
-                            {content: row.supervisor!.fullName, xsOptional: true},
+                            {content: row.student.fullName, xsOptional: true},
+                            {content: row.supervisor.fullName, xsOptional: true},
                             ...(problems?.content.some(p => p.referees.length !== 0) ?
                                 [{
                                     content: row.referees.map(r => r.fullName!).join("، "),
@@ -256,7 +256,7 @@ const ProblemListView: React.FunctionComponent = () => {
 
                         return (
                             <CollapsibleTableRow
-                                key={row.id!}
+                                key={row.id}
                                 cells={cells}
                             >
                                 <Grid container className={classes.justifyAlign}>

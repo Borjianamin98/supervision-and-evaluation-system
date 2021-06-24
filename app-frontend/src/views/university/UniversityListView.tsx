@@ -191,7 +191,7 @@ const UniversityListView: React.FunctionComponent = () => {
                             {content: row.facultiesCount},
                             {content: actions},
                         ];
-                        return <ExtendedTableRow key={row.id!} cells={cells}/>;
+                        return <ExtendedTableRow key={row.id} cells={cells}/>;
                     }}
                     noDataMessage="دانشگاهی تعریف نشده است."
                     hasDelete={row => true}

@@ -230,7 +230,7 @@ const FacultyListView: React.FunctionComponent = () => {
                             {content: row.mastersCount, xsOptional: true},
                             {content: actions},
                         ];
-                        return <ExtendedTableRow key={row.id!} cells={cells}/>;
+                        return <ExtendedTableRow key={row.id} cells={cells}/>;
                     }}
                     noDataMessage={noDataMessage}
                     hasDelete={row => true}

@@ -18,6 +18,7 @@ import ProblemListView from "../problem/PorblemListView";
 import ProblemRequiredEntryPoint from "../problem/ProblemRequiredEntryPoint";
 import ProblemScheduleView from "../problem/schedule/ProblemScheduleView";
 import ProfileView from "../ProfileView";
+import MasterReportListView from "../report/MasterReportListView";
 import MasterReportView from "../report/MasterReportView";
 import FacultyListView from "../university/faculty/FacultyListView";
 import UniversityListView from "../university/UniversityListView";
@@ -109,10 +110,16 @@ const universityRoutesInfo: navBarRouteInfo[] = [
 
 const reportRoutesInfo: navBarRouteInfo[] = [
     {
+        path: MASTER_REPORT_VIEW_PATH + "/:masterId",
+        name: "گزارش استاد",
+        roles: [Role.ADMIN],
+        component: MasterReportView,
+    },
+    {
         path: MASTER_REPORT_VIEW_PATH,
         name: "گزارش اساتید",
         roles: [Role.ADMIN],
-        component: MasterReportView,
+        component: MasterReportListView,
         icon: AssessmentIcon,
     },
 ]
