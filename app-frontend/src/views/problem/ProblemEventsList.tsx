@@ -19,7 +19,6 @@ const ProblemEventsList: React.FunctionComponent<ProblemEventListProps> = (props
     const {problemId, pageSize} = props;
 
     const [page, setPage] = React.useState(0);
-
     const queryClient = useQueryClient();
     const {data: events, isLoading, isError} = useQuery(["problemEvents", problemId, pageSize, page],
         () => {

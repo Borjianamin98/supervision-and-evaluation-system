@@ -16,14 +16,16 @@ class ProblemAuthenticatedService {
 
     static retrieveProblemEvents(pageSize: number, page: number, problemId: number,
                                  sortBy?: string, sortDirection?: "asc" | "desc") {
-        return apiAxios.get<Pageable<ProblemEvent>>(`${API_PROBLEM_ROOT_PATH}/${problemId}/events`,
-            {
-                params: {
-                    size: pageSize,
-                    page: page,
-                    sort: sortBy ? (sortDirection ? `${sortBy},${sortDirection}` : sortBy) : undefined,
-                }
-            }).then(response => response.data);
+        return apiAxios
+            .get<Pageable<ProblemEvent>>(`${API_PROBLEM_ROOT_PATH}/${problemId}/events`,
+                {
+                    params: {
+                        size: pageSize,
+                        page: page,
+                        sort: sortBy ? (sortDirection ? `${sortBy},${sortDirection}` : sortBy) : undefined,
+                    }
+                })
+            .then(response => response.data);
     }
 
     static abandonProblem(problemId: number) {

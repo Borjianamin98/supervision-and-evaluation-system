@@ -1,5 +1,6 @@
 import apiAxios from "../../../config/axios-config";
 import {Pageable} from "../../../model/api/Pageable";
+import {PeerReview} from "../../../model/review/PeerReview";
 import {Master} from "../../../model/user/master/Master";
 import {MasterSave} from "../../../model/user/master/MasterSave";
 
@@ -40,6 +41,20 @@ class MasterService {
         return apiAxios
             .get<Master>(`${MasterService.API_MASTER_ROOT_PATH}/${masterId}`)
             .then(response => response.data)
+    }
+
+    static retrieveMasterPeerReviews(pageSize: number, page: number, masterId: number,
+                                     sortBy?: string, sortDirection?: "asc" | "desc") {
+        return apiAxios
+            .get<Pageable<PeerReview>>(`${MasterService.API_MASTER_ROOT_PATH}/${masterId}/peerReviews`,
+                {
+                    params: {
+                        size: pageSize,
+                        page: page,
+                        sort: sortBy ? (sortDirection ? `${sortBy},${sortDirection}` : sortBy) : undefined,
+                    }
+                })
+            .then(response => response.data);
     }
 }
 

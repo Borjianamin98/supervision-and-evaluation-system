@@ -1,6 +1,7 @@
+import {Auditable} from "../Auditable";
 import {User} from "../user/User";
 
-export interface PeerReview {
+export interface PeerReview extends Auditable {
     id: number,
     content: string,
     score: number,
