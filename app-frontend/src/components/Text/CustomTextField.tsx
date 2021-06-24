@@ -7,12 +7,13 @@ import React from "react";
 
 export type CustomTextFieldProps = TextFieldProps & {
     extraInputProps?: Partial<InputProps> | Partial<FilledInputProps> | Partial<OutlinedInputProps>
+    extraInnerInputProps?: OutlinedInputProps['inputProps'],
     textDir?: "ltr" | "rtl",
     maxLength?: number,
 }
 
 const CustomTextField: React.FunctionComponent<CustomTextFieldProps> = (params) => {
-    const {textDir, maxLength, InputProps, extraInputProps, ...rest} = params;
+    const {textDir, maxLength, InputProps, extraInputProps, extraInnerInputProps, ...rest} = params;
 
     return (
         <TextField
@@ -25,7 +26,8 @@ const CustomTextField: React.FunctionComponent<CustomTextFieldProps> = (params) 
             }}
             inputProps={{
                 maxLength: maxLength ?? undefined,
-                dir: textDir ? textDir : undefined
+                dir: textDir ? textDir : undefined,
+                ...extraInnerInputProps
             }}
             {...rest}
         />

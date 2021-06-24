@@ -19,7 +19,7 @@ import lombok.Setter;
 public class ProblemReview extends BaseEntity {
 
     @Column(name = "score")
-    private int score;
+    private Double score;
 
     @ManyToOne
     @JoinColumn(name = "reviewer_id")
@@ -34,7 +34,7 @@ public class ProblemReview extends BaseEntity {
 
     @Builder
     public ProblemReview(Long id,
-            int score,
+            Double score,
             Master reviewer,
             Problem problem) {
         super(id);

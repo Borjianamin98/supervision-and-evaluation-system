@@ -24,6 +24,7 @@ import {ProblemReviewSave} from "../../../../model/review/ProblemReviewSave";
 import {User, userRoleInfo} from "../../../../model/user/User";
 import AuthenticationService from "../../../../services/api/AuthenticationService";
 import ReviewService from "../../../../services/api/review/ReviewService";
+import PointNumberTextField from "./PointNumberTextField";
 
 interface ReviewEvaluationDialogProps {
     problem: Problem,
@@ -74,7 +75,6 @@ const ReviewEvaluationDialog: React.FunctionComponent<ReviewEvaluationDialogProp
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open])
 
-    const isProblemScoreValid = (score: number) => score >= 0 && score <= 20;
     const isPeerReviewValid = (peerReviewSave: PeerReviewSave) => peerReviewSave.content.length > 0;
 
     const stepperContent = () => {
@@ -92,16 +92,11 @@ const ReviewEvaluationDialog: React.FunctionComponent<ReviewEvaluationDialogProp
                         صورت خودکار در انتهای فرآیند برای محاسبه‌ی نمره‌ی نهایی دانشجو استفاده می‌شود.
                     </CustomTypography>
                 </CustomAlert>
-                <CustomTextField
+                <PointNumberTextField
                     autoFocus
                     label={"نمره نهایی"}
                     value={problemScore}
-                    onChange={(e) => {
-                        const onlyTwoDigit = e.target.value.replace(/[^0-9]/g, '').substring(0, 2);
-                        setProblemScore(onlyTwoDigit === "" ? 0 : parseInt(onlyTwoDigit))
-                    }}
-                    helperText={!isProblemScoreValid(problemScore) ? "نمره دانشجو باید بین صفر و بیست باشد." : ""}
-                    error={!isProblemScoreValid(problemScore)}
+                    onChange={(e) => setProblemScore(+e.target.value)}
                 />
             </>;
         } else if (activeStep === 1) {
@@ -168,7 +163,7 @@ const ReviewEvaluationDialog: React.FunctionComponent<ReviewEvaluationDialogProp
                     {
                         content: "قسمت بعد",
                         name: "next",
-                        disabled: activeStep === 1 || !isProblemScoreValid(problemScore)
+                        disabled: activeStep === 1
                     },
                     {
                         content: "تایید",
@@ -217,7 +212,6 @@ const PersonReviewListItem: React.FunctionComponent<PersonReviewListItemProps> =
                     value={peerReviewSave.content}
                     onChange={event => updatePeerReviewSave({...peerReviewSave, content: event.target.value})}
                     helperText={isBlank(peerReviewSave.content) ? "نظر حداقلی در مورد همکار الزامی می‌باشد." : ""}
-                    // error={isBlank(peerReviewSave.content)}
                 />
                 <CenterBox flexDirection={"row"} justifyContent={"space-between"}>
                     <CustomTypography>امتیازدهی:</CustomTypography>

@@ -18,6 +18,7 @@ import {ProblemReviewSave} from "../../../../model/review/ProblemReviewSave";
 import {User, userRoleInfo} from "../../../../model/user/User";
 import AuthenticationService from "../../../../services/api/AuthenticationService";
 import ReviewService from "../../../../services/api/review/ReviewService";
+import PointNumberTextField from "./PointNumberTextField";
 
 interface ReviewConclusionDialogProps {
     problem: Problem,
@@ -42,6 +43,11 @@ const ReviewConclusionDialog: React.FunctionComponent<ReviewConclusionDialogProp
             },
             onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
+
+    const [finalGrade, setFinalGrade] = React.useState(problem.finalGrade);
+    React.useEffect(() => {
+        setFinalGrade(problem.finalGrade);
+    }, [problem.finalGrade])
 
     const isAllParticipantEvaluatedProblem = problem.problemReviews.length === problem.referees.length + 1;
 
@@ -101,6 +107,12 @@ const ReviewConclusionDialog: React.FunctionComponent<ReviewConclusionDialogProp
                                                 (پروژه) تکمیل نموده‌اند. نمره‌ی نهایی دانشجو بر اساس اطلاعات وارد‌شده
                                                 توسط داوران محترم به صورت زیر می‌باشد:
                                             </CustomTypography>
+                                            <PointNumberTextField
+                                                autoFocus
+                                                label={"نمره نهایی"}
+                                                value={finalGrade}
+                                                onChange={(e) => setFinalGrade(+e.target.value)}
+                                            />
                                         </React.Fragment>
                                     ) : (
                                         <CustomTypography lineHeight={2}>

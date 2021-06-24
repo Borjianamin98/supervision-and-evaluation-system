@@ -79,7 +79,7 @@ public class ReviewService {
         if (problem.getProblemReviews().size() == problem.getReferees().size() + 1) {
             // All participant evaluated problem so we update final grade of problem
             problem.getProblemReviews()
-                    .stream().mapToInt(ProblemReview::getScore).average()
+                    .stream().mapToDouble(ProblemReview::getScore).average()
                     .ifPresent(problem::setFinalGrade);
         }
         return ProblemDto.from(problemRepository.save(problem));

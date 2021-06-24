@@ -15,12 +15,12 @@ import lombok.Setter;
 public class ProblemReviewDto {
 
     private long id;
-    private Integer score;
+    private Double score;
     private MasterDto reviewer;
 
     @Builder
     public ProblemReviewDto(long id,
-            Integer score,
+            Double score,
             MasterDto reviewer) {
         this.id = id;
         this.score = score;

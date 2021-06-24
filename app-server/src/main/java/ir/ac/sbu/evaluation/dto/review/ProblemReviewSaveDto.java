@@ -16,7 +16,7 @@ public class ProblemReviewSaveDto {
 
     @Min(value = 0)
     @Max(value = 20)
-    private int score;
+    private double score;
 
     @NotNull
     @Size(min = 1)
@@ -26,7 +26,7 @@ public class ProblemReviewSaveDto {
     }
 
     @Builder
-    public ProblemReviewSaveDto(int score, Set<PeerReviewSaveDto> peerReviews) {
+    public ProblemReviewSaveDto(double score, Set<PeerReviewSaveDto> peerReviews) {
         this.score = score;
         this.peerReviews = peerReviews;
     }
@@ -40,7 +40,8 @@ public class ProblemReviewSaveDto {
             return false;
         }
         ProblemReviewSaveDto that = (ProblemReviewSaveDto) o;
-        return score == that.score && Objects.equals(peerReviews, that.peerReviews);
+        return Double.compare(that.score, score) == 0
+                && Objects.equals(peerReviews, that.peerReviews);
     }
 
     @Override
