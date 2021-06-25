@@ -1,3 +1,5 @@
+import filesize from "filesize";
+
 export default class LocaleUtils {
 
     private constructor() {
@@ -15,6 +17,25 @@ export default class LocaleUtils {
             .replaceAll("7", "۷")
             .replaceAll("8", "۸")
             .replaceAll("9", "۹");
+    }
+
+    static convertFileSizeToPersian(size: number) {
+        return filesize(size, {
+            round: 1,
+            locale: "fa",
+            standard: "jedec",
+            symbols: {
+                B: "بایت",
+                KB: "کیلوبایت",
+                MB: "مگابایت",
+                GB: "گیگابایت",
+                TB: "ترابایت",
+                PB: "پتابایت",
+                EB: "اگزابایت",
+                ZB: "زتابایت",
+                YB: "یتابایت"
+            }
+        })
     }
 
 }

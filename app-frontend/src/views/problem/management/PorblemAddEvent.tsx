@@ -1,14 +1,24 @@
+import Box from "@material-ui/core/Box";
+import Button from "@material-ui/core/Button";
+import Card from "@material-ui/core/Card";
+import CardActions from "@material-ui/core/CardActions";
+import CardContent from "@material-ui/core/CardContent";
 import {ThemeProvider} from "@material-ui/core/styles";
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import DeleteIcon from '@material-ui/icons/Delete';
 import {AxiosError} from "axios";
 import {useSnackbar} from "notistack";
-import React from 'react';
+import React, {ChangeEventHandler} from 'react';
 import {useMutation, useQueryClient} from "react-query";
 import {rtlTheme} from "../../../App";
 import MultiActionDialog from "../../../components/Dialog/MultiActionDialog";
+import InputFileIconButton from "../../../components/Input/InputFileIconButton";
 import CustomTextField from "../../../components/Text/CustomTextField";
+import CustomTypography from "../../../components/Typography/CustomTypography";
 import {generalErrorHandler} from "../../../config/axios-config";
 import AuthenticationService from "../../../services/api/AuthenticationService";
 import ProblemMasterService from "../../../services/api/problem/ProblemMasterService";
+import LocaleUtils from "../../../utility/LocaleUtils";
 
 interface ProblemAddEventProps {
     open: boolean,
@@ -38,11 +48,21 @@ const ProblemAddEvent: React.FunctionComponent<ProblemAddEventProps> = (props) =
         });
 
     const [content, setContent] = React.useState("");
+    const [attachment, setAttachment] = React.useState<File | null>(null);
     React.useEffect(() => {
         if (!open) {
             setContent("");
+            setAttachment(null);
         }
     }, [open])
+
+    const onFileUpload: ChangeEventHandler<HTMLInputElement> = (event) => {
+        const target = event.target;
+        if (!target.files) {
+            return; // User canceled upload file window
+        }
+        setAttachment(target.files[0]);
+    }
 
     return (
         <ThemeProvider theme={rtlTheme}>
@@ -83,9 +103,50 @@ const ProblemAddEvent: React.FunctionComponent<ProblemAddEventProps> = (props) =
                     rows={6}
                     maxLength={1000}
                 />
+                <Box display={attachment ? "none" : "flex"} flexDirection={"row"} alignItems={"center"}>
+                    <InputFileIconButton
+                        onFileChange={onFileUpload}
+                        accept={"*/*"}
+                    >
+                        <Button
+                            component={"span"}
+                            variant="contained"
+                            color="primary"
+                            startIcon={<CloudUploadIcon/>}
+                        >
+                            بارگزاری
+                        </Button>
+                    </InputFileIconButton>
+                </Box>
+                {
+                    attachment && <Card>
+                        <CardContent>
+                            <CustomTypography lineHeight={2} noWrap={true}>
+                                {`نام پیوست: ${attachment.name}`}
+                            </CustomTypography>
+                            <CustomTypography lineHeight={2}>
+                                {`اندازه پیوست: ${LocaleUtils.convertFileSizeToPersian(attachment.size)}`}
+                            </CustomTypography>
+                        </CardContent>
+                        <CardActions>
+                            <Button
+                                variant={"contained"}
+                                startIcon={<DeleteIcon/>}
+                                color={"primary"}
+                                onClick={() => setAttachment(null)}
+                            >
+                                حذف پیوست
+                            </Button>
+                        </CardActions>
+                    </Card>
+                }
             </MultiActionDialog>
         </ThemeProvider>
     );
 }
 
 export default ProblemAddEvent;
+
+function convertFileSizeToPersian(size: number) {
+    throw new Error("Function not implemented.");
+}

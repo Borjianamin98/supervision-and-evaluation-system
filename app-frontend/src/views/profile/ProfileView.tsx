@@ -1,4 +1,4 @@
-import {Avatar, Badge, Grid, Paper} from "@material-ui/core";
+import {Avatar, Badge, Grid, IconButton, Paper} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import {createStyles, makeStyles, Theme, ThemeProvider} from '@material-ui/core/styles';
@@ -140,10 +140,11 @@ const ProfileView: React.FunctionComponent = () => {
                                     <InputFileIconButton
                                         onFileChange={onFileChangeHandler}
                                         accept={PROFILE_PICTURE_MIME_TYPES.join(",")}
-                                        edge="end"
-                                        color="primary"
                                     >
-                                        <PhotoCameraIcon/>
+                                        <IconButton edge="end" color="primary" aria-label="upload file"
+                                                    component="span">
+                                            <PhotoCameraIcon/>
+                                        </IconButton>
                                     </InputFileIconButton>
                                 }
                                 anchorOrigin={{
