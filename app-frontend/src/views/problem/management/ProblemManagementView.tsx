@@ -19,11 +19,11 @@ import AuthenticationService from "../../../services/api/AuthenticationService";
 import ProblemMasterService from "../../../services/api/problem/ProblemMasterService";
 import MasterService from "../../../services/api/user/MasterService";
 import NumberUtils from "../../../utility/NumberUtils";
+import ProfileInfoCard from "../../profile/ProfileInfoCard";
 import ProblemEventsList from "../ProblemEventsList";
 import ProblemInfoList from "../ProblemInfoList";
 import ProblemAddEvent from "./PorblemAddEvent";
 import ProblemManagementScheduleCard from "./ProblemManagementScheduleCard";
-import ProfileInfoCard from "../../profile/ProfileInfoCard";
 import ProblemManagementReviewCard from "./review/ProblemManagementReviewCard";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -239,7 +239,6 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                     <ProblemAddEvent
                         open={commentDialogOpen}
                         problemId={problem.id}
-                        problemTitle={problem.title}
                         onClose={() => setCommentDialogOpen(false)}
                     />
                     <SearchableListDialog

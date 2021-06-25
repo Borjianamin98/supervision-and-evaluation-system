@@ -291,8 +291,7 @@ const ProblemListView: React.FunctionComponent = () => {
                 <div aria-label={"dialogs"}>
                     <ProblemAddEvent
                         open={commentDialogOpen}
-                        problemId={commentProblem ? commentProblem.id! : 0}
-                        problemTitle={commentProblem ? commentProblem.title : ""}
+                        problemId={commentProblem ? commentProblem.id : 0}
                         onClose={() => setCommentDialogOpen(false)}
                     />
                     <ConfirmDialog

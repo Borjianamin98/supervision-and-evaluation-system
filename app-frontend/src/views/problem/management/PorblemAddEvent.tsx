@@ -4,7 +4,8 @@ import {useSnackbar} from "notistack";
 import React from 'react';
 import {useMutation, useQueryClient} from "react-query";
 import {rtlTheme} from "../../../App";
-import SingleFieldFormDialog from "../../../components/Dialog/SingleFieldFormDialog";
+import MultiActionDialog from "../../../components/Dialog/MultiActionDialog";
+import CustomTextField from "../../../components/Text/CustomTextField";
 import {generalErrorHandler} from "../../../config/axios-config";
 import AuthenticationService from "../../../services/api/AuthenticationService";
 import ProblemMasterService from "../../../services/api/problem/ProblemMasterService";
@@ -12,16 +13,14 @@ import ProblemMasterService from "../../../services/api/problem/ProblemMasterSer
 interface ProblemAddEventProps {
     open: boolean,
     problemId: number,
-    problemTitle: string,
     onClose: () => void,
 }
 
 const ProblemAddEvent: React.FunctionComponent<ProblemAddEventProps> = (props) => {
     const {enqueueSnackbar} = useSnackbar();
-    const {open, problemId, problemTitle, onClose} = props;
+    const {open, problemId, onClose} = props;
 
     const jwtPayloadRole = AuthenticationService.getJwtPayloadRole()!;
-
     const queryClient = useQueryClient();
     const commentOnProblem = useMutation(
         (data: { problemId: number, comment: string }) =>
@@ -38,33 +37,53 @@ const ProblemAddEvent: React.FunctionComponent<ProblemAddEventProps> = (props) =
             onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
         });
 
-    const onCommentDialogEvent = (comment?: string) => {
-        if (comment) {
-            commentOnProblem.mutate({
-                problemId: problemId,
-                comment: comment,
-            });
+    const [content, setContent] = React.useState("");
+    React.useEffect(() => {
+        if (!open) {
+            setContent("");
         }
-        onClose();
-    };
+    }, [open])
 
     return (
         <ThemeProvider theme={rtlTheme}>
-            <SingleFieldFormDialog
+            <MultiActionDialog
                 open={open}
-                onAction={onCommentDialogEvent}
-                title="ثبت نظر"
-                descriptions={[
-                    "نظرات، بازخوردها یا پیشنهادات خود را برای تایید مسئله وارد نمایید.",
-                    `عنوان مسئله: ${problemTitle}`
-                ]}
-                textFieldProps={{
-                    label: "نظرات",
-                    multiline: true,
-                    rows: 6,
-                    maxLength: 1000,
+                onAction={reason => {
+                    if (reason === "closed") {
+                        onClose();
+                    } else if (reason === "confirm") {
+                        commentOnProblem.mutate({
+                            problemId: problemId,
+                            comment: content,
+                        }, {
+                            onSuccess: () => onClose(),
+                        });
+                    }
                 }}
-            />
+                title={"ثبت نظر"}
+                description={"نظرات، بازخوردها یا پیشنهادات خود را برای پایان‌نامه (پروژه) وارد نمایید."}
+                actions={[
+                    {
+                        content: "انصراف",
+                        name: "closed",
+                    },
+                    {
+                        content: "تایید",
+                        name: "confirm",
+                        disabled: content.length === 0,
+                    },
+                ]}
+            >
+                <CustomTextField
+                    autoFocus
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    label={"توضیحات"}
+                    multiline={true}
+                    rows={6}
+                    maxLength={1000}
+                />
+            </MultiActionDialog>
         </ThemeProvider>
     );
 }
