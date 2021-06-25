@@ -21,6 +21,6 @@ public interface PeerReviewRepository extends JpaRepository<PeerReview, Long> {
             "from PeerReview p " +
             "where p.reviewed.id = :reviewedId " +
             "group by p.score")
-    List<ScoreCount> findTotalReviewScoresByReviewedId(
+    List<ScoreCount> findAggregatedReviewScoresByReviewedId(
             @Param("reviewedId") long reviewedId);
 }

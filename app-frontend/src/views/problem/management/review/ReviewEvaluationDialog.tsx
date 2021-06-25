@@ -6,7 +6,6 @@ import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import Stepper from "@material-ui/core/Stepper";
 import {ThemeProvider} from "@material-ui/core/styles";
-import Rating from "@material-ui/lab/Rating";
 import {AxiosError} from "axios";
 import {useSnackbar} from "notistack";
 import React from 'react';
@@ -15,6 +14,7 @@ import {rtlTheme} from "../../../../App";
 import CustomAlert from "../../../../components/Alert/CustomAlert";
 import MultiActionDialog from "../../../../components/Dialog/MultiActionDialog";
 import CenterBox from "../../../../components/Grid/CenterBox";
+import CustomRating from "../../../../components/Rating/CustomRating";
 import CustomTextField from "../../../../components/Text/CustomTextField";
 import CustomTypography from "../../../../components/Typography/CustomTypography";
 import {generalErrorHandler} from "../../../../config/axios-config";
@@ -35,7 +35,7 @@ interface ReviewEvaluationDialogProps {
 const convertUserToPeerReview = (users: User[]) => {
     return users.map<PeerReviewSave>(user => ({
         content: "",
-        score: 0,
+        score: 1,
         reviewedId: user.id,
     }))
 }
@@ -64,7 +64,7 @@ const ReviewEvaluationDialog: React.FunctionComponent<ReviewEvaluationDialogProp
 
     const [activeStep, setActiveStep] = React.useState(0);
     const [problemScore, setProblemScore] = React.useState(0);
-    const [peerReviewSaves, setPeerReviewSaves] = React.useState<PeerReviewSave[]>(convertUserToPeerReview(candidatePeers));
+    const [peerReviewSaves, setPeerReviewSaves] = React.useState(convertUserToPeerReview(candidatePeers));
 
     React.useEffect(() => {
         if (!open) {
@@ -215,11 +215,11 @@ const PersonReviewListItem: React.FunctionComponent<PersonReviewListItemProps> =
                 />
                 <CenterBox flexDirection={"row"} justifyContent={"space-between"}>
                     <CustomTypography>امتیازدهی:</CustomTypography>
-                    <Rating
+                    <CustomRating
                         name={`rating-${user.id}`}
-                        size="large"
+                        labelPosition={"right"}
                         value={peerReviewSave.score}
-                        onChange={(event, newValue) => updatePeerReviewSave({...peerReviewSave, score: newValue ?? 0})}
+                        onValueChange={newValue => updatePeerReviewSave({...peerReviewSave, score: newValue ?? 1})}
                     />
                 </CenterBox>
             </ListItemText>

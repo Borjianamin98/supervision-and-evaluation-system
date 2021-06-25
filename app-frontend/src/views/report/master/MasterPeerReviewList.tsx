@@ -1,11 +1,12 @@
-import {Avatar, Box, CircularProgress, createStyles, Grid, makeStyles, Theme} from "@material-ui/core";
+import {Avatar, Box, CircularProgress, createStyles, Grid, makeStyles, Theme, useTheme} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import GradeIcon from '@material-ui/icons/Grade';
-import {Pagination, Rating} from "@material-ui/lab";
+import {Pagination} from "@material-ui/lab";
 import React from 'react';
 import {useQuery, useQueryClient} from "react-query";
 import CustomAlert from "../../../components/Alert/CustomAlert";
 import CenterBox from "../../../components/Grid/CenterBox";
+import CustomRating from "../../../components/Rating/CustomRating";
 import CustomTypography from "../../../components/Typography/CustomTypography";
 import {PeerReview} from "../../../model/review/peer/PeerReview";
 import MasterService from "../../../services/api/user/MasterService";
@@ -24,7 +25,6 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-
 interface MasterPeerReviewListProps {
     masterId: number,
     pageSize: number,
@@ -32,6 +32,7 @@ interface MasterPeerReviewListProps {
 
 const MasterPeerReviewList: React.FunctionComponent<MasterPeerReviewListProps> = (props) => {
     const classes = useStyles();
+    const theme = useTheme();
     const {masterId, pageSize} = props;
 
     const [page, setPage] = React.useState(0);
@@ -76,7 +77,7 @@ const MasterPeerReviewList: React.FunctionComponent<MasterPeerReviewListProps> =
             <Grid container alignItems={"center"} className={classes.root}>
                 <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
                     <CenterBox>
-                        <Avatar style={{marginBottom: 8}}>
+                        <Avatar style={{marginBottom: 8, backgroundColor: theme.palette.primary.main}}>
                             <GradeIcon/>
                         </Avatar>
                         <CustomTypography>
@@ -93,9 +94,11 @@ const MasterPeerReviewList: React.FunctionComponent<MasterPeerReviewListProps> =
                             .sort(([key1,], [key2,]) => key1.localeCompare(key2))
                             .map(([score, count]) => {
                                 return <CenterBox flexDirection={"row"} justifyContent={"flex-start"} marginBottom={1}>
-                                    <Rating
-                                        name="rating"
-                                        defaultValue={parseInt(score)}
+                                    <CustomRating
+                                        name={`rating-${score}`}
+                                        labelPosition={"none"}
+                                        value={parseInt(score)}
+                                        onValueChange={() => undefined}
                                         readOnly
                                     />
                                     <Box ml={2}>

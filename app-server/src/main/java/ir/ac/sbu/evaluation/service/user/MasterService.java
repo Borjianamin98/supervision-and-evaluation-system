@@ -82,7 +82,7 @@ public class MasterService {
         Page<PeerReviewDto> peerReviews = peerReviewRepository.findAllByReviewedId(masterId, pageable)
                 .map(PeerReviewDto::from);
 
-        List<ScoreCount> scoreCounts = peerReviewRepository.findTotalReviewScoresByReviewedId(masterId);
+        List<ScoreCount> scoreCounts = peerReviewRepository.findAggregatedReviewScoresByReviewedId(masterId);
         Map<Integer, Long> scoreCountsMapping = new HashMap<>();
         for (int i = 1; i <= 5; i++) {
             // Provide zero value for not available scores.

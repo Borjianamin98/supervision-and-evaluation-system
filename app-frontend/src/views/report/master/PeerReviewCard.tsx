@@ -1,10 +1,9 @@
 import {Box, Card, CardActions, CardContent, CardProps, Divider} from "@material-ui/core";
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import Rating from "@material-ui/lab/Rating/Rating";
 import moment from "jalali-moment";
 import React from 'react';
-import CenterBox from "../../../components/Grid/CenterBox";
+import CustomRating from "../../../components/Rating/CustomRating";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -19,15 +18,6 @@ const useStyles = makeStyles((theme: Theme) =>
             padding: theme.spacing(1, 2, 0),
         }
     }));
-
-const labels: { [index: string]: string } = {
-    0: "نادقیق",
-    1: "خیلی ضعیف",
-    2: "ضعیف",
-    3: "متوسط",
-    4: "خوب",
-    5: "عالی",
-};
 
 interface PeerReviewCardProps extends CardProps {
     content: string,
@@ -44,10 +34,17 @@ const PeerReviewCard: React.FunctionComponent<PeerReviewCardProps> = (props) => 
             <CardContent classes={{
                 root: classes.cardContent,
             }}>
-                <CenterBox flexDirection={"row"} justifyContent={"flex-start"} marginBottom={1}>
-                    <Rating name="rating" defaultValue={score} readOnly/>
-                    <Box ml={2}>{labels[score]}</Box>
-                </CenterBox>
+                <CustomRating
+                    name="rating"
+                    labelPosition={"left"}
+                    value={score}
+                    onValueChange={() => undefined}
+                    readOnly
+                    boxProps={{
+                        justifyContent: "flex-start",
+                        marginBottom: 1
+                    }}
+                />
                 <Divider/>
                 <Box marginTop={1}>
                     <Typography variant="body2" color="textSecondary" className={classes.bodyContent}>
