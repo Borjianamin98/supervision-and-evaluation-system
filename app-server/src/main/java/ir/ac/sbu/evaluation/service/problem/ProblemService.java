@@ -5,6 +5,7 @@ import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventSaveDto;
 import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleDto;
 import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
+import ir.ac.sbu.evaluation.exception.PayloadTooLargeException;
 import ir.ac.sbu.evaluation.exception.ResourceConflictException;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
 import ir.ac.sbu.evaluation.model.problem.Problem;
@@ -22,6 +23,9 @@ import ir.ac.sbu.evaluation.repository.schedule.ScheduleEventRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
 import ir.ac.sbu.evaluation.security.SecurityRoles;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,6 +35,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ProblemService {
@@ -164,12 +169,26 @@ public class ProblemService {
                     + "problem ID = " + problemId);
         }
 
+        MultipartFile attachment = problemEventSaveDto.getAttachment();
+        if (attachment != null) {
+            if (attachment.getSize() >= 5 * 1024 * 1024) {
+                throw new PayloadTooLargeException(
+                        "Attachment file is too much large: " + attachment.getName() + " bytes",
+                        "فایل ارسالی از حجم مجاز 5 مگابایت بیش‌تر می‌باشد.");
+            }
+            try {
+                Files.write(Paths.get(""), attachment.getBytes());
+            } catch (IOException e) {
+                throw new ResourceConflictException("Unable to store attachment: " + attachment.getName(),
+                        "در دریافت فایل ارسالی خطا رخ داده است. دوباره تلاش نمایید. در صورت تداوم مشکل، با مسئول "
+                                + "مربوطه تماس بگیرید.");
+            }
+        }
+
         ProblemEvent problemEvent = problemEventSaveDto.toProblemEvent();
         problemEvent.setProblem(problem);
+        problemEvent.setHasAttachment(attachment != null);
         ProblemEvent savedProblemEvent = problemEventRepository.save(problemEvent);
-        problem.getEvents().add(savedProblemEvent);
-        problemRepository.save(problem);
-
         return ProblemEventDto.from(savedProblemEvent);
     }
 

@@ -8,7 +8,7 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import DeleteIcon from '@material-ui/icons/Delete';
 import {AxiosError} from "axios";
 import {useSnackbar} from "notistack";
-import React, {ChangeEventHandler} from 'react';
+import React from 'react';
 import {useMutation, useQueryClient} from "react-query";
 import {rtlTheme} from "../../../App";
 import MultiActionDialog from "../../../components/Dialog/MultiActionDialog";
@@ -57,14 +57,6 @@ const ProblemAddEvent: React.FunctionComponent<ProblemAddEventProps> = (props) =
         }
     }, [open])
 
-    const onFileUpload: ChangeEventHandler<HTMLInputElement> = (event) => {
-        const target = event.target;
-        if (!target.files) {
-            return; // User canceled upload file window
-        }
-        setAttachment(target.files[0]);
-    }
-
     return (
         <ThemeProvider theme={rtlTheme}>
             <MultiActionDialog
@@ -106,7 +98,7 @@ const ProblemAddEvent: React.FunctionComponent<ProblemAddEventProps> = (props) =
                 />
                 <Box display={attachment ? "none" : "flex"} flexDirection={"row"} alignItems={"center"}>
                     <InputFileIconButton
-                        onFileChange={onFileUpload}
+                        onFileChange={file => setAttachment(file)}
                         accept={"*/*"}
                     >
                         <Button

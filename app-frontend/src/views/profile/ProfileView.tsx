@@ -91,13 +91,7 @@ const ProfileView: React.FunctionComponent = () => {
             });
     }, [enqueueSnackbar])
 
-    const onFileChangeHandler: React.ChangeEventHandler<HTMLInputElement> = (event) => {
-        event.preventDefault();
-        const target = event.target;
-        if (!target.files) {
-            return; // User canceled upload file window
-        }
-        const selectedFile = target.files[0];
+    const onFileChangeHandler = (selectedFile: File) => {
         if (!PROFILE_PICTURE_MIME_TYPES.some(acceptType => selectedFile.type.match(acceptType))) {
             enqueueSnackbar('فایل انتخابی باید تصویری با فرمت مناسب باشد.', {variant: "error"});
             return;
