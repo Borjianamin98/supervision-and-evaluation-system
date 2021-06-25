@@ -7,6 +7,7 @@ import javax.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -16,12 +17,15 @@ public class ProblemEventSaveDto {
     @Size(max = 1000)
     private String message;
 
+    private MultipartFile attachment;
+
     public ProblemEventSaveDto() {
     }
 
     @Builder
-    public ProblemEventSaveDto(String message) {
+    public ProblemEventSaveDto(String message, MultipartFile attachment) {
         this.message = message;
+        this.attachment = attachment;
     }
 
     public ProblemEvent toProblemEvent() {

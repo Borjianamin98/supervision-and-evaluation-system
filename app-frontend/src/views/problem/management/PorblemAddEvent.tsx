@@ -35,7 +35,8 @@ const ProblemAddEvent: React.FunctionComponent<ProblemAddEventProps> = (props) =
     const commentOnProblem = useMutation(
         (data: { problemId: number, comment: string }) =>
             ProblemMasterService.addProblemEvent(data.problemId, {
-                message: data.comment
+                message: data.comment,
+                attachment: attachment,
             }),
         {
             onSuccess: (data, variables) => {

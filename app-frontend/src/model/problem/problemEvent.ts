@@ -4,7 +4,3 @@ export interface ProblemEvent extends Auditable {
     id: number,
     message: string,
 }
-
-export interface ProblemEventSave {
-    message: string,
-}

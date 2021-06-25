@@ -1,7 +1,8 @@
 import apiAxios from "../../../config/axios-config";
 import {Pageable} from "../../../model/api/Pageable";
 import {Problem} from "../../../model/problem/problem";
-import {ProblemEvent, ProblemEventSave} from "../../../model/problem/problemEvent";
+import {ProblemEvent} from "../../../model/problem/problemEvent";
+import {ProblemEventSave} from "../../../model/problem/problemEventSave";
 import {ProblemState} from "../../../model/problem/problemState";
 import {API_PROBLEM_ROOT_PATH} from "../../ApiPaths";
 
@@ -24,8 +25,14 @@ class ProblemMasterService {
     }
 
     static addProblemEvent(problemId: number, problemEventSave: ProblemEventSave) {
-        return apiAxios.post<ProblemEvent>(`${API_PROBLEM_ROOT_PATH}/${problemId}/events`,
-            problemEventSave).then(response => response.data);
+        const formData = new FormData();
+        formData.append('message', problemEventSave.message);
+        if (problemEventSave.attachment) {
+            formData.append('attachment', problemEventSave.attachment);
+        }
+        return apiAxios
+            .post<ProblemEvent>(`${API_PROBLEM_ROOT_PATH}/${problemId}/events`, formData)
+            .then(response => response.data);
     }
 
     static initialApprovalOfProblem(problemId: number) {
