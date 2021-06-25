@@ -8,6 +8,13 @@ public class ApiException extends RuntimeException {
     private final String enMessage;
     private final String faMessage;
 
+    public ApiException(HttpStatus statusCode, String enMessage, String faMessage, Throwable throwable) {
+        super(throwable.getMessage());
+        this.statusCode = statusCode;
+        this.enMessage = enMessage;
+        this.faMessage = faMessage;
+    }
+
     public ApiException(HttpStatus statusCode, String enMessage, String faMessage) {
         super(enMessage);
         this.statusCode = statusCode;

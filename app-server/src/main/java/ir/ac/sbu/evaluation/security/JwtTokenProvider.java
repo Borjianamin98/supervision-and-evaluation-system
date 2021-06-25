@@ -47,15 +47,15 @@ public class JwtTokenProvider {
             ensureCustomClaims(jws);
             return jws.getBody();
         } catch (UnsupportedJwtException e) {
-            throw new InvalidJwtTokenException("Received unsupported JWT in a particular format/configuration.", e);
+            throw new InvalidJwtTokenException("Received unsupported JWT in a particular format/configuration", e);
         } catch (MalformedJwtException e) {
-            throw new InvalidJwtTokenException("Received invalid JWT string.", e);
+            throw new InvalidJwtTokenException("Received invalid JWT string", e);
         } catch (SignatureException e) {
-            throw new InvalidJwtTokenException("Received JWT not match with signature.", e);
+            throw new InvalidJwtTokenException("Received JWT not match with signature", e);
         } catch (ExpiredJwtException e) {
-            throw new InvalidJwtTokenException("Received expired JWT token.", e);
+            throw new InvalidJwtTokenException("Received expired JWT token", e);
         } catch (IllegalArgumentException e) {
-            throw new AssertionError("Received unexpected empty JWT string.", e);
+            throw new AssertionError("Received unexpected empty JWT string", e);
         }
     }
 

@@ -5,4 +5,5 @@ export interface ProblemEvent extends Auditable {
     message: string,
     hasAttachment: boolean,
     attachmentContentType: string,
+    attachmentLink: string,
 }

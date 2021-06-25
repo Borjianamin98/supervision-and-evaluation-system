@@ -26,6 +26,9 @@ public class ProblemEvent extends Auditable {
     @Column(name = "attachment_content_type", nullable = false, updatable = false)
     private String attachmentContentType = "";
 
+    @Column(name = "attachment_extension", nullable = false, updatable = false)
+    private String attachmentExtension = "";
+
     @ManyToOne
     @JoinColumn(name = "problem_id")
     private Problem problem;
@@ -40,11 +43,13 @@ public class ProblemEvent extends Auditable {
             String message,
             Boolean hasAttachment,
             String attachmentContentType,
+            String attachmentExtension,
             Problem problem) {
         super(id, createdBy, createdDate);
         this.message = message;
         this.hasAttachment = hasAttachment != null && hasAttachment;
         this.attachmentContentType = attachmentContentType != null ? attachmentContentType : "";
+        this.attachmentExtension = attachmentExtension != null ? attachmentExtension : "";
         this.problem = problem;
     }
 }

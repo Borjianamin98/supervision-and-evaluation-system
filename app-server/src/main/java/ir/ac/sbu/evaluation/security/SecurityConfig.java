@@ -1,10 +1,7 @@
 package ir.ac.sbu.evaluation.security;
 
-import static ir.ac.sbu.evaluation.security.SecurityRoles.MASTER_ROLE_NAME;
-import static ir.ac.sbu.evaluation.security.SecurityRoles.STUDENT_ROLE_NAME;
-
-import ir.ac.sbu.evaluation.controller.ApiPaths;
 import ir.ac.sbu.evaluation.controller.AuthController;
+import ir.ac.sbu.evaluation.controller.problem.ProblemAuthenticatedController;
 import ir.ac.sbu.evaluation.controller.university.FacultyController;
 import ir.ac.sbu.evaluation.controller.university.UniversityController;
 import ir.ac.sbu.evaluation.controller.user.MasterController;
@@ -66,6 +63,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(UserController.permittedPaths()).permitAll()
                 .antMatchers(StudentController.permittedPaths()).permitAll()
                 .antMatchers(MasterController.permittedPaths()).permitAll()
+
+                // Permitted paths related to download attachments
+                .antMatchers(ProblemAuthenticatedController.permittedPaths()).permitAll()
 
                 .antMatchers("/favicon.ico").permitAll()
                 .antMatchers("/actuator/**").permitAll()

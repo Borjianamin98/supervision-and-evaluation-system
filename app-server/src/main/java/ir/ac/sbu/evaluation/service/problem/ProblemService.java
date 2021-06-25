@@ -1,5 +1,6 @@
 package ir.ac.sbu.evaluation.service.problem;
 
+import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
 import ir.ac.sbu.evaluation.dto.problem.ProblemSaveDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventSaveDto;
@@ -35,6 +36,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -76,7 +79,7 @@ public class ProblemService {
     }
 
     @Transactional
-    public ir.ac.sbu.evaluation.dto.problem.ProblemDto addProblem(long studentUserId, ProblemSaveDto problemSaveDto) {
+    public ProblemDto addProblem(long studentUserId, ProblemSaveDto problemSaveDto) {
         Student student = studentRepository.findById(studentUserId)
                 .orElseThrow(() -> new IllegalArgumentException("Student not found: ID = " + studentUserId));
         Master supervisor = masterRepository.findById(problemSaveDto.getSupervisorId())
@@ -100,12 +103,11 @@ public class ProblemService {
                 .build());
         savedProblem.setMeetSchedule(meetSchedule);
         savedProblem = problemRepository.save(savedProblem);
-        return ir.ac.sbu.evaluation.dto.problem.ProblemDto.from(savedProblem);
+        return ProblemDto.from(savedProblem);
     }
 
     @Transactional
-    public ir.ac.sbu.evaluation.dto.problem.ProblemDto updateProblem(long studentId, long problemId,
-            ProblemSaveDto problemSaveDto) {
+    public ProblemDto updateProblem(long studentId, long problemId, ProblemSaveDto problemSaveDto) {
         Problem problem = getProblem(problemId);
         if (problem.getStudent().getId() != studentId) {
             throw new IllegalResourceAccessException("Problem is not belong to student: " + studentId);
@@ -120,11 +122,11 @@ public class ProblemService {
         problem.setConsiderations(problemSaveDto.getConsiderations());
         problem.getEvents().add(problemEventRepository.save(
                 ProblemEvent.builder().message("اطلاعات مربوط به مسئله ویرایش شد.").build()));
-        return ir.ac.sbu.evaluation.dto.problem.ProblemDto.from(problemRepository.save(problem));
+        return ProblemDto.from(problemRepository.save(problem));
     }
 
     @Transactional
-    public ir.ac.sbu.evaluation.dto.problem.ProblemDto abandonProblem(long userId, long problemId) {
+    public ProblemDto abandonProblem(long userId, long problemId) {
         Problem problem = getProblem(problemId);
         if (problem.getStudent().getId() != userId && problem.getSupervisor().getId() != userId) {
             throw new IllegalResourceAccessException(
@@ -134,11 +136,11 @@ public class ProblemService {
         problem.setState(ProblemState.ABANDONED);
         problem.getEvents().add(problemEventRepository.save(
                 ProblemEvent.builder().message("مسئله به وضعیت لغو شده تغییر کرد.").build()));
-        return ir.ac.sbu.evaluation.dto.problem.ProblemDto.from(problemRepository.save(problem));
+        return ProblemDto.from(problemRepository.save(problem));
     }
 
     @Transactional
-    public ir.ac.sbu.evaluation.dto.problem.ProblemDto initialApprovalOfProblem(long userId, long problemId) {
+    public ProblemDto initialApprovalOfProblem(long userId, long problemId) {
         Problem problem = getProblem(problemId);
         if (problem.getSupervisor().getId() != userId) {
             throw new IllegalResourceAccessException(
@@ -149,31 +151,31 @@ public class ProblemService {
         ProblemEvent savedProblemEvent = problemEventRepository.save(ProblemEvent.builder()
                 .message("مسئله تایید اولیه شد.").problem(problem).build());
         problem.getEvents().add(savedProblemEvent);
-        return ir.ac.sbu.evaluation.dto.problem.ProblemDto.from(problemRepository.save(problem));
+        return ProblemDto.from(problemRepository.save(problem));
     }
 
-    public ir.ac.sbu.evaluation.dto.problem.ProblemDto retrieveProblem(long userId, long problemId) {
+    public ProblemDto retrieveProblem(long userId, long problemId) {
         Problem problem = getProblem(problemId);
         checkUserAccessProblem(userId, problem);
-        return ir.ac.sbu.evaluation.dto.problem.ProblemDto.from(problem);
+        return ProblemDto.from(problem);
     }
 
-    public Page<ir.ac.sbu.evaluation.dto.problem.ProblemDto> retrieveProblemsOfStudents(long studentUserId,
+    public Page<ProblemDto> retrieveProblemsOfStudents(long studentUserId,
             ProblemState problemState,
             Pageable pageable) {
         return problemRepository.findAllByStudentIdAndState(studentUserId, problemState, pageable)
-                .map(ir.ac.sbu.evaluation.dto.problem.ProblemDto::from);
+                .map(ProblemDto::from);
     }
 
-    public Page<ir.ac.sbu.evaluation.dto.problem.ProblemDto> retrieveMasterAssignedProblems(long masterUserId,
+    public Page<ProblemDto> retrieveMasterAssignedProblems(long masterUserId,
             ProblemState problemState,
             Pageable pageable) {
         return problemRepository
                 .findAllAssignedForMasterAndState(masterUserId, problemState, pageable)
-                .map(ir.ac.sbu.evaluation.dto.problem.ProblemDto::from);
+                .map(ProblemDto::from);
     }
 
-    @Transactional()
+    @Transactional
     public ProblemEventDto addProblemEvent(long userId, long problemId, ProblemEventSaveDto problemEventSaveDto) {
         Problem problem = getProblem(problemId);
         checkUserAccessProblem(userId, problem);
@@ -194,18 +196,22 @@ public class ProblemService {
 
         ProblemEvent problemEvent = problemEventSaveDto.toProblemEvent();
         problemEvent.setProblem(problem);
-        problemEvent.setHasAttachment(attachment != null);
-        problemEvent.setAttachmentContentType(attachment != null ? attachment.getContentType() : "");
-        ProblemEvent savedProblemEvent = problemEventRepository.save(problemEvent);
-
         if (attachment != null) {
             String attachmentFilename = attachment.getOriginalFilename();
             String attachmentExtension = "";
             if (attachmentFilename != null && !attachmentFilename.isEmpty()) {
                 attachmentExtension = attachmentFilename.substring(attachmentFilename.lastIndexOf(".") + 1);
             }
+            problemEvent.setHasAttachment(true);
+            problemEvent.setAttachmentContentType(attachment.getContentType());
+            problemEvent.setAttachmentExtension(attachmentExtension);
+        }
+        ProblemEvent savedProblemEvent = problemEventRepository.save(problemEvent);
+
+        if (attachment != null) {
             try {
-                Files.write(Paths.get(problemEventDirectory, problemEvent.getId() + "." + attachmentExtension),
+                Files.write(Paths.get(problemEventDirectory,
+                        problemEvent.getId() + "." + savedProblemEvent.getAttachmentExtension()),
                         attachment.getBytes());
             } catch (IOException e) {
                 throw new ResourceConflictException("Unable to store received attachment",
@@ -215,6 +221,31 @@ public class ProblemService {
         }
 
         return ProblemEventDto.from(savedProblemEvent);
+    }
+
+    public ResponseEntity<byte[]> getProblemEventAttachment(long userId, long problemId, long problemEventId) {
+        Problem problem = getProblem(problemId);
+        ProblemEvent problemEvent = getProblemEvent(problemEventId);
+        checkUserAccessProblem(userId, problem);
+
+        if (problemEvent.getProblem().getId() != problemId) {
+            throw new IllegalArgumentException("Problem event requested is not related to problem: "
+                    + "Problem ID = " + problemId + " Problem event ID = " + problemEventId);
+        }
+        if (!problemEvent.getHasAttachment()) {
+            throw new IllegalResourceAccessException("There is no attachment for requested problem event: "
+                    + "Problem event ID = " + problemEventId);
+        }
+
+        try {
+            byte[] bytes = Files.readAllBytes(Paths.get(problemEventDirectory,
+                    problemEvent.getId() + "." + problemEvent.getAttachmentExtension()));
+            return ResponseEntity.status(HttpStatus.OK).body(bytes);
+        } catch (IOException e) {
+            throw new ResourceConflictException("Unable to retrieve attachment",
+                    "در دریافت فایل از سرور خطایی رخ داده است. دوباره تلاش نمایید. در صورت تداوم مشکل، با مسئول "
+                            + "مربوطه تماس بگیرید.");
+        }
     }
 
     public Page<ProblemEventDto> retrieveProblemEvents(long userId, long problemId, Pageable pageable) {
@@ -233,7 +264,7 @@ public class ProblemService {
     }
 
     @Transactional
-    public ir.ac.sbu.evaluation.dto.problem.ProblemDto addReferee(long userId, long problemId, long refereeId) {
+    public ProblemDto addReferee(long userId, long problemId, long refereeId) {
         Problem problem = getProblem(problemId);
         checkUserAccessProblem(userId, problem, Collections.singletonList(SecurityRoles.MASTER_ROLE_NAME));
         if (problem.getSupervisor().getId() != userId) {
@@ -258,11 +289,11 @@ public class ProblemService {
                 .message(message).problem(problem).build());
         problem.getEvents().add(savedProblemEvent);
 
-        return ir.ac.sbu.evaluation.dto.problem.ProblemDto.from(savedProblem);
+        return ProblemDto.from(savedProblem);
     }
 
     @Transactional
-    public ir.ac.sbu.evaluation.dto.problem.ProblemDto deleteReferee(long userId, long problemId, long refereeId,
+    public ProblemDto deleteReferee(long userId, long problemId, long refereeId,
             boolean forceToRemove) {
         Problem problem = getProblem(problemId);
         checkUserAccessProblem(userId, problem, Collections.singletonList(SecurityRoles.MASTER_ROLE_NAME));
@@ -305,7 +336,7 @@ public class ProblemService {
                 .message(message).problem(problem).build());
         problem.getEvents().add(savedProblemEvent);
 
-        return ir.ac.sbu.evaluation.dto.problem.ProblemDto.from(problemRepository.save(problem));
+        return ProblemDto.from(problemRepository.save(problem));
     }
 
     private void checkUserAccessProblem(long userId, Problem problem) {
@@ -329,5 +360,10 @@ public class ProblemService {
     private Problem getProblem(long problemId) {
         return problemRepository.findById(problemId)
                 .orElseThrow(() -> new ResourceNotFoundException("Problem not found: ID = " + problemId));
+    }
+
+    private ProblemEvent getProblemEvent(long problemEventId) {
+        return problemEventRepository.findById(problemEventId)
+                .orElseThrow(() -> new ResourceNotFoundException("Problem event not found: ID = " + problemEventId));
     }
 }
