@@ -25,17 +25,25 @@ spring:
       hibernate:
         format_sql: false # TODO: Added for debug purpose and should be disabled
 
+  servlet:
+    multipart:
+      max-file-size: 8MB
+      max-request-size: 10MB
+
   # To redirect the exception to our advice (ResponseEntityExceptionHandler) instead of DefaultHandlerExceptionResolver
   mvc.throw-exception-if-no-handler-found: true
   web.resources.add-mappings: false
 
-# logging.level.org.hibernate.SQL: DEBUG
-# logging.level.org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-
 # Application configurations
+
 # JWT configurations
 jwt:
   secret: SecretJwtString
   # TODO: Decrease it to 900 (15 minutes) after ready for deployment
   access-token-expiration-seconds: 3600 # 15 minutes
   refresh-token-expiration-seconds: 604800 # 1 week
+
+# Local data file paths
+local-paths:
+  root-directory: data
+  problem-events: problemEvents

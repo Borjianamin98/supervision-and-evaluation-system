@@ -17,6 +17,9 @@ target/
 *.iml
 *.ipr
 
+# Application data
+/data
+
 # VS Code
 .vscode/
 

@@ -123,6 +123,7 @@ public class DataLoader implements CommandLineRunner {
         prepareUniversities();
         prepareUsers();
 
+        setSpringSecurityAuthentication(aminStudent);
         ProblemDto problem1 = problemService.addProblem(aminStudent.getId(), ProblemSaveDto.builder()
                 .education(Education.BACHELOR)
                 .title("سامانه ارزیابی و نظارت یکپارچه")
@@ -174,6 +175,7 @@ public class DataLoader implements CommandLineRunner {
                 .supervisorId(mojtabaMaster.getId())
                 .build());
 
+        setSpringSecurityAuthentication(mojtabaMaster);
         problemService.initialApprovalOfProblem(mojtabaMaster.getId(), problem3.getId());
         problemService.initialApprovalOfProblem(mojtabaMaster.getId(), problem4.getId());
 

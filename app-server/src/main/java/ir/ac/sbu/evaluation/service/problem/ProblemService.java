@@ -5,6 +5,7 @@ import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventSaveDto;
 import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleDto;
 import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
+import ir.ac.sbu.evaluation.exception.InitializationFailureException;
 import ir.ac.sbu.evaluation.exception.PayloadTooLargeException;
 import ir.ac.sbu.evaluation.exception.ResourceConflictException;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
@@ -31,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -48,17 +50,29 @@ public class ProblemService {
     private final MeetScheduleRepository meetScheduleRepository;
     private final ScheduleEventRepository scheduleEventRepository;
 
+    private final String problemEventDirectory;
+
     public ProblemService(StudentRepository studentRepository,
             MasterRepository masterRepository, ProblemRepository problemRepository,
             ProblemEventRepository problemEventRepository,
             MeetScheduleRepository meetScheduleRepository,
-            ScheduleEventRepository scheduleEventRepository) {
+            ScheduleEventRepository scheduleEventRepository,
+            @Value("${local-paths.root-directory}") String rootDirectory,
+            @Value("${local-paths.problem-events}") String problemEventDirectory)
+            throws InitializationFailureException {
         this.studentRepository = studentRepository;
         this.masterRepository = masterRepository;
         this.problemRepository = problemRepository;
         this.problemEventRepository = problemEventRepository;
         this.meetScheduleRepository = meetScheduleRepository;
         this.scheduleEventRepository = scheduleEventRepository;
+
+        this.problemEventDirectory = rootDirectory + "/" + problemEventDirectory;
+        try {
+            Files.createDirectories(Paths.get(this.problemEventDirectory));
+        } catch (IOException e) {
+            throw new InitializationFailureException("Unable to create problem event root directory", e);
+        }
     }
 
     @Transactional
@@ -159,7 +173,7 @@ public class ProblemService {
                 .map(ir.ac.sbu.evaluation.dto.problem.ProblemDto::from);
     }
 
-    @Transactional
+    @Transactional()
     public ProblemEventDto addProblemEvent(long userId, long problemId, ProblemEventSaveDto problemEventSaveDto) {
         Problem problem = getProblem(problemId);
         checkUserAccessProblem(userId, problem);
@@ -171,24 +185,35 @@ public class ProblemService {
 
         MultipartFile attachment = problemEventSaveDto.getAttachment();
         if (attachment != null) {
-            if (attachment.getSize() >= 5 * 1024 * 1024) {
+            if (attachment.getSize() > 5 * 1024 * 1024) {
                 throw new PayloadTooLargeException(
                         "Attachment file is too much large: " + attachment.getName() + " bytes",
-                        "فایل ارسالی از حجم مجاز 5 مگابایت بیش‌تر می‌باشد.");
-            }
-            try {
-                Files.write(Paths.get(""), attachment.getBytes());
-            } catch (IOException e) {
-                throw new ResourceConflictException("Unable to store attachment: " + attachment.getName(),
-                        "در دریافت فایل ارسالی خطا رخ داده است. دوباره تلاش نمایید. در صورت تداوم مشکل، با مسئول "
-                                + "مربوطه تماس بگیرید.");
+                        "فایل ارسالی از حجم مجاز ۵ مگابایت بیش‌تر می‌باشد.");
             }
         }
 
         ProblemEvent problemEvent = problemEventSaveDto.toProblemEvent();
         problemEvent.setProblem(problem);
         problemEvent.setHasAttachment(attachment != null);
+        problemEvent.setAttachmentContentType(attachment != null ? attachment.getContentType() : "");
         ProblemEvent savedProblemEvent = problemEventRepository.save(problemEvent);
+
+        if (attachment != null) {
+            String attachmentFilename = attachment.getOriginalFilename();
+            String attachmentExtension = "";
+            if (attachmentFilename != null && !attachmentFilename.isEmpty()) {
+                attachmentExtension = attachmentFilename.substring(attachmentFilename.lastIndexOf(".") + 1);
+            }
+            try {
+                Files.write(Paths.get(problemEventDirectory, problemEvent.getId() + "." + attachmentExtension),
+                        attachment.getBytes());
+            } catch (IOException e) {
+                throw new ResourceConflictException("Unable to store received attachment",
+                        "در دریافت فایل ارسالی خطا رخ داده است. دوباره تلاش نمایید. در صورت تداوم مشکل، با مسئول "
+                                + "مربوطه تماس بگیرید.");
+            }
+        }
+
         return ProblemEventDto.from(savedProblemEvent);
     }
 

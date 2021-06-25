@@ -16,6 +16,7 @@ import InputFileIconButton from "../../../components/Input/InputFileIconButton";
 import CustomTextField from "../../../components/Text/CustomTextField";
 import CustomTypography from "../../../components/Typography/CustomTypography";
 import {generalErrorHandler} from "../../../config/axios-config";
+import {ApiError} from "../../../model/api/ApiError";
 import AuthenticationService from "../../../services/api/AuthenticationService";
 import ProblemMasterService from "../../../services/api/problem/ProblemMasterService";
 import LocaleUtils from "../../../utility/LocaleUtils";
@@ -45,7 +46,13 @@ const ProblemAddEvent: React.FunctionComponent<ProblemAddEventProps> = (props) =
                     queryClient.refetchQueries(["problemEvents", variables.problemId])
                 ]).then(() => enqueueSnackbar(`نظر جدید با موفقیت ثبت شد.`, {variant: "success"}))
             },
-            onError: (error: AxiosError) => generalErrorHandler(error, enqueueSnackbar),
+            onError: (error: AxiosError<ApiError>) => {
+                if (error.response && (error.response.status === 413 || error.response.status === 409)) {
+                    enqueueSnackbar(error.response.data.faMessage, {variant: "error"});
+                } else {
+                    generalErrorHandler(error, enqueueSnackbar);
+                }
+            }
         });
 
     const [content, setContent] = React.useState("");
@@ -83,7 +90,7 @@ const ProblemAddEvent: React.FunctionComponent<ProblemAddEventProps> = (props) =
                     {
                         content: "تایید",
                         name: "confirm",
-                        disabled: content.length === 0,
+                        disabled: content.length === 0 || (attachment != null && attachment.size > 5 * 1024 * 1024),
                     },
                 ]}
             >
@@ -118,8 +125,13 @@ const ProblemAddEvent: React.FunctionComponent<ProblemAddEventProps> = (props) =
                                 {`نام پیوست: ${attachment.name}`}
                             </CustomTypography>
                             <CustomTypography lineHeight={2}>
-                                {`اندازه پیوست: ${LocaleUtils.convertFileSizeToPersian(attachment.size)}`}
+                                {`حجم پیوست: ${LocaleUtils.convertFileSizeToPersian(attachment.size)}`}
                             </CustomTypography>
+                            {
+                                attachment.size > 5 * 1024 * 1024 && <CustomTypography lineHeight={2} color={"error"}>
+                                    اندازه‌ی فایل پیوست باید کمتر از ۵ مگابایت باشد.
+                                </CustomTypography>
+                            }
                         </CardContent>
                         <CardActions>
                             <Button
