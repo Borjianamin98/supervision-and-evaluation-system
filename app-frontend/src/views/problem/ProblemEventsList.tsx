@@ -53,6 +53,10 @@ const ProblemEventsList: React.FunctionComponent<ProblemEventListProps> = (props
                 subheader={roleMapToPersian(event.createdByRole)}
                 body={event.message}
                 date={event.createdDate}
+                hasAttachment={event.hasAttachment}
+                onAttachmentClick={() => {
+
+                }}
             />
         </Box>
     )

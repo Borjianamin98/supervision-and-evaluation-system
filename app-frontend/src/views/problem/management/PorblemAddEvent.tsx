@@ -4,7 +4,7 @@ import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import {ThemeProvider} from "@material-ui/core/styles";
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import AttachFileIcon from '@material-ui/icons/AttachFile';
 import DeleteIcon from '@material-ui/icons/Delete';
 import {AxiosError} from "axios";
 import {useSnackbar} from "notistack";
@@ -25,11 +25,12 @@ interface ProblemAddEventProps {
     open: boolean,
     problemId: number,
     onClose: () => void,
+    attachmentAllowed: boolean,
 }
 
 const ProblemAddEvent: React.FunctionComponent<ProblemAddEventProps> = (props) => {
     const {enqueueSnackbar} = useSnackbar();
-    const {open, problemId, onClose} = props;
+    const {open, problemId, onClose, attachmentAllowed} = props;
 
     const jwtPayloadRole = AuthenticationService.getJwtPayloadRole()!;
     const queryClient = useQueryClient();
@@ -103,7 +104,11 @@ const ProblemAddEvent: React.FunctionComponent<ProblemAddEventProps> = (props) =
                     rows={6}
                     maxLength={1000}
                 />
-                <Box display={attachment ? "none" : "flex"} flexDirection={"row"} alignItems={"center"}>
+                <Box
+                    display={attachment || !attachmentAllowed ? "none" : "flex"}
+                    flexDirection={"row"}
+                    alignItems={"center"}
+                >
                     <InputFileIconButton
                         onFileChange={file => setAttachment(file)}
                         accept={"*/*"}
@@ -112,14 +117,14 @@ const ProblemAddEvent: React.FunctionComponent<ProblemAddEventProps> = (props) =
                             component={"span"}
                             variant="contained"
                             color="primary"
-                            startIcon={<CloudUploadIcon/>}
+                            startIcon={<AttachFileIcon/>}
                         >
-                            بارگزاری
+                            افزودن فایل پیوست
                         </Button>
                     </InputFileIconButton>
                 </Box>
                 {
-                    attachment && <Card>
+                    attachmentAllowed && attachment && <Card>
                         <CardContent>
                             <CustomTypography lineHeight={2} noWrap={true}>
                                 {`نام پیوست: ${attachment.name}`}
@@ -151,7 +156,3 @@ const ProblemAddEvent: React.FunctionComponent<ProblemAddEventProps> = (props) =
 }
 
 export default ProblemAddEvent;
-
-function convertFileSizeToPersian(size: number) {
-    throw new Error("Function not implemented.");
-}

@@ -1,7 +1,8 @@
-import {Box, Card, CardActions, CardContent, CardHeader, CardProps} from "@material-ui/core";
+import {Box, Card, CardActions, CardContent, CardHeader, CardProps, IconButton} from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
+import AttachFileIcon from '@material-ui/icons/AttachFile';
 import moment from "jalali-moment";
 import React from 'react';
 
@@ -26,18 +27,32 @@ interface ProblemEventCardProps extends CardProps {
     title: string,
     subheader: string,
     body: string,
-    date?: string
+    date: string,
+
+    hasAttachment: boolean,
+    onAttachmentClick: () => void,
 }
 
 const ProblemEventCard: React.FunctionComponent<ProblemEventCardProps> = (props) => {
     const classes = useStyles();
-    const {title, subheader, body, date, ...rest} = props;
+    const {title, subheader, body, date, hasAttachment, onAttachmentClick, ...rest} = props;
 
     return (
         <Card variant="outlined" {...rest} className={classes.root}>
             <CardHeader
                 avatar={
                     <Avatar src={""} className={classes.avatar}/>
+                }
+                action={
+                    hasAttachment ? (
+                        <IconButton
+                            color={"primary"}
+                            aria-label="attachment"
+                            onClick={() => onAttachmentClick()}
+                        >
+                            <AttachFileIcon/>
+                        </IconButton>
+                    ) : undefined
                 }
                 title={title}
                 subheader={subheader}

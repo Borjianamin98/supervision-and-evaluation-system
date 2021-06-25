@@ -293,6 +293,7 @@ const ProblemListView: React.FunctionComponent = () => {
                         open={commentDialogOpen}
                         problemId={commentProblem ? commentProblem.id : 0}
                         onClose={() => setCommentDialogOpen(false)}
+                        attachmentAllowed={false}
                     />
                     <ConfirmDialog
                         open={abandonDialogOpen}

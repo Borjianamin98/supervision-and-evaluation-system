@@ -240,6 +240,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                         open={commentDialogOpen}
                         problemId={problem.id}
                         onClose={() => setCommentDialogOpen(false)}
+                        attachmentAllowed={true}
                     />
                     <SearchableListDialog
                         title={"انتخاب استاد داور"}
