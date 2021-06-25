@@ -22,7 +22,7 @@ class ProblemAuthenticatedService {
                     params: {
                         size: pageSize,
                         page: page,
-                        sortBy: sortBy ? (sortDirection ? `${sortBy},${sortDirection}` : sortBy) : undefined,
+                        sort: sortBy ? (sortDirection ? `${sortBy},${sortDirection}` : sortBy) : undefined,
                     }
                 })
             .then(response => response.data);

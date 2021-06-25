@@ -3,7 +3,6 @@ package ir.ac.sbu.evaluation.repository.problem;
 import ir.ac.sbu.evaluation.dto.report.RefereeReportItemDto;
 import ir.ac.sbu.evaluation.model.problem.Problem;
 import ir.ac.sbu.evaluation.model.problem.ProblemState;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -30,7 +29,8 @@ public interface ProblemRepository extends PagingAndSortingRepository<Problem, L
             + " sum(case when r.id = :masterId then 1 else 0 end)) " +
             "from Problem p left join p.referees r " +
             "where p.state = :state and p.student.faculty.university.name like concat('%',:universityName,'%') " +
-            "group by p.student.faculty.university")
+            "group by p.student.faculty.university " +
+            "order by p.student.faculty.university.name")
     Page<RefereeReportItemDto> masterProblemRefereeReport(
             @Param("masterId") long masterId,
             @Param("state") ProblemState state,

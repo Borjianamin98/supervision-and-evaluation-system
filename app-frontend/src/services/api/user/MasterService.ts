@@ -52,14 +52,13 @@ class MasterService {
                     params: {
                         size: pageSize,
                         page: page,
-                        sortBy: sortBy ? (sortDirection ? `${sortBy},${sortDirection}` : sortBy) : undefined,
+                        sort: sortBy ? (sortDirection ? `${sortBy},${sortDirection}` : sortBy) : undefined,
                     }
                 })
             .then(response => response.data);
     }
 
     static retrieveMasterRefereeReport(masterId: number, pageSize: number, page: number,
-                                       sortBy?: string, sortDirection?: "asc" | "desc",
                                        universityName?: string) {
         return apiAxios
             .get<Pageable<RefereeReportItem>>(`${MasterService.API_MASTER_ROOT_PATH}/${masterId}/refereeReport`,
@@ -67,7 +66,6 @@ class MasterService {
                     params: {
                         size: pageSize,
                         page: page,
-                        sortBy: sortBy ? (sortDirection ? `${sortBy},${sortDirection}` : sortBy) : undefined,
                         universityName: universityName ? universityName : undefined,
                     }
                 })

@@ -110,7 +110,6 @@ public class MasterService {
 
     public Page<RefereeReportItemDto> retrieveMasterRefereeReport(long masterId, String universityName,
             Pageable pageable) {
-        System.out.println(universityName);
         return problemRepository.masterProblemRefereeReport(masterId, ProblemState.COMPLETED, universityName, pageable);
     }
 

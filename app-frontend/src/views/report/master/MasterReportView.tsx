@@ -55,8 +55,7 @@ const MasterReportView: React.FunctionComponent<MasterReportViewProps> = (props)
         data: refereeReportItems,
         ...refereeReportQuery
     } = useQuery(['refereeReport', master.id, universityNameQuery, rowsPerPage, page],
-        () => MasterService.retrieveMasterRefereeReport(master.id, rowsPerPage, page,
-            "universityName", "asc", universityNameQuery), {
+        () => MasterService.retrieveMasterRefereeReport(master.id, rowsPerPage, page, universityNameQuery), {
             keepPreviousData: true
         });
 
