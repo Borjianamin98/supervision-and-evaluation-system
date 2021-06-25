@@ -2,6 +2,7 @@ package ir.ac.sbu.evaluation.controller.user;
 
 import static ir.ac.sbu.evaluation.controller.ApiPaths.API_MASTER_ROOT_PATH;
 
+import ir.ac.sbu.evaluation.dto.report.RefereeReportItemDto;
 import ir.ac.sbu.evaluation.dto.review.peer.AggregatedPeerReviewsDto;
 import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
 import ir.ac.sbu.evaluation.dto.user.master.MasterSaveDto;
@@ -54,7 +55,6 @@ public class MasterController {
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.ADMIN_ROLE_NAME)")
     @GetMapping(path = "/{masterId}")
     public MasterDto retrieveMaster(
-            @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long masterId) {
         return masterService.retrieveMaster(masterId);
     }
@@ -62,10 +62,18 @@ public class MasterController {
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.ADMIN_ROLE_NAME)")
     @GetMapping(path = "/{masterId}/peerReviews")
     public AggregatedPeerReviewsDto retrieveMasterPeerReviews(
-            @ModelAttribute AuthUserDetail authUserDetail,
             @PathVariable long masterId,
             Pageable pageable) {
         return masterService.retrieveMasterPeerReviews(masterId, pageable);
+    }
+
+    @PreAuthorize("hasAnyAuthority(@SecurityRoles.ADMIN_ROLE_NAME)")
+    @GetMapping(path = "/{masterId}/refereeReport")
+    public Page<RefereeReportItemDto> retrieveMasterRefereeReport(
+            @ModelAttribute AuthUserDetail authUserDetail,
+            @PathVariable long masterId,
+            Pageable pageable) {
+        return masterService.retrieveMasterRefereeReport(masterId, pageable);
     }
 
     @PostMapping(path = API_MASTER_REGISTER_PATH)

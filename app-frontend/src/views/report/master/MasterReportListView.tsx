@@ -1,9 +1,7 @@
 import Grid from "@material-ui/core/Grid";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import Paper from "@material-ui/core/Paper";
 import {makeStyles, ThemeProvider} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import SearchIcon from '@material-ui/icons/Search';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import React, {useState} from 'react';
 import {useQuery, useQueryClient} from "react-query";
@@ -11,7 +9,7 @@ import {rtlTheme} from "../../../App";
 import ExtendedTableRow from "../../../components/Table/ExtendedTableRow";
 import {OptionalTableCellProps} from "../../../components/Table/OptionalTableCell";
 import StatelessPaginationTable from "../../../components/Table/StatelessPaginationTable";
-import CustomTextField from "../../../components/Text/CustomTextField";
+import SearchTextField from "../../../components/Text/SearchTextField";
 import browserHistory from "../../../config/browserHistory";
 import {toLoadingState} from "../../../model/enum/loadingState";
 import {Master} from "../../../model/user/master/Master";
@@ -57,14 +55,9 @@ const MasterReportListView: React.FunctionComponent = () => {
                         </Typography>
                     </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.gridItem}>
-                        <CustomTextField
-                            variant="outlined"
-                            label="جستجو"
+                        <SearchTextField
                             value={masterNameQuery}
                             onChange={event => setMasterNameQuery(event.target.value)}
-                            InputProps={{
-                                startAdornment: <InputAdornment position="start"><SearchIcon/></InputAdornment>,
-                            }}
                         />
                     </Grid>
                 </Grid>

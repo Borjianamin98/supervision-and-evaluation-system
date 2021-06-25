@@ -1,4 +1,4 @@
-package ir.ac.sbu.evaluation.model.review;
+package ir.ac.sbu.evaluation.dto.report;
 
 import java.util.Objects;
 import lombok.Builder;
@@ -7,13 +7,13 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ScoreCount {
+public class ScoreCountDto {
 
     private int score;
     private long count;
 
     @Builder
-    public ScoreCount(int score, long count) {
+    public ScoreCountDto(int score, long count) {
         this.score = score;
         this.count = count;
     }
@@ -26,7 +26,7 @@ public class ScoreCount {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ScoreCount that = (ScoreCount) o;
+        ScoreCountDto that = (ScoreCountDto) o;
         return score == that.score && count == that.count;
     }
 

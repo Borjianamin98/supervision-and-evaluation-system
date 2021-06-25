@@ -1,14 +1,17 @@
 package ir.ac.sbu.evaluation.service.user;
 
+import ir.ac.sbu.evaluation.dto.report.RefereeReportItemDto;
+import ir.ac.sbu.evaluation.dto.report.ScoreCountDto;
 import ir.ac.sbu.evaluation.dto.review.peer.AggregatedPeerReviewsDto;
 import ir.ac.sbu.evaluation.dto.review.peer.PeerReviewDto;
 import ir.ac.sbu.evaluation.dto.user.master.MasterDto;
 import ir.ac.sbu.evaluation.dto.user.master.MasterSaveDto;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
-import ir.ac.sbu.evaluation.model.review.ScoreCount;
+import ir.ac.sbu.evaluation.model.problem.ProblemState;
 import ir.ac.sbu.evaluation.model.university.Faculty;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.PersonalInfo;
+import ir.ac.sbu.evaluation.repository.problem.ProblemRepository;
 import ir.ac.sbu.evaluation.repository.review.PeerReviewRepository;
 import ir.ac.sbu.evaluation.repository.university.FacultyRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
@@ -17,7 +20,6 @@ import ir.ac.sbu.evaluation.repository.user.UserRepository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalDouble;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,19 +37,22 @@ public class MasterService {
     private final FacultyRepository facultyRepository;
 
     private final PeerReviewRepository peerReviewRepository;
+    private final ProblemRepository problemRepository;
 
     public MasterService(PasswordEncoder passwordEncoder,
             UserRepository userRepository,
             PersonalInfoRepository personalInfoRepository,
             MasterRepository masterRepository,
             FacultyRepository facultyRepository,
-            PeerReviewRepository peerReviewRepository) {
+            PeerReviewRepository peerReviewRepository,
+            ProblemRepository problemRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.personalInfoRepository = personalInfoRepository;
         this.masterRepository = masterRepository;
         this.facultyRepository = facultyRepository;
         this.peerReviewRepository = peerReviewRepository;
+        this.problemRepository = problemRepository;
     }
 
     public Page<MasterDto> retrieveMasters(String nameQuery, Pageable pageable) {
@@ -78,26 +83,33 @@ public class MasterService {
         return MasterDto.from(getMaster(userId));
     }
 
+
     public AggregatedPeerReviewsDto retrieveMasterPeerReviews(long masterId, Pageable pageable) {
         Page<PeerReviewDto> peerReviews = peerReviewRepository.findAllByReviewedId(masterId, pageable)
                 .map(PeerReviewDto::from);
 
-        List<ScoreCount> scoreCounts = peerReviewRepository.findAggregatedReviewScoresByReviewedId(masterId);
+        List<ScoreCountDto> scoreCounts = peerReviewRepository.aggregatedReviewScoresByReviewedId(masterId);
         Map<Integer, Long> scoreCountsMapping = new HashMap<>();
         for (int i = 1; i <= 5; i++) {
             // Provide zero value for not available scores.
             scoreCountsMapping.put(i, 0L);
         }
-        for (ScoreCount scoreCount : scoreCounts) {
+        for (ScoreCountDto scoreCount : scoreCounts) {
             scoreCountsMapping.put(scoreCount.getScore(), scoreCount.getCount());
         }
 
-        OptionalDouble averageScore = scoreCounts.stream().mapToLong(s -> s.getScore() * s.getCount()).average();
+        long sumScore = scoreCounts.stream().mapToLong(s -> s.getScore() * s.getCount()).sum();
+        long totalScores = scoreCounts.stream().mapToLong(ScoreCountDto::getCount).sum();
+        double averageScore = totalScores == 0 ? 0.0 : sumScore * 1.0 / totalScores;
         return AggregatedPeerReviewsDto.builder()
-                .averageScore(averageScore.isPresent() ? averageScore.getAsDouble() : 0.0)
+                .averageScore(averageScore)
                 .scoresCount(scoreCountsMapping)
                 .peerReviews(peerReviews)
                 .build();
+    }
+
+    public Page<RefereeReportItemDto> retrieveMasterRefereeReport(long masterId, Pageable pageable) {
+        return problemRepository.masterProblemRefereeReport(masterId, ProblemState.COMPLETED, pageable);
     }
 
     public Master getMaster(long userId) {

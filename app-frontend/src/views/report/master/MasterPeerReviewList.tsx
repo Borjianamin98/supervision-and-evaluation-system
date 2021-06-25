@@ -69,7 +69,7 @@ const MasterPeerReviewList: React.FunctionComponent<MasterPeerReviewListProps> =
 
     const peerReviews = aggregatedPeerReviews.peerReviews;
     if (peerReviews.totalElements === 0) {
-        return <CustomAlert severity="info">هیچ نظری تاککنون برای استاد ثبت نشده است..</CustomAlert>;
+        return <CustomAlert severity="info">هیچ نظری تاکنون برای استاد ثبت نشده است.</CustomAlert>;
     }
 
     return (
@@ -81,10 +81,12 @@ const MasterPeerReviewList: React.FunctionComponent<MasterPeerReviewListProps> =
                             <GradeIcon/>
                         </Avatar>
                         <CustomTypography>
-                            {LocaleUtils.convertToPersianDigits(aggregatedPeerReviews.averageScore.toString())}
+                            {`امتیاز ${LocaleUtils.convertToPersianDigits(
+                                aggregatedPeerReviews.averageScore.toFixed(2).toString())}`}
                         </CustomTypography>
                         <CustomTypography>
-                            {`از مجموع ${LocaleUtils.convertToPersianDigits(peerReviews.totalElements.toString())} نظر`}
+                            {`از مجموع ${LocaleUtils.convertToPersianDigits(
+                                peerReviews.totalElements.toString())} نظر`}
                         </CustomTypography>
                     </CenterBox>
                 </Grid>

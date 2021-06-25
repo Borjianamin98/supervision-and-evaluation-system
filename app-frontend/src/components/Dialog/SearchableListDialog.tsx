@@ -5,15 +5,13 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import ListItem from "@material-ui/core/ListItem";
 import {makeStyles, useTheme} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import SearchIcon from '@material-ui/icons/Search';
 import React from 'react';
 import {useQuery} from "react-query";
 import {FixedSizeList, ListChildComponentProps} from "react-window";
-import CustomTextField from "../Text/CustomTextField";
+import SearchTextField from "../Text/SearchTextField";
 
 const useStyles = makeStyles((theme) => ({
     justifyAlign: {
@@ -111,15 +109,10 @@ function SearchableListDialog<T>(props: SearchableListDialogProps<T>) {
                     {description}
                 </DialogContentText>
                 <Box marginBottom={2}>
-                    <CustomTextField
-                        variant="outlined"
+                    <SearchTextField
                         textDir={theme.direction}
-                        label="جستجو"
                         value={searchContent}
                         onChange={event => setSearchContent(event.target.value)}
-                        InputProps={{
-                            startAdornment: <InputAdornment position="start"><SearchIcon/></InputAdornment>,
-                        }}
                     />
                 </Box>
                 {viewContent}

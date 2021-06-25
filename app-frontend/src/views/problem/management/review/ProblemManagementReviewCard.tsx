@@ -46,7 +46,7 @@ const ProblemManagementReviewCard: React.FunctionComponent<ProblemManagementRevi
                 if (problem.state === ProblemState.COMPLETED) {
                     return [
                         `نمره‌ی نهایی پایان‌نامه (پروژه) به تایید استاد راهنما، 
-                        ${LocaleUtils.convertToPersianDigits(problem.finalGrade.toString())}
+                        ${LocaleUtils.convertToPersianDigits(problem.finalGrade.toFixed(2).toString())}
                          می‌باشد.`
                     ]
                 } else {

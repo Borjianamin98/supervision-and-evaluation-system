@@ -3,8 +3,8 @@ package ir.ac.sbu.evaluation.bootstrap;
 import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
 import ir.ac.sbu.evaluation.dto.problem.ProblemSaveDto;
 import ir.ac.sbu.evaluation.dto.problem.event.ProblemEventSaveDto;
-import ir.ac.sbu.evaluation.dto.review.peer.PeerReviewSaveDto;
 import ir.ac.sbu.evaluation.dto.review.ProblemReviewSaveDto;
+import ir.ac.sbu.evaluation.dto.review.peer.PeerReviewSaveDto;
 import ir.ac.sbu.evaluation.dto.schedule.MeetScheduleSaveDto;
 import ir.ac.sbu.evaluation.dto.schedule.event.DateRangeDto;
 import ir.ac.sbu.evaluation.dto.university.UniversityDto;
@@ -43,6 +43,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -51,6 +53,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DataLoader implements CommandLineRunner {
 
+    private static final ThreadLocalRandom random = ThreadLocalRandom.current();
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     private static List<UniversityDto> universities;
@@ -73,6 +76,13 @@ public class DataLoader implements CommandLineRunner {
     private MasterDto hasanMaster;
     private StudentDto aminStudent;
 
+    private final String yesterdayDate;
+    private final String todayDate;
+    private final String tomorrowDate;
+
+    private final Instant twoDayAgo;
+    private final Instant twoDayTomorrow;
+
     public DataLoader(UniversityService universityService,
             FacultyService facultyService,
             AdminService adminService, MasterService masterService,
@@ -88,15 +98,29 @@ public class DataLoader implements CommandLineRunner {
         this.problemService = problemService;
         this.meetScheduleService = meetScheduleService;
         this.reviewService = reviewService;
+
+        Calendar calendar = Calendar.getInstance();
+        yesterdayDate = String.format("%04d-%02d-%02d",
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DAY_OF_MONTH) - 1);
+        todayDate = String.format("%04d-%02d-%02d",
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DAY_OF_MONTH));
+        tomorrowDate = String.format("%04d-%02d-%02d",
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DAY_OF_MONTH) + 1);
+
+        twoDayAgo = DateUtility.getStartOfDay(Instant.now().minus(2, ChronoUnit.DAYS));
+        twoDayTomorrow = DateUtility.getStartOfDay(Instant.now().plus(2, ChronoUnit.DAYS));
     }
 
     @Override
     public void run(String... args) throws ParseException {
         prepareUniversities();
         prepareUsers();
-
-        Instant twoDayAgo = DateUtility.getStartOfDay(Instant.now().minus(2, ChronoUnit.DAYS));
-        Instant threeDayTomorrow = DateUtility.getStartOfDay(Instant.now().plus(2, ChronoUnit.DAYS));
 
         ProblemDto problem1 = problemService.addProblem(aminStudent.getId(), ProblemSaveDto.builder()
                 .education(Education.BACHELOR)
@@ -169,19 +193,6 @@ public class DataLoader implements CommandLineRunner {
                                 + " رفتن به سمت آن بسنجیم تا از درستی آن تا حد خوبی اطمینان پیدا کنیم.")
                 .build());
 
-        Calendar calendar = Calendar.getInstance();
-        String yesterdayDate = String.format("%04d-%02d-%02d",
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH) + 1,
-                calendar.get(Calendar.DAY_OF_MONTH) - 1);
-        String todayDate = String.format("%04d-%02d-%02d",
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH) + 1,
-                calendar.get(Calendar.DAY_OF_MONTH));
-        String tomorrowDate = String.format("%04d-%02d-%02d",
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH) + 1,
-                calendar.get(Calendar.DAY_OF_MONTH) + 1);
         meetScheduleService.addScheduleEvent(sadeghMaster.getId(), problem3.getMeetSchedule().getId(),
                 DateRangeDto.builder()
                         .startDate(dateFormat.parse(String.format("%s 09:00", todayDate)).toInstant())
@@ -225,7 +236,7 @@ public class DataLoader implements CommandLineRunner {
                 MeetScheduleSaveDto.builder()
                         .durationMinutes(30)
                         .minimumDate(twoDayAgo)
-                        .maximumDate(threeDayTomorrow)
+                        .maximumDate(twoDayTomorrow)
                         .build());
         for (UserDto user : Arrays.asList(sadeghMaster, aminStudent, mojtabaMaster, mahmoudMaster)) {
             meetScheduleService.addScheduleEvent(user.getId(), problem4.getMeetSchedule().getId(),
@@ -250,7 +261,9 @@ public class DataLoader implements CommandLineRunner {
                                 .build(),
                         PeerReviewSaveDto.builder()
                                 .reviewedId(sadeghMaster.getId())
-                                .content("ایشان با مطالعه‌ی قبلی در جلسه‌ی دفاع حضور داشتند و نسبت به مسئله‌ی دانشجو و چالش‌های آن کاملا آگاه بودند.")
+                                .content(
+                                        "ایشان با مطالعه‌ی قبلی در جلسه‌ی دفاع حضور داشتند و نسبت به مسئله‌ی دانشجو و"
+                                                + " چالش‌های آن کاملا آگاه بودند.")
                                 .score(3)
                                 .build(),
                         PeerReviewSaveDto.builder()
@@ -276,6 +289,80 @@ public class DataLoader implements CommandLineRunner {
                                 .build()
                 )))
                 .build());
+
+        // Create some completed problems
+        createCompletedProblem(1, aminStudent, hasanMaster, mojtabaMaster, sadeghMaster);
+        createCompletedProblem(2, aminStudent, hasanMaster, mojtabaMaster, mahmoudMaster);
+        createCompletedProblem(3, aminStudent, hasanMaster, sadeghMaster, mahmoudMaster);
+
+        createCompletedProblem(4, aminStudent, sadeghMaster, mojtabaMaster, hasanMaster);
+        createCompletedProblem(5, aminStudent, sadeghMaster, mojtabaMaster, mahmoudMaster);
+        createCompletedProblem(6, aminStudent, sadeghMaster, hasanMaster, mahmoudMaster);
+
+        createCompletedProblem(7, aminStudent, mojtabaMaster, sadeghMaster, hasanMaster);
+        createCompletedProblem(8, aminStudent, mojtabaMaster, sadeghMaster, mahmoudMaster);
+        createCompletedProblem(9, aminStudent, mojtabaMaster, hasanMaster, mahmoudMaster);
+    }
+
+    private void createCompletedProblem(int number, StudentDto student, MasterDto master,
+            MasterDto referee1, MasterDto referee2) throws ParseException {
+        ProblemDto problem = problemService.addProblem(student.getId(), ProblemSaveDto.builder()
+                .education(Education.BACHELOR)
+                .title("مسئله " + number)
+                .englishTitle("Problem " + number)
+                .keywords(new HashSet<>(Arrays.asList("کلیدواژه 1", "کلیدواژه 2", "کلیدواژه 3")))
+                .definition(
+                        "تعریف مسئله‌ای که باید به عنوان پروژه‌ی دانشجویی بررسی و انجام شود و در عین حال صنعتی باشد.")
+                .history("بیشینه مسئله")
+                .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
+                .supervisorId(master.getId())
+                .build());
+
+        problemService.initialApprovalOfProblem(master.getId(), problem.getId());
+
+        setSpringSecurityAuthentication(master);
+        problemService.addReferee(master.getId(), problem.getId(), referee1.getId());
+        problemService.addReferee(master.getId(), problem.getId(), referee2.getId());
+
+        meetScheduleService.startMeetSchedule(master.getId(), problem.getMeetSchedule().getId(),
+                MeetScheduleSaveDto.builder()
+                        .durationMinutes(60)
+                        .minimumDate(twoDayAgo)
+                        .maximumDate(twoDayTomorrow)
+                        .build());
+        for (UserDto user : Arrays.asList(master, student, referee1, referee2)) {
+            meetScheduleService.addScheduleEvent(user.getId(), problem.getMeetSchedule().getId(), DateRangeDto.builder()
+                    .startDate(dateFormat.parse(String.format("%s %02d:00", yesterdayDate, 8 + number)).toInstant())
+                    .endDate(dateFormat.parse(String.format("%s %02d:00", yesterdayDate, 8 + number + 1)).toInstant())
+                    .build());
+        }
+        meetScheduleService.finalizeMeetSchedule(master.getId(), problem.getMeetSchedule().getId(),
+                dateFormat.parse(String.format("%s %02d:00", yesterdayDate, 8 + number)).toInstant());
+        meetScheduleService.acceptMeetSchedule(master.getId(), problem.getMeetSchedule().getId());
+
+        List<MasterDto> allReferees = Arrays.asList(master, referee1, referee2);
+        for (UserDto user : allReferees) {
+            List<MasterDto> otherReferees = allReferees.stream().filter(u -> u.getId() != user.getId())
+                    .collect(Collectors.toList());
+            setSpringSecurityAuthentication(user);
+            reviewService.reviewProblem(user.getId(), problem.getId(), ProblemReviewSaveDto.builder()
+                    .score(random.nextInt(0, 20 + 1))
+                    .peerReviews(new HashSet<>(Arrays.asList(
+                            PeerReviewSaveDto.builder()
+                                    .reviewedId(otherReferees.get(0).getId())
+                                    .content("خیلی خوب در زمان جلسه دانشجو را مورد بررسی قرار دادند.")
+                                    .score(random.nextInt(1, 5 + 1))
+                                    .build(),
+                            PeerReviewSaveDto.builder()
+                                    .reviewedId(otherReferees.get(1).getId())
+                                    .content("حضور ایشان به موقع و با آمادگی بود.")
+                                    .score(random.nextInt(1, 5 + 1))
+                                    .build()
+                    )))
+                    .build());
+        }
+
+        reviewService.finalizeProblem(master.getId(), problem.getId(), (double) random.nextInt(0, 20 + 1));
     }
 
     private void prepareUsers() {
@@ -284,7 +371,7 @@ public class DataLoader implements CommandLineRunner {
                 .firstName("صادق")
                 .lastName("علی اکبری")
                 .degree("استاد")
-                .username("master")
+                .username("sadegh")
                 .password("pass")
                 .personalInfo(PersonalInfoSaveDto.builder()
                         .gender(Gender.MALE)
@@ -312,7 +399,7 @@ public class DataLoader implements CommandLineRunner {
                 .firstName("محمود")
                 .lastName("نشاطی")
                 .degree("استاد")
-                .username("master3")
+                .username("mahmoud")
                 .password("pass")
                 .personalInfo(PersonalInfoSaveDto.builder()
                         .gender(Gender.MALE)
@@ -326,7 +413,7 @@ public class DataLoader implements CommandLineRunner {
                 .firstName("حسن")
                 .lastName("حقیقی")
                 .degree("استاد")
-                .username("master4")
+                .username("hasan")
                 .password("pass")
                 .personalInfo(PersonalInfoSaveDto.builder()
                         .gender(Gender.MALE)

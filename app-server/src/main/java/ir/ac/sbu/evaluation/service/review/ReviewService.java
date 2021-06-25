@@ -101,7 +101,7 @@ public class ReviewService {
                 .message(String.format(
                         "ارزیابی پایان‌نامه (پروژه) توسط استاد راهنما تایید شد. "
                                 + "نمره نهایی پایان‌نامه (پروژه) دانشجو %s می‌باشد.",
-                        LocaleUtility.convertToPersianDigits(finalGrade.toString())))
+                        LocaleUtility.convertToPersianDigits(String.format("%.2f", finalGrade))))
                 .problem(problem)
                 .build());
 
