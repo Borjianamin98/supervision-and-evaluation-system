@@ -70,10 +70,10 @@ public class MasterController {
     @PreAuthorize("hasAnyAuthority(@SecurityRoles.ADMIN_ROLE_NAME)")
     @GetMapping(path = "/{masterId}/refereeReport")
     public Page<RefereeReportItemDto> retrieveMasterRefereeReport(
-            @ModelAttribute AuthUserDetail authUserDetail,
+            @RequestParam(name = "universityName", required = false, defaultValue = "") String universityName,
             @PathVariable long masterId,
             Pageable pageable) {
-        return masterService.retrieveMasterRefereeReport(masterId, pageable);
+        return masterService.retrieveMasterRefereeReport(masterId, universityName, pageable);
     }
 
     @PostMapping(path = API_MASTER_REGISTER_PATH)

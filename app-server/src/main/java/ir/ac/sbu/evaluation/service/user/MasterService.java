@@ -108,8 +108,10 @@ public class MasterService {
                 .build();
     }
 
-    public Page<RefereeReportItemDto> retrieveMasterRefereeReport(long masterId, Pageable pageable) {
-        return problemRepository.masterProblemRefereeReport(masterId, ProblemState.COMPLETED, pageable);
+    public Page<RefereeReportItemDto> retrieveMasterRefereeReport(long masterId, String universityName,
+            Pageable pageable) {
+        System.out.println(universityName);
+        return problemRepository.masterProblemRefereeReport(masterId, ProblemState.COMPLETED, universityName, pageable);
     }
 
     public Master getMaster(long userId) {

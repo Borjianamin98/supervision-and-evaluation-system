@@ -1,4 +1,14 @@
-import {Avatar, Box, CircularProgress, createStyles, Grid, makeStyles, Theme, useTheme} from "@material-ui/core";
+import {
+    Avatar,
+    Box,
+    CircularProgress,
+    createStyles,
+    Grid,
+    makeStyles,
+    Theme,
+    Typography,
+    useTheme
+} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import GradeIcon from '@material-ui/icons/Grade';
 import {Pagination} from "@material-ui/lab";
@@ -7,7 +17,6 @@ import {useQuery, useQueryClient} from "react-query";
 import CustomAlert from "../../../components/Alert/CustomAlert";
 import CenterBox from "../../../components/Grid/CenterBox";
 import CustomRating from "../../../components/Rating/CustomRating";
-import CustomTypography from "../../../components/Typography/CustomTypography";
 import {PeerReview} from "../../../model/review/peer/PeerReview";
 import MasterService from "../../../services/api/user/MasterService";
 import LocaleUtils from "../../../utility/LocaleUtils";
@@ -20,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
             borderRadius: 5,
             borderColor: theme.palette.info.main,
             boxShadow: "none",
-            padding: theme.spacing(1, 0),
+            padding: theme.spacing(1),
         },
     }),
 );
@@ -75,27 +84,32 @@ const MasterPeerReviewList: React.FunctionComponent<MasterPeerReviewListProps> =
     return (
         <>
             <Grid container alignItems={"center"} className={classes.root}>
-                <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-                    <CenterBox>
+                <Grid item xs={12} sm={6} md={4} lg={4} xl={6}>
+                    <CenterBox paddingY={2}>
                         <Avatar style={{marginBottom: 8, backgroundColor: theme.palette.primary.main}}>
                             <GradeIcon/>
                         </Avatar>
-                        <CustomTypography>
+                        <Typography align={"center"}>
                             {`امتیاز ${LocaleUtils.convertToPersianDigits(
                                 aggregatedPeerReviews.averageScore.toFixed(2).toString())}`}
-                        </CustomTypography>
-                        <CustomTypography>
+                        </Typography>
+                        <Typography align={"center"}>
                             {`از مجموع ${LocaleUtils.convertToPersianDigits(
                                 peerReviews.totalElements.toString())} نظر`}
-                        </CustomTypography>
+                        </Typography>
                     </CenterBox>
                 </Grid>
-                <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
+                <Grid item xs={12} sm={6} md={8} lg={8} xl={6}>
                     {
                         Object.entries(aggregatedPeerReviews.scoresCount)
                             .sort(([key1,], [key2,]) => key1.localeCompare(key2))
                             .map(([score, count]) => {
-                                return <CenterBox flexDirection={"row"} justifyContent={"flex-start"} marginBottom={1}>
+                                return <CenterBox
+                                    key={score}
+                                    flexDirection={"row"}
+                                    // justifyContent={"flex-start"}
+                                    marginBottom={1}
+                                >
                                     <CustomRating
                                         name={`rating-${score}`}
                                         labelPosition={"none"}

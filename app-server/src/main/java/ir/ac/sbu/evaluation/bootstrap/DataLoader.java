@@ -75,13 +75,14 @@ public class DataLoader implements CommandLineRunner {
     private MasterDto mahmoudMaster;
     private MasterDto hasanMaster;
     private StudentDto aminStudent;
+    private StudentDto ahmadStudent;
 
     private final String yesterdayDate;
     private final String todayDate;
     private final String tomorrowDate;
 
-    private final Instant twoDayAgo;
-    private final Instant twoDayTomorrow;
+    private final Instant threeDayAgo;
+    private final Instant threeDayTomorrow;
 
     public DataLoader(UniversityService universityService,
             FacultyService facultyService,
@@ -113,8 +114,8 @@ public class DataLoader implements CommandLineRunner {
                 calendar.get(Calendar.MONTH) + 1,
                 calendar.get(Calendar.DAY_OF_MONTH) + 1);
 
-        twoDayAgo = DateUtility.getStartOfDay(Instant.now().minus(2, ChronoUnit.DAYS));
-        twoDayTomorrow = DateUtility.getStartOfDay(Instant.now().plus(2, ChronoUnit.DAYS));
+        threeDayAgo = DateUtility.getStartOfDay(Instant.now().minus(3, ChronoUnit.DAYS));
+        threeDayTomorrow = DateUtility.getStartOfDay(Instant.now().plus(3, ChronoUnit.DAYS));
     }
 
     @Override
@@ -235,8 +236,8 @@ public class DataLoader implements CommandLineRunner {
         meetScheduleService.startMeetSchedule(mojtabaMaster.getId(), problem4.getMeetSchedule().getId(),
                 MeetScheduleSaveDto.builder()
                         .durationMinutes(30)
-                        .minimumDate(twoDayAgo)
-                        .maximumDate(twoDayTomorrow)
+                        .minimumDate(threeDayAgo)
+                        .maximumDate(threeDayTomorrow)
                         .build());
         for (UserDto user : Arrays.asList(sadeghMaster, aminStudent, mojtabaMaster, mahmoudMaster)) {
             meetScheduleService.addScheduleEvent(user.getId(), problem4.getMeetSchedule().getId(),
@@ -302,6 +303,10 @@ public class DataLoader implements CommandLineRunner {
         createCompletedProblem(7, aminStudent, mojtabaMaster, sadeghMaster, hasanMaster);
         createCompletedProblem(8, aminStudent, mojtabaMaster, sadeghMaster, mahmoudMaster);
         createCompletedProblem(9, aminStudent, mojtabaMaster, hasanMaster, mahmoudMaster);
+
+        createCompletedProblem(10, ahmadStudent, mahmoudMaster, sadeghMaster, hasanMaster);
+        createCompletedProblem(11, ahmadStudent, mahmoudMaster, sadeghMaster, mojtabaMaster);
+        createCompletedProblem(12, ahmadStudent, mahmoudMaster, hasanMaster, mojtabaMaster);
     }
 
     private void createCompletedProblem(int number, StudentDto student, MasterDto master,
@@ -310,7 +315,7 @@ public class DataLoader implements CommandLineRunner {
                 .education(Education.BACHELOR)
                 .title("مسئله " + number)
                 .englishTitle("Problem " + number)
-                .keywords(new HashSet<>(Arrays.asList("کلیدواژه 1", "کلیدواژه 2", "کلیدواژه 3")))
+                .keywords(new HashSet<>(Arrays.asList("کلیدواژه 1", "کلیدواژه 2")))
                 .definition(
                         "تعریف مسئله‌ای که باید به عنوان پروژه‌ی دانشجویی بررسی و انجام شود و در عین حال صنعتی باشد.")
                 .history("بیشینه مسئله")
@@ -327,17 +332,18 @@ public class DataLoader implements CommandLineRunner {
         meetScheduleService.startMeetSchedule(master.getId(), problem.getMeetSchedule().getId(),
                 MeetScheduleSaveDto.builder()
                         .durationMinutes(60)
-                        .minimumDate(twoDayAgo)
-                        .maximumDate(twoDayTomorrow)
+                        .minimumDate(threeDayAgo)
+                        .maximumDate(threeDayTomorrow)
                         .build());
+        int amountToAdd = number < 12 ? 8 + number : 24 + 8 + (number - 12);
         for (UserDto user : Arrays.asList(master, student, referee1, referee2)) {
             meetScheduleService.addScheduleEvent(user.getId(), problem.getMeetSchedule().getId(), DateRangeDto.builder()
-                    .startDate(dateFormat.parse(String.format("%s %02d:00", yesterdayDate, 8 + number)).toInstant())
-                    .endDate(dateFormat.parse(String.format("%s %02d:00", yesterdayDate, 8 + number + 1)).toInstant())
+                    .startDate(threeDayAgo.plus(amountToAdd, ChronoUnit.HOURS))
+                    .endDate(threeDayAgo.plus(amountToAdd + 1, ChronoUnit.HOURS))
                     .build());
         }
         meetScheduleService.finalizeMeetSchedule(master.getId(), problem.getMeetSchedule().getId(),
-                dateFormat.parse(String.format("%s %02d:00", yesterdayDate, 8 + number)).toInstant());
+                threeDayAgo.plus(amountToAdd, ChronoUnit.HOURS));
         meetScheduleService.acceptMeetSchedule(master.getId(), problem.getMeetSchedule().getId());
 
         List<MasterDto> allReferees = Arrays.asList(master, referee1, referee2);
@@ -366,7 +372,8 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private void prepareUsers() {
-        FacultyDto computerEngineeringFaculty = faculties.get(universities.get(0).getId()).get(0);
+        FacultyDto computerEngineeringFacultyShahidBeheshti = faculties.get(universities.get(0).getId()).get(0);
+        FacultyDto computerEngineeringFacultyTehran = faculties.get(universities.get(1).getId()).get(0);
         sadeghMaster = masterService.save(MasterSaveDto.builder()
                 .firstName("صادق")
                 .lastName("علی اکبری")
@@ -378,7 +385,7 @@ public class DataLoader implements CommandLineRunner {
                         .telephoneNumber("9131234567")
                         .email("sadegh.aliakbari@gmail.com")
                         .build())
-                .facultyId(computerEngineeringFaculty.getId())
+                .facultyId(computerEngineeringFacultyShahidBeheshti.getId())
                 .build());
 
         mojtabaMaster = masterService.save(MasterSaveDto.builder()
@@ -392,7 +399,7 @@ public class DataLoader implements CommandLineRunner {
                         .telephoneNumber("9137654321")
                         .email("mojtaba.vahidi@sbu.ac.ir")
                         .build())
-                .facultyId(computerEngineeringFaculty.getId())
+                .facultyId(computerEngineeringFacultyShahidBeheshti.getId())
                 .build());
 
         mahmoudMaster = masterService.save(MasterSaveDto.builder()
@@ -406,7 +413,7 @@ public class DataLoader implements CommandLineRunner {
                         .telephoneNumber("9137654123")
                         .email("master3@sbu.ac.ir")
                         .build())
-                .facultyId(computerEngineeringFaculty.getId())
+                .facultyId(computerEngineeringFacultyShahidBeheshti.getId())
                 .build());
 
         hasanMaster = masterService.save(MasterSaveDto.builder()
@@ -420,21 +427,35 @@ public class DataLoader implements CommandLineRunner {
                         .telephoneNumber("9137651234")
                         .email("master4@sbu.ac.ir")
                         .build())
-                .facultyId(computerEngineeringFaculty.getId())
+                .facultyId(computerEngineeringFacultyShahidBeheshti.getId())
                 .build());
 
         aminStudent = studentService.save(StudentSaveDto.builder()
                 .firstName("امین")
                 .lastName("برجیان")
                 .studentNumber("96243012")
-                .username("student")
+                .username("amin")
                 .password("pass")
                 .personalInfo(PersonalInfoSaveDto.builder()
                         .gender(Gender.MALE)
                         .telephoneNumber("9137654321")
-                        .email("student@gmail.com")
+                        .email("amin@gmail.com")
                         .build())
-                .facultyId(computerEngineeringFaculty.getId())
+                .facultyId(computerEngineeringFacultyShahidBeheshti.getId())
+                .build());
+
+        ahmadStudent = studentService.save(StudentSaveDto.builder()
+                .firstName("احمد")
+                .lastName("اسدی")
+                .studentNumber("96243013")
+                .username("ahmad")
+                .password("pass")
+                .personalInfo(PersonalInfoSaveDto.builder()
+                        .gender(Gender.MALE)
+                        .telephoneNumber("9137654322")
+                        .email("ahmad@gmail.com")
+                        .build())
+                .facultyId(computerEngineeringFacultyTehran.getId())
                 .build());
 
         AdminDto admin = adminService.save(AdminSaveDto.builder()

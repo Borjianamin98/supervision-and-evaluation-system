@@ -1,5 +1,6 @@
 import apiAxios from "../../../config/axios-config";
 import {Pageable} from "../../../model/api/Pageable";
+import {RefereeReportItem} from "../../../model/report/RefereeReportItem";
 import {AggregatedPeerReviews} from "../../../model/review/peer/AggregatedPeerReviews";
 import {Master} from "../../../model/user/master/Master";
 import {MasterSave} from "../../../model/user/master/MasterSave";
@@ -51,7 +52,23 @@ class MasterService {
                     params: {
                         size: pageSize,
                         page: page,
-                        sort: sortBy ? (sortDirection ? `${sortBy},${sortDirection}` : sortBy) : undefined,
+                        sortBy: sortBy ? (sortDirection ? `${sortBy},${sortDirection}` : sortBy) : undefined,
+                    }
+                })
+            .then(response => response.data);
+    }
+
+    static retrieveMasterRefereeReport(masterId: number, pageSize: number, page: number,
+                                       sortBy?: string, sortDirection?: "asc" | "desc",
+                                       universityName?: string) {
+        return apiAxios
+            .get<Pageable<RefereeReportItem>>(`${MasterService.API_MASTER_ROOT_PATH}/${masterId}/refereeReport`,
+                {
+                    params: {
+                        size: pageSize,
+                        page: page,
+                        sortBy: sortBy ? (sortDirection ? `${sortBy},${sortDirection}` : sortBy) : undefined,
+                        universityName: universityName ? universityName : undefined,
                     }
                 })
             .then(response => response.data);

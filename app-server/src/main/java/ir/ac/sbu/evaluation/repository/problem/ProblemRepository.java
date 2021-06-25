@@ -24,16 +24,16 @@ public interface ProblemRepository extends PagingAndSortingRepository<Problem, L
             Pageable pageable);
 
     @Query("select " +
-            "distinct new ir.ac.sbu.evaluation.dto.report.RefereeReportItemDto("
+            "new ir.ac.sbu.evaluation.dto.report.RefereeReportItemDto("
             + " p.student.faculty.university.name,"
             + " count(distinct p.id),"
-            + " sum(case when p.supervisor.id = :masterId then 1 else 0 end),"
             + " sum(case when r.id = :masterId then 1 else 0 end)) " +
             "from Problem p left join p.referees r " +
-            "where p.state = :state " +
-            "group by p.student.faculty.university.name")
+            "where p.state = :state and p.student.faculty.university.name like concat('%',:universityName,'%') " +
+            "group by p.student.faculty.university")
     Page<RefereeReportItemDto> masterProblemRefereeReport(
             @Param("masterId") long masterId,
             @Param("state") ProblemState state,
+            @Param("universityName") String universityName,
             Pageable pageable);
 }

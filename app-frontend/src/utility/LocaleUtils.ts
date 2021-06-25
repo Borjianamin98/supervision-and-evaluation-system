@@ -3,8 +3,8 @@ export default class LocaleUtils {
     private constructor() {
     }
 
-    static convertToPersianDigits(str: string) {
-        return str
+    static convertToPersianDigits(str: string | number) {
+        return str.toString()
             .replaceAll("0", "۰")
             .replaceAll("1", "۱")
             .replaceAll("2", "۲")

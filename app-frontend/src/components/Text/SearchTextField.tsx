@@ -3,7 +3,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import React from "react";
 import CustomTextField, {CustomTextFieldProps} from "./CustomTextField";
 
-const SearchTextField: React.FunctionComponent<Omit<CustomTextFieldProps, "InputProps" | "label">> = (params) => {
+const SearchTextField: React.FunctionComponent<Omit<CustomTextFieldProps, "InputProps">> = (params) => {
     return (
         <CustomTextField
             variant="outlined"

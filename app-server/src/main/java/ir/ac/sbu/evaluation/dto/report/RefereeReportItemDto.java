@@ -10,16 +10,13 @@ public class RefereeReportItemDto {
 
     private String universityName;
     private long totalProblems;
-    private long supervisorCount;
     private long refereeCount;
 
     public RefereeReportItemDto(String universityName,
             long totalProblems,
-            long supervisorCount,
             long refereeCount) {
         this.universityName = universityName;
         this.totalProblems = totalProblems;
-        this.supervisorCount = supervisorCount;
         this.refereeCount = refereeCount;
     }
 
@@ -33,13 +30,12 @@ public class RefereeReportItemDto {
         }
         RefereeReportItemDto that = (RefereeReportItemDto) o;
         return Objects.equals(universityName, that.universityName)
-                && supervisorCount == that.supervisorCount
                 && refereeCount == that.refereeCount
                 && totalProblems == that.totalProblems;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(universityName, totalProblems, supervisorCount, refereeCount);
+        return Objects.hash(universityName, totalProblems, refereeCount);
     }
 }

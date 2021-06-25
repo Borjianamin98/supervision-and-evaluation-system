@@ -14,14 +14,23 @@ spring:
     url: jdbc:h2:mem:testdb
     username: root
     password: root
-    platform: h2
+  sql:
+    init:
+      platform: h2
   jpa:
     hibernate:
       ddl-auto: create-drop
     show-sql: false # TODO: Added for debug purpose and should be disabled
+    properties:
+      hibernate:
+        format_sql: false # TODO: Added for debug purpose and should be disabled
+
   # To redirect the exception to our advice (ResponseEntityExceptionHandler) instead of DefaultHandlerExceptionResolver
   mvc.throw-exception-if-no-handler-found: true
   web.resources.add-mappings: false
+
+# logging.level.org.hibernate.SQL: DEBUG
+# logging.level.org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
 # Application configurations
 # JWT configurations

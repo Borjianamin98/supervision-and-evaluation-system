@@ -38,6 +38,7 @@ export interface StatelessPaginationListAction<T> extends Omit<TooltipIconButton
 }
 
 interface StatelessPaginationListProps<T> extends BoxProps {
+    size?: "small" | "medium",
     total: number,
 
     page: number,
@@ -69,6 +70,7 @@ interface StatelessPaginationListProps<T> extends BoxProps {
 function StatelessPaginationTable<T>(props: StatelessPaginationListProps<T>) {
     const classes = useStyles();
     const {
+        size,
         total,
 
         page,
@@ -179,7 +181,7 @@ function StatelessPaginationTable<T>(props: StatelessPaginationListProps<T>) {
         <ThemeProvider theme={rtlTheme}>
             <Box dir="rtl" {...rest}>
                 <TableContainer component={Paper} elevation={4} className={classes.tableContainer}>
-                    <Table size="small">
+                    <Table size={size ?? "small"}>
                         <TableHead>
                             <TableRow>
                                 {tableHeaderCells.map((cell, index) => (
