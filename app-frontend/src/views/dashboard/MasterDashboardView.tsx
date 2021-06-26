@@ -1,33 +1,38 @@
-import {makeStyles} from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import React from 'react';
 import viewProblemImage from "../../assets/images/problem/view-problem.jpg";
+import UserInfoImage from "../../assets/images/user/UserInfo.jpg";
 import ButtonLink from "../../components/Button/ButtonLink";
 import MediaCard from "../../components/MediaCard/MediaCard";
-import {PROBLEM_LIST_VIEW_PATH} from "../ViewPaths";
-
-const useStyles = makeStyles((theme) => ({
-    mediaCard: {
-        margin: theme.spacing(1)
-    },
-}));
+import {PROBLEM_LIST_VIEW_PATH, PROFILE_VIEW_PATH} from "../ViewPaths";
 
 const MasterDashboardView: React.FunctionComponent = () => {
-    const classes = useStyles();
-
     return (
         <Grid container dir="rtl">
-            <Grid item xs={12} sm={6} md={4} lg={4} xl={4}>
+            <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
                 <MediaCard
-                    className={classes.mediaCard}
                     media={viewProblemImage}
                     title="مشاهده پایان‌نامه‌ها (پروژه‌ها)"
                     subTitle={[
                         "پایان‌نامه‌ها (پروژه‌ها) که مربوط به شما هستند را مشاهده نمایید.",
-                        "پروژه‌ها شامل مواردی هستند که شما استاد راهنمای آن می‌باشید یا داور مشخص‌شده برای آن باشید."
+                        "پروژه‌ها شامل مواردی هستند که شما استاد راهنما یا داور آن باشد."
                     ]}
                 >
                     <ButtonLink to={PROBLEM_LIST_VIEW_PATH} color="primary">
+                        مشاهده
+                    </ButtonLink>
+                </MediaCard>
+            </Grid>
+            <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
+                <MediaCard
+                    media={UserInfoImage}
+                    title="حساب کاربری"
+                    subTitle={[
+                        "اطلاعات حساب کاربری خود را از بخش مربوطه مشاهده نمایید.",
+                        "برای اطلاعات بیش‌تر به بخش مربوطه مراجعه کنید."
+                    ]}
+                >
+                    <ButtonLink to={PROFILE_VIEW_PATH} color="primary">
                         مشاهده
                     </ButtonLink>
                 </MediaCard>
