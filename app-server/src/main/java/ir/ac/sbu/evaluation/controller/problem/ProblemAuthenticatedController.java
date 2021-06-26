@@ -12,6 +12,7 @@ import ir.ac.sbu.evaluation.service.problem.ProblemService;
 import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -61,7 +62,7 @@ public class ProblemAuthenticatedController {
     }
 
     @GetMapping(path = "/{problemId}/events/{problemEventId}/attachment")
-    public ResponseEntity<byte[]> getProblemEventAttachment(
+    public ResponseEntity<ByteArrayResource> getProblemEventAttachment(
             @PathVariable long problemId,
             @PathVariable long problemEventId,
             @RequestParam(name = "token") String token,

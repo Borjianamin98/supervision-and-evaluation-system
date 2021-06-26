@@ -27,6 +27,7 @@ import ir.ac.sbu.evaluation.repository.user.StudentRepository;
 import ir.ac.sbu.evaluation.security.SecurityRoles;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Arrays;
@@ -34,9 +35,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -223,7 +226,8 @@ public class ProblemService {
         return ProblemEventDto.from(savedProblemEvent);
     }
 
-    public ResponseEntity<byte[]> getProblemEventAttachment(long userId, long problemId, long problemEventId) {
+    public ResponseEntity<ByteArrayResource> getProblemEventAttachment(long userId, long problemId,
+            long problemEventId) {
         Problem problem = getProblem(problemId);
         ProblemEvent problemEvent = getProblemEvent(problemEventId);
         checkUserAccessProblem(userId, problem);
@@ -237,15 +241,31 @@ public class ProblemService {
                     + "Problem event ID = " + problemEventId);
         }
 
+        String fileName = problemEvent.getId() + "." + problemEvent.getAttachmentExtension();
+        Path localFilePath = Paths.get(problemEventDirectory, fileName);
+        if (!Files.exists(localFilePath)) {
+            throw new ResourceNotFoundException("Unable to find problem event attachment.",
+                    "فایل پیوست مربوط به مسئله درخواستی موجود نیست. درخواست خود را بررسی و دوباره تلاش نمایید.");
+        }
+
+        byte[] bytes;
         try {
-            byte[] bytes = Files.readAllBytes(Paths.get(problemEventDirectory,
-                    problemEvent.getId() + "." + problemEvent.getAttachmentExtension()));
-            return ResponseEntity.status(HttpStatus.OK).body(bytes);
+            bytes = Files.readAllBytes(localFilePath);
         } catch (IOException e) {
-            throw new ResourceConflictException("Unable to retrieve attachment",
+            throw new ResourceConflictException("Unable to retrieve problem event attachment",
                     "در دریافت فایل از سرور خطایی رخ داده است. دوباره تلاش نمایید. در صورت تداوم مشکل، با مسئول "
                             + "مربوطه تماس بگیرید.");
         }
+
+        ByteArrayResource resource = new ByteArrayResource(bytes);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
+        headers.add(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(bytes.length)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
     }
 
     public Page<ProblemEventDto> retrieveProblemEvents(long userId, long problemId, Pageable pageable) {
