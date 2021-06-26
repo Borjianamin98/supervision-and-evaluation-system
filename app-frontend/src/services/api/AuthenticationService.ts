@@ -6,15 +6,14 @@ import {CustomJwtPayload, TokenType} from "../../model/auth/jwtToken";
 import {DASHBOARD_VIEW_PATH, LOGIN_VIEW_PATH} from "../../views/ViewPaths";
 import {
     API_AUTHENTICATION_CHECK_PATH,
+    API_AUTHENTICATION_DOWNLOAD_TOKEN_PATH,
     API_AUTHENTICATION_LOGIN_PATH,
     API_AUTHENTICATION_REFRESH_PATH
 } from "../ApiPaths";
 
 export interface AuthResponse {
-    username: string,
-    access_token?: string,
-    refresh_token?: string,
-    error?: string
+    token: string,
+    refreshToken?: string,
 }
 
 class AuthenticationService {
@@ -46,8 +45,8 @@ class AuthenticationService {
                 username: username,
                 password: password
             })
-        localStorage.setItem(TokenType.ACCESS, response.data.access_token!);
-        localStorage.setItem(TokenType.REFRESH, response.data.refresh_token!);
+        localStorage.setItem(TokenType.ACCESS, response.data.token);
+        localStorage.setItem(TokenType.REFRESH, response.data.refreshToken!);
         browserHistory.push(DASHBOARD_VIEW_PATH);
     }
 
@@ -56,11 +55,17 @@ class AuthenticationService {
             {
                 refresh_token: AuthenticationService.getRefreshToken()
             })
-        localStorage.setItem(TokenType.ACCESS, response.data.access_token!);
+        localStorage.setItem(TokenType.ACCESS, response.data.token);
+    }
+
+    static getDownloadToken() {
+        return apiAxios
+            .get<AuthResponse>(API_AUTHENTICATION_DOWNLOAD_TOKEN_PATH)
+            .then(response => response.data);
     }
 
     static check() {
-        return apiAxios.get<AuthResponse>(API_AUTHENTICATION_CHECK_PATH)
+        return apiAxios.get<{}>(API_AUTHENTICATION_CHECK_PATH)
     }
 
     static getJwtPayloadUserId() {

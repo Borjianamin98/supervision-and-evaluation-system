@@ -58,7 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return Optional.of(authHeader.substring(AUTHORIZATION_BEARER_PREFIX.length()));
     }
 
-    public InvalidJwtTokenException handleJwtToken(HttpServletRequest request, String token) {
+    private void handleJwtToken(HttpServletRequest request, String token) {
         try {
             Claims tokenClaims = jwtTokenProvider.parseToken(token);
             jwtTokenProvider.ensureIsAccessToken(tokenClaims);
@@ -67,10 +67,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     jwtTokenProvider.getFullName(tokenClaims),
                     jwtTokenProvider.getUsername(tokenClaims),
                     jwtTokenProvider.getRole(tokenClaims));
-            return null;
         } catch (InvalidJwtTokenException e) {
             logger.warn(e.getMessage());
-            return e;
         }
     }
 

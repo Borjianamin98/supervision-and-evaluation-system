@@ -1,13 +1,18 @@
 import {Box, CircularProgress} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import {Pagination} from "@material-ui/lab";
+import {AxiosError} from "axios";
+import {useSnackbar} from "notistack";
 import React from 'react';
 import {useQuery, useQueryClient} from "react-query";
 import CustomAlert from "../../components/Alert/CustomAlert";
 import CenterBox from "../../components/Grid/CenterBox";
+import {generalErrorHandler} from "../../config/axios-config";
 import {roleMapToPersian} from "../../model/enum/role";
 import {ProblemEvent} from "../../model/problem/problemEvent";
+import AuthenticationService from "../../services/api/AuthenticationService";
 import ProblemAuthenticatedService from "../../services/api/problem/ProblemAuthenticatedService";
+import {BACKEND_SERVICE_HOST} from "../../services/ApiPaths";
 import ProblemEventCard from "./ProblemEventCard";
 
 interface ProblemEventListProps {
@@ -16,10 +21,11 @@ interface ProblemEventListProps {
 }
 
 const ProblemEventsList: React.FunctionComponent<ProblemEventListProps> = (props) => {
+    const {enqueueSnackbar} = useSnackbar();
+    const queryClient = useQueryClient();
     const {problemId, pageSize} = props;
 
     const [page, setPage] = React.useState(0);
-    const queryClient = useQueryClient();
     const {data: events, isLoading, isError} = useQuery(["problemEvents", problemId, pageSize, page],
         () => {
             return ProblemAuthenticatedService.retrieveProblemEvents(pageSize, page, problemId,
@@ -55,7 +61,12 @@ const ProblemEventsList: React.FunctionComponent<ProblemEventListProps> = (props
                 date={event.createdDate}
                 hasAttachment={event.hasAttachment}
                 onAttachmentClick={() => {
-
+                    AuthenticationService.getDownloadToken()
+                        .then((value) => {
+                            const downloadLink = `${BACKEND_SERVICE_HOST}${event.attachmentLink}?token=${value.token}`;
+                            window.open(downloadLink, "_blank");
+                        })
+                        .catch((error: AxiosError) => generalErrorHandler(error, enqueueSnackbar))
                 }}
             />
         </Box>

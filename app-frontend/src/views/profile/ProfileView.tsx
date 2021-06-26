@@ -57,7 +57,7 @@ const ProfileView: React.FunctionComponent = () => {
 
     React.useEffect(() => {
         AuthenticationService.check()
-            .then(async value => {
+            .then(async () => {
                 const jwtPayloadRole = AuthenticationService.getJwtPayloadRole()!;
                 if (jwtPayloadRole === Role.STUDENT) {
                     return await StudentService.retrieveStudentInfo();
@@ -70,7 +70,7 @@ const ProfileView: React.FunctionComponent = () => {
                 }
             })
             .then(value => setUser(value))
-            .catch(reason => {
+            .catch(() => {
                 // Invalid JWT token provided for authentication
                 AuthenticationService.logout();
                 browserHistory.push(LOGIN_VIEW_PATH);

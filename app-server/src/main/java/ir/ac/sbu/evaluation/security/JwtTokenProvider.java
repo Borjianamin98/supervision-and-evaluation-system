@@ -26,6 +26,8 @@ public class JwtTokenProvider {
     private final static String TOKEN_TYPE_CLAIM_NAME = "tokenType";
     private final static String ACCESS_TOKEN_TYPE_NAME = "accessToken";
     private final static String REFRESH_TOKEN_TYPE_NAME = "refreshToken";
+    private final static String DOWNLOAD_TOKEN_TYPE_NAME = "downloadToken";
+
     private final static String TOKEN_USER_ID_CLAIM_NAME = "userId";
     private final static String TOKEN_FULL_NAME_CLAIM_NAME = "fullName";
     private final static String TOKEN_ROLE_CLAIM_NAME = "role";
@@ -38,6 +40,9 @@ public class JwtTokenProvider {
 
     @Value("${jwt.refresh-token-expiration-seconds}")
     private long jwtRefreshTokenExpirationSeconds;
+
+    @Value("${jwt.download-token-expiration-seconds}")
+    private long jwtDownloadTokenExpirationSeconds;
 
     public Claims parseToken(String token) throws InvalidJwtTokenException {
         try {
@@ -96,6 +101,14 @@ public class JwtTokenProvider {
         return generateToken(authUserDetail, ACCESS_TOKEN_TYPE_NAME);
     }
 
+    public String generateDownloadToken(AuthUserDetail authUserDetail) {
+        return generateToken(authUserDetail, DOWNLOAD_TOKEN_TYPE_NAME);
+    }
+
+    public void ensureIsDownloadToken(Claims tokenClaims) throws InvalidJwtTokenException {
+        ensureTokenType(tokenClaims, DOWNLOAD_TOKEN_TYPE_NAME);
+    }
+
     public void ensureIsAccessToken(Claims tokenClaims) throws InvalidJwtTokenException {
         ensureTokenType(tokenClaims, ACCESS_TOKEN_TYPE_NAME);
     }
@@ -135,8 +148,20 @@ public class JwtTokenProvider {
         customClaims.put(TOKEN_FULL_NAME_CLAIM_NAME, authUserDetail.getFullName());
 
         long currentTime = System.currentTimeMillis();
-        long expirationOffset = tokenType.equals(ACCESS_TOKEN_TYPE_NAME) ?
-                jwtAccessTokenExpirationSeconds : jwtRefreshTokenExpirationSeconds;
+        long expirationOffset;
+        switch (tokenType) {
+            case ACCESS_TOKEN_TYPE_NAME:
+                expirationOffset = jwtAccessTokenExpirationSeconds;
+                break;
+            case REFRESH_TOKEN_TYPE_NAME:
+                expirationOffset = jwtRefreshTokenExpirationSeconds;
+                break;
+            case DOWNLOAD_TOKEN_TYPE_NAME:
+                expirationOffset = jwtDownloadTokenExpirationSeconds;
+                break;
+            default:
+                throw new AssertionError("Invalid token type requested: " + tokenType);
+        }
 
         return Jwts.builder()
                 .setClaims(customClaims)

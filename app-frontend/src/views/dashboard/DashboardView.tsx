@@ -18,7 +18,7 @@ const DashboardView: React.FunctionComponent = () => {
 
     React.useEffect(() => {
         AuthenticationService.check()
-            .then(value => {
+            .then(() => {
                 const jwtPayloadRole = AuthenticationService.getJwtPayloadRole()!;
                 switch (jwtPayloadRole) {
                     case Role.STUDENT:
@@ -34,7 +34,7 @@ const DashboardView: React.FunctionComponent = () => {
                         throw new Error("Invalid user role: " + jwtPayloadRole)
                 }
             })
-            .catch(reason => {
+            .catch(() => {
                 // Invalid JWT token provided for authentication
                 AuthenticationService.logout();
                 browserHistory.push(LOGIN_VIEW_PATH);

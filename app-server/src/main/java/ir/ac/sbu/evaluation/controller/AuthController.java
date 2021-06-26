@@ -6,6 +6,7 @@ import io.jsonwebtoken.Claims;
 import ir.ac.sbu.evaluation.dto.authentication.AuthLoginDto;
 import ir.ac.sbu.evaluation.dto.authentication.AuthRefreshDto;
 import ir.ac.sbu.evaluation.dto.authentication.AuthResponseDto;
+import ir.ac.sbu.evaluation.exception.UnauthorizedAccessException;
 import ir.ac.sbu.evaluation.exception.security.InvalidJwtTokenException;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
 import ir.ac.sbu.evaluation.security.JwtTokenProvider;
@@ -33,7 +34,6 @@ public class AuthController {
 
     private final static String API_AUTHENTICATION_LOGIN_PATH = "/login";
     private final static String API_AUTHENTICATION_REFRESH_PATH = "/refresh";
-    private final static String API_AUTHENTICATION_CHECK_PATH = "/check";
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
@@ -65,13 +65,12 @@ public class AuthController {
             throw new AssertionError(
                     "Unexpected exception because locking user accounts for a duration has not been used.", e);
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(AuthResponseDto.builder()
-                    .username(username).error("Invalid credential provided.").build());
+            throw new UnauthorizedAccessException("Invalid credential provided.");
         }
 
         final AuthUserDetail authUserDetail = userService.loadUserByUsername(username);
-        return ResponseEntity.status(HttpStatus.OK).body(AuthResponseDto.builder().username(username)
-                .accessToken(jwtTokenProvider.generateAccessToken(authUserDetail))
+        return ResponseEntity.status(HttpStatus.OK).body(AuthResponseDto.builder()
+                .token(jwtTokenProvider.generateAccessToken(authUserDetail))
                 .refreshToken(jwtTokenProvider.generateRefreshToken(authUserDetail))
                 .build());
     }
@@ -86,26 +85,29 @@ public class AuthController {
             // Find user provided by JWT refreshToken to validate its existence.
             authUserDetail = userService.loadUserByUsername(jwtTokenProvider.getUsername(tokenClaims));
         } catch (InvalidJwtTokenException e) {
-            return refreshTokenResponseWithError(refreshToken, e.getMessage());
+            throw new UnauthorizedAccessException(e.getMessage());
         } catch (UsernameNotFoundException e) {
-            return refreshTokenResponseWithError(refreshToken, "Refresh token username not found.");
+            throw new UnauthorizedAccessException("Refresh token username not found.");
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(AuthResponseDto.builder()
-                .refreshToken(refreshToken).accessToken(jwtTokenProvider.generateAccessToken(authUserDetail))
+                .refreshToken(refreshToken).token(jwtTokenProvider.generateAccessToken(authUserDetail))
                 .build());
     }
 
-    @GetMapping(path = API_AUTHENTICATION_CHECK_PATH)
-    public ResponseEntity<AuthResponseDto> check(@ModelAttribute AuthUserDetail authUserDetail) {
+    @GetMapping(path = "/check")
+    public ResponseEntity<Void> check(@ModelAttribute AuthUserDetail authUserDetail) {
         // return {@link HttpStatus.OK} if user token is valid.
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(AuthResponseDto.builder().username(authUserDetail.getUsername()).build());
+        return ResponseEntity.ok().build();
     }
 
-    private ResponseEntity<AuthResponseDto> refreshTokenResponseWithError(String refreshToken, String error) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(AuthResponseDto.builder()
-                .refreshToken(refreshToken).error(error).build());
+    @GetMapping(path = "/downloadToken")
+    public ResponseEntity<AuthResponseDto> downloadToken(@ModelAttribute AuthUserDetail authUserDetail) {
+        // return valid token (with shorter valid time) just to be used for download files.
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(AuthResponseDto.builder()
+                        .token(jwtTokenProvider.generateDownloadToken(authUserDetail))
+                        .build());
     }
 
 }
