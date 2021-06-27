@@ -141,6 +141,7 @@ public class DataLoader implements CommandLineRunner {
                 .history("بیشینه مسئله")
                 .considerations("برای پیاده‌سازی در محیط عملیاتی، نیازمند سرور و تجهیزات شبکه‌ای مربوطه می‌باشد.")
                 .supervisorId(sadeghMaster.getId())
+                .numberOfReferees(2)
                 .build());
         ProblemDto problem2 = problemService.addProblem(aminStudent.getId(), ProblemSaveDto.builder()
                 .education(Education.BACHELOR)
@@ -153,6 +154,7 @@ public class DataLoader implements CommandLineRunner {
                 .history("بیشینه مسئله")
                 .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
                 .supervisorId(sadeghMaster.getId())
+                .numberOfReferees(2)
                 .build());
         ProblemDto problem3 = problemService.addProblem(aminStudent.getId(), ProblemSaveDto.builder()
                 .education(Education.BACHELOR)
@@ -163,6 +165,7 @@ public class DataLoader implements CommandLineRunner {
                 .history("بیشینه مسئله")
                 .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
                 .supervisorId(mojtabaMaster.getId())
+                .numberOfReferees(2)
                 .build());
         ProblemDto problem4 = problemService.addProblem(aminStudent.getId(), ProblemSaveDto.builder()
                 .education(Education.BACHELOR)
@@ -173,6 +176,7 @@ public class DataLoader implements CommandLineRunner {
                 .history("بیشینه مسئله")
                 .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
                 .supervisorId(mojtabaMaster.getId())
+                .numberOfReferees(2)
                 .build());
 
         setSpringSecurityAuthentication(mojtabaMaster);
@@ -323,6 +327,7 @@ public class DataLoader implements CommandLineRunner {
                 .history("بیشینه مسئله")
                 .considerations("ملاحظاتی که باید در نظر گرفته شوند.")
                 .supervisorId(master.getId())
+                .numberOfReferees(2)
                 .build());
 
         problemService.initialApprovalOfProblem(master.getId(), problem.getId());

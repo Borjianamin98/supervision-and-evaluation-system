@@ -62,6 +62,9 @@ public class Problem extends BaseEntity {
     @Column(name = "final_grade")
     private Double finalGrade = 0.0;
 
+    @Column(name = "number_of_referees")
+    private Integer numberOfReferees;
+
     @ManyToOne
     @JoinColumn(name = "student_id")
     private Student student;
@@ -95,6 +98,7 @@ public class Problem extends BaseEntity {
             Set<String> keywords, String definition, String history, String considerations,
             ProblemState state,
             Double finalGrade,
+            Integer numberOfReferees,
             Student student,
             Master supervisor,
             Set<Master> referees,
@@ -111,6 +115,7 @@ public class Problem extends BaseEntity {
         this.considerations = considerations;
         this.state = state;
         this.finalGrade = finalGrade == null ? 0.0 : finalGrade;
+        this.numberOfReferees = numberOfReferees;
         this.student = student;
         this.supervisor = supervisor;
         this.referees = referees == null ? new HashSet<>() : referees;
@@ -131,11 +136,12 @@ public class Problem extends BaseEntity {
                 ", considerations='" + considerations + '\'' +
                 ", state=" + state +
                 ", finalGrade=" + finalGrade +
+                ", numberOfReferees=" + numberOfReferees +
                 '}';
     }
 
     public boolean isAllDoneReview() {
         // Plus one is supervisor of problem
-        return getProblemReviews().size() == getReferees().size() + 1;
+        return getProblemReviews().size() == getNumberOfReferees() + 1;
     }
 }

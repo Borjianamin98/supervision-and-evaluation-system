@@ -23,7 +23,7 @@ const jss = create({plugins: [...jssPreset().plugins, rtl()]});
 // Configure custom font
 const vazirFontTheme = createMuiTheme({
     typography: {
-        fontFamily: "Vazir",
+        fontFamily: "Vazir !important",
     }
 });
 

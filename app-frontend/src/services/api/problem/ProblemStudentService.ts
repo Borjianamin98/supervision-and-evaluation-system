@@ -1,6 +1,6 @@
 import apiAxios from "../../../config/axios-config";
-import {Education, ENGLISH_EDUCATIONS} from "../../../model/enum/education";
 import {Pageable} from "../../../model/api/Pageable";
+import {Education, ENGLISH_EDUCATIONS} from "../../../model/enum/education";
 import {Problem, ProblemSave} from "../../../model/problem/problem";
 import {ProblemState} from "../../../model/problem/problemState";
 import {API_PROBLEM_ROOT_PATH} from "../../ApiPaths";
@@ -22,6 +22,8 @@ class ProblemStudentService {
             definition: "",
             history: "",
             considerations: "",
+            supervisorId: -1,
+            numberOfReferees: 2
         }
     }
 
@@ -58,7 +60,8 @@ class ProblemStudentService {
             && problemSave.considerations.length > 0
             && problemSave.considerations.length <= ProblemStudentService.MAX_LONG_STRING_LENGTH
             && problemSave.history.length <= ProblemStudentService.MAX_LONG_STRING_LENGTH
-            && problemSave.supervisorId;
+            && problemSave.supervisorId >= 1
+            && problemSave.numberOfReferees >= 1 && problemSave.numberOfReferees <= 6;
     }
 
     static isDefinitionValid(definition: string) {

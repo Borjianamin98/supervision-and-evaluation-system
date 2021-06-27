@@ -28,6 +28,7 @@ public class ProblemDto {
     private String considerations;
     private ProblemState state;
     private double finalGrade;
+    private int numberOfReferees;
 
     private StudentDto student;
     private MasterDto supervisor;
@@ -43,6 +44,7 @@ public class ProblemDto {
             String definition, String history, String considerations,
             ProblemState state,
             double finalGrade,
+            int numberOfReferees,
             StudentDto student,
             MasterDto supervisor,
             Set<MasterDto> referees,
@@ -58,6 +60,7 @@ public class ProblemDto {
         this.considerations = considerations;
         this.state = state;
         this.finalGrade = finalGrade;
+        this.numberOfReferees = numberOfReferees;
         this.student = student;
         this.supervisor = supervisor;
         this.referees = referees;
@@ -75,6 +78,7 @@ public class ProblemDto {
                 .considerations(problem.getConsiderations())
                 .state(problem.getState())
                 .finalGrade(problem.getFinalGrade())
+                .numberOfReferees(problem.getNumberOfReferees())
                 .student(StudentDto.from(problem.getStudent()))
                 .supervisor(MasterDto.from(problem.getSupervisor()))
                 .referees(problem.getReferees().stream().map(MasterDto::from).collect(Collectors.toSet()))
@@ -102,14 +106,18 @@ public class ProblemDto {
                 && Objects.equals(history, that.history)
                 && Objects.equals(considerations, that.considerations)
                 && state == that.state
-                && Double.compare(finalGrade, that.finalGrade) == 0;
+                && Double.compare(finalGrade, that.finalGrade) == 0
+                && numberOfReferees == that.numberOfReferees;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, education,
+        return Objects.hash(id,
+                education,
                 title, englishTitle, keywords,
                 definition, history, considerations,
-                state, finalGrade);
+                state,
+                finalGrade,
+                numberOfReferees);
     }
 }

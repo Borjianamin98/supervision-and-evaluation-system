@@ -4,6 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import KeywordsList from "../../../components/Chip/KeywordsList";
 import {educationMapToPersian} from "../../../model/enum/education";
+import LocaleUtils from "../../../utility/LocaleUtils";
 import {ProblemEditSectionsProps} from "./ProblemEdit";
 
 const useStyles = makeStyles((theme) => ({
@@ -60,6 +61,14 @@ const ProblemEditReview: React.FunctionComponent<ProblemEditSectionsProps> = (pr
                         <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
                             <Typography>
                                 {selectedSupervisor ? selectedSupervisor.fullName : "استاد راهنما مشخص نشده است."}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
+                            <Typography variant="h6">تعداد داوران:</Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className={classes.gridItem}>
+                            <Typography>
+                                {`${LocaleUtils.convertToPersianDigits(problemSave.numberOfReferees)} نفر`}
                             </Typography>
                         </Grid>
                     </Grid>

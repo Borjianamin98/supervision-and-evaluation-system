@@ -52,7 +52,7 @@ const ProblemManagementScheduleCard: React.FunctionComponent<ProblemManagementSc
         switch (problem.meetSchedule.state) {
             case MeetScheduleState.CREATED:
                 if (currentUserIsSupervisor) {
-                    if (problem.referees.length === 2) {
+                    if (problem.referees.length === problem.numberOfReferees) {
                         return ["شرایط لازم برای زمان‌بندی و تعیین جلسه‌ی دفاع فراهم می‌باشد. " +
                         "شما می‌توانید زمانی که به برگزاری جلسه دفاع نزدیک می‌شود، " +
                         "زمان‌بندی مسئله را شروع کنید تا زمانی مشترک برای برگزاری جلسه دفاع مشخص کنید."];
@@ -65,7 +65,7 @@ const ProblemManagementScheduleCard: React.FunctionComponent<ProblemManagementSc
                     "شما می‌توانید بعد از این که امکان زمان‌بندی جلسه دفاع توسط استاد راهنما فعال شد، از این قسمت زمان‌های حضور و هماهنگی‌های لازم را انجام دهید."]
                 }
             case MeetScheduleState.STARTED:
-                if (problem.referees.length === 2) {
+                if (problem.referees.length === problem.numberOfReferees) {
                     return ["برنامه‌ریزی جلسه‌ی دفاع پایان‌نامه (پروژه) شروع شده است. " +
                     "تمامی افرادی که باید در جلسه حاضرشوند، زمان‌های حضور خود را برای تعیین تاریخ دفاع مشخص نمایند."];
                 } else {
@@ -106,7 +106,7 @@ const ProblemManagementScheduleCard: React.FunctionComponent<ProblemManagementSc
     const schedulingMediaActions = () => {
         switch (problem.meetSchedule.state) {
             case MeetScheduleState.CREATED:
-                if (currentUserIsSupervisor && problem.referees.length === 2) {
+                if (currentUserIsSupervisor && problem.referees.length === problem.numberOfReferees) {
                     return <ButtonLink to={`${PROBLEM_SCHEDULE_VIEW_PATH}/${problem.id}`} color="primary">
                         شروع برنامه‌ریزی جلسه دفاع
                     </ButtonLink>;
@@ -114,7 +114,7 @@ const ProblemManagementScheduleCard: React.FunctionComponent<ProblemManagementSc
                     return null;
                 }
             case MeetScheduleState.STARTED:
-                if (problem.referees.length === 2) {
+                if (problem.referees.length === problem.numberOfReferees) {
                     return <ButtonLink to={`${PROBLEM_SCHEDULE_VIEW_PATH}/${problem.id}`} color="primary">
                         برنامه‌ریزی جلسه دفاع
                     </ButtonLink>;

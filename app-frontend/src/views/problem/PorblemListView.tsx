@@ -247,7 +247,7 @@ const ProblemListView: React.FunctionComponent = () => {
                             {content: row.supervisor.fullName, xsOptional: true},
                             ...(problems?.content.some(p => p.referees.length !== 0) ?
                                 [{
-                                    content: row.referees.map(r => r.fullName!).join("، "),
+                                    content: row.referees.map(r => r.fullName).join("، "),
                                     xsOptional: true,
                                     width: "10%"
                                 }] : []),

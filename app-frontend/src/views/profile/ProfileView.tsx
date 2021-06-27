@@ -1,5 +1,4 @@
 import {Avatar, Badge, Grid, IconButton, Paper} from "@material-ui/core";
-import Button from "@material-ui/core/Button";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import {createStyles, makeStyles, Theme, ThemeProvider} from '@material-ui/core/styles';
 import Typography from "@material-ui/core/Typography";
@@ -156,26 +155,26 @@ const ProfileView: React.FunctionComponent = () => {
                                 {user ? userRoleInfo(user) : ""}
                             </Typography>
                         </Grid>
-                        <Grid container spacing={2} className={classes.gridItem}>
-                            <Grid item xs={6}>
-                                <Button
-                                    variant="contained"
-                                    fullWidth
-                                    color="secondary"
-                                >
-                                    تغییر رمز عبور
-                                </Button>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <Button
-                                    variant="contained"
-                                    fullWidth
-                                    color="secondary"
-                                >
-                                    ویرایش اطلاعات
-                                </Button>
-                            </Grid>
-                        </Grid>
+                        {/*<Grid container spacing={2} className={classes.gridItem}>*/}
+                        {/*    <Grid item xs={6}>*/}
+                        {/*        <Button*/}
+                        {/*            variant="contained"*/}
+                        {/*            fullWidth*/}
+                        {/*            color="secondary"*/}
+                        {/*        >*/}
+                        {/*            تغییر رمز عبور*/}
+                        {/*        </Button>*/}
+                        {/*    </Grid>*/}
+                        {/*    <Grid item xs={6}>*/}
+                        {/*        <Button*/}
+                        {/*            variant="contained"*/}
+                        {/*            fullWidth*/}
+                        {/*            color="secondary"*/}
+                        {/*        >*/}
+                        {/*            ویرایش اطلاعات*/}
+                        {/*        </Button>*/}
+                        {/*    </Grid>*/}
+                        {/*</Grid>*/}
                     </Grid>
                 </Grid>
                 <Grid item xs={12} sm={12} md={12} lg={8} xl={8}>

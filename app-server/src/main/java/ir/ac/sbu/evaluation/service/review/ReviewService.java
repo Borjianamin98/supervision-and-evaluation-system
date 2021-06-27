@@ -94,7 +94,9 @@ public class ReviewService {
 
         if (!problem.isAllDoneReview()) {
             throw new ResourceConflictException("It is illegal to finalize a problem review before all "
-                    + "participants reviewed problem: problem ID = " + problemId);
+                    + "participants reviewed problem: problem ID = " + problemId
+                    + " current number Of reviews: " + problem.getProblemReviews().size()
+                    + " target number of referees: " + problem.getNumberOfReferees());
         }
 
         problemEventRepository.save(ProblemEvent.builder()

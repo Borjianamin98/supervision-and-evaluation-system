@@ -4,6 +4,8 @@ import ir.ac.sbu.evaluation.enumeration.Education;
 import ir.ac.sbu.evaluation.model.problem.Problem;
 import java.util.Objects;
 import java.util.Set;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -42,17 +44,26 @@ public class ProblemSaveDto {
     @Size(max = 1000)
     private String considerations;
 
-    private Long supervisorId;
+    @Min(1)
+    private long supervisorId;
+
+    @Min(1)
+    @Max(6)
+    private int numberOfReferees;
 
     public ProblemSaveDto() {
     }
 
     @Builder
     public ProblemSaveDto(Education education,
-            String title, String englishTitle,
+            String title,
+            String englishTitle,
             Set<String> keywords,
-            String definition, String history, String considerations,
-            Long supervisorId) {
+            String definition,
+            String history,
+            String considerations,
+            long supervisorId,
+            int numberOfReferees) {
         this.education = education;
         this.title = title;
         this.englishTitle = englishTitle;
@@ -61,6 +72,7 @@ public class ProblemSaveDto {
         this.history = history;
         this.considerations = considerations;
         this.supervisorId = supervisorId;
+        this.numberOfReferees = numberOfReferees;
     }
 
     public Problem toProblem() {
@@ -70,6 +82,7 @@ public class ProblemSaveDto {
                 .keywords(keywords)
                 .definition(definition).history(history)
                 .considerations(considerations)
+                .numberOfReferees(numberOfReferees)
                 .build();
     }
 
@@ -89,12 +102,20 @@ public class ProblemSaveDto {
                 && Objects.equals(definition, that.definition)
                 && Objects.equals(history, that.history)
                 && Objects.equals(considerations, that.considerations)
-                && Objects.equals(supervisorId, that.supervisorId);
+                && Objects.equals(supervisorId, that.supervisorId)
+                && Objects.equals(numberOfReferees, that.numberOfReferees);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(education, title, englishTitle, keywords, definition, history, considerations,
-                supervisorId);
+        return Objects.hash(education,
+                title,
+                englishTitle,
+                keywords,
+                definition,
+                history,
+                considerations,
+                supervisorId,
+                numberOfReferees);
     }
 }

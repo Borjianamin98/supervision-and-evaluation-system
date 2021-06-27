@@ -13,7 +13,8 @@ export interface ProblemSave {
     definition: string,
     history: string,
     considerations: string,
-    supervisorId?: number,
+    supervisorId: number,
+    numberOfReferees: number,
 }
 
 export interface Problem {
@@ -27,6 +28,7 @@ export interface Problem {
     considerations: string,
     state: ProblemState,
     finalGrade: number,
+    numberOfReferees: number,
 
     student: Student,
     supervisor: Master,

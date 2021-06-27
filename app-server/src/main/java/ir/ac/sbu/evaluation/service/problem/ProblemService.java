@@ -94,7 +94,7 @@ public class ProblemService {
         problem.setSupervisor(supervisor);
         problem.setState(ProblemState.CREATED);
         problem.getEvents().add(problemEventRepository.save(
-                ProblemEvent.builder().message("پایان‌نامه (پروژه) تعریف شد.").build()));
+                ProblemEvent.builder().message("پایان‌نامه (پروژه) توسط دانشجو تعریف شد.").build()));
         Problem savedProblem = problemRepository.save(problem);
 
         MeetSchedule meetSchedule = meetScheduleRepository.save(MeetSchedule.builder()
@@ -123,8 +123,9 @@ public class ProblemService {
         problem.setDefinition(problemSaveDto.getDefinition());
         problem.setHistory(problemSaveDto.getHistory());
         problem.setConsiderations(problemSaveDto.getConsiderations());
+        problem.setNumberOfReferees(problemSaveDto.getNumberOfReferees());
         problem.getEvents().add(problemEventRepository.save(
-                ProblemEvent.builder().message("اطلاعات مربوط به مسئله ویرایش شد.").build()));
+                ProblemEvent.builder().message("اطلاعات مربوط به پایان‌نامه (پروژه) توسط دانشجو ویرایش شد.").build()));
         return ProblemDto.from(problemRepository.save(problem));
     }
 
@@ -138,7 +139,7 @@ public class ProblemService {
 
         problem.setState(ProblemState.ABANDONED);
         problem.getEvents().add(problemEventRepository.save(
-                ProblemEvent.builder().message("مسئله به وضعیت لغو شده تغییر کرد.").build()));
+                ProblemEvent.builder().message("پایان‌نامه (پروژه) به وضعیت لغو شده تغییر کرد.").build()));
         return ProblemDto.from(problemRepository.save(problem));
     }
 
@@ -152,7 +153,7 @@ public class ProblemService {
 
         problem.setState(ProblemState.IN_PROGRESS);
         ProblemEvent savedProblemEvent = problemEventRepository.save(ProblemEvent.builder()
-                .message("مسئله تایید اولیه شد.").problem(problem).build());
+                .message("پایان‌نامه (پروژه) توسط استاد راهنما تایید اولیه شد.").problem(problem).build());
         problem.getEvents().add(savedProblemEvent);
         return ProblemDto.from(problemRepository.save(problem));
     }
@@ -278,7 +279,7 @@ public class ProblemService {
         Problem problem = getProblem(problemId);
         checkUserAccessProblem(userId, problem);
         if (problem.getMeetSchedule() == null) {
-            throw new ResourceNotFoundException("No schedule found for problem: id = " + problemId);
+            throw new ResourceNotFoundException("No schedule found for problem: ID = " + problemId);
         }
         return MeetScheduleDto.from(problem.getMeetSchedule());
     }
@@ -304,7 +305,7 @@ public class ProblemService {
         referee.getProblemsReferee().add(savedProblem);
         masterRepository.save(referee);
 
-        String message = String.format("استاد «%s» به لیست داورهای مسئله اضافه شد.", referee.getFullName());
+        String message = String.format("استاد «%s» به لیست داورهای پایان‌نامه (پروژه) اضافه شد.", referee.getFullName());
         ProblemEvent savedProblemEvent = problemEventRepository.save(ProblemEvent.builder()
                 .message(message).problem(problem).build());
         problem.getEvents().add(savedProblemEvent);
@@ -351,7 +352,7 @@ public class ProblemService {
         referee.getProblemsReferee().removeIf(p -> p.getId().equals(problem.getId()));
         masterRepository.save(referee);
 
-        String message = String.format("استاد داور «%s» حذف شد.", referee.getFullName());
+        String message = String.format("استاد داور «%s» از پایان‌نامه (پروژه) حذف شد.", referee.getFullName());
         ProblemEvent savedProblemEvent = problemEventRepository.save(ProblemEvent.builder()
                 .message(message).problem(problem).build());
         problem.getEvents().add(savedProblemEvent);

@@ -11,6 +11,7 @@ import {educationMapToEnglish, educationMapToPersian, PERSIAN_EDUCATIONS} from "
 import {Master} from "../../../model/user/master/Master";
 import ProblemStudentService from "../../../services/api/problem/ProblemStudentService";
 import MasterService from "../../../services/api/user/MasterService";
+import LocaleUtils from "../../../utility/LocaleUtils";
 import {EditState, ProblemEditSectionsProps} from "./ProblemEdit";
 
 const ProblemEditGeneralInfo: React.FunctionComponent<ProblemEditSectionsProps> = (props) => {
@@ -120,6 +121,20 @@ const ProblemEditGeneralInfo: React.FunctionComponent<ProblemEditSectionsProps> 
                 در صورت وجود تعداد زیادی نتیجه، تنها بخشی از آن نمایش داده می‌شود. برای یافتن سریع‌تر، جستجوی خود را
                 دقیق‌تر نمایید.
             </CustomAlert>
+            <ComboBox
+                options={["۱", "۲", "۳", "۴", "۵", "۶"]}
+                value={problemSave.numberOfReferees.toString()}
+                getOptionLabel={(option) => `${LocaleUtils.convertToPersianDigits(option)} نفر`}
+                onChange={(e, newValue) =>
+                    updateProblemSave({
+                        ...problemSave,
+                        numberOfReferees: +LocaleUtils.convertToEnglishDigits(newValue)
+                    })
+                }
+                textFieldInputProps={{
+                    label: "تعداد داوران",
+                }}
+            />
         </React.Fragment>
     );
 }

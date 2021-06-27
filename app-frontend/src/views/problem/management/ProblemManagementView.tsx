@@ -177,7 +177,7 @@ const ProblemManagementView: React.FunctionComponent<ProblemManagementViewProps>
                             </Typography>
                         </Box>
                         {
-                            [...Array(2)].map((e, index) => {
+                            [...Array(problem.numberOfReferees)].map((e, index) => {
                                 const orderString = NumberUtils.mapNumberToPersianOrderName(index + 1);
                                 let content: React.ReactNode;
                                 if (index < problem.referees.length) {
