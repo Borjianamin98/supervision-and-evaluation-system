@@ -93,8 +93,6 @@ public class ProblemService {
         problem.setStudent(student);
         problem.setSupervisor(supervisor);
         problem.setState(ProblemState.CREATED);
-        problem.getEvents().add(problemEventRepository.save(
-                ProblemEvent.builder().message("پایان‌نامه (پروژه) توسط دانشجو تعریف شد.").build()));
         Problem savedProblem = problemRepository.save(problem);
 
         MeetSchedule meetSchedule = meetScheduleRepository.save(MeetSchedule.builder()
@@ -106,6 +104,14 @@ public class ProblemService {
                 .build());
         savedProblem.setMeetSchedule(meetSchedule);
         savedProblem = problemRepository.save(savedProblem);
+
+        ProblemEvent problemEvent = problemEventRepository.save(ProblemEvent.builder()
+                .message("پایان‌نامه (پروژه) توسط دانشجو تعریف شد.")
+                .problem(savedProblem)
+                .build());
+        savedProblem.getEvents().add(problemEvent);
+        savedProblem = problemRepository.save(savedProblem);
+
         return ProblemDto.from(savedProblem);
     }
 
@@ -116,6 +122,11 @@ public class ProblemService {
             throw new IllegalResourceAccessException("Problem is not belong to student: " + studentId);
         }
 
+        ProblemEvent problemEvent = problemEventRepository.save(ProblemEvent.builder()
+                .message("اطلاعات مربوط به پایان‌نامه (پروژه) توسط دانشجو ویرایش شد.")
+                .problem(problem)
+                .build());
+
         problem.setEducation(problemSaveDto.getEducation());
         problem.setTitle(problemSaveDto.getTitle());
         problem.setEnglishTitle(problemSaveDto.getEnglishTitle());
@@ -124,8 +135,7 @@ public class ProblemService {
         problem.setHistory(problemSaveDto.getHistory());
         problem.setConsiderations(problemSaveDto.getConsiderations());
         problem.setNumberOfReferees(problemSaveDto.getNumberOfReferees());
-        problem.getEvents().add(problemEventRepository.save(
-                ProblemEvent.builder().message("اطلاعات مربوط به پایان‌نامه (پروژه) توسط دانشجو ویرایش شد.").build()));
+        problem.getEvents().add(problemEvent);
         return ProblemDto.from(problemRepository.save(problem));
     }
 
@@ -305,7 +315,8 @@ public class ProblemService {
         referee.getProblemsReferee().add(savedProblem);
         masterRepository.save(referee);
 
-        String message = String.format("استاد «%s» به لیست داورهای پایان‌نامه (پروژه) اضافه شد.", referee.getFullName());
+        String message = String
+                .format("استاد «%s» به لیست داورهای پایان‌نامه (پروژه) اضافه شد.", referee.getFullName());
         ProblemEvent savedProblemEvent = problemEventRepository.save(ProblemEvent.builder()
                 .message(message).problem(problem).build());
         problem.getEvents().add(savedProblemEvent);

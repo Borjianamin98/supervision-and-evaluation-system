@@ -126,7 +126,8 @@ public class MeetScheduleService {
                 .message(
                         "زمان‌بندی دفاع پایان‌نامه (پروژه) شروع شده است. خواهشا تمامی اعضای مربوطه زمان‌های حضور خود "
                                 + "را برای برگزاری جلسه‌ی دفاع مشخص نمایند.")
-                .problem(scheduleProblem).build());
+                .problem(scheduleProblem)
+                .build());
 
         meetSchedule.setDurationMinutes(durationMinutes);
         meetSchedule.setMinimumDate(DateUtility.getStartOfDay(meetScheduleSaveDto.getMinimumDate()));
@@ -148,7 +149,8 @@ public class MeetScheduleService {
                         "زمان‌بندی دفاع پایان‌نامه (پروژه) به درخواست استاد راهنما تغییر یافته است. خواهشا تمامی "
                                 + "اعضای مربوطه زمان‌های حضور خود را برای برگزاری جلسه‌ی دفاع در زمان‌بندی جدید مشخص "
                                 + "نمایند.")
-                .problem(scheduleProblem).build());
+                .problem(scheduleProblem)
+                .build());
 
         meetSchedule.setMinimumDate(DateUtility.getStartOfDay(dateRangeDto.getStartDate()));
         meetSchedule.setMaximumDate(DateUtility.getEndOfDay(dateRangeDto.getEndDate()));

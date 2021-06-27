@@ -97,7 +97,7 @@ const ProblemManagementScheduleCard: React.FunctionComponent<ProblemManagementSc
             case MeetScheduleState.ACCEPTED:
                 return [
                     "جلسه‌ی دفاع در زمان مقرر با حضور تمامی اعضا تشکیل شد. " +
-                    "داوران از بخش جمع‌بندی، نمره و نظر نهایی خود را در مورد پایان‌نامه (پروژه) مشخصص کنند."];
+                    "داوران از بخش جمع‌بندی، نمره و نظر نهایی خود را در مورد پایان‌نامه (پروژه) مشخص کنند."];
             default:
                 throw new Error("Illegal problem meet schedule state: " + problem.meetSchedule.state);
         }
