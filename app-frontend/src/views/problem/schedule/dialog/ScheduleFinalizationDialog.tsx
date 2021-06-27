@@ -24,6 +24,7 @@ import {Problem} from "../../../../model/problem/problem";
 import {userRoleInfo} from "../../../../model/user/User";
 import ScheduleService from "../../../../services/api/schedule/ScheduleService";
 import DateUtils from "../../../../utility/DateUtils";
+import LocaleUtils from "../../../../utility/LocaleUtils";
 import {PROBLEM_MANAGEMENT_VIEW_PATH} from "../../../ViewPaths";
 
 function minAvailableHour(selectedDate: moment.Moment) {
@@ -189,7 +190,11 @@ const ScheduleFinalizationDialog: React.FunctionComponent<ScheduleDateDialogProp
                             helperText: selectedDateError ? (
                                 minAvailableHour(selectedDate) > 20 ?
                                     `در تاریخ مربوطه امکان تشکیل جلسه دفاع ممکن نمی‌باشد.` :
-                                    `ساعت جلسه دفاع باید بین ${minAvailableHour(selectedDate)} الی 20 باشد.`
+                                    `ساعت جلسه دفاع باید بین 
+                                    ${LocaleUtils.convertToPersianDigits(minAvailableHour(selectedDate))}
+                                     الی 
+                                     ${LocaleUtils.convertToPersianDigits(20)}
+                                      باشد.`
                             ) : ""
                         }}
                     />

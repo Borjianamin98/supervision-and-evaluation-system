@@ -4,6 +4,7 @@ import brown from '@material-ui/core/colors/brown';
 import deepOrange from '@material-ui/core/colors/deepOrange';
 import indigo from '@material-ui/core/colors/indigo';
 import purple from '@material-ui/core/colors/purple';
+import red from '@material-ui/core/colors/red';
 import teal from '@material-ui/core/colors/teal';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -114,7 +115,7 @@ const ProblemScheduleView: React.FunctionComponent<ProblemScheduleViewProps> = (
             .catch(error => generalErrorHandler(error, enqueueSnackbar))
     }
 
-    const candidateColors = [blue[500], purple[500], teal[500], indigo[500]]
+    const candidateColors = [blue[500], purple[500], teal[500], indigo[500], red[500]]
     const participants = [
         {
             id: problem.student.id,

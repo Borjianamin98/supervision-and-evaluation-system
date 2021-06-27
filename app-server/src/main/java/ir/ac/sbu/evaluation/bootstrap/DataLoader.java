@@ -200,6 +200,12 @@ public class DataLoader implements CommandLineRunner {
                                 + " رفتن به سمت آن بسنجیم تا از درستی آن تا حد خوبی اطمینان پیدا کنیم.")
                 .build());
 
+        meetScheduleService.startMeetSchedule(mojtabaMaster.getId(), problem3.getMeetSchedule().getId(),
+                MeetScheduleSaveDto.builder()
+                        .durationMinutes(30)
+                        .minimumDate(threeDayAgo)
+                        .maximumDate(threeDayTomorrow)
+                        .build());
         meetScheduleService.addScheduleEvent(sadeghMaster.getId(), problem3.getMeetSchedule().getId(),
                 DateRangeDto.builder()
                         .startDate(dateFormat.parse(String.format("%s 09:00", todayDate)).toInstant())
@@ -237,6 +243,9 @@ public class DataLoader implements CommandLineRunner {
                         .startDate(dateFormat.parse(String.format("%s 17:00", tomorrowDate)).toInstant())
                         .endDate(dateFormat.parse(String.format("%s 18:00", tomorrowDate)).toInstant())
                         .build());
+        for (UserDto user : Arrays.asList(sadeghMaster, aminStudent, mojtabaMaster, mahmoudMaster)) {
+            meetScheduleService.announceFinalizationByUser(user.getId(), problem3.getMeetSchedule().getId());
+        }
 
         // Shared schedule event between all participants for problem 4
         meetScheduleService.startMeetSchedule(mojtabaMaster.getId(), problem4.getMeetSchedule().getId(),
@@ -251,6 +260,7 @@ public class DataLoader implements CommandLineRunner {
                             .startDate(dateFormat.parse(String.format("%s 17:00", yesterdayDate)).toInstant())
                             .endDate(dateFormat.parse(String.format("%s 18:00", yesterdayDate)).toInstant())
                             .build());
+            meetScheduleService.announceFinalizationByUser(user.getId(), problem4.getMeetSchedule().getId());
         }
         // Complete meet schedule of problem 4
         meetScheduleService.finalizeMeetSchedule(mojtabaMaster.getId(), problem4.getMeetSchedule().getId(),
@@ -348,6 +358,7 @@ public class DataLoader implements CommandLineRunner {
                     .startDate(threeDayAgo.plus(amountToAdd, ChronoUnit.HOURS))
                     .endDate(threeDayAgo.plus(amountToAdd + 1, ChronoUnit.HOURS))
                     .build());
+            meetScheduleService.announceFinalizationByUser(user.getId(), problem.getMeetSchedule().getId());
         }
         meetScheduleService.finalizeMeetSchedule(master.getId(), problem.getMeetSchedule().getId(),
                 threeDayAgo.plus(amountToAdd, ChronoUnit.HOURS));

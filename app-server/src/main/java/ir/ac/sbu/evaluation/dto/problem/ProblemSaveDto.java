@@ -48,7 +48,7 @@ public class ProblemSaveDto {
     private long supervisorId;
 
     @Min(1)
-    @Max(6)
+    @Max(5)
     private int numberOfReferees;
 
     public ProblemSaveDto() {

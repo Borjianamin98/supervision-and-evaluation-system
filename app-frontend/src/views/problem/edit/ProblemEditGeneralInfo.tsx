@@ -122,7 +122,7 @@ const ProblemEditGeneralInfo: React.FunctionComponent<ProblemEditSectionsProps> 
                 دقیق‌تر نمایید.
             </CustomAlert>
             <ComboBox
-                options={["۱", "۲", "۳", "۴", "۵", "۶"]}
+                options={["۱", "۲", "۳", "۴", "۵"]}
                 value={problemSave.numberOfReferees.toString()}
                 getOptionLabel={(option) => `${LocaleUtils.convertToPersianDigits(option)} نفر`}
                 onChange={(e, newValue) =>
