@@ -18,6 +18,7 @@ import ir.ac.sbu.evaluation.model.schedule.MeetScheduleState;
 import ir.ac.sbu.evaluation.model.schedule.ScheduleEvent;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.Student;
+import ir.ac.sbu.evaluation.repository.notification.NotificationRepository;
 import ir.ac.sbu.evaluation.repository.problem.ProblemEventRepository;
 import ir.ac.sbu.evaluation.repository.problem.ProblemRepository;
 import ir.ac.sbu.evaluation.repository.schedule.MeetScheduleRepository;
@@ -48,6 +49,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class ProblemService {
 
+    private final NotificationRepository notificationRepository;
+
     private final StudentRepository studentRepository;
     private final MasterRepository masterRepository;
     private final ProblemRepository problemRepository;
@@ -58,14 +61,18 @@ public class ProblemService {
 
     private final String problemEventDirectory;
 
-    public ProblemService(StudentRepository studentRepository,
-            MasterRepository masterRepository, ProblemRepository problemRepository,
+    public ProblemService(
+            NotificationRepository notificationRepository,
+            StudentRepository studentRepository,
+            MasterRepository masterRepository,
+            ProblemRepository problemRepository,
             ProblemEventRepository problemEventRepository,
             MeetScheduleRepository meetScheduleRepository,
             ScheduleEventRepository scheduleEventRepository,
             @Value("${local-paths.root-directory}") String rootDirectory,
             @Value("${local-paths.problem-events}") String problemEventDirectory)
             throws InitializationFailureException {
+        this.notificationRepository = notificationRepository;
         this.studentRepository = studentRepository;
         this.masterRepository = masterRepository;
         this.problemRepository = problemRepository;

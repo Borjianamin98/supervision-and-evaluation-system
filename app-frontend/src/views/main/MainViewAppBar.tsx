@@ -5,9 +5,11 @@ import Typography from '@material-ui/core/Typography';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import PersonIcon from '@material-ui/icons/Person';
 import React from 'react';
+import {useQuery} from "react-query";
 import {Link, useLocation} from "react-router-dom";
 import PopperIconButton from "../../components/Popper/PopperIconButton";
 import AuthenticationService from "../../services/api/AuthenticationService";
+import NotificationService from "../../services/api/notification/NotificationService";
 import {PROFILE_VIEW_PATH} from "../ViewPaths";
 import {allRoutesInfo} from "./MainViewNavBarLinks";
 
@@ -39,13 +41,19 @@ const MainViewAppBar: React.FunctionComponent = () => {
         setPageTitle(candidateNames.length === 0 || candidateNames.length > 1 ? "" : candidateNames[0]);
     }, [location])
 
+    const {data: notifications} = useQuery(["notifications"],
+        () => NotificationService.numberOfNotifications(false), {
+            refetchInterval: 5000,
+            keepPreviousData: true
+        });
+
     return (
         <>
             <Typography variant="h6" noWrap className={classes.title}>{pageTitle}</Typography>
             <IconButton
                 color="inherit"
             >
-                <Badge badgeContent={0} color="secondary">
+                <Badge badgeContent={notifications ?? 0} color="secondary">
                     <NotificationsIcon/>
                 </Badge>
             </IconButton>

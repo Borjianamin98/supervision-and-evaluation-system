@@ -21,6 +21,8 @@ public class ApiPaths {
     public final static String API_MASTER_ROOT_PATH = API_ROOT_PATH + "/master";
     public final static String API_STUDENT_ROOT_PATH = API_ROOT_PATH + "/student";
 
+    public final static String API_NOTIFICATION_ROOT_PATH = API_ROOT_PATH + "/notification";
+
     private ApiPaths() {
     }
 
