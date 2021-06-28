@@ -2,9 +2,10 @@ import Grid from "@material-ui/core/Grid";
 import React from 'react';
 import addProblemImage from "../../assets/images/problem/add-prbolem.jpg";
 import viewProblemImage from "../../assets/images/problem/view-problem.jpg";
+import UserInfoImage from "../../assets/images/user/UserInfo.jpg";
 import ButtonLink from "../../components/Button/ButtonLink";
 import MediaCard from "../../components/MediaCard/MediaCard";
-import {PROBLEM_EDIT_VIEW_PATH, PROBLEM_LIST_VIEW_PATH} from "../ViewPaths";
+import {PROBLEM_EDIT_VIEW_PATH, PROBLEM_LIST_VIEW_PATH, PROFILE_VIEW_PATH} from "../ViewPaths";
 
 const StudentDashboardView: React.FunctionComponent = () => {
     return (
@@ -27,6 +28,19 @@ const StudentDashboardView: React.FunctionComponent = () => {
                     subTitle={["پایان‌نامه‌ها (پروژه‌ها) افزوده‌شده و در حال پیگیری را مشاهده نمایید."]}
                 >
                     <ButtonLink to={PROBLEM_LIST_VIEW_PATH} color="primary">
+                        مشاهده
+                    </ButtonLink>
+                </MediaCard>
+            </Grid>
+            <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
+                <MediaCard
+                    media={UserInfoImage}
+                    title="حساب کاربری"
+                    subTitle={[
+                        "اطلاعات حساب کاربری خود را از بخش مربوطه مشاهده نمایید.",
+                    ]}
+                >
+                    <ButtonLink to={PROFILE_VIEW_PATH} color="primary">
                         مشاهده
                     </ButtonLink>
                 </MediaCard>
