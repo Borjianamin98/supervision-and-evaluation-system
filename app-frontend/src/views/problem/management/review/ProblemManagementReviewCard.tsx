@@ -52,7 +52,7 @@ const ProblemManagementReviewCard: React.FunctionComponent<ProblemManagementRevi
                 } else {
                     const sharedInfo = "جلسه‌ی دفاع در زمان مقرر با حضور تمامی اعضا تشکیل شده است. ";
                     if (currentUserIsStudent) {
-                        return ["نمره‌ی پاپا‌ن‌نامه (پروژه) هنوز توسط داوران نهایی نشده است."]
+                        return ["نمره‌ی پایا‌ن‌نامه (پروژه) هنوز توسط داوران نهایی نشده است."]
                     } else if (currentUserIsSupervisor) {
                         return [
                             sharedInfo +
