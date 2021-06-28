@@ -20,10 +20,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-    show-sql: false # TODO: Added for debug purpose and should be disabled
+    show-sql: false
     properties:
       hibernate:
-        format_sql: false # TODO: Added for debug purpose and should be disabled
+        format_sql: false
 
   servlet:
     multipart:
@@ -35,12 +35,13 @@ spring:
   web.resources.add-mappings: false
 
 # Application configurations
+application:
+  init-with-sample-data: true
 
 # JWT configurations
 jwt:
   secret: SecretJwtString
-  # TODO: Decrease it to 900 (15 minutes) after ready for deployment
-  access-token-expiration-seconds: 3600 # 15 minutes
+  access-token-expiration-seconds: 900 # 15 minutes
   refresh-token-expiration-seconds: 604800 # 1 week
   download-token-expiration-seconds: 120 # 2 minutes
 

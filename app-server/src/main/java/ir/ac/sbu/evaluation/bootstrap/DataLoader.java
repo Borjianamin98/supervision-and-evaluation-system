@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -84,6 +85,9 @@ public class DataLoader implements CommandLineRunner {
     private final Instant threeDayAgo;
     private final Instant threeDayTomorrow;
 
+    @Value("${application.init-with-sample-data}")
+    private boolean initWithSampleDate;
+
     public DataLoader(UniversityService universityService,
             FacultyService facultyService,
             AdminService adminService, MasterService masterService,
@@ -120,9 +124,26 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws ParseException {
-        prepareUniversities();
-        prepareUsers();
+        if (initWithSampleDate) {
+            prepareUniversities();
+            prepareUsers();
+            prepareSampleProblems();
+        }
 
+        AdminDto admin = adminService.save(AdminSaveDto.builder()
+                .firstName("مدیر")
+                .lastName("سامانه")
+                .username("admin")
+                .password("pass")
+                .personalInfo(PersonalInfoSaveDto.builder()
+                        .gender(Gender.MALE)
+                        .telephoneNumber("9137654321")
+                        .email("admin@gmail.com")
+                        .build())
+                .build());
+    }
+
+    private void prepareSampleProblems() throws ParseException {
         setSpringSecurityAuthentication(aminStudent);
         ProblemDto problem1 = problemService.addProblem(aminStudent.getId(), ProblemSaveDto.builder()
                 .education(Education.BACHELOR)
@@ -479,18 +500,6 @@ public class DataLoader implements CommandLineRunner {
                         .email("ahmad@gmail.com")
                         .build())
                 .facultyId(computerEngineeringFacultyTehran.getId())
-                .build());
-
-        AdminDto admin = adminService.save(AdminSaveDto.builder()
-                .firstName("مدیر")
-                .lastName("سامانه")
-                .username("admin")
-                .password("pass")
-                .personalInfo(PersonalInfoSaveDto.builder()
-                        .gender(Gender.MALE)
-                        .telephoneNumber("9137654321")
-                        .email("admin@gmail.com")
-                        .build())
                 .build());
     }
 

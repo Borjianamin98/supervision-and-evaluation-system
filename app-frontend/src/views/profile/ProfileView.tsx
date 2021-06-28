@@ -155,6 +155,7 @@ const ProfileView: React.FunctionComponent = () => {
                                 {user ? userRoleInfo(user) : ""}
                             </Typography>
                         </Grid>
+                        {/* TODO: Implementation of modifying user information is not implemented. */}
                         {/*<Grid container spacing={2} className={classes.gridItem}>*/}
                         {/*    <Grid item xs={6}>*/}
                         {/*        <Button*/}

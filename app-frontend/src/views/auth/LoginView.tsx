@@ -115,16 +115,17 @@ const LoginView: React.FunctionComponent = (props) => {
                                 ورود
                             </Button>
                             <Grid container spacing={2}>
-                                <Grid item xs={6}>
-                                    <Button
-                                        variant="contained"
-                                        fullWidth
-                                        color="secondary"
-                                    >
-                                        فراموشی رمز
-                                    </Button>
-                                </Grid>
-                                <Grid item xs={6}>
+                                {/* TODO: Resetting password feature is not implemented. */}
+                                {/*<Grid item xs={6}>*/}
+                                {/*    <Button*/}
+                                {/*        variant="contained"*/}
+                                {/*        fullWidth*/}
+                                {/*        color="secondary"*/}
+                                {/*    >*/}
+                                {/*        فراموشی رمز*/}
+                                {/*    </Button>*/}
+                                {/*</Grid>*/}
+                                <Grid item xs={12}>
                                     <ButtonLink
                                         to={SIGNUP_VIEW_PATH}
                                         variant="contained"
