@@ -1,4 +1,3 @@
-import {makeStyles} from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import React from 'react';
 import facultyViewImage from "../../assets/images/faculty/faculty-view.jpg";

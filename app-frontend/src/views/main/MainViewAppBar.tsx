@@ -1,4 +1,4 @@
-import {Badge, MenuItem, MenuList} from "@material-ui/core";
+import {Badge, IconButton, MenuItem, MenuList} from "@material-ui/core";
 import Divider from '@material-ui/core/Divider';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -42,23 +42,13 @@ const MainViewAppBar: React.FunctionComponent = () => {
     return (
         <>
             <Typography variant="h6" noWrap className={classes.title}>{pageTitle}</Typography>
-            <PopperIconButton
-                icon={
-                    <Badge badgeContent={0} color="secondary">
-                        <NotificationsIcon/>
-                    </Badge>
-                }>
-                {
-                    ({menuListProps, popperClose}) => <MenuList {...menuListProps}>
-                        <MenuItem
-                            className={classes.dropdownItem}
-                            onClick={popperClose}
-                        >
-                            پیامی وجود ندارد.
-                        </MenuItem>
-                    </MenuList>
-                }
-            </PopperIconButton>
+            <IconButton
+                color="inherit"
+            >
+                <Badge badgeContent={0} color="secondary">
+                    <NotificationsIcon/>
+                </Badge>
+            </IconButton>
             <PopperIconButton icon={<PersonIcon/>}>
                 {
                     ({menuListProps, popperClose}) => <MenuList {...menuListProps}>
