@@ -18,7 +18,6 @@ import ir.ac.sbu.evaluation.model.schedule.MeetScheduleState;
 import ir.ac.sbu.evaluation.model.schedule.ScheduleEvent;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.Student;
-import ir.ac.sbu.evaluation.repository.notification.NotificationRepository;
 import ir.ac.sbu.evaluation.repository.problem.ProblemEventRepository;
 import ir.ac.sbu.evaluation.repository.problem.ProblemRepository;
 import ir.ac.sbu.evaluation.repository.schedule.MeetScheduleRepository;
@@ -26,6 +25,7 @@ import ir.ac.sbu.evaluation.repository.schedule.ScheduleEventRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
 import ir.ac.sbu.evaluation.repository.user.StudentRepository;
 import ir.ac.sbu.evaluation.security.SecurityRoles;
+import ir.ac.sbu.evaluation.service.notification.NotificationService;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -49,7 +49,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class ProblemService {
 
-    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
 
     private final StudentRepository studentRepository;
     private final MasterRepository masterRepository;
@@ -62,7 +62,7 @@ public class ProblemService {
     private final String problemEventDirectory;
 
     public ProblemService(
-            NotificationRepository notificationRepository,
+            NotificationService notificationService,
             StudentRepository studentRepository,
             MasterRepository masterRepository,
             ProblemRepository problemRepository,
@@ -72,7 +72,7 @@ public class ProblemService {
             @Value("${local-paths.root-directory}") String rootDirectory,
             @Value("${local-paths.problem-events}") String problemEventDirectory)
             throws InitializationFailureException {
-        this.notificationRepository = notificationRepository;
+        this.notificationService = notificationService;
         this.studentRepository = studentRepository;
         this.masterRepository = masterRepository;
         this.problemRepository = problemRepository;
@@ -118,6 +118,11 @@ public class ProblemService {
                 .build());
         savedProblem.getEvents().add(problemEvent);
         savedProblem = problemRepository.save(savedProblem);
+
+        notificationService.sendNotification(
+                String.format("پایان‌نامه (پروژه) %s توسط %s تعریف شد.",
+                        problem.getTitle(), problem.getStudent().getFullName()),
+                problem.getSupervisor());
 
         return ProblemDto.from(savedProblem);
     }

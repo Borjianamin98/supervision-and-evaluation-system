@@ -9,7 +9,7 @@ class NotificationService {
 
     static numberOfNotifications(seen: boolean) {
         return apiAxios
-            .get<number>(`${NotificationService.API_NOTIFICATION_ROOT_PATH}`, {
+            .get<number>(`${NotificationService.API_NOTIFICATION_ROOT_PATH}/count`, {
                 params: {
                     seen,
                 }

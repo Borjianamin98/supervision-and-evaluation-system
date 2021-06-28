@@ -22,7 +22,7 @@ public class Notification extends Auditable {
     private String content;
 
     @Column(name = "seen", nullable = false)
-    private Boolean seen;
+    private Boolean seen = false;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -40,7 +40,7 @@ public class Notification extends Auditable {
             User user) {
         super(id, createdBy, createdDate);
         this.content = content;
-        this.seen = seen;
+        this.seen = seen != null && seen;
         this.user = user;
     }
 }
