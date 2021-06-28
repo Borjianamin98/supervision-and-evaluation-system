@@ -133,8 +133,8 @@ const ProblemAddEvent: React.FunctionComponent<ProblemAddEventProps> = (props) =
                                 {`حجم پیوست: ${LocaleUtils.convertFileSizeToPersian(attachment.size)}`}
                             </CustomTypography>
                             {
-                                attachment.size > 5 * 1024 * 1024 && <CustomTypography lineHeight={2} color={"error"}>
-                                    اندازه‌ی فایل پیوست باید کمتر از ۵ مگابایت باشد.
+                                attachment.size > 20 * 1024 * 1024 && <CustomTypography lineHeight={2} color={"error"}>
+                                    اندازه‌ی فایل پیوست باید کمتر از ۲۰ مگابایت باشد.
                                 </CustomTypography>
                             }
                         </CardContent>

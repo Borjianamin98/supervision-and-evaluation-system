@@ -201,10 +201,10 @@ public class ProblemService {
 
         MultipartFile attachment = problemEventSaveDto.getAttachment();
         if (attachment != null) {
-            if (attachment.getSize() > 5 * 1024 * 1024) {
+            if (attachment.getSize() > 20 * 1024 * 1024) {
                 throw new PayloadTooLargeException(
                         "Attachment file is too much large: " + attachment.getName() + " bytes",
-                        "فایل ارسالی از حجم مجاز ۵ مگابایت بیش‌تر می‌باشد.");
+                        "فایل ارسالی از حجم مجاز ۲۰ مگابایت بیش‌تر می‌باشد.");
             }
         }
 
