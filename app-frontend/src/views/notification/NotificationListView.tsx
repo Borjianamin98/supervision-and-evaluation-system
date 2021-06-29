@@ -1,6 +1,7 @@
 import {ThemeProvider} from "@material-ui/core/styles";
 import DoneIcon from '@material-ui/icons/Done';
 import NewReleasesIcon from '@material-ui/icons/NewReleases';
+import moment from "jalali-moment";
 import React from 'react';
 import {useQuery, useQueryClient} from "react-query";
 import {rtlTheme} from "../../App";
@@ -42,13 +43,18 @@ const NotificationListView: React.FunctionComponent = () => {
                 loadingState={toLoadingState(notificationsQuery)}
                 collectionData={notifications ? notifications.content : []}
                 tableHeaderCells={[
-                    {content: "مسئول", width: "20%"},
-                    {content: "پیام", width: "70%"},
-                    {content: "وضعیت", smOptional: true, width: "10%"},
+                    {content: "تاریخ", width: "25%", xsOptional: true},
+                    {content: "مسئول", width: "10%", mdOptional: true},
+                    {content: "پیام", width: "60%"},
+                    {content: "وضعیت", smOptional: true, width: "5%"},
                 ]}
                 tableRow={(row: AppNotification, actions) => {
                     const cells: OptionalTableCellProps[] = [
-                        {content: row.createdBy},
+                        {
+                            content: moment(row.createdDate).locale('fa').format('ddd، D MMMM YYYY (h:mm a)'),
+                            xsOptional: true
+                        },
+                        {content: row.createdBy, mdOptional: true},
                         {content: <CustomTypography>{row.content}</CustomTypography>},
                         {
                             content: row.seen ? (
