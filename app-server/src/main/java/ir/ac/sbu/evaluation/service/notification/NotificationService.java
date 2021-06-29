@@ -5,6 +5,7 @@ import ir.ac.sbu.evaluation.model.notification.Notification;
 import ir.ac.sbu.evaluation.model.user.User;
 import ir.ac.sbu.evaluation.repository.notification.NotificationRepository;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +23,12 @@ public class NotificationService {
 
     @Transactional
     public void sendNotification(String content, User... receivers) {
-        notificationRepository.saveAll(Arrays.stream(receivers)
+        sendNotification(content, Arrays.asList(receivers));
+    }
+
+    @Transactional
+    public void sendNotification(String content, List<? extends User> receivers) {
+        notificationRepository.saveAll(receivers.stream()
                 .map(receiver -> Notification.builder()
                         .content(content)
                         .user(receiver)

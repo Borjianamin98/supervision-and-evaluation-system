@@ -31,10 +31,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
@@ -172,7 +174,7 @@ public class ProblemService {
         } else {
             // Responsible user is supervisor.
             abandonReason = String
-                    .format("پایان‌نامه (پروژه) %s توسط استاد راهنما به دلیل مناسب‌نبودن لغو شد.", problem.getTitle());
+                    .format("پایان‌نامه (پروژه) %s توسط استاد راهنما به دلیل نامناسب بودن، لغو شد.", problem.getTitle());
             notificationService.sendNotification(abandonReason, problem.getStudent());
         }
 
@@ -190,9 +192,13 @@ public class ProblemService {
                     "Problem is not controlled by master user: ID = " + userId + " Problem ID = " + problemId);
         }
 
-        problem.setState(ProblemState.IN_PROGRESS);
         ProblemEvent savedProblemEvent = problemEventRepository.save(ProblemEvent.builder()
                 .message("پایان‌نامه (پروژه) توسط استاد راهنما تایید اولیه شد.").problem(problem).build());
+        notificationService.sendNotification(
+                String.format("پایان‌نامه (پروژه) %s توسط استاد راهنما تایید اولیه شد.", problem.getTitle()),
+                problem.getStudent());
+
+        problem.setState(ProblemState.IN_PROGRESS);
         problem.getEvents().add(savedProblemEvent);
         return ProblemDto.from(problemRepository.save(problem));
     }
@@ -261,6 +267,24 @@ public class ProblemService {
                         "در دریافت فایل ارسالی خطا رخ داده است. دوباره تلاش نمایید. در صورت تداوم مشکل، با مسئول "
                                 + "مربوطه تماس بگیرید.");
             }
+        }
+
+        String notificationGeneralMessage =
+                "بر روی پایان‌نامه (پروژه) " + problem.getTitle() + " توسط %s بازخورد (پیشنهادی) ثبت شد.";
+        if (userId == problem.getStudent().getId()) {
+            String notificationMessage = String.format(notificationGeneralMessage, "دانشجو");
+            notificationService.sendNotification(notificationMessage, new ArrayList<>(problem.getReferees()));
+            notificationService.sendNotification(notificationMessage, problem.getSupervisor());
+        } else if (userId == problem.getSupervisor().getId()) {
+            String notificationMessage = String.format(notificationGeneralMessage, "استاد راهنما");
+            notificationService.sendNotification(notificationMessage, new ArrayList<>(problem.getReferees()));
+            notificationService.sendNotification(notificationMessage, problem.getStudent());
+        } else {
+            String notificationMessage = String.format(notificationGeneralMessage, "یکی از داوران");
+            List<Master> otherReferees = problem.getReferees().stream().filter(master -> master.getId() != userId)
+                    .collect(Collectors.toList());
+            notificationService.sendNotification(notificationMessage, otherReferees);
+            notificationService.sendNotification(notificationMessage, problem.getStudent(), problem.getSupervisor());
         }
 
         return ProblemEventDto.from(savedProblemEvent);
@@ -348,8 +372,13 @@ public class ProblemService {
                 .format("استاد «%s» به لیست داورهای پایان‌نامه (پروژه) اضافه شد.", referee.getFullName());
         ProblemEvent savedProblemEvent = problemEventRepository.save(ProblemEvent.builder()
                 .message(message).problem(problem).build());
-        problem.getEvents().add(savedProblemEvent);
 
+        String notificationMessage = String.format("استاد %s به لیست داورهای پایان‌نامه (پروژه) %s اضافه شد.",
+                referee.getFullName(), problem.getTitle());
+        notificationService.sendNotification(notificationMessage, problem.getStudent());
+        notificationService.sendNotification(notificationMessage, new ArrayList<>(problem.getReferees()));
+
+        problem.getEvents().add(savedProblemEvent);
         return ProblemDto.from(savedProblem);
     }
 
@@ -396,6 +425,11 @@ public class ProblemService {
         ProblemEvent savedProblemEvent = problemEventRepository.save(ProblemEvent.builder()
                 .message(message).problem(problem).build());
         problem.getEvents().add(savedProblemEvent);
+
+        String notificationMessage = String.format("استاد %s از لیست داورهای پایان‌نامه (پروژه) %s حذف شد.",
+                referee.getFullName(), problem.getTitle());
+        notificationService.sendNotification(notificationMessage, problem.getStudent());
+        notificationService.sendNotification(notificationMessage, new ArrayList<>(problem.getReferees()));
 
         return ProblemDto.from(problemRepository.save(problem));
     }
