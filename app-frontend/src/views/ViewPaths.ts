@@ -6,8 +6,9 @@ export const SIGNUP_VIEW_PATH = `${AUTH_VIEW_PATH}/signup`;
 // Dashboard Views
 export const DASHBOARD_VIEW_PATH = "/dashboard";
 
-// Profile Views
+// User Views
 export const PROFILE_VIEW_PATH = "/profile";
+export const NOTIFICATION_VIEW_PATH = "/notification";
 
 // Problem Views
 export const PROBLEM_VIEW_PATH = "/problem";

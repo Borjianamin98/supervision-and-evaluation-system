@@ -3,6 +3,7 @@ import List from '@material-ui/core/List';
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
+import NotificationsIcon from '@material-ui/icons/Notifications';
 import PersonIcon from '@material-ui/icons/Person';
 import SchoolIcon from '@material-ui/icons/School';
 import ViewListIcon from '@material-ui/icons/ViewList';
@@ -12,6 +13,7 @@ import ListItemLink from '../../components/List/ListItemLink';
 import {Role} from "../../model/enum/role";
 import AuthenticationService from "../../services/api/AuthenticationService";
 import DashboardView from "../dashboard/DashboardView";
+import NotificationListView from "../notification/NotificationListView";
 import ProblemEdit from "../problem/edit/ProblemEdit";
 import ProblemManagementView from "../problem/management/ProblemManagementView";
 import ProblemListView from "../problem/PorblemListView";
@@ -27,6 +29,7 @@ import {
     DASHBOARD_VIEW_PATH,
     FACULTY_LIST_VIEW_PATH,
     MASTER_REPORT_VIEW_PATH,
+    NOTIFICATION_VIEW_PATH,
     PROBLEM_EDIT_VIEW_PATH,
     PROBLEM_LIST_VIEW_PATH,
     PROBLEM_MANAGEMENT_VIEW_PATH,
@@ -86,15 +89,6 @@ const problemRoutesInfo: navBarRouteInfo[] = [
     },
 ]
 
-const managementRoutesInfo: navBarRouteInfo[] = [
-    {
-        path: PROFILE_VIEW_PATH,
-        name: "حساب کاربری",
-        component: ProfileView,
-        icon: PersonIcon,
-    },
-]
-
 const universityRoutesInfo: navBarRouteInfo[] = [
     {
         path: UNIVERSITY_LIST_VIEW_PATH,
@@ -129,12 +123,27 @@ const reportRoutesInfo: navBarRouteInfo[] = [
     },
 ]
 
+const userRoutesInfo: navBarRouteInfo[] = [
+    {
+        path: NOTIFICATION_VIEW_PATH,
+        name: "اطلاعیه‌ها",
+        component: NotificationListView,
+        icon: NotificationsIcon,
+    },
+    {
+        path: PROFILE_VIEW_PATH,
+        name: "حساب کاربری",
+        component: ProfileView,
+        icon: PersonIcon,
+    },
+]
+
 const allRoutesInfo: navBarRouteInfo[] = [
     ...dashboardRoutesInfo,
     ...problemRoutesInfo,
-    ...managementRoutesInfo,
     ...universityRoutesInfo,
     ...reportRoutesInfo,
+    ...userRoutesInfo,
 ];
 
 const createListFromRoutesInfo = (routesInfo: navBarRouteInfo[], authenticatedUserRole: Role) => {
@@ -171,7 +180,7 @@ const MainViewNavBarLinks: React.FunctionComponent = () => {
             {createListFromRoutesInfo(problemRoutesInfo, jwtPayloadRole)}
             {createListFromRoutesInfo(universityRoutesInfo, jwtPayloadRole)}
             {createListFromRoutesInfo(reportRoutesInfo, jwtPayloadRole)}
-            {createListFromRoutesInfo(managementRoutesInfo, jwtPayloadRole)}
+            {createListFromRoutesInfo(userRoutesInfo, jwtPayloadRole)}
         </>
     );
 }

@@ -31,6 +31,7 @@ import ir.ac.sbu.evaluation.service.user.AdminService;
 import ir.ac.sbu.evaluation.service.user.MasterService;
 import ir.ac.sbu.evaluation.service.user.StudentService;
 import ir.ac.sbu.evaluation.utility.DateUtility;
+import ir.ac.sbu.evaluation.utility.LocaleUtility;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -350,10 +351,11 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private void createCompletedProblem(int number, StudentDto student, MasterDto master,
-            MasterDto referee1, MasterDto referee2) throws ParseException {
+            MasterDto referee1, MasterDto referee2) {
+        setSpringSecurityAuthentication(student);
         ProblemDto problem = problemService.addProblem(student.getId(), ProblemSaveDto.builder()
                 .education(Education.BACHELOR)
-                .title("مسئله " + number)
+                .title("مسئله " + LocaleUtility.convertToPersianDigits(String.valueOf(number)))
                 .englishTitle("Problem " + number)
                 .keywords(new HashSet<>(Arrays.asList("کلیدواژه 1", "کلیدواژه 2")))
                 .definition(

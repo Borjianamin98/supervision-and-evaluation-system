@@ -120,8 +120,7 @@ public class ProblemService {
         savedProblem = problemRepository.save(savedProblem);
 
         notificationService.sendNotification(
-                String.format("پایان‌نامه (پروژه) %s توسط %s تعریف شد.",
-                        problem.getTitle(), problem.getStudent().getFullName()),
+                String.format("پایان‌نامه (پروژه) جدید %s تعریف شد.", problem.getTitle()),
                 problem.getSupervisor());
 
         return ProblemDto.from(savedProblem);
@@ -148,7 +147,13 @@ public class ProblemService {
         problem.setConsiderations(problemSaveDto.getConsiderations());
         problem.setNumberOfReferees(problemSaveDto.getNumberOfReferees());
         problem.getEvents().add(problemEvent);
-        return ProblemDto.from(problemRepository.save(problem));
+        Problem savedProblem = problemRepository.save(problem);
+
+        notificationService.sendNotification(
+                String.format("اطلاعات مربوط به پایان‌نامه (پروژه) %s توسط دانشجو ویرایش شد.", problem.getTitle()),
+                problem.getSupervisor());
+
+        return ProblemDto.from(savedProblem);
     }
 
     @Transactional
@@ -159,9 +164,21 @@ public class ProblemService {
                     "Problem is not belong to student or supervisor: ID = " + userId + " Problem ID = " + problemId);
         }
 
+        String abandonReason;
+        if (problem.getStudent().getId() == userId) {
+            // Responsible user is student.
+            abandonReason = String.format("پایان‌نامه (پروژه) %s توسط دانشجو لغو شد.", problem.getTitle());
+            notificationService.sendNotification(abandonReason, problem.getSupervisor());
+        } else {
+            // Responsible user is supervisor.
+            abandonReason = String
+                    .format("پایان‌نامه (پروژه) %s توسط استاد راهنما به دلیل مناسب‌نبودن لغو شد.", problem.getTitle());
+            notificationService.sendNotification(abandonReason, problem.getStudent());
+        }
+
         problem.setState(ProblemState.ABANDONED);
         problem.getEvents().add(problemEventRepository.save(
-                ProblemEvent.builder().message("پایان‌نامه (پروژه) به وضعیت لغو شده تغییر کرد.").build()));
+                ProblemEvent.builder().message(abandonReason).build()));
         return ProblemDto.from(problemRepository.save(problem));
     }
 

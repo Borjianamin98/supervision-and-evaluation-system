@@ -34,8 +34,18 @@ public class NotificationService {
         return notificationRepository.countAllByUserIdAndSeen(userId, seen);
     }
 
+    @Transactional
     public Page<NotificationDto> retrieveNotifications(long userId, Pageable pageable) {
-        return notificationRepository.findAllByUserId(userId, pageable).map(NotificationDto::from);
+        Page<Notification> retrievedNotifications = notificationRepository.findAllByUserId(userId, pageable);
+        Page<NotificationDto> result = retrievedNotifications.map(NotificationDto::from);
+
+        // We should mark each notification as seen.
+        notificationRepository.saveAll(retrievedNotifications.map(notification -> {
+            notification.setSeen(true);
+            return notification;
+        }).getContent());
+
+        return result;
     }
 
 }

@@ -1,25 +1,26 @@
-import {IconButtonProps, TooltipProps, Zoom} from "@material-ui/core";
+import {IconButtonProps} from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
-import Tooltip from "@material-ui/core/Tooltip";
 import React from "react";
+import CustomTooltip, {CustomTooltipProps} from "../tooltip/CustomTooltip";
 
-export interface TooltipIconButtonProps extends IconButtonProps {
-    tooltipTitle: string,
-    tooltipTransitionComponent?: TooltipProps["TransitionComponent"],
-    extraTooltipProps?: Omit<TooltipProps, "TransitionComponent" | "children" | "title">,
+export interface TooltipIconButtonProps extends CustomTooltipProps, IconButtonProps {
 }
 
 const TooltipIconButton: React.FunctionComponent<TooltipIconButtonProps> = (props) => {
     const {tooltipTransitionComponent, tooltipTitle, extraTooltipProps, ...rest} = props;
 
     return (
-        <Tooltip TransitionComponent={tooltipTransitionComponent ?? Zoom} title={tooltipTitle} {...extraTooltipProps}>
+        <CustomTooltip
+            tooltipTransitionComponent={tooltipTransitionComponent}
+            tooltipTitle={tooltipTitle}
+            extraTooltipProps={extraTooltipProps}
+        >
              <span>
                 <IconButton {...rest}>
                     {props.children}
                 </IconButton>
              </span>
-        </Tooltip>
+        </CustomTooltip>
     );
 }
 

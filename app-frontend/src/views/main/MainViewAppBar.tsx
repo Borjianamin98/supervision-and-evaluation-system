@@ -41,7 +41,7 @@ const MainViewAppBar: React.FunctionComponent = () => {
         setPageTitle(candidateNames.length === 0 || candidateNames.length > 1 ? "" : candidateNames[0]);
     }, [location])
 
-    const {data: notifications} = useQuery(["notifications"],
+    const {data: notifications} = useQuery(["notificationsCount"],
         () => NotificationService.numberOfNotifications(false), {
             refetchInterval: 5000,
             keepPreviousData: true
