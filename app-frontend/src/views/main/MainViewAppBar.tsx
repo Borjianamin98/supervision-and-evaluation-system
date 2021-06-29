@@ -8,9 +8,10 @@ import React from 'react';
 import {useQuery} from "react-query";
 import {Link, useLocation} from "react-router-dom";
 import PopperIconButton from "../../components/Popper/PopperIconButton";
+import browserHistory from "../../config/browserHistory";
 import AuthenticationService from "../../services/api/AuthenticationService";
 import NotificationService from "../../services/api/notification/NotificationService";
-import {PROFILE_VIEW_PATH} from "../ViewPaths";
+import {NOTIFICATION_VIEW_PATH, PROFILE_VIEW_PATH} from "../ViewPaths";
 import {allRoutesInfo} from "./MainViewNavBarLinks";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -52,6 +53,7 @@ const MainViewAppBar: React.FunctionComponent = () => {
             <Typography variant="h6" noWrap className={classes.title}>{pageTitle}</Typography>
             <IconButton
                 color="inherit"
+                onClick={() => browserHistory.push(NOTIFICATION_VIEW_PATH)}
             >
                 <Badge badgeContent={notifications ?? 0} color="secondary">
                     <NotificationsIcon/>

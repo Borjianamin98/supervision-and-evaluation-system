@@ -83,7 +83,6 @@ public class MasterService {
         return MasterDto.from(getMaster(userId));
     }
 
-
     public AggregatedPeerReviewsDto retrieveMasterPeerReviews(long masterId, Pageable pageable) {
         Page<PeerReviewDto> peerReviews = peerReviewRepository.findAllByReviewedId(masterId, pageable)
                 .map(PeerReviewDto::from);

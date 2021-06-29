@@ -8,6 +8,7 @@ import TooltipIconButton from "../../components/Button/TooltipIconButton";
 import ExtendedTableRow from "../../components/Table/ExtendedTableRow";
 import {OptionalTableCellProps} from "../../components/Table/OptionalTableCell";
 import StatelessPaginationTable from "../../components/Table/StatelessPaginationTable";
+import CustomTypography from "../../components/Typography/CustomTypography";
 import {toLoadingState} from "../../model/enum/loadingState";
 import {AppNotification} from "../../model/notification/Notification"
 import NotificationService from "../../services/api/notification/NotificationService";
@@ -21,7 +22,8 @@ const NotificationListView: React.FunctionComponent = () => {
         data: notifications,
         ...notificationsQuery
     } = useQuery(["notifications", rowsPerPage, page],
-        () => NotificationService.retrieveNotifications(rowsPerPage, page, "createdDate", "desc"), {
+        () => NotificationService.retrieveNotifications(rowsPerPage, page,
+            ["createdDate", "id"], ["desc", "desc"]), {
             keepPreviousData: true
         });
 
@@ -47,7 +49,7 @@ const NotificationListView: React.FunctionComponent = () => {
                 tableRow={(row: AppNotification, actions) => {
                     const cells: OptionalTableCellProps[] = [
                         {content: row.createdBy},
-                        {content: row.content},
+                        {content: <CustomTypography>{row.content}</CustomTypography>},
                         {
                             content: row.seen ? (
                                 <TooltipIconButton tooltipTitle={"مشاهده‌شده"} color={"secondary"}>

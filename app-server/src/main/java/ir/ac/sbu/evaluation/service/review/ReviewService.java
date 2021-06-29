@@ -1,8 +1,8 @@
 package ir.ac.sbu.evaluation.service.review;
 
 import ir.ac.sbu.evaluation.dto.problem.ProblemDto;
-import ir.ac.sbu.evaluation.dto.review.peer.PeerReviewSaveDto;
 import ir.ac.sbu.evaluation.dto.review.ProblemReviewSaveDto;
+import ir.ac.sbu.evaluation.dto.review.peer.PeerReviewSaveDto;
 import ir.ac.sbu.evaluation.exception.IllegalResourceAccessException;
 import ir.ac.sbu.evaluation.exception.ResourceConflictException;
 import ir.ac.sbu.evaluation.exception.ResourceNotFoundException;
@@ -17,12 +17,15 @@ import ir.ac.sbu.evaluation.repository.problem.ProblemRepository;
 import ir.ac.sbu.evaluation.repository.review.PeerReviewRepository;
 import ir.ac.sbu.evaluation.repository.review.ProblemReviewRepository;
 import ir.ac.sbu.evaluation.repository.user.MasterRepository;
+import ir.ac.sbu.evaluation.service.notification.NotificationService;
 import ir.ac.sbu.evaluation.utility.LocaleUtility;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ReviewService {
+
+    private final NotificationService notificationService;
 
     private final MasterRepository masterRepository;
 
@@ -32,11 +35,13 @@ public class ReviewService {
     private final PeerReviewRepository peerReviewRepository;
     private final ProblemReviewRepository problemReviewRepository;
 
-    public ReviewService(MasterRepository masterRepository,
+    public ReviewService(NotificationService notificationService,
+            MasterRepository masterRepository,
             ProblemRepository problemRepository,
             ProblemEventRepository problemEventRepository,
             PeerReviewRepository peerReviewRepository,
             ProblemReviewRepository problemReviewRepository) {
+        this.notificationService = notificationService;
         this.masterRepository = masterRepository;
         this.problemRepository = problemRepository;
         this.problemEventRepository = problemEventRepository;
@@ -77,6 +82,11 @@ public class ReviewService {
                 .problem(problem)
                 .build());
 
+        notificationService.sendNotification(
+                String.format("استاد «%s» ارزیابی مربوط به جلسه‌ی دفاع پایان‌نامه (پروژه) %s را تکمیل کرد.",
+                        reviewer.getFullName(), problem.getTitle()),
+                problem.getAllParticipants(reviewer.getId()));
+
         problem.getProblemReviews().add(problemReview);
         if (problem.isAllDoneReview()) {
             // All participant evaluated problem so we update final grade of problem
@@ -99,13 +109,21 @@ public class ReviewService {
                     + " target number of referees: " + problem.getNumberOfReferees());
         }
 
+        String finalGradePersian = LocaleUtility.convertToPersianDigits(String.format("%.2f", finalGrade));
         problemEventRepository.save(ProblemEvent.builder()
                 .message(String.format(
                         "ارزیابی پایان‌نامه (پروژه) توسط استاد راهنما تایید شد. "
                                 + "نمره نهایی پایان‌نامه (پروژه) دانشجو %s می‌باشد.",
-                        LocaleUtility.convertToPersianDigits(String.format("%.2f", finalGrade))))
+                        finalGradePersian))
                 .problem(problem)
                 .build());
+
+        notificationService.sendNotification(
+                String.format(
+                        "ارزیابی پایان‌نامه (پروژه) %s توسط استاد راهنما تایید شد. "
+                                + "نمره نهایی دانشجو %s می‌باشد.",
+                        problem.getTitle(), finalGradePersian),
+                problem.getAllParticipants(problem.getSupervisor().getId()));
 
         problem.setFinalGrade(finalGrade);
         problem.setState(ProblemState.COMPLETED);

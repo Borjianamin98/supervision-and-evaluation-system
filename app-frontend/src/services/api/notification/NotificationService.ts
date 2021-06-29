@@ -9,14 +9,19 @@ class NotificationService {
     private constructor() {
     }
 
-    static retrieveNotifications(pageSize: number, page: number, sortBy?: string, sortDirection?: "asc" | "desc") {
+    static retrieveNotifications(pageSize: number, page: number,
+                                 sortBys?: string[], sortDirections?: ("asc" | "desc")[]) {
+        // sortBys?.map((value, index) => )
+        const params = new URLSearchParams();
+        params.append("size", pageSize.toString());
+        params.append("page", page.toString());
+        sortBys?.forEach((value, index) =>
+            params.append("sort", sortDirections && index < sortDirections.length ?
+                `${value},${sortDirections[index]}` : value));
+
         return apiAxios
             .get<Pageable<AppNotification>>(`${NotificationService.API_NOTIFICATION_ROOT_PATH}`, {
-                params: {
-                    size: pageSize,
-                    page: page,
-                    sort: sortBy ? (sortDirection ? `${sortBy},${sortDirection}` : sortBy) : undefined,
-                }
+                params: params
             })
             .then(response => response.data);
     }

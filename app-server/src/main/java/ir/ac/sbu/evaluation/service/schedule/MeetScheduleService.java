@@ -19,6 +19,7 @@ import ir.ac.sbu.evaluation.repository.problem.ProblemEventRepository;
 import ir.ac.sbu.evaluation.repository.schedule.MeetScheduleRepository;
 import ir.ac.sbu.evaluation.repository.schedule.ScheduleEventRepository;
 import ir.ac.sbu.evaluation.repository.user.UserRepository;
+import ir.ac.sbu.evaluation.service.notification.NotificationService;
 import ir.ac.sbu.evaluation.utility.DateUtility;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -34,6 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class MeetScheduleService {
 
+    private final NotificationService notificationService;
+
     private final UserRepository userRepository;
 
     private final ProblemEventRepository problemEventRepository;
@@ -41,10 +44,12 @@ public class MeetScheduleService {
     private final MeetScheduleRepository meetScheduleRepository;
     private final ScheduleEventRepository scheduleEventRepository;
 
-    public MeetScheduleService(UserRepository userRepository,
+    public MeetScheduleService(NotificationService notificationService,
+            UserRepository userRepository,
             ProblemEventRepository problemEventRepository,
             MeetScheduleRepository meetScheduleRepository,
             ScheduleEventRepository scheduleEventRepository) {
+        this.notificationService = notificationService;
         this.userRepository = userRepository;
         this.problemEventRepository = problemEventRepository;
         this.meetScheduleRepository = meetScheduleRepository;
@@ -128,6 +133,9 @@ public class MeetScheduleService {
                                 + "را برای برگزاری جلسه‌ی دفاع مشخص نمایند.")
                 .problem(scheduleProblem)
                 .build());
+        notificationService.sendNotification(
+                String.format("زمان‌بندی دفاع پایان‌نامه (پروژه) %s شروع شد.", scheduleProblem.getTitle()),
+                scheduleProblem.getAllParticipants(scheduleProblem.getSupervisor().getId()));
 
         meetSchedule.setDurationMinutes(durationMinutes);
         meetSchedule.setMinimumDate(DateUtility.getStartOfDay(meetScheduleSaveDto.getMinimumDate()));
@@ -151,6 +159,10 @@ public class MeetScheduleService {
                                 + "نمایند.")
                 .problem(scheduleProblem)
                 .build());
+        notificationService.sendNotification(
+                String.format("زمان‌بندی دفاع پایان‌نامه (پروژه) %s به درخواست استاد راهنما تغییر یافت.",
+                        scheduleProblem.getTitle()),
+                scheduleProblem.getAllParticipants(scheduleProblem.getSupervisor().getId()));
 
         meetSchedule.setMinimumDate(DateUtility.getStartOfDay(dateRangeDto.getStartDate()));
         meetSchedule.setMaximumDate(DateUtility.getEndOfDay(dateRangeDto.getEndDate()));
@@ -162,13 +174,17 @@ public class MeetScheduleService {
         MeetSchedule meetSchedule = getMeetSchedule(meetScheduleId);
         checkUserAccessMeetSchedule(userId, meetSchedule);
         checkMeetScheduleState(meetSchedule, MeetScheduleState.STARTED);
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: ID = " + userId));
+
+        Problem scheduleProblem = meetSchedule.getProblem();
         problemEventRepository.save(ProblemEvent.builder()
                 .message(String.format("زمان‌بندی دفاع پایان‌نامه (پروژه) توسط «%s» نهایی شد.", user.getFullName()))
-                .problem(meetSchedule.getProblem())
+                .problem(scheduleProblem)
                 .build());
+        notificationService.sendNotification(
+                String.format("زمان‌بندی دفاع پایان‌نامه (پروژه) %s نهایی شد.", scheduleProblem.getTitle()),
+                scheduleProblem.getAllParticipants(scheduleProblem.getSupervisor().getId()));
 
         meetSchedule.getAnnouncedUsers().add(userId);
         return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
@@ -189,6 +205,9 @@ public class MeetScheduleService {
                                 + "امکان مواردی را تغییر دهند.")
                 .problem(meetSchedule.getProblem())
                 .build());
+        notificationService.sendNotification(
+                String.format("زمان‌بندی دفاع پایان‌نامه (پروژه) %s بازنشانی شد.", scheduleProblem.getTitle()),
+                scheduleProblem.getAllParticipants(scheduleProblem.getSupervisor().getId()));
 
         meetSchedule.setAnnouncedUsers(new HashSet<>());
         return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));
@@ -260,12 +279,17 @@ public class MeetScheduleService {
                             + "شرکت می‌کنند.");
         }
 
+        String finalizedDatePersian = DateUtility.getFullPersianDate(finalizedDateStart);
         problemEventRepository.save(ProblemEvent.builder()
                 .message(String.format(
                         "جلسه دفاع پایان‌نامه (پروژه) در تاریخ %s به مدت %s برگزار می‌شود.",
-                        DateUtility.getFullPersianDate(finalizedDateStart), meetSchedule.getDurationInfo()))
+                        finalizedDatePersian, meetSchedule.getDurationInfo()))
                 .problem(meetSchedule.getProblem())
                 .build());
+        notificationService.sendNotification(
+                String.format("جلسه دفاع پایان‌نامه (پروژه) %s در تاریخ %s به مدت %s برگزار می‌شود.",
+                        scheduleProblem.getTitle(), finalizedDatePersian, meetSchedule.getDurationInfo()),
+                scheduleProblem.getAllParticipants(scheduleProblem.getSupervisor().getId()));
 
         meetSchedule.setState(MeetScheduleState.FINALIZED);
         meetSchedule.setFinalizedDate(finalizedDateStart);
@@ -294,6 +318,12 @@ public class MeetScheduleService {
                                 + "نظر گرفته شد.")
                 .problem(scheduleProblem)
                 .build());
+        notificationService.sendNotification(
+                String.format(
+                        "جلسه دفاع پایان‌نامه (پروژه) %s به علت یکسری دلایل (مانند عدم حضور دانشجو و ...) تشکیل نشد. "
+                                + "نمره صفر برای دانشجو در نظر گرفته شد.",
+                        scheduleProblem.getTitle()),
+                scheduleProblem.getAllParticipants(scheduleProblem.getSupervisor().getId()));
 
         meetSchedule.setState(MeetScheduleState.REJECTED);
         scheduleProblem.setState(ProblemState.COMPLETED);
@@ -319,6 +349,12 @@ public class MeetScheduleService {
                         + "داوران از بخش جمع‌بندی، نمره و نظر نهایی خود را در مورد پایان‌نامه (پروژه) مشخص کنند.")
                 .problem(meetSchedule.getProblem())
                 .build());
+        notificationService.sendNotification(
+                String.format(
+                        "جلسه‌ی دفاع پایان‌نامه (پروژه) %s در زمان مقرر با حضور تمامی اعضا تشکیل شد. "
+                                + "داوران ارزیابی خود را در مورد آن وارد نمایند.",
+                        scheduleProblem.getTitle()),
+                scheduleProblem.getAllParticipants(scheduleProblem.getSupervisor().getId()));
 
         meetSchedule.setState(MeetScheduleState.ACCEPTED);
         return MeetScheduleDto.from(meetScheduleRepository.save(meetSchedule));

@@ -6,6 +6,7 @@ import {TablePaginationBaseProps} from "@material-ui/core/TablePagination/TableP
 import {TablePaginationActionsProps} from "@material-ui/core/TablePagination/TablePaginationActions";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import React from 'react';
+import LocaleUtils from "../../../utility/LocaleUtils";
 import CustomTablePaginationActions from "./CustomTablePaginationActions";
 
 const useStyles = makeStyles((theme) => ({
@@ -47,7 +48,8 @@ const CustomTablePagination: React.FunctionComponent<CustomTablePaginationProps>
                         input: classes.paginationInput,
                     }}
                     labelRowsPerPage="تعداد:"
-                    labelDisplayedRows={paginationInfo => `سطرهای ${paginationInfo.from} تا ${paginationInfo.to} از ${paginationInfo.count}`}
+                    labelDisplayedRows={paginationInfo =>
+                        LocaleUtils.convertToPersianDigits(`سطرهای ${paginationInfo.from} تا ${paginationInfo.to} از ${paginationInfo.count}`)}
                     onChangePage={handleChangePage}
                     onChangeRowsPerPage={handleChangeRowsPerPage}
                     ActionsComponent={CustomTablePaginationActions}

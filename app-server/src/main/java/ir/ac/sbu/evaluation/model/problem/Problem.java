@@ -6,8 +6,12 @@ import ir.ac.sbu.evaluation.model.review.ProblemReview;
 import ir.ac.sbu.evaluation.model.schedule.MeetSchedule;
 import ir.ac.sbu.evaluation.model.user.Master;
 import ir.ac.sbu.evaluation.model.user.Student;
+import ir.ac.sbu.evaluation.model.user.User;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -143,5 +147,13 @@ public class Problem extends BaseEntity {
     public boolean isAllDoneReview() {
         // Plus one is supervisor of problem
         return getProblemReviews().size() == getNumberOfReferees() + 1;
+    }
+
+    public List<User> getAllParticipants(long excludedUserIds) {
+        List<User> participants = new ArrayList<>(getReferees());
+        participants.add(getSupervisor());
+        participants.add(getStudent());
+
+        return participants.stream().filter(user -> user.getId() != excludedUserIds).collect(Collectors.toList());
     }
 }
