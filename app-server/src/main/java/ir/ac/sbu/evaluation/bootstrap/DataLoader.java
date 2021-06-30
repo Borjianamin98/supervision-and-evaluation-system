@@ -22,6 +22,7 @@ import ir.ac.sbu.evaluation.dto.user.student.StudentSaveDto;
 import ir.ac.sbu.evaluation.enumeration.Education;
 import ir.ac.sbu.evaluation.enumeration.Gender;
 import ir.ac.sbu.evaluation.security.AuthUserDetail;
+import ir.ac.sbu.evaluation.service.notification.NotificationService;
 import ir.ac.sbu.evaluation.service.problem.ProblemService;
 import ir.ac.sbu.evaluation.service.review.ReviewService;
 import ir.ac.sbu.evaluation.service.schedule.MeetScheduleService;
@@ -48,6 +49,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -86,6 +88,8 @@ public class DataLoader implements CommandLineRunner {
     private final Instant threeDayAgo;
     private final Instant threeDayTomorrow;
 
+    private final NotificationService notificationService;
+
     @Value("${application.init-with-sample-data}")
     private boolean initWithSampleDate;
 
@@ -95,7 +99,8 @@ public class DataLoader implements CommandLineRunner {
             StudentService studentService,
             ProblemService problemService,
             MeetScheduleService meetScheduleService,
-            ReviewService reviewService) {
+            ReviewService reviewService,
+            NotificationService notificationService) {
         this.universityService = universityService;
         this.facultyService = facultyService;
         this.adminService = adminService;
@@ -104,6 +109,7 @@ public class DataLoader implements CommandLineRunner {
         this.problemService = problemService;
         this.meetScheduleService = meetScheduleService;
         this.reviewService = reviewService;
+        this.notificationService = notificationService;
 
         Calendar calendar = Calendar.getInstance();
         yesterdayDate = String.format("%04d-%02d-%02d",
@@ -119,7 +125,7 @@ public class DataLoader implements CommandLineRunner {
                 calendar.get(Calendar.MONTH) + 1,
                 calendar.get(Calendar.DAY_OF_MONTH) + 1);
 
-        threeDayAgo = DateUtility.getStartOfDay(Instant.now().minus(3, ChronoUnit.DAYS));
+        threeDayAgo = DateUtility.getStartOfDay(Instant.now().minus(15, ChronoUnit.DAYS));
         threeDayTomorrow = DateUtility.getStartOfDay(Instant.now().plus(3, ChronoUnit.DAYS));
     }
 
@@ -129,6 +135,7 @@ public class DataLoader implements CommandLineRunner {
             prepareUniversities();
             prepareUsers();
             prepareSampleProblems();
+            handleNotifications();
         }
 
         AdminDto admin = adminService.save(AdminSaveDto.builder()
@@ -142,6 +149,13 @@ public class DataLoader implements CommandLineRunner {
                         .email("admin@gmail.com")
                         .build())
                 .build());
+    }
+
+    private void handleNotifications() {
+        for (UserDto user : Arrays.asList(sadeghMaster, aminStudent, mojtabaMaster, mahmoudMaster)) {
+            setSpringSecurityAuthentication(user);
+            notificationService.retrieveNotifications(user.getId(), Pageable.ofSize(1000));
+        }
     }
 
     private void prepareSampleProblems() throws ParseException {
