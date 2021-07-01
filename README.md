@@ -51,13 +51,4 @@ Given the increasing number of students over time, the greater involvement of ou
 * [React](https://reactjs.org/)
 * [Spring boot](https://spring.io/projects/spring-boot)
 
-<!-- GETTING STARTED -->
-## Getting Started
-
-### Prerequisites
-
-### Installation
-
-## Usage
-
 
