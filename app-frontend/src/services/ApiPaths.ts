@@ -1,4 +1,4 @@
-export const BACKEND_SERVICE_HOST = "http://localhost:8080"
+export const BACKEND_SERVICE_HOST = "http://localhost:9000"
 export const API_ROOT_PATH = `${BACKEND_SERVICE_HOST}/api/v1`
 
 // Authentication paths

@@ -196,8 +196,8 @@ function StatelessPaginationTable<T>(props: StatelessPaginationListProps<T>) {
                             count={total}
                             rowsPerPage={rowsPerPage}
                             page={page}
-                            onChangePage={(value) => onPageChange(value)}
-                            onChangeRowsPerPage={(value) => onRowsPerPageChange(value)}
+                            onPageChange={(value) => onPageChange(value)}
+                            onRowsPerPageChange={(value) => onRowsPerPageChange(value)}
                         />
                     </Table>
                 </TableContainer>

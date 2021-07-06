@@ -17,12 +17,12 @@ const useStyles = makeStyles((theme) => ({
 
 type CustomTablePaginationProps<D extends React.ElementType = React.ComponentType<TablePaginationBaseProps>,
     P = {}> =
-    Omit<TablePaginationProps<D, P>, "onChangePage" | "onChangeRowsPerPage" | "count" | "rowsPerPageOptions">
+    Omit<TablePaginationProps<D, P>, "onPageChange" | "onRowsPerPageChange" | "count" | "rowsPerPageOptions">
     & {
     rowsPerPageOptions: number[],
     count: number,
-    onChangeRowsPerPage: (newValue: number) => void,
-    onChangePage: (newValue: number) => void,
+    onRowsPerPageChange: (newValue: number) => void,
+    onPageChange: (newValue: number) => void,
 }
 
 const CustomTablePagination: React.FunctionComponent<CustomTablePaginationProps> = (props) => {
@@ -30,11 +30,11 @@ const CustomTablePagination: React.FunctionComponent<CustomTablePaginationProps>
     const mobileMatches = useMediaQuery((theme: Theme) => theme.breakpoints.down('xs'));
     const {rowsPerPageOptions, count, ...rest} = props;
 
-    const handleChangePage: TablePaginationActionsProps["onChangePage"] = (event, newPage) => {
-        props.onChangePage(newPage);
+    const handleChangePage: TablePaginationActionsProps["onPageChange"] = (event, newPage) => {
+        props.onPageChange(newPage);
     };
-    const handleChangeRowsPerPage: TablePaginationProps["onChangeRowsPerPage"] = (event) => {
-        props.onChangeRowsPerPage(parseInt(event.target.value, 10));
+    const handleChangeRowsPerPage: TablePaginationProps["onRowsPerPageChange"] = (event) => {
+        props.onRowsPerPageChange(parseInt(event.target.value, 10));
     };
 
     return (
@@ -50,8 +50,8 @@ const CustomTablePagination: React.FunctionComponent<CustomTablePaginationProps>
                     labelRowsPerPage="تعداد:"
                     labelDisplayedRows={paginationInfo =>
                         LocaleUtils.convertToPersianDigits(`سطرهای ${paginationInfo.from} تا ${paginationInfo.to} از ${paginationInfo.count}`)}
-                    onChangePage={handleChangePage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
                     ActionsComponent={CustomTablePaginationActions}
                 />
             </TableRow>

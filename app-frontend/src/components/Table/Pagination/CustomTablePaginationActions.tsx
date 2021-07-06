@@ -19,14 +19,14 @@ const useStyles = makeStyles((theme: Theme) =>
 const CustomTablePaginationActions: React.FunctionComponent<TablePaginationActionsProps> = (props) => {
     const classes = useStyles();
     const theme = useTheme();
-    const {count, page, rowsPerPage, onChangePage} = props;
+    const {count, page, rowsPerPage, onPageChange} = props;
     const maxPageNumber = Math.max(0, Math.ceil(count / rowsPerPage) - 1);
     const isRtlTheme = theme.direction === 'rtl';
 
-    const handleFirstPageButtonClick = () => onChangePage(null, 0);
-    const handleBackButtonClick = () => onChangePage(null, page - 1);
-    const handleNextButtonClick = () => onChangePage(null, page + 1);
-    const handleLastPageButtonClick = () => onChangePage(null, maxPageNumber);
+    const handleFirstPageButtonClick = () => onPageChange(null, 0);
+    const handleBackButtonClick = () => onPageChange(null, page - 1);
+    const handleNextButtonClick = () => onPageChange(null, page + 1);
+    const handleLastPageButtonClick = () => onPageChange(null, maxPageNumber);
 
     return (
         <div className={classes.root}>
